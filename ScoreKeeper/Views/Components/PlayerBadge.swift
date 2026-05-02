@@ -13,9 +13,9 @@ enum BadgeSize {
 
     var font: Font {
         switch self {
-        case .small: return .system(size: 14, weight: .bold, design: .rounded)
-        case .medium: return .system(size: 18, weight: .bold, design: .rounded)
-        case .large: return .system(size: 28, weight: .bold, design: .rounded)
+        case .small: return .caption.bold()
+        case .medium: return .subheadline.bold()
+        case .large: return .title3.bold()
         }
     }
 
@@ -53,6 +53,8 @@ struct PlayerBadge: View {
                     .truncationMode(.tail)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(name)
     }
 
     private var initial: String {

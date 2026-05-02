@@ -22,7 +22,7 @@ struct ConfettiOverlay: View {
                 for piece in pieces {
                     let elapsed = animationProgress
                     let adjustedY = piece.y + piece.speed * elapsed * size.height
-                    let adjustedX = piece.x + sin(elapsed * 3 + piece.wobble) * 30
+                    let adjustedX = piece.x * size.width + sin(elapsed * 3 + piece.wobble) * 30
 
                     guard adjustedY < size.height + 20 else { continue }
 
@@ -53,7 +53,7 @@ struct ConfettiOverlay: View {
     private func generatePieces() {
         pieces = (0..<80).map { _ in
             ConfettiPiece(
-                x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
+                x: CGFloat.random(in: 0...1),
                 y: CGFloat.random(in: -200...(-20)),
                 color: colors.randomElement() ?? .white,
                 size: CGFloat.random(in: 6...12),

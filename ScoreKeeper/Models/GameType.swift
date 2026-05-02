@@ -53,5 +53,5 @@ enum GameType: String, Codable, CaseIterable, Identifiable {
     }
 
     var minPlayers: Int { 2 }
-    var maxPlayers: Int { 6 }
+    var maxPlayers: Int { 15 }
 }

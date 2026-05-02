@@ -28,6 +28,11 @@ struct Phase10Engine: GameEngine {
     }
 
     func winners(session: GameSession) -> [UUID] {
+        let hasProgress = session.players.contains { player in
+            currentPhase(for: player.id, in: session) > 0 || player.totalScore(in: session) != 0
+        }
+        guard hasProgress else { return [] }
+
         // Players who completed phase 10; ties broken by lowest total points
         let completedPlayers = session.players.filter { player in
             currentPhase(for: player.id, in: session) >= 10

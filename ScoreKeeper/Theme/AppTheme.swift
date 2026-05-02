@@ -8,11 +8,12 @@ struct AppTheme {
     static let spacingSmall: CGFloat = 8
     static let spacingMedium: CGFloat = 16
     static let spacingLarge: CGFloat = 24
+    static let spacingXLarge: CGFloat = 32
 
     static let backgroundGradient = LinearGradient(
         colors: [
-            Color(red: 1.0, green: 0.96, blue: 0.92),
-            Color(red: 0.95, green: 0.93, blue: 1.0)
+            Color(red: 0.98, green: 0.96, blue: 0.93),
+            Color(red: 0.93, green: 0.97, blue: 1.0)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -20,8 +21,8 @@ struct AppTheme {
 
     static let darkBackgroundGradient = LinearGradient(
         colors: [
-            Color(red: 0.10, green: 0.10, blue: 0.14),
-            Color(red: 0.12, green: 0.10, blue: 0.18)
+            Color(red: 0.08, green: 0.09, blue: 0.12),
+            Color(red: 0.11, green: 0.10, blue: 0.16)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing

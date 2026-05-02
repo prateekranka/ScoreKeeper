@@ -6,44 +6,35 @@ struct WhatsForDinnerScoringView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var handValues: [UUID: Int] = [:]
     @State private var callerID: UUID?
+    @State private var scoreHapticTrigger = 0
+    private let engine = WhatsForDinnerEngine()
 
     var body: some View {
-        VStack(spacing: 0) {
-            roundInfo
-
-            ScrollView {
-                VStack(spacing: AppTheme.spacingMedium) {
-                    mealRevealSection
-                    playerHandsSection
-                    submitButton
-                }
-                .padding(AppTheme.spacingMedium)
-            }
-
-            if !session.sortedRounds.isEmpty {
-                roundHistory
-            }
+        ScoringScreenLayout(
+            session: session,
+            engine: engine,
+            actionTitle: "Submit Meal Reveal",
+            actionSystemImage: "fork.knife",
+            action: submitRound
+        ) {
+            RoundBanner(
+                icon: GameType.whatsForDinner.icon,
+                color: GameType.whatsForDinner.color,
+                title: "Round \(session.currentRoundNumber)",
+                subtitle: "Lowest total wins"
+            )
+            mealRevealSection
+            playerHandsSection
+        } footer: {
+            RoundHistoryStrip(session: session)
         }
-    }
-
-    private var roundInfo: some View {
-        HStack {
-            Image(systemName: "fork.knife.circle.fill")
-                .foregroundStyle(GameType.whatsForDinner.color)
-            Text("Round \(session.currentRoundNumber)")
-                .font(AppFonts.headline)
-            Spacer()
-            Text("Lowest total wins")
-                .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
-        }
-        .padding(AppTheme.spacingMedium)
+        .animation(.easeOut, value: session.sortedRounds.isEmpty)
+        .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
     }
 
     private var mealRevealSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Who called Meal Reveal?")
-                .font(AppFonts.headline)
+            AppSectionHeader(title: "Meal Reveal", subtitle: "Choose the player who called it", systemImage: "person.crop.circle.badge.checkmark")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: AppTheme.spacingSmall) {
@@ -65,6 +56,7 @@ struct WhatsForDinnerScoringView: View {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundStyle(.green)
                                         .font(.caption)
+                                        .transition(.scale.combined(with: .opacity))
                                 }
                             }
                             .padding(AppTheme.spacingSmall)
@@ -74,99 +66,46 @@ struct WhatsForDinnerScoringView: View {
                                           PlayerColors.lightColor(for: player.colorIndex) : .clear)
                             )
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(PressableButtonStyle())
+                        .accessibilityIdentifier("meal_reveal_\(player.name)")
+                        .accessibilityLabel("\(player.name) called Meal Reveal")
                     }
                 }
             }
         }
         .padding(AppTheme.spacingMedium)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
+        .animation(.easeOut, value: callerID)
+        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
     }
 
     private var playerHandsSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Card Values")
-                .font(AppFonts.headline)
+            AppSectionHeader(title: "Card Values", systemImage: "number")
 
             ForEach(session.players, id: \.id) { player in
-                HStack(spacing: AppTheme.spacingMedium) {
-                    PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small)
-                        .frame(width: 70)
-
-                    Spacer()
-
-                    ScoreEntryField(
-                        value: Binding(
-                            get: { handValues[player.id] ?? 0 },
-                            set: { handValues[player.id] = $0 }
-                        ),
-                        range: 0...9999
-                    )
-                }
-                .padding(AppTheme.spacingSmall)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
-            }
-        }
-    }
-
-    private var submitButton: some View {
-        Button {
-            submitRound()
-        } label: {
-            HStack {
-                Image(systemName: "fork.knife")
-                Text("Submit Meal Reveal")
-            }
-            .font(AppFonts.headline)
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                    .fill(GameType.whatsForDinner.color)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var roundHistory: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Rounds")
-                .font(AppFonts.headline)
-                .padding(.horizontal, AppTheme.spacingMedium)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: AppTheme.spacingSmall) {
-                    ForEach(session.sortedRounds, id: \.id) { round in
-                        roundCard(round)
+                ScoreEntryRow(
+                    player: player,
+                    value: handValueBinding(for: player),
+                    range: 0...9999,
+                    title: "Hand value"
+                ) {
+                    if callerID == player.id {
+                        Label("Caller", systemImage: "checkmark.circle.fill")
+                            .font(AppFonts.caption)
+                            .foregroundStyle(.green)
+                    } else {
+                        EmptyView()
                     }
                 }
-                .padding(.horizontal, AppTheme.spacingMedium)
             }
         }
-        .padding(.vertical, AppTheme.spacingSmall)
-        .background(.ultraThinMaterial)
     }
 
-    private func roundCard(_ round: Round) -> some View {
-        VStack(spacing: 4) {
-            Text("R\(round.roundNumber)")
-                .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
-
-            ForEach(session.players, id: \.id) { player in
-                let entry = round.entry(for: player.id)
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(PlayerColors.color(for: player.colorIndex))
-                        .frame(width: 8, height: 8)
-                    Text("\(entry?.points ?? 0)")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                }
-            }
-        }
-        .padding(AppTheme.spacingSmall)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+    private func handValueBinding(for player: Player) -> Binding<Int> {
+        Binding(
+            get: { handValues[player.id] ?? 0 },
+            set: { handValues[player.id] = $0 }
+        )
     }
 
     private func submitRound() {
@@ -186,6 +125,6 @@ struct WhatsForDinnerScoringView: View {
         handValues = [:]
         callerID = nil
 
-        HapticManager.shared.scoreEntry()
+        scoreHapticTrigger += 1
     }
 }

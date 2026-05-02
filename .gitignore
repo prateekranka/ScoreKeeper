@@ -14,6 +14,9 @@ DerivedData/
 *.dSYM.zip
 *.dSYM
 
+# Node tooling
+node_modules/
+
 # Swift Package Manager
 .build/
 Packages/

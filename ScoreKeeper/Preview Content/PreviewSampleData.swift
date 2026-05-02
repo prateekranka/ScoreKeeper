@@ -4,15 +4,16 @@ import Foundation
 @MainActor
 let previewContainer: ModelContainer = {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(
+    guard let container = try? ModelContainer(
         for: GameSession.self, Player.self, Round.self, ScoreEntry.self,
         configurations: config
-    )
+    ) else {
+        fatalError("Preview ModelContainer creation failed.")
+    }
 
-    // Sample completed game
     let session = GameSession(gameType: .generic)
     session.isComplete = true
-    session.completedAt = Date().addingTimeInterval(-86400)
+    session.completedAt = Date.now.addingTimeInterval(-86400)
     container.mainContext.insert(session)
 
     let player1 = Player(name: "Alice", colorIndex: 0)

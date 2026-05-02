@@ -28,8 +28,11 @@ struct GameHistoryListView: View {
                     .onDelete(perform: deleteGames)
                 }
                 .listStyle(.insetGrouped)
+                .scrollContentBackground(.hidden)
+                .accessibilityIdentifier("game_history_list")
             }
         }
+        .appBackground()
         .navigationTitle("Game History")
     }
 
@@ -45,9 +48,8 @@ struct GameHistoryListView: View {
                     .font(AppFonts.body)
 
                 HStack(spacing: 4) {
-                    if let winnerID = session.winnerID,
-                       let winner = session.players.first(where: { $0.id == winnerID }) {
-                        Text("\(winner.name) won")
+                    if let resultText = resultText(for: session) {
+                        Text(resultText)
                     }
                     Text("·")
                     Text("\(session.players.count) players")
@@ -66,11 +68,24 @@ struct GameHistoryListView: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 
     private func deleteGames(at offsets: IndexSet) {
         for index in offsets {
             modelContext.delete(completedGames[index])
         }
+    }
+
+    private func resultText(for session: GameSession) -> String? {
+        let engine = GameEngineFactory.engine(for: session.gameType)
+        let winnerIDs = engine.winners(session: session)
+        guard !winnerIDs.isEmpty else { return "No winner" }
+
+        let names = session.players
+            .filter { winnerIDs.contains($0.id) }
+            .map(\.name)
+
+        return names.count == 1 ? "\(names[0]) won" : "\(names.joined(separator: " & ")) won"
     }
 }

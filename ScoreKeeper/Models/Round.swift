@@ -5,7 +5,7 @@ import SwiftData
 final class Round {
     var id: UUID = UUID()
     var roundNumber: Int = 1
-    var createdAt: Date = Date()
+    var createdAt: Date
     var session: GameSession?
 
     @Relationship(deleteRule: .cascade, inverse: \ScoreEntry.round)
@@ -14,7 +14,7 @@ final class Round {
     init(roundNumber: Int) {
         self.id = UUID()
         self.roundNumber = roundNumber
-        self.createdAt = Date()
+        self.createdAt = .now
     }
 
     func entry(for playerID: UUID) -> ScoreEntry? {

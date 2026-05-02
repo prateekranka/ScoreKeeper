@@ -17,13 +17,7 @@ struct ScoringView: View {
     private func scoringContent(_ session: GameSession) -> some View {
         let engine = GameEngineFactory.engine(for: session.gameType)
 
-        VStack(spacing: 0) {
-            // Scoreboard header
-            scoreboardHeader(session, engine: engine)
-
-            Divider()
-
-            // Game-specific scoring view
+        Group {
             switch session.gameType {
             case .generic:
                 GenericScoringView(session: session)
@@ -41,6 +35,7 @@ struct ScoringView: View {
                 Button("End Game") {
                     showEndGameAlert = true
                 }
+                .accessibilityIdentifier("end_game_button")
                 .font(AppFonts.body)
                 .foregroundStyle(.red)
             }
@@ -56,28 +51,9 @@ struct ScoringView: View {
         .navigationBarBackButtonHidden(true)
     }
 
-    private func scoreboardHeader(_ session: GameSession, engine: GameEngine) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: AppTheme.spacingSmall) {
-                ForEach(session.players, id: \.id) { player in
-                    let score = engine.totalScore(for:
-                        session.rounds.flatMap(\.entries).filter { $0.playerID == player.id }
-                    )
-                    let winners = engine.winners(session: session)
-                    ScoreCard(
-                        player: player,
-                        totalScore: score,
-                        isLeading: winners.contains(player.id) && session.rounds.count > 0
-                    )
-                }
-            }
-            .padding(AppTheme.spacingMedium)
-        }
-    }
-
     private func endGame(_ session: GameSession, engine: GameEngine) {
         session.isComplete = true
-        session.completedAt = Date()
+        session.completedAt = .now
         let winnerIDs = engine.winners(session: session)
         session.winnerID = winnerIDs.first
         try? modelContext.save()

@@ -18,6 +18,7 @@ struct WhatsForDinnerEngine: GameEngine {
         }
 
         guard !playerScores.isEmpty else { return [] }
+        guard playerScores.contains(where: { $0.1 != 0 }) else { return [] }
 
         let lowestScore = playerScores.map(\.1).min() ?? 0
         return playerScores.filter { $0.1 == lowestScore }.map(\.0)

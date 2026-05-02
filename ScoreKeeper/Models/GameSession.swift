@@ -5,11 +5,12 @@ import SwiftData
 final class GameSession {
     var id: UUID = UUID()
     var gameTypeRaw: String = GameType.generic.rawValue
-    var createdAt: Date = Date()
+    var createdAt: Date
     var completedAt: Date?
     var isComplete: Bool = false
     var winnerID: UUID?
     var targetScore: Int?
+    var phase10SkipOnFail: Bool = false
     var winConditionRaw: String = WinCondition.highestScore.rawValueString
 
     @Relationship(deleteRule: .cascade, inverse: \Player.session)
@@ -45,7 +46,7 @@ final class GameSession {
     init(gameType: GameType) {
         self.id = UUID()
         self.gameTypeRaw = gameType.rawValue
-        self.createdAt = Date()
+        self.createdAt = .now
         self.winConditionRaw = gameType.defaultWinCondition.rawValueString
     }
 }

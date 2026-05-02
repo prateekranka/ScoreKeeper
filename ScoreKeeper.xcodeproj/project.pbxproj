@@ -39,10 +39,32 @@
 		AA000000000000000000021E /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000011E /* AppTheme.swift */; };
 		AA000000000000000000021F /* PlayerColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000011F /* PlayerColors.swift */; };
 		AA0000000000000000000220 /* AppFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000120 /* AppFonts.swift */; };
-		AA0000000000000000000221 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000121 /* HapticManager.swift */; };
 		AA0000000000000000000222 /* PreviewSampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000122 /* PreviewSampleData.swift */; };
 		AA0000000000000000000223 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000123 /* Assets.xcassets */; };
+		AA0000000000000001000303 /* ScoreKeeperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000301 /* ScoreKeeperUITests.swift */; };
+		AA0000000000000001000304 /* ScoreKeeperUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000302 /* ScoreKeeperUITestsLaunchTests.swift */; };
+		AA0000000000000001000312 /* PressableButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000313 /* PressableButtonStyle.swift */; };
+		AA0000000000000001000314 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000315 /* ThemeManager.swift */; };
+		AA0000000000000001000317 /* SavedPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000316 /* SavedPlayer.swift */; };
+		AA0000000000000001000319 /* PlayerRosterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000318 /* PlayerRosterSheet.swift */; };
+		AA0000000000000001000321 /* PlayerStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000320 /* PlayerStats.swift */; };
+		AA0000000000000001000323 /* StatsCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000322 /* StatsCalculator.swift */; };
+		AA0000000000000001000325 /* PlayerStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000324 /* PlayerStatsView.swift */; };
+		AA0000000000000001000327 /* HeadToHeadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000326 /* HeadToHeadView.swift */; };
+		AA0000000000000001000330 /* AppSurfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000333 /* AppSurfaces.swift */; };
+		AA0000000000000001000331 /* ScoringComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000334 /* ScoringComponents.swift */; };
+		AA0000000000000001000332 /* StandingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000335 /* StandingsList.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		AA000000000000000100030D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000007;
+			remoteInfo = ScoreKeeper;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		AA000000000000000000000E /* ScoreKeeper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScoreKeeper.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,9 +100,22 @@
 		AA000000000000000000011E /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		AA000000000000000000011F /* PlayerColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerColors.swift; sourceTree = "<group>"; };
 		AA0000000000000000000120 /* AppFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFonts.swift; sourceTree = "<group>"; };
-		AA0000000000000000000121 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		AA0000000000000000000122 /* PreviewSampleData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewSampleData.swift; sourceTree = "<group>"; };
 		AA0000000000000000000123 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AA0000000000000001000301 /* ScoreKeeperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreKeeperUITests.swift; sourceTree = "<group>"; };
+		AA0000000000000001000302 /* ScoreKeeperUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreKeeperUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		AA000000000000000100030F /* ScoreKeeperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScoreKeeperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000001000313 /* PressableButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressableButtonStyle.swift; sourceTree = "<group>"; };
+		AA0000000000000001000315 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		AA0000000000000001000316 /* SavedPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPlayer.swift; sourceTree = "<group>"; };
+		AA0000000000000001000318 /* PlayerRosterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerRosterSheet.swift; sourceTree = "<group>"; };
+		AA0000000000000001000320 /* PlayerStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStats.swift; sourceTree = "<group>"; };
+		AA0000000000000001000322 /* StatsCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsCalculator.swift; sourceTree = "<group>"; };
+		AA0000000000000001000324 /* PlayerStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStatsView.swift; sourceTree = "<group>"; };
+		AA0000000000000001000326 /* HeadToHeadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadToHeadView.swift; sourceTree = "<group>"; };
+		AA0000000000000001000333 /* AppSurfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSurfaces.swift; sourceTree = "<group>"; };
+		AA0000000000000001000334 /* ScoringComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringComponents.swift; sourceTree = "<group>"; };
+		AA0000000000000001000335 /* StandingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandingsList.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,13 +126,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA000000000000000100030B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AA0000000000000000000002 /* root */ = {
+		AA0000000000000000000002 = {
 			isa = PBXGroup;
 			children = (
 				AA0000000000000000000010 /* ScoreKeeper */,
+				AA0000000000000001000305 /* ScoreKeeperUITests */,
 				AA0000000000000000000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -106,6 +149,7 @@
 			isa = PBXGroup;
 			children = (
 				AA000000000000000000000E /* ScoreKeeper.app */,
+				AA000000000000000100030F /* ScoreKeeperUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,6 +165,7 @@
 				AA000000000000000000001B /* Utilities */,
 				AA0000000000000000000123 /* Assets.xcassets */,
 				AA000000000000000000001C /* Preview Content */,
+				AA0000000000000001000328 /* Services */,
 			);
 			path = ScoreKeeper;
 			sourceTree = "<group>";
@@ -142,6 +187,8 @@
 				AA0000000000000000000105 /* Player.swift */,
 				AA0000000000000000000106 /* Round.swift */,
 				AA0000000000000000000107 /* ScoreEntry.swift */,
+				AA0000000000000001000316 /* SavedPlayer.swift */,
+				AA0000000000000001000320 /* PlayerStats.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -165,6 +212,7 @@
 				AA0000000000000000000017 /* Scoring */,
 				AA0000000000000000000018 /* Summary */,
 				AA0000000000000000000019 /* Components */,
+				AA0000000000000001000329 /* Stats */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -184,6 +232,7 @@
 				AA000000000000000000010E /* GamePickerView.swift */,
 				AA000000000000000000010F /* PlayerSetupView.swift */,
 				AA0000000000000000000110 /* GameConfigView.swift */,
+				AA0000000000000001000318 /* PlayerRosterSheet.swift */,
 			);
 			path = Setup;
 			sourceTree = "<group>";
@@ -218,6 +267,10 @@
 				AA000000000000000000011B /* GameTypeTile.swift */,
 				AA000000000000000000011C /* AnimatedScoreChange.swift */,
 				AA000000000000000000011D /* ConfettiOverlay.swift */,
+				AA0000000000000001000313 /* PressableButtonStyle.swift */,
+				AA0000000000000001000333 /* AppSurfaces.swift */,
+				AA0000000000000001000334 /* ScoringComponents.swift */,
+				AA0000000000000001000335 /* StandingsList.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -228,6 +281,7 @@
 				AA000000000000000000011E /* AppTheme.swift */,
 				AA000000000000000000011F /* PlayerColors.swift */,
 				AA0000000000000000000120 /* AppFonts.swift */,
+				AA0000000000000001000315 /* ThemeManager.swift */,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -235,7 +289,6 @@
 		AA000000000000000000001B /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000000000000000000121 /* HapticManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -246,6 +299,32 @@
 				AA0000000000000000000122 /* PreviewSampleData.swift */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		AA0000000000000001000305 /* ScoreKeeperUITests */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000301 /* ScoreKeeperUITests.swift */,
+				AA0000000000000001000302 /* ScoreKeeperUITestsLaunchTests.swift */,
+			);
+			path = ScoreKeeperUITests;
+			sourceTree = "<group>";
+		};
+		AA0000000000000001000328 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000322 /* StatsCalculator.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		AA0000000000000001000329 /* Stats */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000324 /* PlayerStatsView.swift */,
+				AA0000000000000001000326 /* HeadToHeadView.swift */,
+			);
+			path = Stats;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -268,6 +347,24 @@
 			productReference = AA000000000000000000000E /* ScoreKeeper.app */;
 			productType = "com.apple.product-type.application";
 		};
+		AA0000000000000001000306 /* ScoreKeeperUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0000000000000001000307 /* Build configuration list for PBXNativeTarget "ScoreKeeperUITests" */;
+			buildPhases = (
+				AA000000000000000100030A /* Sources */,
+				AA000000000000000100030B /* Frameworks */,
+				AA000000000000000100030C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA000000000000000100030E /* PBXTargetDependency */,
+			);
+			name = ScoreKeeperUITests;
+			productName = ScoreKeeperUITests;
+			productReference = AA000000000000000100030F /* ScoreKeeperUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -280,6 +377,11 @@
 				TargetAttributes = {
 					AA0000000000000000000007 = {
 						CreatedOnToolsVersion = 16.0;
+						TestTargetID = AA0000000000000001000306;
+					};
+					AA0000000000000001000306 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = AA0000000000000000000007;
 					};
 				};
 			};
@@ -290,7 +392,7 @@
 				en,
 				Base,
 			);
-			mainGroup = AA0000000000000000000002 /* root */;
+			mainGroup = AA0000000000000000000002;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AA0000000000000000000003 /* Products */;
@@ -298,6 +400,7 @@
 			projectRoot = "";
 			targets = (
 				AA0000000000000000000007 /* ScoreKeeper */,
+				AA0000000000000001000306 /* ScoreKeeperUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -308,6 +411,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0000000000000000000223 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA000000000000000100030C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -347,15 +457,42 @@
 				AA000000000000000000021B /* GameTypeTile.swift in Sources */,
 				AA000000000000000000021C /* AnimatedScoreChange.swift in Sources */,
 				AA000000000000000000021D /* ConfettiOverlay.swift in Sources */,
+				AA0000000000000001000312 /* PressableButtonStyle.swift in Sources */,
 				AA000000000000000000021E /* AppTheme.swift in Sources */,
 				AA000000000000000000021F /* PlayerColors.swift in Sources */,
 				AA0000000000000000000220 /* AppFonts.swift in Sources */,
-				AA0000000000000000000221 /* HapticManager.swift in Sources */,
+				AA0000000000000001000314 /* ThemeManager.swift in Sources */,
+				AA0000000000000001000317 /* SavedPlayer.swift in Sources */,
+				AA0000000000000001000319 /* PlayerRosterSheet.swift in Sources */,
+				AA0000000000000001000321 /* PlayerStats.swift in Sources */,
+				AA0000000000000001000323 /* StatsCalculator.swift in Sources */,
+				AA0000000000000001000325 /* PlayerStatsView.swift in Sources */,
+				AA0000000000000001000327 /* HeadToHeadView.swift in Sources */,
+				AA0000000000000001000330 /* AppSurfaces.swift in Sources */,
+				AA0000000000000001000331 /* ScoringComponents.swift in Sources */,
+				AA0000000000000001000332 /* StandingsList.swift in Sources */,
 				AA0000000000000000000222 /* PreviewSampleData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA000000000000000100030A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000000000000001000303 /* ScoreKeeperUITests.swift in Sources */,
+				AA0000000000000001000304 /* ScoreKeeperUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AA000000000000000100030E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000007 /* ScoreKeeper */;
+			targetProxy = AA000000000000000100030D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AA0000000000000000000005 /* Debug */ = {
@@ -410,7 +547,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -467,7 +604,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -482,9 +619,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
+				DEVELOPMENT_TEAM = Y4QMMY38ZN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ScoreKeeper;
@@ -492,13 +632,13 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.scorekeeper.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prateekranka.scorekeeper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -513,9 +653,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
+				DEVELOPMENT_TEAM = Y4QMMY38ZN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ScoreKeeper;
@@ -523,19 +665,55 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.scorekeeper.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prateekranka.scorekeeper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		AA0000000000000001000308 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y4QMMY38ZN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prateekranka.scorekeeper.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = ScoreKeeper;
+			};
+			name = Debug;
+		};
+		AA0000000000000001000309 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y4QMMY38ZN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prateekranka.scorekeeper.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = ScoreKeeper;
 			};
 			name = Release;
 		};
@@ -556,6 +734,15 @@
 			buildConfigurations = (
 				AA0000000000000000000009 /* Debug */,
 				AA000000000000000000000A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA0000000000000001000307 /* Build configuration list for PBXNativeTarget "ScoreKeeperUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000001000308 /* Debug */,
+				AA0000000000000001000309 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

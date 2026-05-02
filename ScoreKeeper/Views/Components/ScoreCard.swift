@@ -11,6 +11,7 @@ struct ScoreCard: View {
 
             Text("\(totalScore)")
                 .font(AppFonts.scoreMedium)
+                .monospacedDigit()
                 .foregroundStyle(isLeading ? PlayerColors.color(for: player.colorIndex) : .primary)
                 .contentTransition(.numericText())
 
@@ -23,13 +24,15 @@ struct ScoreCard: View {
         }
         .padding(AppTheme.spacingMedium)
         .frame(minWidth: 100)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
-        .overlay(
+        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .overlay {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
                 .strokeBorder(
                     isLeading ? PlayerColors.color(for: player.colorIndex).opacity(0.5) : .clear,
                     lineWidth: 2
                 )
-        )
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(player.name), total score \(totalScore)\(isLeading ? ", leading" : "")")
     }
 }

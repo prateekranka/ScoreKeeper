@@ -19,6 +19,7 @@ struct GenericEngine: GameEngine {
         }
 
         guard !playerScores.isEmpty else { return [] }
+        guard playerScores.contains(where: { $0.1 != 0 }) else { return [] }
 
         let bestScore: Int
         switch session.winCondition {

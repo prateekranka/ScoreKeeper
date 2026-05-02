@@ -18,7 +18,7 @@ struct RoundTracker: View {
                                        height: round == currentRound ? 14 : 10)
 
                             Text("\(round)")
-                                .font(.system(size: 10, weight: round == currentRound ? .bold : .regular, design: .rounded))
+                                .font(round == currentRound ? AppFonts.caption.bold() : AppFonts.caption)
                                 .foregroundStyle(round == currentRound ? .primary : .secondary)
                         }
                         .id(round)

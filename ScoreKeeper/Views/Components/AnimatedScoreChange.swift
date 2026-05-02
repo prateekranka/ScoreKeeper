@@ -7,7 +7,8 @@ struct AnimatedScoreChange: View {
     var body: some View {
         if isVisible && delta != 0 {
             Text(delta > 0 ? "+\(delta)" : "\(delta)")
-                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .font(.callout.bold())
+                .monospacedDigit()
                 .foregroundStyle(delta > 0 ? .green : .red)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
                 .onAppear {
@@ -36,7 +37,8 @@ struct ScoreChangeModifier: ViewModifier {
                 if newValue != oldValue {
                     displayDelta = newValue - oldValue
                     showChange = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    Task { @MainActor in
+                        try? await Task.sleep(for: .seconds(2))
                         showChange = false
                     }
                 }
