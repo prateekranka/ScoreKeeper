@@ -28,6 +28,8 @@ enum AppDestination: Hashable {
     case gameOver(PersistentIdentifier)
     case gameDetail(PersistentIdentifier)
     case gameHistory
+    case headToHead
+    case playerStats(String)
 }
 
 struct ContentView: View {
@@ -53,6 +55,10 @@ struct ContentView: View {
                         GameDetailView(sessionID: sessionID)
                     case .gameHistory:
                         GameHistoryListView()
+                    case .headToHead:
+                        HeadToHeadView()
+                    case .playerStats(let playerName):
+                        PlayerStatsView(playerName: playerName)
                     }
                 }
         }

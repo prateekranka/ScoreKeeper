@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HeadToHeadView: View {
+    @Environment(NavigationRouter.self) private var router
     @Query(sort: \GameSession.createdAt, order: .reverse) private var allSessions: [GameSession]
     @State private var playerA = ""
     @State private var playerB = ""
@@ -71,7 +72,7 @@ struct HeadToHeadView: View {
 
                 Spacer()
 
-                Text("\(record.gamesTogether) \(record.gamesTogether == 1 ? "game" : "games")")
+                Text("\(record.gamesTogether) \(record.gamesTogether == 1 ? "game" : "games") together")
                     .font(AppFonts.caption)
                     .foregroundStyle(.secondary)
             }
@@ -104,19 +105,27 @@ struct HeadToHeadView: View {
     }
 
     private func playerWinColumn(name: String, wins: Int, rate: Double, color: Color) -> some View {
-        VStack(spacing: 4) {
-            Text(name)
-                .font(AppFonts.body)
-                .bold()
-            Text("\(wins) \(wins == 1 ? "win" : "wins")")
-                .font(AppFonts.scoreSmall)
-                .bold()
-                .foregroundStyle(color)
-            Text(String(format: "%.0f%%", rate * 100))
-                .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+        Button {
+            router.push(.playerStats(name))
+        } label: {
+            VStack(spacing: 4) {
+                Text(name)
+                    .font(AppFonts.body)
+                    .bold()
+                Text("\(wins) \(wins == 1 ? "win" : "wins")")
+                    .font(AppFonts.scoreSmall)
+                    .bold()
+                    .foregroundStyle(color)
+                Text(String(format: "%.0f%%", rate * 100))
+                    .font(AppFonts.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
+        .buttonStyle(.plain)
+        .accessibilityLabel(name)
+        .accessibilityHint("Opens player stats")
+        .accessibilityIdentifier("player_stats_\(name)")
     }
 
     private func winBar(_ record: H2HRecord) -> some View {

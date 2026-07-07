@@ -16,6 +16,7 @@ DerivedData/
 
 # Node tooling
 node_modules/
+.playwright-cli/
 
 # Swift Package Manager
 .build/

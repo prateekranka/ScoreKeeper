@@ -2,6 +2,10 @@
 
 Native iOS scorekeeping app.
 
+## UI Screen Network
+
+The current screen and navigation route inventory for redesign prep lives in `docs/ui-screen-network.md`.
+
 ## Simulator Preview
 
 This project includes `serve-sim` tooling so a booted iOS Simulator can be previewed and controlled from a browser.

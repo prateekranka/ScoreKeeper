@@ -6,6 +6,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     let engine: GameEngine
     let actionTitle: String
     let actionSystemImage: String?
+    var showsScoreboardHeader = true
     let action: () -> Void
     @ViewBuilder var content: Content
     @ViewBuilder var footer: Footer
@@ -16,7 +17,9 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     var body: some View {
         VStack(spacing: 0) {
             ScoringToolsBar(session: session, selectedTool: $selectedTool)
-            ScoreboardHeader(session: session, engine: engine)
+            if showsScoreboardHeader {
+                ScoreboardHeader(session: session, engine: engine)
+            }
 
             ScrollView {
                 VStack(spacing: AppTheme.spacingMedium) {

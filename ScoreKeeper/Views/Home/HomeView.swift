@@ -72,7 +72,7 @@ struct HomeView: View {
                     )
                     .staggeredEntrance(visible: sectionsVisible, index: 5)
 
-                    HomeStatsSection()
+                    HomeStatsSection(sessions: completedGames)
                         .staggeredEntrance(visible: sectionsVisible, index: 6)
                 }
             }
@@ -324,7 +324,7 @@ private struct HomeRecentGamesSection: View {
             HStack {
                 AppSectionHeader(title: "Recent Games", systemImage: "clock")
                 Spacer()
-                if sessions.count > 5 {
+                if !sessions.isEmpty {
                     Button("See All", action: onSeeAll)
                         .font(AppFonts.body)
                         .accessibilityIdentifier("see_all_button")
@@ -398,17 +398,48 @@ private struct RecentGameRow: View {
 }
 
 private struct HomeStatsSection: View {
+    @Environment(NavigationRouter.self) private var router
+    let sessions: [GameSession]
+
+    private var playerNames: [String] {
+        StatsCalculator.allPlayerNames(from: sessions)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             AppSectionHeader(title: "Stats", subtitle: "Compare players across completed games", systemImage: "chart.bar")
 
-            NavigationLink(destination: HeadToHeadView()) {
+            Button {
+                router.push(.headToHead)
+            } label: {
                 Label("Head to Head", systemImage: "person.2.slash")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(AppTheme.spacingMedium)
                     .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
             }
             .buttonStyle(PressableButtonStyle())
+            .accessibilityIdentifier("head_to_head_button")
+
+            if !playerNames.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: AppTheme.spacingSmall) {
+                        ForEach(playerNames, id: \.self) { name in
+                            Button {
+                                router.push(.playerStats(name))
+                            } label: {
+                                Label(name, systemImage: "person.crop.circle")
+                                    .font(AppFonts.body)
+                                    .padding(.horizontal, AppTheme.spacingSmall)
+                                    .frame(minHeight: 42)
+                                    .background(.regularMaterial, in: Capsule())
+                            }
+                            .buttonStyle(PressableButtonStyle())
+                            .accessibilityIdentifier("player_stats_\(name)")
+                        }
+                    }
+                }
+                .accessibilityIdentifier("player_stats_entry_list")
+            }
         }
     }
 }

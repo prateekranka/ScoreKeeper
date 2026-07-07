@@ -52,6 +52,7 @@ struct PlayerStatsView: View {
         }
         .scrollContentBackground(.hidden)
         .appBackground()
+        .accessibilityIdentifier("player_stats_view")
         .navigationTitle(playerName)
         .navigationBarTitleDisplayMode(.inline)
     }

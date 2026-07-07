@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ScoreKeeper Redesign Explorations</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body class="theme-index">
+    <main class="index-shell">
+      <header class="hero">
+        <div>
+          <h1>ScoreKeeper Redesign Explorations</h1>
+          <p>
+            Three independent product UI directions for the same iPhone 16 Pro, iOS 26+ app flows. These are static HTML mockups only:
+            no SwiftUI implementation, no data model edits, and no API behavior changes.
+          </p>
+          <p class="note-line">
+            Shared product assumption: small groups need to track casual games quickly, confidently, and without spreadsheet friction.
+          </p>
+        </div>
+        <dl class="index-meta">
+          <div>
+            <dt>Artifact scope</dt>
+            <dd>Exploration mockups</dd>
+          </div>
+          <div>
+            <dt>Register</dt>
+            <dd>Product UI</dd>
+          </div>
+          <div>
+            <dt>Target surface</dt>
+            <dd>iPhone 16 Pro on iOS 26+, 402 x 874 CSS px</dd>
+          </div>
+          <div>
+            <dt>Screens per system</dt>
+            <dd>Home, setup, scoring, Phase 10, summary</dd>
+          </div>
+        </dl>
+      </header>
+
+      <section class="direction-grid" aria-label="Design systems">
+        <a class="direction-card" href="./club-table.html">
+          <div>
+            <h2>Club Table</h2>
+            <p>Tactile, social, and restrained for game night without sliding into parchment or nostalgia props.</p>
+          </div>
+          <div class="card-row">
+            <span class="tag">Deep table green</span>
+            <span class="tag">Tally rows</span>
+            <span class="tag">Warm accent</span>
+          </div>
+        </a>
+
+        <a class="direction-card" href="./referee-console.html">
+          <div>
+            <h2>Referee Console</h2>
+            <p>Dense, official, and table-first for a scorer who needs to see every number and command at once.</p>
+          </div>
+          <div class="card-row">
+            <span class="tag">Dark console</span>
+            <span class="tag">Data grids</span>
+            <span class="tag">Command bars</span>
+          </div>
+        </a>
+
+        <a class="direction-card" href="./playful-ledger.html">
+          <div>
+            <h2>Playful Ledger</h2>
+            <p>Colorful and state-rich for families and friends, with player identity doing real work in the score sheet.</p>
+          </div>
+          <div class="card-row">
+            <span class="tag">Player colors</span>
+            <span class="tag">Forgiving controls</span>
+            <span class="tag">Readable history</span>
+          </div>
+        </a>
+      </section>
+
+      <section class="notes-grid" style="margin-top: 32px;">
+        <article class="note-box">
+          <h2>Fair Comparison</h2>
+          <p>Each direction mocks the same representative iPhone 16 Pro screens using the same sample players, rounds, and outcomes.</p>
+        </article>
+        <article class="note-box">
+          <h2>Implementation Boundary</h2>
+          <p>The mockups intentionally do not reuse the current SwiftUI layout, colors, gradients, or component style.</p>
+        </article>
+        <article class="note-box">
+          <h2>Next Pass</h2>
+          <p>The folder is ready to feed a later Argent Lens redesign pass as visual input and product context.</p>
+        </article>
+      </section>
+
+      <p class="footer-note">
+        Companion notes: <a class="meta-link" href="./README.md">README.md</a>
+      </p>
+    </main>
+  </body>
+</html>

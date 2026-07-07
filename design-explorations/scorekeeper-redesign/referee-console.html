@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Referee Console - ScoreKeeper Redesign</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body class="theme-ref">
+    <main class="shell">
+      <a class="back-link" href="./index.html">Back to explorations</a>
+
+      <header class="system-header">
+        <div>
+          <h1>Referee Console</h1>
+          <p>
+            A compact official's console for a scorer who needs strong tables, decisive commands, and minimal visual ambiguity.
+            It favors density because the scorer is already in the role of operator.
+          </p>
+          <p class="note-line">
+            Positioning: a confident score desk for fast edits, clear standings, and audit-friendly round history.
+          </p>
+        </div>
+        <dl class="system-meta">
+          <div>
+            <dt>Physical scene</dt>
+            <dd>Side table, overhead light, scorer checks every total</dd>
+          </div>
+          <div>
+            <dt>Target surface</dt>
+            <dd>iPhone 16 Pro on iOS 26+, 402 x 874 CSS px</dd>
+          </div>
+          <div>
+            <dt>Navigation model</dt>
+            <dd>Top status bar, tabs, command rail, dense detail pane</dd>
+          </div>
+          <div>
+            <dt>Motion posture</dt>
+            <dd>Direct state changes, 150 ms row updates, no page choreography</dd>
+          </div>
+        </dl>
+      </header>
+
+      <section class="notes-grid" aria-label="Design system notes">
+        <article class="note-box">
+          <h2>Tokens</h2>
+          <p>Graphite shell, crisp slate surfaces, cyan active states, amber attention states, and strong line contrast.</p>
+          <div class="token-row">
+            <span class="swatch" style="--swatch: var(--page-bg);"></span>
+            <span class="swatch" style="--swatch: var(--app-bg);"></span>
+            <span class="swatch" style="--swatch: var(--surface);"></span>
+            <span class="swatch" style="--swatch: var(--accent);"></span>
+            <span class="swatch" style="--swatch: var(--accent-2);"></span>
+          </div>
+        </article>
+        <article class="note-box">
+          <h2>Components</h2>
+          <ul>
+            <li>iOS 26-style glass treatment is reserved for bars and tappable controls.</li>
+            <li>Command bars for submit, undo, end, timer, dice, and log.</li>
+            <li>Editable data grids for scores and Phase 10 state.</li>
+          </ul>
+        </article>
+        <article class="note-box">
+          <h2>States</h2>
+          <ul>
+            <li>Selected tabs and active commands use cyan with dark text.</li>
+            <li>Warnings use amber row badges before destructive choices.</li>
+            <li>Errors stay close to form rows and never hide behind modals.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="screen-heading">
+        <div>
+          <h2>Representative Screens</h2>
+          <p>Every screen is built as a compact iPhone 16 Pro operations surface, with density coming from tables and command bars rather than stretched type.</p>
+        </div>
+      </section>
+
+      <section class="screen-grid" aria-label="Referee Console mockups">
+        <article class="device">
+          <div class="phone-frame-title" data-screen="Home console">
+            <span>9:42</span>
+            <span>5G 82%</span>
+          </div>
+          <div class="app-body tight">
+            <div class="topbar">
+              <div>
+                <h2>Score desk</h2>
+                <p>1 active, 27 completed</p>
+              </div>
+              <span class="pill status-ok">Ready</span>
+            </div>
+
+            <div class="console-command">
+              <a class="mini-button active" href="#">New</a>
+              <a class="mini-button" href="#">Resume</a>
+              <a class="mini-button" href="#">History</a>
+              <a class="mini-button" href="#">Stats</a>
+            </div>
+
+            <section class="panel pad">
+              <div class="panel-title">
+                <h3>Active game</h3>
+                <span class="pill">R6</span>
+              </div>
+              <table class="table-like">
+                <thead>
+                  <tr>
+                    <th>Game</th>
+                    <th>Leader</th>
+                    <th>Spread</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Phase 10</td>
+                    <td>Maya</td>
+                    <td>15</td>
+                  </tr>
+                </tbody>
+              </table>
+              <a class="primary-action" href="#" style="margin-top: 14px;">Resume active game</a>
+            </section>
+
+            <section class="panel">
+              <table class="table-like">
+                <thead>
+                  <tr>
+                    <th>Recent</th>
+                    <th>Winner</th>
+                    <th>Final</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Dinner</td><td>Jules</td><td>42</td></tr>
+                  <tr><td>Scoreboard</td><td>Maya</td><td>128</td></tr>
+                  <tr><td>Phase 10</td><td>Priya</td><td>205</td></tr>
+                  <tr><td>Scoreboard</td><td>Sam</td><td>94</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="panel pad soft">
+              <div class="metric-row">
+                <div class="metric">
+                  <span class="tiny">Games</span>
+                  <strong>27</strong>
+                </div>
+                <div class="metric">
+                  <span class="tiny">Players</span>
+                  <strong>9</strong>
+                </div>
+                <div class="metric">
+                  <span class="tiny">Rivalry</span>
+                  <strong>12</strong>
+                </div>
+              </div>
+            </section>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="phone-frame-title" data-screen="Game type + roster">
+            <span>9:42</span>
+            <span>5G 82%</span>
+          </div>
+          <div class="app-body tight">
+            <div class="topbar">
+              <div>
+                <h2>New session</h2>
+                <p>Configure scoring before the first round.</p>
+              </div>
+            </div>
+
+            <div class="segmented">
+              <span class="active">Game</span>
+              <span>Players</span>
+            </div>
+
+            <section class="panel">
+              <table class="table-like">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Mode</th>
+                    <th>Next</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Scoreboard</td><td>Highest</td><td>Config</td></tr>
+                  <tr><td>Dinner</td><td>Lowest</td><td>Start</td></tr>
+                  <tr><td>Phase 10</td><td>Lowest</td><td>Config</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="panel pad">
+              <div class="panel-title">
+                <h3>Roster table</h3>
+                <span class="pill status-warn">1 issue</span>
+              </div>
+              <div class="input-row">
+                <span class="avatar p-maya">M</span>
+                <span class="fake-input">Maya</span>
+                <span class="tiny">OK</span>
+              </div>
+              <div class="input-row">
+                <span class="avatar p-jules">J</span>
+                <span class="fake-input">Jules</span>
+                <span class="tiny">OK</span>
+              </div>
+              <div class="input-row">
+                <span class="avatar p-maya">M</span>
+                <span class="fake-input">maya</span>
+                <span class="tiny">Duplicate</span>
+              </div>
+              <p class="pill status-danger" style="margin-top: 12px;">Player names must be unique.</p>
+            </section>
+
+            <section class="panel pad">
+              <div class="panel-title">
+                <h3>Win condition</h3>
+              </div>
+              <div class="segmented">
+                <span class="active">Highest score</span>
+                <span>Lowest score</span>
+              </div>
+            </section>
+
+            <a class="primary-action" href="#">Resolve roster issue</a>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="phone-frame-title" data-screen="Live generic scoreboard">
+            <span>9:42</span>
+            <span>5G 82%</span>
+          </div>
+          <div class="app-body tight">
+            <div class="topbar">
+              <div>
+                <h2>Scoreboard R4</h2>
+                <p>Highest score wins. Draft round not submitted.</p>
+              </div>
+              <span class="pill status-warn">Draft</span>
+            </div>
+
+            <div class="console-command">
+              <a class="mini-button active" href="#">Submit R4</a>
+              <a class="mini-button" href="#">Undo R3</a>
+              <a class="mini-button" href="#">Timer</a>
+              <a class="mini-button" href="#">Dice</a>
+              <a class="mini-button" href="#">End</a>
+            </div>
+
+            <div class="console-layout">
+              <section class="panel">
+                <table class="table-like">
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Player</th>
+                      <th>Total</th>
+                      <th>Round</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1</td><td>Maya</td><td>118</td><td><div class="number-control"><button>-</button><strong>10</strong><button>+</button></div></td></tr>
+                    <tr><td>2</td><td>Jules</td><td>91</td><td><div class="number-control"><button>-</button><strong>5</strong><button>+</button></div></td></tr>
+                    <tr><td>3</td><td>Priya</td><td>83</td><td><div class="number-control"><button>-</button><strong>0</strong><button>+</button></div></td></tr>
+                    <tr><td>4</td><td>Sam</td><td>76</td><td><div class="number-control"><button>-</button><strong>15</strong><button>+</button></div></td></tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <aside class="panel pad soft">
+                <div class="panel-title">
+                  <h3>Live checks</h3>
+                </div>
+                <div class="metric-row">
+                  <div class="metric">
+                    <span class="tiny">Entries</span>
+                    <strong>4/4</strong>
+                  </div>
+                  <div class="metric">
+                    <span class="tiny">Delta</span>
+                    <strong>+30</strong>
+                  </div>
+                </div>
+                <table class="table-like" style="margin-top: 12px;">
+                  <tbody>
+                    <tr><td>R3 submitted</td><td>2 min ago</td></tr>
+                    <tr><td>Undo available</td><td>Yes</td></tr>
+                    <tr><td>Target score</td><td>None</td></tr>
+                  </tbody>
+                </table>
+              </aside>
+            </div>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="phone-frame-title" data-screen="Phase 10 status">
+            <span>9:42</span>
+            <span>5G 82%</span>
+          </div>
+          <div class="app-body tight">
+            <div class="topbar">
+              <div>
+                <h2>Phase 10 R8</h2>
+                <p>Track phase completion and leftovers.</p>
+              </div>
+              <span class="pill status-warn">2 pending</span>
+            </div>
+
+            <section class="panel">
+              <table class="table-like">
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Phase</th>
+                    <th>Left</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Maya</td><td>8/10</td><td>15</td></tr>
+                  <tr><td>Jules</td><td>7/10</td><td>25</td></tr>
+                  <tr><td>Priya</td><td>6/10</td><td>30</td></tr>
+                  <tr><td>Sam</td><td>8/10</td><td>5</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="panel pad">
+              <div class="panel-title">
+                <h3>Phase completion</h3>
+                <span class="pill">No repeat rounds: off</span>
+              </div>
+              <div class="list">
+                <div class="row">
+                  <div class="row-main">
+                    <strong>Maya phase 8</strong>
+                    <span class="tiny">Completed this round</span>
+                  </div>
+                  <span class="pill status-ok">Complete</span>
+                </div>
+                <div class="row">
+                  <div class="row-main">
+                    <strong>Jules phase 7</strong>
+                    <span class="tiny">Waiting on toggle</span>
+                  </div>
+                  <span class="pill status-warn">Pending</span>
+                </div>
+                <div class="row">
+                  <div class="row-main">
+                    <strong>Priya phase 6</strong>
+                    <span class="tiny">Leftover points entered</span>
+                  </div>
+                  <span class="pill status-warn">Pending</span>
+                </div>
+              </div>
+            </section>
+
+            <a class="primary-action" href="#">Submit Phase 10 round</a>
+            <a class="ghost-action" href="#">Open round log</a>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="phone-frame-title" data-screen="Summary + detail">
+            <span>9:42</span>
+            <span>5G 82%</span>
+          </div>
+          <div class="app-body tight">
+            <section class="summary-hero">
+              <div class="title-row">
+                <span class="pill status-ok">Closed</span>
+                <span class="tiny">Game ID 027</span>
+              </div>
+              <div>
+                <h2>Maya wins</h2>
+                <p class="subtle">Scoreboard, 4 rounds, highest score wins</p>
+              </div>
+              <div class="metric-row">
+                <div class="metric">
+                  <span class="tiny">Final</span>
+                  <strong>128</strong>
+                </div>
+                <div class="metric">
+                  <span class="tiny">Margin</span>
+                  <strong>22</strong>
+                </div>
+                <div class="metric">
+                  <span class="tiny">Rounds</span>
+                  <strong>4</strong>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel">
+              <table class="table-like">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>1</td><td>Maya</td><td>128</td></tr>
+                  <tr><td>2</td><td>Jules</td><td>106</td></tr>
+                  <tr><td>3</td><td>Priya</td><td>101</td></tr>
+                  <tr><td>4</td><td>Sam</td><td>91</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="panel pad">
+              <div class="panel-title">
+                <h3>Audit trend</h3>
+                <span class="pill">Cumulative</span>
+              </div>
+              <div class="chart" aria-label="Score trend chart">
+                <svg viewBox="0 0 320 86" role="img">
+                  <path d="M12 70 L88 54 L164 40 L240 26 L308 16" fill="none" stroke="oklch(0.73 0.14 218)" stroke-width="4" stroke-linecap="round"></path>
+                  <path d="M12 72 L88 62 L164 50 L240 42 L308 38" fill="none" stroke="oklch(0.8 0.14 82)" stroke-width="4" stroke-linecap="round"></path>
+                  <path d="M12 76 L88 68 L164 60 L240 53 L308 46" fill="none" stroke="oklch(0.72 0.14 158)" stroke-width="4" stroke-linecap="round"></path>
+                </svg>
+              </div>
+            </section>
+
+            <div class="bottom-bar">
+              <a class="primary-action" href="#">Rematch same roster</a>
+              <a class="secondary-action" href="#">Export detail</a>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

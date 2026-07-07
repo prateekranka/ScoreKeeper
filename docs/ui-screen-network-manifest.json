@@ -1,0 +1,170 @@
+{
+  "title": "ScoreKeeper UI Screen Network",
+  "subtitle": "Route strips for the current SwiftUI navigation surface. Screens repeat when they act as hubs.",
+  "width": 2200,
+  "thumb_width": 128,
+  "card_width": 188,
+  "gap": 74,
+  "row_label_width": 244,
+  "screens_dir": "../screenshots/app-screens",
+  "screens": {
+    "H0": { "file": "01-home.png", "label": "Home Empty" },
+    "H1": { "file": "16-home-with-active-game.png", "label": "Home Active" },
+    "H2": { "file": "17-home-recent-and-stats.png", "label": "Home Recent + Stats" },
+    "GP": { "file": "02-game-picker.png", "label": "Game Picker" },
+    "PS": { "file": "03-player-setup-scoreboard.png", "label": "Player Setup" },
+    "GS": { "file": "04-game-settings-scoreboard.png", "label": "Scoreboard Settings" },
+    "SS": { "file": "05-scoring-scoreboard.png", "label": "Scoreboard Scoring" },
+    "WT": { "file": "12-player-setup-whats-for-dinner.png", "label": "Dinner Player Setup" },
+    "WS": { "file": "13-scoring-whats-for-dinner.png", "label": "Dinner Scoring" },
+    "P3": { "file": "14-game-settings-phase10.png", "label": "Phase 10 Settings" },
+    "P4": { "file": "15-scoring-phase10.png", "label": "Phase 10 Scoring" },
+    "TA": { "file": "06-tool-timer.png", "label": "Timer Sheet" },
+    "TD": { "file": "07-tool-dice.png", "label": "Dice Sheet" },
+    "TS": { "file": "08-tool-starter.png", "label": "Starter Sheet" },
+    "TL": { "file": "09-tool-log-empty.png", "label": "Round Log Sheet" },
+    "EA": { "file": "10-end-game-confirmation.png", "label": "End Game Confirm" },
+    "GO": { "file": "11-game-over-no-winner.png", "label": "Game Over" },
+    "RS": { "file": "22-roster-select-sheet.png", "label": "Roster Sheet" },
+    "HE": { "file": "18-head-to-head-empty.png", "label": "Head to Head Empty" },
+    "HB": { "file": "19-head-to-head-by-game.png", "label": "H2H By Game" },
+    "HX": { "file": "20-head-to-head-expanded.png", "label": "H2H Expanded" },
+    "GD": { "file": "21-game-details.png", "label": "Game Details" }
+  },
+  "routes": [
+    {
+      "title": "A. New Scoreboard Game",
+      "subtitle": "Central AppDestination route: Home -> game picker -> players -> settings -> live scoring -> game over.",
+      "steps": [
+        { "screen": "H0", "transition": "New Game" },
+        { "screen": "GP", "transition": "Scoreboard" },
+        { "screen": "PS", "transition": "Start" },
+        { "screen": "GS", "transition": "Start" },
+        { "screen": "SS", "transition": "End Game" },
+        { "screen": "EA", "transition": "Confirm" },
+        { "screen": "GO", "transition": "" }
+      ]
+    },
+    {
+      "title": "B. New What's for Dinner Game",
+      "subtitle": "Dinner skips GameConfigView and creates the scoring session directly from PlayerSetupView.",
+      "steps": [
+        { "screen": "H0", "transition": "New Game" },
+        { "screen": "GP", "transition": "Dinner" },
+        { "screen": "WT", "transition": "Start" },
+        { "screen": "WS", "transition": "End Game" },
+        { "screen": "EA", "transition": "Confirm" },
+        { "screen": "GO", "transition": "" }
+      ]
+    },
+    {
+      "title": "C. New Phase 10 Game",
+      "subtitle": "Phase 10 shares PlayerSetupView, then adds a Phase-specific setting before live scoring.",
+      "steps": [
+        { "screen": "H0", "transition": "New Game" },
+        { "screen": "GP", "transition": "Phase 10" },
+        { "screen": "PS", "transition": "Start" },
+        { "screen": "P3", "transition": "Start" },
+        { "screen": "P4", "transition": "End or phase complete" },
+        { "screen": "EA", "transition": "Confirm" },
+        { "screen": "GO", "transition": "" }
+      ]
+    },
+    {
+      "title": "D. Live Scoring Tool Sheets",
+      "subtitle": "All scoring variants use the shared scoring toolbar sheet loop.",
+      "rows": [
+        {
+          "label": "Timer",
+          "steps": [
+            { "screen": "SS", "transition": "Timer" },
+            { "screen": "TA", "transition": "Done" },
+            { "screen": "SS", "transition": "" }
+          ]
+        },
+        {
+          "label": "Dice",
+          "steps": [
+            { "screen": "SS", "transition": "Dice" },
+            { "screen": "TD", "transition": "Done" },
+            { "screen": "SS", "transition": "" }
+          ]
+        },
+        {
+          "label": "Starter",
+          "steps": [
+            { "screen": "SS", "transition": "Starter" },
+            { "screen": "TS", "transition": "Done" },
+            { "screen": "SS", "transition": "" }
+          ]
+        },
+        {
+          "label": "Round Log",
+          "steps": [
+            { "screen": "SS", "transition": "Log" },
+            { "screen": "TL", "transition": "Done" },
+            { "screen": "SS", "transition": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "E. Resume, Replay, and Roster Loops",
+      "subtitle": "Hub flows that return users to active scoring or setup without a fresh game-type decision.",
+      "rows": [
+        {
+          "label": "Resume Active",
+          "steps": [
+            { "screen": "H1", "transition": "Resume" },
+            { "screen": "SS", "transition": "" }
+          ]
+        },
+        {
+          "label": "Play Again",
+          "steps": [
+            { "screen": "GO", "transition": "Play Again" },
+            { "screen": "SS", "transition": "" }
+          ]
+        },
+        {
+          "label": "Return Home",
+          "steps": [
+            { "screen": "GO", "transition": "Home" },
+            { "screen": "H2", "transition": "" }
+          ]
+        },
+        {
+          "label": "Roster Reuse",
+          "steps": [
+            { "screen": "PS", "transition": "From Roster" },
+            { "screen": "RS", "transition": "Add" },
+            { "screen": "PS", "transition": "" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "F. Completed Game History and Stats",
+      "subtitle": "Completed data appears on Home, detail screens, and the direct Head-to-Head stats route.",
+      "rows": [
+        {
+          "label": "Recent Detail",
+          "steps": [
+            { "screen": "H2", "transition": "Recent row" },
+            { "screen": "GD", "transition": "" }
+          ]
+        },
+        {
+          "label": "Head to Head",
+          "steps": [
+            { "screen": "H2", "transition": "Head to Head" },
+            { "screen": "HE", "transition": "Pick players" },
+            { "screen": "HB", "transition": "Matched pair" },
+            { "screen": "HX", "transition": "Expand player" }
+          ]
+        }
+      ]
+    }
+  ],
+  "inventory": ["H0", "H1", "H2", "GP", "PS", "GS", "SS", "WT", "WS", "P3", "P4", "TA", "TD", "TS", "TL", "EA", "GO", "RS", "HE", "HB", "HX", "GD"]
+}

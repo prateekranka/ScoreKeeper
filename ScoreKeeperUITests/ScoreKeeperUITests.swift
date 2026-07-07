@@ -243,9 +243,44 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["Player 2, Select..."].tap()
         app.buttons["Morgan"].tap()
 
-        XCTAssertTrue(app.staticTexts["1 games together"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.staticTexts["1 game together"].waitForExistence(timeout: 2))
         XCTAssertTrue(app.buttons["Taylor"].exists)
         XCTAssertTrue(app.buttons["Morgan"].exists)
+    }
+
+    // MARK: - Test 11: History is reachable with one completed game
+
+    func testGameHistoryIsReachableWithOneCompletedGame() throws {
+        completeGenericGame(playerNames: ["Ivy", "Noah"])
+
+        let seeAllButton = app.buttons["see_all_button"]
+        if !seeAllButton.waitForExistence(timeout: 1) {
+            app.swipeUp()
+        }
+
+        XCTAssertTrue(seeAllButton.waitForExistence(timeout: 3))
+        seeAllButton.tap()
+
+        XCTAssertTrue(app.navigationBars["Game History"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Scoreboard"].exists)
+    }
+
+    // MARK: - Test 12: Player stats navigation
+
+    func testPlayerStatsNavigationFromStatsEntry() throws {
+        completeGenericGame(playerNames: ["Taylor", "Morgan"])
+
+        let playerStatsButton = app.buttons["player_stats_Taylor"]
+        if !playerStatsButton.waitForExistence(timeout: 1) {
+            app.swipeUp()
+        }
+
+        XCTAssertTrue(playerStatsButton.waitForExistence(timeout: 3))
+        playerStatsButton.tap()
+
+        XCTAssertTrue(app.navigationBars["Taylor"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Games Played"].exists)
+        XCTAssertTrue(app.staticTexts["Wins"].exists)
     }
 
     // MARK: - Helpers
@@ -265,10 +300,10 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons[gameTileID].tap()
         fillPlayerNames(playerNames)
 
-        // For generic, there's a game config step
-        if gameTileID == "game_tile_generic" {
+        // Scoreboard and Phase 10 include a game config step before scoring.
+        if gameTileID == "game_tile_generic" || gameTileID == "game_tile_phase10" {
             app.buttons["start_game_button"].tap()
-            XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 1))
+            XCTAssertTrue(app.navigationBars["Game Settings"].waitForExistence(timeout: 2))
         }
         app.buttons["start_game_button"].tap()
 
