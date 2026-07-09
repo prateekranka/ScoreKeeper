@@ -123,7 +123,9 @@ private struct WinnerHeroSection: View {
                 .font(AppFonts.body)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
 
-            StampBadge(text: "Winner")
+            if !winners.isEmpty {
+                StampBadge(text: "Winner")
+            }
         }
         .padding(.top, AppTheme.spacingXLarge)
         .accessibilityElement(children: .combine)
@@ -200,7 +202,7 @@ private struct GameRecapPanel: View {
                 RecapMetric(title: "Margin", value: "\(winningMargin)", systemImage: "arrow.left.and.right", tint: PlayerColors.palette[0])
             }
 
-            if !standings.isEmpty {
+            if showsScoreTrend {
                 ScoreSparkline(session: session, standings: standings)
                     .frame(height: 86)
                     .accessibilityLabel("Score trend")
@@ -208,6 +210,10 @@ private struct GameRecapPanel: View {
         }
         .padding(AppTheme.spacingMedium)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+    }
+
+    private var showsScoreTrend: Bool {
+        !standings.isEmpty && session.sortedRounds.count > 1
     }
 }
 

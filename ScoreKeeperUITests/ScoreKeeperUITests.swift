@@ -405,6 +405,92 @@ final class ScoreKeeperUITests: XCTestCase {
         }
     }
 
+    // MARK: - Screenshot tour (design QA only; runs when SCREENSHOT_DIR env is set)
+
+    func testScreenshotTour() throws {
+        guard let dir = ProcessInfo.processInfo.environment["SCREENSHOT_DIR"] else {
+            throw XCTSkip("SCREENSHOT_DIR not set")
+        }
+        try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+
+        func snap(_ name: String) {
+            let png = XCUIScreen.main.screenshot().pngRepresentation
+            try? png.write(to: URL(fileURLWithPath: "\(dir)/\(name).png"))
+        }
+
+        launchOnboarding()
+        _ = app.staticTexts["onboarding_page_title"].waitForExistence(timeout: 3)
+        snap("01-onboarding-1")
+        app.buttons["onboarding_primary_button"].tap()
+        sleep(1); snap("02-onboarding-2")
+        app.buttons["onboarding_primary_button"].tap()
+        sleep(1); snap("03-onboarding-3")
+        app.buttons["onboarding_primary_button"].tap()
+        _ = app.buttons["new_game_button"].waitForExistence(timeout: 3)
+        snap("04-home-empty")
+
+        app.buttons["new_game_button"].tap()
+        _ = app.buttons["game_tile_generic"].waitForExistence(timeout: 2)
+        snap("05-game-picker")
+
+        app.buttons["game_tile_generic"].tap()
+        fillPlayerNames(["Mina", "Omar", "Jules"])
+        snap("06-player-setup")
+
+        app.buttons["start_game_button"].tap()
+        _ = app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 2)
+        snap("07-game-config")
+
+        app.buttons["start_game_button"].tap()
+        _ = app.buttons["end_game_button"].waitForExistence(timeout: 3)
+        snap("08-scoring-initial")
+
+        app.buttons["Mina_increment"].tap()
+        app.buttons["Mina_increment"].tap()
+        app.buttons["Omar_increment"].tap()
+        app.buttons["submit_round_button"].tap()
+        sleep(1); snap("09-scoring-round2")
+
+        app.buttons["end_game_button"].tap()
+        if app.alerts.buttons["End Game"].waitForExistence(timeout: 2) {
+            app.alerts.buttons["End Game"].tap()
+        }
+        sleep(2); snap("10-game-over")
+
+        if app.buttons["home_button"].waitForExistence(timeout: 2) {
+            app.buttons["home_button"].tap()
+        } else if app.buttons["Home"].waitForExistence(timeout: 2) {
+            app.buttons["Home"].tap()
+        }
+        _ = app.buttons["new_game_button"].waitForExistence(timeout: 3)
+        snap("11-home-with-history")
+
+        if app.buttons["theme_button"].exists {
+            app.buttons["theme_button"].tap()
+            sleep(1); snap("12-home-theme-toggled")
+            app.buttons["theme_button"].tap()
+            sleep(1)
+        }
+
+        relaunch(arguments: ["-in-memory-store", "-free-games-exhausted"])
+        app.buttons["new_game_button"].tap()
+        app.buttons["game_tile_whatsForDinner"].tap()
+        fillPlayerNames(["Ada", "Ben"])
+        app.buttons["start_game_button"].tap()
+        _ = app.staticTexts["ScoreKeeper Pro"].waitForExistence(timeout: 3)
+        snap("13-paywall")
+
+        relaunch(arguments: ["-in-memory-store", "-force-review-ask"])
+        navigateToGenericScoring(playerNames: ["Ada", "Ben"])
+        app.buttons["submit_round_button"].tap()
+        app.buttons["end_game_button"].tap()
+        if app.alerts.buttons["End Game"].waitForExistence(timeout: 2) {
+            app.alerts.buttons["End Game"].tap()
+        }
+        _ = app.buttons["review_ask_rate_button"].waitForExistence(timeout: 5)
+        snap("14-review-ask")
+    }
+
     private func replaceText(in field: XCUIElement, with text: String) {
         XCTAssertTrue(field.waitForExistence(timeout: 1))
         field.tap()

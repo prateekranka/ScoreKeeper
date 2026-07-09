@@ -66,7 +66,7 @@ struct GameHistoryListView: View {
                         Text(resultText)
                             .foregroundStyle(ClubhouseTheme.brass)
                     }
-                    Text("\(session.players.count) players / \(session.rounds.count) rounds")
+                    Text("\(session.players.count.quantityText("player")) / \(session.rounds.count.quantityText("round"))")
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
                 .font(AppFonts.caption)

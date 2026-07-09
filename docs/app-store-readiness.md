@@ -6,9 +6,9 @@ This tracks product, release, and App Store Connect work that must be true befor
 
 | Screen | Current State | Required Before Review | Notes |
 | --- | --- | --- | --- |
-| Onboarding | Redesigned as a polished three-page first-launch `OnboardingView` in `ContentView.swift` | Done for App Store review: explains setup, live scoring/tools, history/stats/rematches; saves completion state; supports Skip/Start; covered by a focused UI test and refreshed screenshot | Route remains a first-launch `fullScreenCover`; no paywall or review prompt is included. |
-| Paywall | Missing | Add a real paywall screen only after the monetization model and App Store Connect product IDs are known | Use StoreKit for digital subscriptions/features. Do not ship a nonfunctional paywall. |
-| Review Ask | Missing | Add a lightweight post-success review ask that calls StoreKit's system review prompt when appropriate | Trigger after a positive moment such as completed games, never on first launch or as a blocking gate. |
+| Onboarding | Rebuilt in the Clubhouse Scorecard design system: three pages whose artwork previews the real product (ledger, setup slips, FINAL stamp) | Done for App Store review: saves completion state, supports Skip/Start, covered by a focused UI test | Route remains a first-launch `fullScreenCover`; no paywall or review prompt is included. |
+| Paywall | Done: StoreKit 2 `PaywallView` + `StoreManager`; one-time $0.99 non-consumable `com.icequeen.scorekeeper.pro`; 10 free games via monotonic `gamesStartedCount`, gated at every GameSession creation site; restore + close always available | Create the matching product in App Store Connect before submission | Local testing via `ScoreKeeper/ScoreKeeper.storekit` (see `docs/monetization.md`). UI-test hooks: `-free-games-exhausted`, `-unlock-pro`. |
+| Review Ask | Done: `ReviewAskManager` + personal developer-note sheet after the 2nd and 5th completed game (max once per 120 days, never in the first session, never alongside the paywall), then StoreKit `requestReview` | None | UI-test hook: `-force-review-ask`. |
 
 ## Release Mechanics
 

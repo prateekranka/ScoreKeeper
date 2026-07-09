@@ -51,25 +51,30 @@ struct LedgerRow: View {
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
+                        .layoutPriority(1)
 
                     if isLeader {
                         BrassCrown()
+                            .fixedSize()
                     }
                 }
+                .layoutPriority(1)
 
                 if let subtitle {
                     Text(subtitle)
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .lineLimit(1)
+                    .lineLimit(1)
                 }
             }
+            .layoutPriority(1)
 
             Spacer(minLength: AppTheme.spacingSmall)
 
             if let trailingLabel {
                 Text(trailingLabel)
                     .columnHeaderStyle()
+                    .fixedSize(horizontal: true, vertical: false)
             }
 
             Text("\(score)")

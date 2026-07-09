@@ -45,3 +45,9 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 - Name work and PRs as `PR# + human title` once a PR number exists.
 - Route every new PR through the Chief of Staff thread for review.
 - QA Tester should run only after implementation is PR-ready and should focus on the changed workflow plus likely adjacent breakpoints.
+
+## Clubhouse Scorecard Redesign (July 2026)
+
+- Branch `redesign/ios26-scorecard` carries the full visual redesign (spec: `docs/redesign-spec.md`): ClubhouseTheme paper/ink/felt/lacquer/brass tokens, serif display type, ledger components, plus onboarding rebuild, StoreKit 2 paywall ($0.99 one-time, 10 free games), and the personal review ask.
+- `ScoreKeeperUITests/testScreenshotTour` is an env-gated design-QA tour: set `TEST_RUNNER_SCREENSHOT_DIR=<dir>` and run it with `-only-testing` to capture every screen (onboarding, setup, scoring, game over, paywall, review ask) as PNGs.
+- Monetization test hooks (honored only with `-in-memory-store`): `-unlock-pro`, `-free-games-exhausted`, `-force-review-ask`.

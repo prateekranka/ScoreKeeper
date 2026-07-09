@@ -126,7 +126,7 @@ private struct GenericFocusScoreTable: View {
             Text("Total")
                 .frame(width: 64, alignment: .trailing)
             Text("This round")
-                .frame(width: 128, alignment: .trailing)
+                .frame(width: 132, alignment: .trailing)
         }
         .columnHeaderStyle()
         .padding(.vertical, AppTheme.spacingSmall)
@@ -189,39 +189,38 @@ private struct FocusScoreRow: View {
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
+                        .layoutPriority(1)
 
                     if isLeading {
                         BrassCrown()
+                            .fixedSize()
                             .accessibilityLabel("Leading")
                     }
                 }
+                .layoutPriority(1)
 
                 Text("Round points")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
+            .layoutPriority(1)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(minWidth: 108, maxWidth: .infinity, alignment: .leading)
+        .layoutPriority(2)
     }
 
     private var totalColumn: some View {
-        VStack(alignment: .trailing, spacing: 2) {
-            Text("\(totalScore)")
-                .font(AppFonts.scoreSmall)
-                .monospacedDigit()
-                .foregroundStyle(isLeading ? ClubhouseTheme.brass : ClubhouseTheme.ink)
-                .contentTransition(.numericText(value: Double(totalScore)))
-
-            Text("total")
-                .columnHeaderStyle()
-        }
-        .frame(width: 56, alignment: .trailing)
+        Text("\(totalScore)")
+            .font(AppFonts.scoreSmall)
+            .monospacedDigit()
+            .foregroundStyle(isLeading ? ClubhouseTheme.brass : ClubhouseTheme.ink)
+            .contentTransition(.numericText(value: Double(totalScore)))
+        .frame(width: 64, alignment: .trailing)
     }
 
     private var scoreStepper: some View {
-        PipStepper(value: $value, range: range, step: step, identifierPrefix: identifierPrefix)
-            .scaleEffect(0.82)
-            .frame(width: 142, alignment: .trailing)
+        CompactScoreStepper(value: $value, range: range, step: step, identifierPrefix: identifierPrefix)
+            .frame(width: 132, alignment: .trailing)
     }
 
     private func quickButton(_ amount: Int) -> some View {
@@ -246,6 +245,55 @@ private struct FocusScoreRow: View {
 
     private var quickAmounts: [Int] {
         Array(Set([step, step * 5, step * 10])).sorted()
+    }
+
+    private func apply(_ delta: Int) {
+        let newValue = value + delta
+        if range.contains(newValue) {
+            value = newValue
+        }
+    }
+}
+
+private struct CompactScoreStepper: View {
+    @Binding var value: Int
+    var range: ClosedRange<Int>
+    var step: Int
+    var identifierPrefix: String
+
+    var body: some View {
+        HStack(spacing: 6) {
+            stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
+
+            Text("\(value)")
+                .font(AppFonts.scoreSmall)
+                .monospacedDigit()
+                .contentTransition(.numericText(value: Double(value)))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .frame(width: 36)
+                .accessibilityLabel("Score \(value)")
+
+            stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
+        }
+    }
+
+    private func stepButton(systemImage: String, delta: Int, identifier: String, label: String) -> some View {
+        Button {
+            apply(delta)
+        } label: {
+            Image(systemName: systemImage)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .frame(width: 42, height: 42)
+                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                }
+        }
+        .buttonStyle(ClubhousePressableButtonStyle())
+        .accessibilityIdentifier(identifierPrefix + identifier)
+        .accessibilityLabel(label)
     }
 
     private func apply(_ delta: Int) {

@@ -1,5 +1,11 @@
 import SwiftUI
 
+extension Int {
+    func quantityText(_ singular: String, plural: String? = nil) -> String {
+        "\(self) \(self == 1 ? singular : plural ?? singular + "s")"
+    }
+}
+
 enum AppButtonRole {
     case primary(Color)
     case secondary

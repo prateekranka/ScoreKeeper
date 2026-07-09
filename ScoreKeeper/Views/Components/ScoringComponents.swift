@@ -13,6 +13,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
+    private let bottomBarContentInset: CGFloat = 132
 
     var body: some View {
         VStack(spacing: 0) {
@@ -27,7 +28,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                     footer
                 }
                 .padding(AppTheme.spacingMedium)
-                .padding(.bottom, 76)
+                .padding(.bottom, bottomBarContentInset)
             }
             .safeAreaInset(edge: .bottom) {
                 glassGroup(spacing: AppTheme.spacingSmall) {
@@ -224,7 +225,7 @@ private struct ScoringToolSheet: View {
             }
         case .starter:
             VStack(spacing: AppTheme.spacingMedium) {
-                Text(selectedStarter?.name ?? "Pick from \(session.players.count) players")
+                Text(selectedStarter?.name ?? "Pick from \(session.players.count.quantityText("player"))")
                     .font(AppFonts.scoreSmall)
                     .multilineTextAlignment(.center)
                 AppActionButton(role: .primary(tool.tint)) {
@@ -389,16 +390,21 @@ struct ScoreEntryRow<Accessory: View>: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             HStack(spacing: AppTheme.spacingSmall) {
                 PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small)
+                    .layoutPriority(2)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 accessory
+                    .fixedSize(horizontal: true, vertical: false)
             }
 
-            HStack {
+            HStack(alignment: .top, spacing: AppTheme.spacingSmall) {
                 if let title {
                     Text(title)
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .layoutPriority(1)
                 }
 
                 Spacer()
@@ -410,6 +416,7 @@ struct ScoreEntryRow<Accessory: View>: View {
                     step: step,
                     identifierPrefix: "\(player.name)_"
                 )
+                .fixedSize(horizontal: true, vertical: false)
             }
         }
         .padding(AppTheme.spacingMedium)

@@ -181,9 +181,9 @@ private struct OnboardingPageView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: AppTheme.spacingMedium) {
+            VStack(spacing: 12) {
                 OnboardingArtwork(page: page, isVisible: highlightsVisible)
-                    .padding(.top, AppTheme.spacingMedium)
+                    .padding(.top, 10)
 
                 VStack(spacing: AppTheme.spacingSmall) {
                     Text(page.title)
@@ -215,7 +215,7 @@ private struct OnboardingPageView: View {
                 }
             }
             .padding(.horizontal, AppTheme.spacingMedium)
-            .padding(.bottom, AppTheme.spacingMedium)
+            .padding(.bottom, 132)
         }
         .accessibilityElement(children: .contain)
     }
@@ -224,7 +224,6 @@ private struct OnboardingPageView: View {
 private struct OnboardingArtwork: View {
     let page: OnboardingPage
     let isVisible: Bool
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var scoreInput = 12
 
@@ -232,7 +231,6 @@ private struct OnboardingArtwork: View {
         artworkContent
             .padding(AppTheme.spacingMedium)
         .frame(maxWidth: .infinity)
-        .frame(height: dynamicTypeSize.isAccessibilitySize ? 320 : 276)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
         .scaleEffect(isVisible || reduceMotion ? 1 : 0.96)
         .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.72), value: isVisible)
@@ -253,9 +251,9 @@ private struct OnboardingArtwork: View {
                 }
 
                 VStack(spacing: 0) {
-                    LedgerRow(player: Player(name: "Mina", colorIndex: 0), score: 128, rank: 1, subtitle: "Last round +12", isLeader: true, isHighlighted: true)
-                    LedgerRow(player: Player(name: "Omar", colorIndex: 1), score: 116, rank: 2, subtitle: "Last round +8")
-                    LedgerRow(player: Player(name: "Jules", colorIndex: 3), score: 94, rank: 3, subtitle: "Last round -4")
+                    LedgerRow(player: Player(name: "Mina", colorIndex: 0), score: 128, rank: 1, isLeader: true, isHighlighted: true)
+                    LedgerRow(player: Player(name: "Omar", colorIndex: 1), score: 116, rank: 2)
+                    LedgerRow(player: Player(name: "Jules", colorIndex: 3), score: 94, rank: 3)
                 }
 
                 HStack(spacing: AppTheme.spacingSmall) {
@@ -308,9 +306,9 @@ private struct OnboardingArtwork: View {
                 }
 
                 VStack(spacing: 0) {
-                    LedgerRow(player: Player(name: "Mina", colorIndex: 0), score: 184, rank: 1, subtitle: "Winner", isLeader: true, isHighlighted: true)
-                    LedgerRow(player: Player(name: "Omar", colorIndex: 1), score: 172, rank: 2, subtitle: "Rematch ready")
-                    LedgerRow(player: Player(name: "Jules", colorIndex: 3), score: 160, rank: 3, subtitle: "Stats updated")
+                    LedgerRow(player: Player(name: "Mina", colorIndex: 0), score: 184, rank: 1, isLeader: true, isHighlighted: true)
+                    LedgerRow(player: Player(name: "Omar", colorIndex: 1), score: 172, rank: 2)
+                    LedgerRow(player: Player(name: "Jules", colorIndex: 3), score: 160, rank: 3)
                 }
 
                 OnboardingStatsLine()

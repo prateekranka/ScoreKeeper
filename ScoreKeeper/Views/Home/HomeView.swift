@@ -19,7 +19,7 @@ struct HomeView: View {
         if let activeGame = inProgressGames.first {
             return "Round \(activeGame.currentRoundNumber) is waiting."
         }
-        return completedGames.isEmpty ? "Ready to play?" : "\(completedGames.count) completed games"
+        return completedGames.isEmpty ? "Ready to play?" : completedGames.count.quantityText("completed game")
     }
 
     private var uniquePlayerCount: Int {
@@ -195,7 +195,7 @@ private struct FreeGamesNote: View {
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Text("\(remainingFreeGames) free games left")
+            Text("\(remainingFreeGames.quantityText("free game")) left")
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .monospacedDigit()
@@ -330,7 +330,7 @@ private struct HomeResumeBanner: View {
                     Text(session.gameType.displayName)
                         .font(AppFonts.body)
                     Text("/").foregroundStyle(ClubhouseTheme.inkMuted)
-                    Text("\(session.players.count) players")
+                    Text(session.players.count.quantityText("player"))
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                     Text("/").foregroundStyle(ClubhouseTheme.inkMuted)
@@ -420,7 +420,7 @@ private struct RecentGameRow: View {
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.brass)
                 } else {
-                    Text("\(session.players.count) players")
+                    Text(session.players.count.quantityText("player"))
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
