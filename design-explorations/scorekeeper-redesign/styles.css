@@ -925,6 +925,17 @@ input {
   display: none;
 }
 
+.touch-score-demo .app-body {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(var(--phone-h) - 76px);
+}
+
+.touch-score-demo .bottom-bar,
+.touch-score-demo .tablet-columns + .primary-action {
+  margin-top: auto;
+}
+
 .summary-fit .app-body {
   gap: var(--space-3);
 }

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ScoreKeeper Redesign V2</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body class="index">
+    <main class="index-shell">
+      <header class="hero">
+        <div>
+          <h1>ScoreKeeper Redesign V2</h1>
+          <p>
+            A second exploration pass for iPhone 16 Pro on iOS 26+, built around mascot-led systems,
+            visual assets, and purposeful scorekeeping motion.
+          </p>
+          <p>
+            This is still exploration only: static HTML/CSS, no SwiftUI implementation changes, no model changes,
+            and no OpenAI API interaction changes.
+          </p>
+        </div>
+        <dl class="system-card">
+          <div>
+            <dt>Target</dt>
+            <dd>iPhone 16 Pro, iOS 26+</dd>
+          </div>
+          <div>
+            <dt>New ingredients</dt>
+            <dd>Mascots, generated assets, animation, texture</dd>
+          </div>
+          <div>
+            <dt>Screen set</dt>
+            <dd>Home, setup, scoreboard, Phase 10, summary</dd>
+          </div>
+        </dl>
+      </header>
+
+      <section class="direction-grid" aria-label="V2 design directions">
+        <a class="direction" href="./pip-table.html">
+          <img src="./assets/pip-token.png" alt="Pip score token mascot on a game table">
+          <div>
+            <h2>Pip's Table</h2>
+            <p>A tactile table companion where a score-token mascot keeps game night warm, quick, and legible.</p>
+          </div>
+        </a>
+
+        <a class="direction" href="./ref9-arcade.html">
+          <img src="./assets/ref9.png" alt="Ref-9 scoreboard official mascot in an arcade booth">
+          <div>
+            <h2>Ref-9 Arcade</h2>
+            <p>A kinetic official-scoreboard system with command energy, animated totals, and a confident mascot.</p>
+          </div>
+        </a>
+
+        <a class="direction" href="./badge-party.html">
+          <img src="./assets/badge-trophy.png" alt="Badge trophy patch mascot on colorful game materials">
+          <div>
+            <h2>Badge Party</h2>
+            <p>A bright sticker-and-patch score ledger for families and friends, with celebratory motion.</p>
+          </div>
+        </a>
+      </section>
+
+      <section class="notes" style="margin-top: 32px;">
+        <article class="note">
+          <h2>Personality</h2>
+          <p>Each system has a named mascot and a specific visual world rather than neutral product chrome.</p>
+        </article>
+        <article class="note">
+          <h2>Motion</h2>
+          <p>Animations map to score moments: score pops, phase glow, token drift, confetti, and command pulses.</p>
+        </article>
+        <article class="note">
+          <h2>iOS 26+</h2>
+          <p>Glass-like treatment is limited to status/chrome and controls; content surfaces stay readable.</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

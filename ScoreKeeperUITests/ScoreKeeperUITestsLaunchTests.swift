@@ -1,5 +1,6 @@
 import XCTest
 
+@MainActor
 final class ScoreKeeperUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {

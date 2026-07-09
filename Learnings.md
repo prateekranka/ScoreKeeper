@@ -16,6 +16,7 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 - Supported game types currently include Scoreboard, What's for Dinner, and Phase 10.
 - Navigation is centralized through `NavigationRouter` and `AppDestination` in `ScoreKeeper/App/ContentView.swift`.
 - The UI screen network artifact for redesign prep lives at `docs/ui-screen-network.md`, with a generated route-strip PNG at `docs/ui-screen-network-route-strips.png`.
+- Head-to-Head and Player Stats are centralized `AppDestination` routes; Home exposes Game History whenever at least one completed game exists.
 - Persistent gameplay state centers on `GameSession`, `Player`, `Round`, and `ScoreEntry` models under `ScoreKeeper/Models`.
 - Scoring behavior is split through engines under `ScoreKeeper/Engines`.
 - UI test coverage exists in `ScoreKeeperUITests/ScoreKeeperUITests.swift` and uses `-in-memory-store`.
@@ -24,11 +25,19 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 ## Current Worktree Snapshot
 
 - Current branch: `claude/show-claude-md-0Z8wn`.
-- Last observed commit: `0690018 Add complete AppIcon set with all required iOS sizes`.
-- Uncommitted changes are present in:
-  - `ScoreKeeper/Views/Components/ScoringComponents.swift`
-  - `ScoreKeeper/Views/Scoring/GenericScoringView.swift`
-- The current WIP appears to replace the generic scoring screen rows with a focused score table and disables the shared scoreboard header for that screen.
+- Last observed commit: `f162084 Prepare ScoreKeeper redesign and release readiness`.
+- Current uncommitted changes include UI-screen-network docs/artifacts, redesign exploration artifacts, and UI-test cleanup. Treat docs/design artifacts as thread outputs unless verified.
+- The previous scoring screen WIP is included in commit `f162084`; `ScoringComponents.swift` and `GenericScoringView.swift` are currently clean.
+
+## App Store Readiness
+
+- Product-screen readiness is tracked in `docs/app-store-readiness.md`; required in-app release screens are onboarding, paywall, and review ask.
+- Onboarding is redesigned and marked done for App Store readiness; remaining release screens are paywall and review ask.
+- `ScoreKeeper/PrivacyInfo.xcprivacy` is present and declares UserDefaults required-reason API usage with reason `CA92.1`.
+- Unsigned generic iOS Release archive passed local archive validation. Signed Release archive succeeds locally only with an Apple Development identity/profile.
+- Local keychain did not have an Apple Distribution identity available during the July 7, 2026 readiness pass; App Store upload/distribution needs that account/certificate/profile path resolved.
+- Full one-shot `xcodebuild test` UI-suite runs can stall at `Testing started` on the iOS 26.4/26.5 simulator runner. Use bounded `-only-testing` slices on the isolated `ScoreKeeper App Store Review 26.4` simulator when this occurs.
+- On July 7, 2026, all ScoreKeeper UI tests passed via bounded `-only-testing` slices on `ScoreKeeper App Store Review 26.4`; `testPlayerStatsNavigationFromStatsEntry` also passed focused after the test helper cleanup.
 
 ## Task And PR Flow
 

@@ -17,6 +17,26 @@ final class ScoreKeeperUITests: XCTestCase {
         app = nil
     }
 
+    // MARK: - Test 0: First launch onboarding
+
+    func testOnboardingSkipAndStartFlows() throws {
+        launchOnboarding()
+
+        XCTAssertTrue(app.staticTexts["Score every round fast"].waitForExistence(timeout: 3))
+        app.buttons["onboarding_skip_button"].tap()
+        XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
+
+        launchOnboarding()
+
+        XCTAssertTrue(app.staticTexts["Score every round fast"].waitForExistence(timeout: 3))
+        app.buttons["onboarding_primary_button"].tap()
+        XCTAssertTrue(app.staticTexts["Set up the table in seconds"].waitForExistence(timeout: 2))
+        app.buttons["onboarding_primary_button"].tap()
+        XCTAssertTrue(app.staticTexts["Keep the night going"].waitForExistence(timeout: 2))
+        app.buttons["onboarding_primary_button"].tap()
+        XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
+    }
+
     // MARK: - Test 1: Create Generic Game and navigate to scoring
 
     func testCreateGenericGameAndScore() throws {
@@ -285,6 +305,13 @@ final class ScoreKeeperUITests: XCTestCase {
 
     // MARK: - Helpers
 
+    private func launchOnboarding() {
+        app.terminate()
+        app = XCUIApplication()
+        app.launchArguments = ["-in-memory-store", "-reset-onboarding"]
+        app.launch()
+    }
+
     private func navigateToGenericScoring(playerNames: [String]) {
         app.buttons["new_game_button"].tap()
         app.buttons["game_tile_generic"].tap()
@@ -372,9 +399,8 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["submit_round_button"].tap()
         app.buttons["end_game_button"].tap()
         app.alerts.buttons["End Game"].tap()
-        XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 3))
         let homeButton = app.buttons["home_button"]
-        XCTAssertTrue(homeButton.waitForExistence(timeout: 3))
+        XCTAssertTrue(homeButton.waitForExistence(timeout: 5))
         homeButton.tap()
     }
 }

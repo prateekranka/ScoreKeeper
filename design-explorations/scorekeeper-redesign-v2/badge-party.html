@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Badge Party - ScoreKeeper V2</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body class="badge">
+    <main class="shell">
+      <a class="back" href="./index.html">Back to V2 index</a>
+
+      <header class="hero">
+        <div>
+          <h1>Badge Party</h1>
+          <p>
+            A bright, tactile score ledger for families and friends. Badge gives wins a little ceremony, while the interface keeps
+            score entry large and forgiving.
+          </p>
+        </div>
+        <dl class="system-card">
+          <div><dt>Mascot</dt><dd>Badge, the trophy patch</dd></div>
+          <div><dt>Visual asset language</dt><dd>Embroidered patch, stickers, crisp score sheets</dd></div>
+          <div><dt>Motion</dt><dd>Confetti fall, score bounce, phase glow</dd></div>
+        </dl>
+      </header>
+
+      <section class="notes">
+        <article class="note">
+          <h2>Design System</h2>
+          <p>White base, navy ink, coral action, cobalt totals, green progress, and sticker-like visual panels.</p>
+        </article>
+        <article class="note">
+          <h2>Components</h2>
+          <p>Patch hero, player ribbons, large touch steppers, phase stickers, celebration summary.</p>
+        </article>
+        <article class="note">
+          <h2>iOS 26+</h2>
+          <p>Glass-like treatment stays on interactive controls; colorful score content remains stable and high contrast.</p>
+        </article>
+      </section>
+
+      <section class="screen-title">
+        <h2>iPhone 16 Pro Screens</h2>
+        <p>A more expressive flow for groups that want the app to feel like part of the game night.</p>
+      </section>
+
+      <section class="screen-grid" aria-label="Badge Party screens">
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <section class="visual-hero">
+              <img src="./assets/badge-trophy.png" alt="Badge trophy patch mascot">
+              <div class="confetti"><span></span><span></span><span></span><span></span></div>
+              <span class="mascot-chip">Badge is ready</span>
+              <div class="hero-copy">
+                <h2>Game night has a scorekeeper</h2>
+                <p>Round 6 is waiting for Maya, Jules, Priya, and Sam.</p>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="row">
+                <div class="row-main"><strong>Active Phase 10</strong><span class="sub">Maya leads by 15</span></div>
+                <span class="score pop">8</span>
+              </div>
+              <div class="row">
+                <div class="row-main"><strong>Last winner</strong><span class="sub">Jules, dinner reveal</span></div>
+                <span class="score">42</span>
+              </div>
+            </section>
+
+            <div class="actions">
+              <a class="button" href="#">Resume party</a>
+              <div class="quick-row">
+                <a class="tiny-button" href="#">New</a>
+                <a class="tiny-button" href="#">Roster</a>
+                <a class="tiny-button" href="#">Stats</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <div class="top-title">
+              <div>
+                <h2>Build the roster</h2>
+                <p>Big taps, no spreadsheet energy.</p>
+              </div>
+              <span class="pill">4 ready</span>
+            </div>
+
+            <section class="panel stack pad">
+              <div class="row" style="padding-inline: 0;">
+                <div class="row-main"><strong>Scoreboard</strong><span class="sub">Any game, highest wins</span></div>
+                <span class="pill">Picked</span>
+              </div>
+              <div class="row" style="padding-inline: 0;">
+                <div class="row-main"><strong>Phase 10</strong><span class="sub">Complete all phases</span></div>
+                <span class="pill">Fun</span>
+              </div>
+              <div class="row" style="padding-inline: 0;">
+                <div class="row-main"><strong>Dinner</strong><span class="sub">Lowest hand wins</span></div>
+                <span class="pill">Quick</span>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="row"><span class="avatar maya">M</span><div class="row-main"><strong>Maya</strong><span class="sub">Cherry ribbon</span></div></div>
+              <div class="row"><span class="avatar jules">J</span><div class="row-main"><strong>Jules</strong><span class="sub">Cobalt ribbon</span></div></div>
+              <div class="row"><span class="avatar priya">P</span><div class="row-main"><strong>Priya</strong><span class="sub">Mint ribbon</span></div></div>
+              <div class="row"><span class="avatar sam">S</span><div class="row-main"><strong>Sam</strong><span class="sub">Violet ribbon</span></div></div>
+            </section>
+
+            <div class="actions">
+              <a class="button" href="#">Start with this crew</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <div class="top-title">
+              <div>
+                <h2>Round 4</h2>
+                <p>Player ribbons make the sheet easy to pass around.</p>
+              </div>
+              <span class="pill">Highest wins</span>
+            </div>
+
+            <section class="panel stack pad">
+              <div class="row" style="padding-inline: 0;">
+                <span class="avatar maya">M</span>
+                <div class="row-main"><strong>Maya</strong><span class="sub">Total 118, leading</span></div>
+                <span class="score pop">+10</span>
+              </div>
+              <div class="number"><button>-</button><strong>10</strong><button>+</button></div>
+            </section>
+
+            <section class="panel stack pad">
+              <div class="row" style="padding-inline: 0;">
+                <span class="avatar jules">J</span>
+                <div class="row-main"><strong>Jules</strong><span class="sub">Total 91</span></div>
+                <span class="score">+5</span>
+              </div>
+              <div class="number"><button>-</button><strong>5</strong><button>+</button></div>
+            </section>
+
+            <section class="panel stack pad">
+              <div class="row" style="padding-inline: 0;">
+                <span class="avatar priya">P</span>
+                <div class="row-main"><strong>Priya</strong><span class="sub">Total 83</span></div>
+                <span class="score">0</span>
+              </div>
+              <div class="quick-row">
+                <button class="tiny-button">+1</button>
+                <button class="tiny-button">+5</button>
+                <button class="tiny-button">+10</button>
+              </div>
+            </section>
+
+            <div class="actions">
+              <a class="button" href="#">Submit round scores</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <div class="top-title">
+              <div>
+                <h2>Phase stickers</h2>
+                <p>Every step to 10 is visible.</p>
+              </div>
+              <span class="pill">2 toggles</span>
+            </div>
+
+            <section class="panel pad stack">
+              <div class="row" style="padding-inline: 0;">
+                <span class="avatar maya">M</span>
+                <div class="row-main"><strong>Maya</strong><span class="sub">Completed this round</span></div>
+                <span class="score">8/10</span>
+              </div>
+              <div class="phase-grid">
+                <span class="done">1</span><span class="done">2</span><span class="done">3</span><span class="done">4</span><span class="done">5</span>
+                <span class="done">6</span><span class="done">7</span><span class="current">8</span><span>9</span><span>10</span>
+              </div>
+            </section>
+
+            <section class="panel pad stack">
+              <div class="row" style="padding-inline: 0;">
+                <span class="avatar jules">J</span>
+                <div class="row-main"><strong>Jules</strong><span class="sub">Needs phase toggle</span></div>
+                <span class="score">7/10</span>
+              </div>
+              <div class="phase-grid">
+                <span class="done">1</span><span class="done">2</span><span class="done">3</span><span class="done">4</span><span class="done">5</span>
+                <span class="done">6</span><span class="current">7</span><span>8</span><span>9</span><span>10</span>
+              </div>
+              <div class="row" style="padding-inline: 0;">
+                <span class="sub">Leftover points</span>
+                <div class="number"><button>-</button><strong>25</strong><button>+</button></div>
+              </div>
+            </section>
+
+            <div class="actions">
+              <a class="button" href="#">Submit round 8</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <section class="visual-hero" style="min-height: 186px;">
+              <img src="./assets/badge-trophy.png" alt="Badge trophy patch mascot celebrating">
+              <div class="confetti"><span></span><span></span><span></span><span></span></div>
+              <span class="mascot-chip">Badge awarded</span>
+              <div class="hero-copy">
+                <h2>Maya takes it</h2>
+                <p>Final 128. Best round 35. Margin 22.</p>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="row"><span class="avatar maya">M</span><strong>Maya</strong><span class="score pop">128</span></div>
+              <div class="row"><span class="avatar jules">J</span><strong>Jules</strong><span class="score">106</span></div>
+              <div class="row"><span class="avatar priya">P</span><strong>Priya</strong><span class="score">101</span></div>
+              <div class="row"><span class="avatar sam">S</span><strong>Sam</strong><span class="score">91</span></div>
+            </section>
+
+            <section class="panel pad">
+              <strong>Score story</strong>
+              <svg viewBox="0 0 320 66" width="100%" height="66" role="img" aria-label="Score trend">
+                <path d="M12 56 L90 42 L168 31 L246 20 L308 11" fill="none" stroke="oklch(0.62 0.2 20)" stroke-width="5" stroke-linecap="round"></path>
+                <path d="M12 58 L90 50 L168 42 L246 35 L308 29" fill="none" stroke="oklch(0.55 0.18 245)" stroke-width="5" stroke-linecap="round"></path>
+                <path d="M12 61 L90 54 L168 47 L246 40 L308 34" fill="none" stroke="oklch(0.59 0.15 145)" stroke-width="5" stroke-linecap="round"></path>
+              </svg>
+            </section>
+
+            <div class="actions">
+              <a class="button" href="#">Play again</a>
+              <a class="tiny-button" href="#">Open history detail</a>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ref-9 Arcade - ScoreKeeper V2</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body class="ref9">
+    <main class="shell">
+      <a class="back" href="./index.html">Back to V2 index</a>
+
+      <header class="hero">
+        <div>
+          <h1>Ref-9 Arcade</h1>
+          <p>
+            A kinetic official-scoreboard direction with a confident mascot, command-heavy controls, and arcade-style
+            score motion for groups that want the scorer to feel in charge.
+          </p>
+        </div>
+        <dl class="system-card">
+          <div><dt>Mascot</dt><dd>Ref-9, the score official</dd></div>
+          <div><dt>Visual asset language</dt><dd>Score booth, visor lights, dark console surfaces</dd></div>
+          <div><dt>Motion</dt><dd>Score pulses, command emphasis, phase glow</dd></div>
+        </dl>
+      </header>
+
+      <section class="notes">
+        <article class="note">
+          <h2>Design System</h2>
+          <p>Graphite shell, cyan command color, coral alert lights, precise tables, and technical texture.</p>
+        </article>
+        <article class="note">
+          <h2>Components</h2>
+          <p>Command rail, score ticker, audit rows, official status badges, and dense but readable score grids.</p>
+        </article>
+        <article class="note">
+          <h2>iOS 26+</h2>
+          <p>Controls use glass-like material; table content remains solid so numbers stay trustworthy.</p>
+        </article>
+      </section>
+
+      <section class="screen-title">
+        <h2>iPhone 16 Pro Screens</h2>
+        <p>Same game flow, redesigned as a score booth with a mascot operator.</p>
+      </section>
+
+      <section class="screen-grid" aria-label="Ref-9 Arcade screens">
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <section class="visual-hero">
+              <img src="./assets/ref9.png" alt="Ref-9 scoreboard mascot">
+              <span class="mascot-chip">Ref-9 online</span>
+              <div class="hero-copy">
+                <h2>Score booth live</h2>
+                <p>One active game. Round 6 is queued.</p>
+              </div>
+            </section>
+
+            <div class="ticker" aria-label="Live totals">
+              <span>118</span><span>91</span><span>83</span><span>76</span>
+            </div>
+
+            <section class="panel">
+              <div class="row">
+                <div class="row-main"><strong>Phase 10</strong><span class="sub">Maya leads by 15</span></div>
+                <span class="pill">R6</span>
+              </div>
+              <div class="row">
+                <div class="row-main"><strong>Recent final</strong><span class="sub">Jules won dinner reveal</span></div>
+                <span class="score">42</span>
+              </div>
+            </section>
+
+            <div class="actions">
+              <a class="button" href="#">Resume command</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <div class="top-title">
+              <div>
+                <h2>New match</h2>
+                <p>Pick rules. Lock roster.</p>
+              </div>
+              <span class="pill">Official mode</span>
+            </div>
+
+            <section class="panel">
+              <div class="row">
+                <div class="row-main"><strong>Scoreboard</strong><span class="sub">Highest score</span></div>
+                <span class="pill">Selected</span>
+              </div>
+              <div class="row">
+                <div class="row-main"><strong>Dinner</strong><span class="sub">Lowest hand</span></div>
+                <span class="pill">Start</span>
+              </div>
+              <div class="row">
+                <div class="row-main"><strong>Phase 10</strong><span class="sub">Phase status</span></div>
+                <span class="pill">Config</span>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="row"><span class="avatar maya">M</span><div class="row-main"><strong>Maya</strong><span class="sub">OK</span></div></div>
+              <div class="row"><span class="avatar jules">J</span><div class="row-main"><strong>Jules</strong><span class="sub">OK</span></div></div>
+              <div class="row"><span class="avatar maya">M</span><div class="row-main"><strong>maya</strong><span class="sub">Duplicate name</span></div><span class="pill">Fix</span></div>
+            </section>
+
+            <div class="segment">
+              <span class="active">Highest</span>
+              <span>Lowest</span>
+            </div>
+
+            <div class="actions">
+              <a class="button" href="#">Resolve roster</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <div class="top-title">
+              <div>
+                <h2>Scoreboard R4</h2>
+                <p>Draft round. All players entered.</p>
+              </div>
+              <span class="pill">Draft</span>
+            </div>
+
+            <div class="quick-row">
+              <a class="tiny-button" href="#">Submit</a>
+              <a class="tiny-button" href="#">Undo</a>
+              <a class="tiny-button" href="#">Timer</a>
+              <a class="tiny-button" href="#">Dice</a>
+            </div>
+
+            <section class="panel">
+              <div class="row">
+                <span>1</span><div class="row-main"><strong>Maya</strong><span class="sub">Total 118</span></div>
+                <div class="number"><button>-</button><strong>10</strong><button>+</button></div>
+              </div>
+              <div class="row">
+                <span>2</span><div class="row-main"><strong>Jules</strong><span class="sub">Total 91</span></div>
+                <div class="number"><button>-</button><strong>5</strong><button>+</button></div>
+              </div>
+              <div class="row">
+                <span>3</span><div class="row-main"><strong>Priya</strong><span class="sub">Total 83</span></div>
+                <div class="number"><button>-</button><strong>0</strong><button>+</button></div>
+              </div>
+              <div class="row">
+                <span>4</span><div class="row-main"><strong>Sam</strong><span class="sub">Total 76</span></div>
+                <div class="number"><button>-</button><strong>15</strong><button>+</button></div>
+              </div>
+            </section>
+
+            <section class="panel pad">
+              <strong>Live checks</strong>
+              <div class="quick-row" style="margin-top: 12px;">
+                <span class="pill">4/4 entries</span>
+                <span class="pill">+30 delta</span>
+              </div>
+            </section>
+
+            <div class="actions">
+              <a class="button" href="#">Submit round 4</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <div class="top-title">
+              <div>
+                <h2>Phase board</h2>
+                <p>Ref-9 checks progress.</p>
+              </div>
+              <span class="pill">2 pending</span>
+            </div>
+
+            <section class="panel">
+              <div class="row"><span>Maya</span><span class="score">8/10</span></div>
+              <div class="row"><span>Jules</span><span class="score">7/10</span></div>
+              <div class="row"><span>Priya</span><span class="score">6/10</span></div>
+              <div class="row"><span>Sam</span><span class="score">8/10</span></div>
+            </section>
+
+            <section class="panel pad stack">
+              <div>
+                <strong>Maya phase 8</strong>
+                <p class="sub">Completed this round</p>
+              </div>
+              <div class="phase-grid">
+                <span class="done">1</span><span class="done">2</span><span class="done">3</span><span class="done">4</span><span class="done">5</span>
+                <span class="done">6</span><span class="done">7</span><span class="current">8</span><span>9</span><span>10</span>
+              </div>
+              <div class="row" style="padding-inline: 0;">
+                <span class="sub">Leftovers</span>
+                <div class="number"><button>-</button><strong>15</strong><button>+</button></div>
+              </div>
+            </section>
+
+            <div class="actions">
+              <a class="button" href="#">Submit Phase 10 round</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="device">
+          <div class="status"><span>9:42</span><span>5G 82%</span></div>
+          <div class="screen">
+            <section class="visual-hero" style="min-height: 190px;">
+              <img src="./assets/ref9.png" alt="Ref-9 mascot in score booth">
+              <span class="mascot-chip">Final locked</span>
+              <div class="hero-copy">
+                <h2>Maya wins</h2>
+                <p>Final audited. Ready for rematch.</p>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="row"><span>1 Maya</span><span class="score pop">128</span></div>
+              <div class="row"><span>2 Jules</span><span class="score">106</span></div>
+              <div class="row"><span>3 Priya</span><span class="score">101</span></div>
+              <div class="row"><span>4 Sam</span><span class="score">91</span></div>
+            </section>
+
+            <section class="panel pad">
+              <strong>Audit trend</strong>
+              <svg viewBox="0 0 320 74" width="100%" height="74" role="img" aria-label="Score trend">
+                <path d="M12 62 L90 45 L168 31 L246 20 L308 12" fill="none" stroke="oklch(0.76 0.16 212)" stroke-width="5" stroke-linecap="round"></path>
+                <path d="M12 66 L90 57 L168 49 L246 41 L308 33" fill="none" stroke="oklch(0.65 0.2 23)" stroke-width="5" stroke-linecap="round"></path>
+                <path d="M12 69 L90 62 L168 55 L246 48 L308 41" fill="none" stroke="oklch(0.7 0.15 145)" stroke-width="5" stroke-linecap="round"></path>
+              </svg>
+            </section>
+
+            <div class="actions">
+              <a class="button" href="#">Run rematch</a>
+              <a class="tiny-button" href="#">Open game detail</a>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
