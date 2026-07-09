@@ -9,6 +9,7 @@ struct HomeView: View {
     @State private var sectionsVisible = false
     @State private var showPaywall = false
     @State private var continueAfterUnlock = false
+    @State private var paywallUnlocked = false
     @Query(filter: #Predicate<GameSession> { !$0.isComplete },
            sort: \GameSession.createdAt, order: .reverse)
     private var inProgressGames: [GameSession]
@@ -91,12 +92,10 @@ struct HomeView: View {
             HomeToolSheet(tool: tool, activeGame: inProgressGames.first)
                 .presentationDetents([.medium])
         }
-        .sheet(isPresented: $showPaywall, onDismiss: {
-            continueAfterUnlock = false
-        }) {
+        .sheet(isPresented: $showPaywall, onDismiss: handlePaywallDismissal) {
             PaywallView(
                 onCancel: { continueAfterUnlock = false },
-                onUnlock: continueNewGameAfterUnlock
+                onUnlock: { paywallUnlocked = true }
             )
         }
         .onAppear(perform: revealSections)
@@ -111,12 +110,11 @@ struct HomeView: View {
         router.push(.gamePicker)
     }
 
-    private func continueNewGameAfterUnlock() {
-        guard continueAfterUnlock else { return }
+    private func handlePaywallDismissal() {
+        let shouldContinue = paywallUnlocked && continueAfterUnlock
+        paywallUnlocked = false
         continueAfterUnlock = false
-        showPaywall = false
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(350))
+        if shouldContinue {
             router.push(.gamePicker)
         }
     }

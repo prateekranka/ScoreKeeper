@@ -13,6 +13,7 @@ struct GameOverView: View {
     @State private var sectionsVisible = false
     @State private var showPaywall = false
     @State private var continueRematchAfterUnlock = false
+    @State private var paywallUnlocked = false
     @State private var creationError: String?
 
     var body: some View {
@@ -56,12 +57,10 @@ struct GameOverView: View {
             }
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .navigationBar)
-            .sheet(isPresented: $showPaywall, onDismiss: {
-                continueRematchAfterUnlock = false
-            }) {
+            .sheet(isPresented: $showPaywall, onDismiss: { handlePaywallDismissal(session) }) {
                 PaywallView(
                     onCancel: { continueRematchAfterUnlock = false },
-                    onUnlock: { resumeRematchAfterUnlock(session) }
+                    onUnlock: { paywallUnlocked = true }
                 )
             }
             .alert("Couldn’t Start Rematch", isPresented: creationErrorBinding) {
@@ -91,12 +90,11 @@ struct GameOverView: View {
         playAgain(session)
     }
 
-    private func resumeRematchAfterUnlock(_ session: GameSession) {
-        guard continueRematchAfterUnlock else { return }
+    private func handlePaywallDismissal(_ session: GameSession) {
+        let shouldContinue = paywallUnlocked && continueRematchAfterUnlock
+        paywallUnlocked = false
         continueRematchAfterUnlock = false
-        showPaywall = false
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(350))
+        if shouldContinue {
             playAgain(session)
         }
     }

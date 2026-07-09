@@ -27,7 +27,7 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 - The free-game count is mirrored to a device-only Keychain item as well as UserDefaults, so reinstalling does not restart the allowance. Game/session data remains local SwiftData and is removed with the app.
 - The StoreKit test configuration lives at `ScoreKeeper/Configuration/ScoreKeeper.storekit`. Production access is determined from verified `Transaction.currentEntitlements` and transaction updates; Restore Purchases calls `AppStore.sync()` only after an explicit tap.
 - Review requests become eligible after four successful game completions, are delayed on Game Over, and are attempted at most once per app version.
-- Paywall continuation belongs to the active presentation intent. Parent screens must not observe entitlement changes loosely, because a delayed pending transaction could otherwise navigate after the paywall has been dismissed.
+- Paywall continuation belongs to the active presentation intent and runs from the sheet's `onDismiss` after an explicit unlock outcome. Parent screens must not observe entitlement changes loosely or launch uncancelled delayed navigation tasks, because either can navigate after the initiating screen has disappeared.
 
 ## App Store Readiness
 
@@ -39,6 +39,7 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 - July 10 inspection still found no Apple Distribution identity or App Store profile. Do not change the target team (`4JRB53LG5C`) or upload until the correct account/signing assets are provided.
 - Full one-shot `xcodebuild test` UI-suite runs can stall at `Testing started` on the iOS 26.4/26.5 simulator runner. Use bounded `-only-testing` slices on the isolated `ScoreKeeper App Store Review 26.4` simulator when this occurs.
 - CLI `SKTestSession` configuration sync fails with `SKInternalErrorDomain Code=3` on the installed iOS 26.4/26.5 runtimes (an Apple-reported regression). Run the StoreKit configuration UI test on the installed iOS 27 runtime; it loads the real local product and `$0.99` price successfully.
+- StoreKit's local test environment is shared and can retain a non-consumable entitlement across tests. Real purchase tests clear transactions; synthetic locked/pending UI tests use an explicit DEBUG locked-entitlement argument so they stay deterministic on runtimes where `SKTestSession` cannot initialize.
 - The July 10, 2026 release pass refreshed all visibly changed route screenshots and regenerated `docs/ui-screen-network-route-strips.png`. Simulator attachment `21-game-details.png` has top-corner masking artifacts and should not be selected as an App Store marketing image.
 - On July 7, 2026, all ScoreKeeper UI tests passed via bounded `-only-testing` slices on `ScoreKeeper App Store Review 26.4`; `testPlayerStatsNavigationFromStatsEntry` also passed focused after the test helper cleanup.
 

@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import Security
 import StoreKit
 
@@ -39,7 +40,7 @@ final class StoreAccessManager {
                 defaults.integer(forKey: Keys.gamesStartedCount),
                 DurableGameAllowance.load() ?? 0
             )
-            DurableGameAllowance.save(gamesStartedCount)
+            _ = DurableGameAllowance.save(gamesStartedCount)
         }
 
 #if DEBUG
@@ -193,6 +194,12 @@ final class StoreAccessManager {
             hasUnlimitedAccess = true
             return
         }
+        if arguments.contains("-ui-test-storekit") ||
+            arguments.contains("-ui-test-storekit-pending") ||
+            arguments.contains("-ui-test-storekit-locked") {
+            hasUnlimitedAccess = false
+            return
+        }
 #endif
 
         var isEntitled = false
@@ -232,7 +239,7 @@ final class StoreAccessManager {
     private func persistGamesStartedCount() {
         guard !arguments.contains("-in-memory-store") else { return }
         defaults.set(gamesStartedCount, forKey: Keys.gamesStartedCount)
-        DurableGameAllowance.save(gamesStartedCount)
+        _ = DurableGameAllowance.save(gamesStartedCount)
     }
 
     private static func integerArgument(named name: String, in arguments: [String]) -> Int? {
@@ -246,6 +253,7 @@ final class StoreAccessManager {
 private enum DurableGameAllowance {
     private static let service = "com.icequeen.scorekeeper.game-allowance"
     private static let account = "games-started-count"
+    private static let logger = Logger(subsystem: service, category: "Keychain")
 
     static func load() -> Int? {
         let query: [String: Any] = [
@@ -257,32 +265,69 @@ private enum DurableGameAllowance {
         ]
 
         var item: CFTypeRef?
-        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
-              let data = item as? Data,
+        let status = SecItemCopyMatching(query as CFDictionary, &item)
+        if status == errSecItemNotFound {
+            return nil
+        }
+        guard status == errSecSuccess else {
+            logger.error("Unable to read durable game allowance. OSStatus: \(status)")
+            return nil
+        }
+        guard let data = item as? Data,
               let value = String(data: data, encoding: .utf8),
               let count = Int(value) else {
+            logger.error("Durable game allowance contained unreadable data.")
             return nil
         }
         return max(0, count)
     }
 
-    static func save(_ count: Int) {
+    @discardableResult
+    static func save(_ count: Int) -> Bool {
+        let normalizedCount = max(0, count)
         let identity: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account
         ]
         let attributes: [String: Any] = [
-            kSecValueData as String: Data(String(max(0, count)).utf8)
+            kSecValueData as String: Data(String(normalizedCount).utf8)
         ]
 
         let status = SecItemUpdate(identity as CFDictionary, attributes as CFDictionary)
-        guard status == errSecItemNotFound else { return }
+        if status == errSecSuccess {
+            return verify(normalizedCount)
+        }
+        guard status == errSecItemNotFound else {
+            logger.error("Unable to update durable game allowance. OSStatus: \(status)")
+            return false
+        }
 
         var item = identity
         item.merge(attributes) { _, new in new }
         item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
-        SecItemAdd(item as CFDictionary, nil)
+        let addStatus = SecItemAdd(item as CFDictionary, nil)
+        if addStatus == errSecSuccess {
+            return verify(normalizedCount)
+        }
+        if addStatus == errSecDuplicateItem {
+            let retryStatus = SecItemUpdate(identity as CFDictionary, attributes as CFDictionary)
+            if retryStatus == errSecSuccess {
+                return verify(normalizedCount)
+            }
+            logger.error("Unable to retry durable game allowance update. OSStatus: \(retryStatus)")
+            return false
+        }
+        logger.error("Unable to create durable game allowance. OSStatus: \(addStatus)")
+        return false
+    }
+
+    private static func verify(_ expectedCount: Int) -> Bool {
+        guard load() == expectedCount else {
+            logger.error("Durable game allowance did not verify after writing.")
+            return false
+        }
+        return true
     }
 }
 

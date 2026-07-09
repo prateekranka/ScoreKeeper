@@ -13,6 +13,7 @@ struct GameConfigView: View {
     @State private var phase10SkipOnFail = false
     @State private var showPaywall = false
     @State private var continueAfterUnlock = false
+    @State private var paywallUnlocked = false
     @State private var creationError: String?
 
     var body: some View {
@@ -34,12 +35,10 @@ struct GameConfigView: View {
         .onAppear {
             winCondition = gameType.defaultWinCondition
         }
-        .sheet(isPresented: $showPaywall, onDismiss: {
-            continueAfterUnlock = false
-        }) {
+        .sheet(isPresented: $showPaywall, onDismiss: handlePaywallDismissal) {
             PaywallView(
                 onCancel: { continueAfterUnlock = false },
-                onUnlock: resumeStartAfterUnlock
+                onUnlock: { paywallUnlocked = true }
             )
         }
         .alert("Couldn’t Start Game", isPresented: creationErrorBinding) {
@@ -115,12 +114,11 @@ struct GameConfigView: View {
         router.push(.scoring(session.persistentModelID))
     }
 
-    private func resumeStartAfterUnlock() {
-        guard continueAfterUnlock else { return }
+    private func handlePaywallDismissal() {
+        let shouldContinue = paywallUnlocked && continueAfterUnlock
+        paywallUnlocked = false
         continueAfterUnlock = false
-        showPaywall = false
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(350))
+        if shouldContinue {
             startGame()
         }
     }

@@ -396,7 +396,11 @@ final class ScoreKeeperUITests: XCTestCase {
         storeKitSession.disableDialogs = true
         storeKitSession.clearTransactions()
 
-        relaunch(arguments: ["-in-memory-store", "-free-games-used", "25"])
+        relaunch(arguments: [
+            "-in-memory-store",
+            "-free-games-used", "25",
+            "-ui-test-storekit-locked"
+        ])
         app.buttons["new_game_button"].tap()
 
         let purchaseButton = app.buttons["purchase_unlimited_button"]
