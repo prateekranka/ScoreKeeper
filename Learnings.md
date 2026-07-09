@@ -19,6 +19,7 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 - Head-to-Head and Player Stats are centralized `AppDestination` routes; Home exposes Game History whenever at least one completed game exists.
 - Persistent gameplay state centers on `GameSession`, `Player`, `Round`, and `ScoreEntry` models under `ScoreKeeper/Models`.
 - Scoring behavior is split through engines under `ScoreKeeper/Engines`.
+- SwiftData route loaders should resolve stored `PersistentIdentifier` values with typed fetches against `persistentModelID`; do not use `ModelContext.model(for:)` as an optional existence check because missing or invalid IDs can trap when a faulted model property is accessed.
 - UI test coverage exists in `ScoreKeeperUITests/ScoreKeeperUITests.swift` and uses `-in-memory-store`.
 - Simulator preview/control tooling is available through `npm run sim`, which launches ScoreKeeper and serves the simulator at `http://localhost:3200`.
 
