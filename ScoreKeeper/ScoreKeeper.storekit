@@ -1,0 +1,33 @@
+{
+  "identifier" : "D61D2F7F-2E0E-41F1-A52E-5D1A3FD0C934",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "7F46E35E",
+      "localizations" : [
+        {
+          "description" : "Unlock unlimited ScoreKeeper games.",
+          "displayName" : "ScoreKeeper Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.icequeen.scorekeeper.pro",
+      "referenceName" : "ScoreKeeper Pro",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

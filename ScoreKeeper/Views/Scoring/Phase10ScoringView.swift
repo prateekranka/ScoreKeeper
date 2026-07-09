@@ -5,6 +5,8 @@ struct Phase10ScoringView: View {
     @Bindable var session: GameSession
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationRouter.self) private var router
+    @Environment(StoreManager.self) private var storeManager
+    @Environment(ReviewAskManager.self) private var reviewAskManager
     @State private var leftoverPoints: [UUID: Int] = [:]
     @State private var completedPhase: [UUID: Bool] = [:]
     @State private var showGameCompleteAlert = false
@@ -179,7 +181,21 @@ struct Phase10ScoringView: View {
         session.completedAt = .now
         session.winnerID = engine.winners(session: session).first
         try? modelContext.save()
+        let completedGameCount = fetchCompletedGameCount()
+        let paywallPresentedThisSession = storeManager.paywallPresentedThisSession
         router.push(.gameOver(session.persistentModelID))
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(1_000))
+            reviewAskManager.considerReviewAsk(
+                completedGameCount: completedGameCount,
+                paywallPresentedThisSession: paywallPresentedThisSession
+            )
+        }
+    }
+
+    private func fetchCompletedGameCount() -> Int {
+        let descriptor = FetchDescriptor<GameSession>(predicate: #Predicate { $0.isComplete })
+        return (try? modelContext.fetch(descriptor).count) ?? 0
     }
 }
 

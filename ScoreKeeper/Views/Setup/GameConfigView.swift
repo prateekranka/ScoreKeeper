@@ -7,9 +7,11 @@ struct GameConfigView: View {
 
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
+    @Environment(StoreManager.self) private var storeManager
 
     @State private var winCondition: WinCondition = .highestScore
     @State private var phase10SkipOnFail = false
+    @State private var showPaywall = false
 
     var body: some View {
         ScrollView {
@@ -31,6 +33,10 @@ struct GameConfigView: View {
         }
         .onAppear {
             winCondition = gameType.defaultWinCondition
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(onUnlocked: startConfiguredGame)
+                .presentationDetents([.large])
         }
     }
 
@@ -79,13 +85,21 @@ struct GameConfigView: View {
     }
 
     private var startButton: some View {
-        AppActionButton(role: .primary(gameType.color)) {
-            let session = createSession()
-            router.push(.scoring(session.persistentModelID))
-        } label: {
+        AppActionButton(role: .primary(gameType.color), action: startConfiguredGame) {
             Label("Start Game", systemImage: "play.fill")
         }
         .accessibilityIdentifier("start_game_button")
+    }
+
+    private func startConfiguredGame() {
+        guard storeManager.canStartNewGame else {
+            showPaywall = true
+            return
+        }
+
+        let session = createSession()
+        storeManager.recordGameStarted()
+        router.push(.scoring(session.persistentModelID))
     }
 
     private func createSession() -> GameSession {

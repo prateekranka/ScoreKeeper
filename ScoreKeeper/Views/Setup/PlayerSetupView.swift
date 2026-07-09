@@ -5,10 +5,12 @@ struct PlayerSetupView: View {
     let gameType: GameType
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
+    @Environment(StoreManager.self) private var storeManager
     @Query(sort: \Player.name) private var allPlayers: [Player]
     @State private var playerNames: [String] = ["", ""]
     @FocusState private var focusedIndex: Int?
     @State private var showRoster = false
+    @State private var showPaywall = false
 
     private var recentNames: [String] {
         Array(Set(allPlayers.map(\.name)).filter { !$0.isEmpty }).sorted().prefix(20).map { $0 }
@@ -95,6 +97,10 @@ struct PlayerSetupView: View {
         .sheet(isPresented: $showRoster) {
             PlayerRosterSheet { names in addRosterNames(names) }
         }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(onUnlocked: startGame)
+                .presentationDetents([.large])
+        }
     }
 
     private func addPlayer() {
@@ -109,7 +115,13 @@ struct PlayerSetupView: View {
         if gameType == .generic || gameType == .phase10 {
             router.push(.gameConfig(gameType, names))
         } else {
+            guard storeManager.canStartNewGame else {
+                showPaywall = true
+                return
+            }
+
             let session = createSession(names: names)
+            storeManager.recordGameStarted()
             router.push(.scoring(session.persistentModelID))
         }
     }

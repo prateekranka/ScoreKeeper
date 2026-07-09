@@ -57,6 +57,10 @@
 		AA0000000000000001000336 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000337 /* PrivacyInfo.xcprivacy */; };
 		AA0000000000000001000339 /* ClubhouseTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000338 /* ClubhouseTheme.swift */; };
 		AA000000000000000100033B /* ClubhouseComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100033A /* ClubhouseComponents.swift */; };
+		AA0000000000000001000341 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000340 /* StoreManager.swift */; };
+		AA0000000000000001000343 /* ReviewAskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000342 /* ReviewAskManager.swift */; };
+		AA0000000000000001000346 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000345 /* PaywallView.swift */; };
+		AA0000000000000001000349 /* ReviewAskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000348 /* ReviewAskView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,6 +126,11 @@
 		AA0000000000000001000337 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA0000000000000001000338 /* ClubhouseTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClubhouseTheme.swift; sourceTree = "<group>"; };
 		AA000000000000000100033A /* ClubhouseComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClubhouseComponents.swift; sourceTree = "<group>"; };
+		AA0000000000000001000340 /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
+		AA0000000000000001000342 /* ReviewAskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewAskManager.swift; sourceTree = "<group>"; };
+		AA0000000000000001000345 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		AA0000000000000001000348 /* ReviewAskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewAskView.swift; sourceTree = "<group>"; };
+		AA000000000000000100034A /* ScoreKeeper.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = ScoreKeeper.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +179,7 @@
 				AA000000000000000000001A /* Theme */,
 				AA000000000000000000001B /* Utilities */,
 				AA0000000000000000000123 /* Assets.xcassets */,
+				AA000000000000000100034A /* ScoreKeeper.storekit */,
 				AA0000000000000001000337 /* PrivacyInfo.xcprivacy */,
 				AA000000000000000000001C /* Preview Content */,
 				AA0000000000000001000328 /* Services */,
@@ -219,6 +229,8 @@
 				AA0000000000000000000017 /* Scoring */,
 				AA0000000000000000000018 /* Summary */,
 				AA0000000000000000000019 /* Components */,
+				AA0000000000000001000344 /* Paywall */,
+				AA0000000000000001000347 /* ReviewAsk */,
 				AA0000000000000001000329 /* Stats */,
 			);
 			path = Views;
@@ -323,8 +335,26 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000001000322 /* StatsCalculator.swift */,
+				AA0000000000000001000340 /* StoreManager.swift */,
+				AA0000000000000001000342 /* ReviewAskManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		AA0000000000000001000344 /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000345 /* PaywallView.swift */,
+			);
+			path = Paywall;
+			sourceTree = "<group>";
+		};
+		AA0000000000000001000347 /* ReviewAsk */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000348 /* ReviewAskView.swift */,
+			);
+			path = ReviewAsk;
 			sourceTree = "<group>";
 		};
 		AA0000000000000001000329 /* Stats */ = {
@@ -483,6 +513,10 @@
 				AA0000000000000001000332 /* StandingsList.swift in Sources */,
 				AA0000000000000001000339 /* ClubhouseTheme.swift in Sources */,
 				AA000000000000000100033B /* ClubhouseComponents.swift in Sources */,
+				AA0000000000000001000341 /* StoreManager.swift in Sources */,
+				AA0000000000000001000343 /* ReviewAskManager.swift in Sources */,
+				AA0000000000000001000346 /* PaywallView.swift in Sources */,
+				AA0000000000000001000349 /* ReviewAskView.swift in Sources */,
 				AA0000000000000000000222 /* PreviewSampleData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

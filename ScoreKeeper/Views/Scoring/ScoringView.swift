@@ -5,6 +5,8 @@ struct ScoringView: View {
     let sessionID: PersistentIdentifier
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationRouter.self) private var router
+    @Environment(StoreManager.self) private var storeManager
+    @Environment(ReviewAskManager.self) private var reviewAskManager
     @State private var showEndGameAlert = false
 
     var body: some View {
@@ -57,7 +59,21 @@ struct ScoringView: View {
         let winnerIDs = engine.winners(session: session)
         session.winnerID = winnerIDs.first
         try? modelContext.save()
+        let completedGameCount = fetchCompletedGameCount()
+        let paywallPresentedThisSession = storeManager.paywallPresentedThisSession
         router.push(.gameOver(session.persistentModelID))
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(1_000))
+            reviewAskManager.considerReviewAsk(
+                completedGameCount: completedGameCount,
+                paywallPresentedThisSession: paywallPresentedThisSession
+            )
+        }
+    }
+
+    private func fetchCompletedGameCount() -> Int {
+        let descriptor = FetchDescriptor<GameSession>(predicate: #Predicate { $0.isComplete })
+        return (try? modelContext.fetch(descriptor).count) ?? 0
     }
 }
 

@@ -6,7 +6,12 @@ struct GameOverView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationRouter.self) private var router
+    @Environment(StoreManager.self) private var storeManager
+    @Environment(ReviewAskManager.self) private var reviewAskManager
+    @Query(filter: #Predicate<GameSession> { $0.isComplete }) private var completedGames: [GameSession]
     @State private var sectionsVisible = false
+    @State private var showPaywall = false
+    @State private var didEvaluateReviewAsk = false
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
@@ -45,12 +50,25 @@ struct GameOverView: View {
                     sectionsVisible = true
                 }
             }
+            .task(id: session.persistentModelID) {
+                try? await Task.sleep(for: .milliseconds(750))
+                evaluateReviewAskIfNeeded()
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView(onUnlocked: { playAgain(session) })
+                    .presentationDetents([.large])
+            }
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .navigationBar)
         }
     }
 
     private func playAgain(_ session: GameSession) {
+        guard storeManager.canStartNewGame else {
+            showPaywall = true
+            return
+        }
+
         let newSession = GameSession(gameType: session.gameType)
         newSession.winCondition = session.winCondition
         newSession.targetScore = session.targetScore
@@ -64,12 +82,22 @@ struct GameOverView: View {
         }
 
         try? modelContext.save()
+        storeManager.recordGameStarted()
 
         router.goHome()
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(100))
             router.push(.scoring(newSession.persistentModelID))
         }
+    }
+
+    private func evaluateReviewAskIfNeeded() {
+        guard !didEvaluateReviewAsk else { return }
+        didEvaluateReviewAsk = true
+        reviewAskManager.considerReviewAsk(
+            completedGameCount: completedGames.count,
+            paywallPresentedThisSession: storeManager.paywallPresentedThisSession
+        )
     }
 }
 

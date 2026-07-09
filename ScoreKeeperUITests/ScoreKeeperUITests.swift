@@ -303,7 +303,57 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Wins"].exists)
     }
 
+    // MARK: - Test 13: Exhausted free games shows paywall
+
+    func testFreeGamesExhaustedShowsPaywallWhenStartingNewGame() throws {
+        relaunch(arguments: ["-in-memory-store", "-free-games-exhausted"])
+
+        app.buttons["new_game_button"].tap()
+        app.buttons["game_tile_whatsForDinner"].tap()
+        fillPlayerNames(["Ada", "Ben"])
+        app.buttons["start_game_button"].tap()
+
+        XCTAssertTrue(app.staticTexts["ScoreKeeper Pro"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["paywall_unlock_button"].exists)
+    }
+
+    // MARK: - Test 14: Pro unlock bypasses paywall
+
+    func testUnlockedProDoesNotShowPaywallWhenStartingNewGame() throws {
+        relaunch(arguments: ["-in-memory-store", "-unlock-pro"])
+
+        app.buttons["new_game_button"].tap()
+        app.buttons["game_tile_whatsForDinner"].tap()
+        fillPlayerNames(["Ada", "Ben"])
+        app.buttons["start_game_button"].tap()
+
+        XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["ScoreKeeper Pro"].waitForExistence(timeout: 1))
+    }
+
+    // MARK: - Test 15: Forced review ask appears after Game Over
+
+    func testForceReviewAskAppearsAfterCompletingGame() throws {
+        relaunch(arguments: ["-in-memory-store", "-force-review-ask"])
+
+        navigateToGenericScoring(playerNames: ["Ada", "Ben"])
+        app.buttons["submit_round_button"].tap()
+        app.buttons["end_game_button"].tap()
+        app.alerts.buttons["End Game"].tap()
+
+        XCTAssertTrue(app.buttons["review_ask_rate_button"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["review_ask_later_button"].exists)
+    }
+
     // MARK: - Helpers
+
+    private func relaunch(arguments: [String]) {
+        app.terminate()
+        app = XCUIApplication()
+        app.launchArguments = arguments
+        app.launch()
+        XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
+    }
 
     private func launchOnboarding() {
         app.terminate()

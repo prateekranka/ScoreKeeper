@@ -4,8 +4,10 @@ import SwiftData
 struct HomeView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(ThemeManager.self) private var themeManager
+    @Environment(StoreManager.self) private var storeManager
     @State private var selectedTool: HomeTool?
     @State private var sectionsVisible = false
+    @State private var showPaywall = false
     @Query(filter: #Predicate<GameSession> { !$0.isComplete },
            sort: \GameSession.createdAt, order: .reverse)
     private var inProgressGames: [GameSession]
@@ -42,26 +44,34 @@ struct HomeView: View {
                     .staggeredEntrance(visible: sectionsVisible, index: 1)
                     .padding(.top, AppTheme.spacingMedium)
 
+                if storeManager.shouldShowFreeGamesSignal {
+                    FreeGamesNote(
+                        remainingFreeGames: storeManager.remainingFreeGames,
+                        onUnlock: { showPaywall = true }
+                    )
+                    .staggeredEntrance(visible: sectionsVisible, index: 2)
+                }
+
                 HomeDashboardRow(
                     gamesCount: completedGames.count,
                     activeCount: inProgressGames.count,
                     playersCount: uniquePlayerCount
                 )
-                .staggeredEntrance(visible: sectionsVisible, index: 2)
+                .staggeredEntrance(visible: sectionsVisible, index: 3)
 
                 HomeQuickToolsRow(selectedTool: $selectedTool)
-                    .staggeredEntrance(visible: sectionsVisible, index: 3)
+                    .staggeredEntrance(visible: sectionsVisible, index: 4)
 
                 if let activeGame = inProgressGames.first {
                     HomeResumeBanner(session: activeGame, onTap: { router.push(.scoring(activeGame.persistentModelID)) })
-                        .staggeredEntrance(visible: sectionsVisible, index: 4)
+                        .staggeredEntrance(visible: sectionsVisible, index: 5)
                 } else if completedGames.isEmpty {
                     EmptyStateView(
                         title: "No games yet",
                         systemImage: "sparkles",
                         message: "Start with a scoreboard, Phase 10, or What's for Dinner."
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 4)
+                    .staggeredEntrance(visible: sectionsVisible, index: 5)
                 }
 
                 if !completedGames.isEmpty {
@@ -70,10 +80,10 @@ struct HomeView: View {
                         onGameTap: { router.push(.gameDetail($0)) },
                         onSeeAll: { router.push(.gameHistory) }
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 5)
+                    .staggeredEntrance(visible: sectionsVisible, index: 6)
 
                     HomeStatsSection(sessions: completedGames)
-                        .staggeredEntrance(visible: sectionsVisible, index: 6)
+                        .staggeredEntrance(visible: sectionsVisible, index: 7)
                 }
             }
             .padding(AppTheme.spacingMedium)
@@ -84,6 +94,10 @@ struct HomeView: View {
         .sheet(item: $selectedTool) { tool in
             HomeToolSheet(tool: tool, activeGame: inProgressGames.first)
                 .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+                .presentationDetents([.large])
         }
         .onAppear(perform: revealSections)
     }
@@ -172,6 +186,27 @@ private struct NewGameButton: View {
             Label("New Game", systemImage: "plus.circle.fill")
         }
         .accessibilityIdentifier("new_game_button")
+    }
+}
+
+private struct FreeGamesNote: View {
+    let remainingFreeGames: Int
+    let onUnlock: () -> Void
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            Text("\(remainingFreeGames) free games left")
+                .font(AppFonts.caption)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .monospacedDigit()
+
+            Button("Unlock", action: onUnlock)
+                .font(AppFonts.caption)
+                .foregroundStyle(ClubhouseTheme.brass)
+                .accessibilityIdentifier("home_unlock_link")
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityIdentifier("free_games_note")
     }
 }
 

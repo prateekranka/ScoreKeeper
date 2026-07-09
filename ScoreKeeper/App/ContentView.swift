@@ -33,11 +33,14 @@ enum AppDestination: Hashable {
 }
 
 struct ContentView: View {
+    @Environment(ReviewAskManager.self) private var reviewAskManager
     @State private var router = NavigationRouter()
     @State private var didApplyOnboardingReset = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
+        @Bindable var reviewAskManager = reviewAskManager
+
         NavigationStack(path: $router.path) {
             HomeView()
                 .navigationDestination(for: AppDestination.self) { destination in
@@ -68,6 +71,10 @@ struct ContentView: View {
             OnboardingView {
                 hasCompletedOnboarding = true
             }
+        }
+        .sheet(isPresented: $reviewAskManager.isPresentingReviewAsk) {
+            ReviewAskView()
+                .presentationDetents([.medium])
         }
         .onAppear(perform: resetOnboardingIfRequested)
     }
