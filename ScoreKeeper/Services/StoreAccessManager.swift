@@ -1,4 +1,5 @@
 import Foundation
+import Security
 import StoreKit
 
 @MainActor
@@ -34,7 +35,11 @@ final class StoreAccessManager {
         if arguments.contains("-in-memory-store") {
             gamesStartedCount = Self.integerArgument(named: "-free-games-used", in: arguments) ?? 0
         } else {
-            gamesStartedCount = defaults.integer(forKey: Keys.gamesStartedCount)
+            gamesStartedCount = max(
+                defaults.integer(forKey: Keys.gamesStartedCount),
+                DurableGameAllowance.load() ?? 0
+            )
+            DurableGameAllowance.save(gamesStartedCount)
         }
 
 #if DEBUG
@@ -58,7 +63,7 @@ final class StoreAccessManager {
         }
 
 #if DEBUG
-        if arguments.contains("-ui-test-storekit") {
+        if arguments.contains("-ui-test-storekit") || arguments.contains("-ui-test-storekit-pending") {
             return "$0.99"
         }
 #endif
@@ -93,6 +98,14 @@ final class StoreAccessManager {
             hasUnlimitedAccess = true
             message = nil
             return true
+        }
+        if arguments.contains("-ui-test-storekit-pending") {
+            message = "Your purchase is pending approval. Unlimited games will unlock automatically when it completes."
+            Task { [weak self] in
+                try? await Task.sleep(for: .seconds(5))
+                self?.hasUnlimitedAccess = true
+            }
+            return false
         }
 #endif
 
@@ -219,6 +232,7 @@ final class StoreAccessManager {
     private func persistGamesStartedCount() {
         guard !arguments.contains("-in-memory-store") else { return }
         defaults.set(gamesStartedCount, forKey: Keys.gamesStartedCount)
+        DurableGameAllowance.save(gamesStartedCount)
     }
 
     private static func integerArgument(named name: String, in arguments: [String]) -> Int? {
@@ -226,6 +240,49 @@ final class StoreAccessManager {
             return nil
         }
         return Int(arguments[index + 1])
+    }
+}
+
+private enum DurableGameAllowance {
+    private static let service = "com.icequeen.scorekeeper.game-allowance"
+    private static let account = "games-started-count"
+
+    static func load() -> Int? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+
+        var item: CFTypeRef?
+        guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess,
+              let data = item as? Data,
+              let value = String(data: data, encoding: .utf8),
+              let count = Int(value) else {
+            return nil
+        }
+        return max(0, count)
+    }
+
+    static func save(_ count: Int) {
+        let identity: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: account
+        ]
+        let attributes: [String: Any] = [
+            kSecValueData as String: Data(String(max(0, count)).utf8)
+        ]
+
+        let status = SecItemUpdate(identity as CFDictionary, attributes as CFDictionary)
+        guard status == errSecItemNotFound else { return }
+
+        var item = identity
+        item.merge(attributes) { _, new in new }
+        item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+        SecItemAdd(item as CFDictionary, nil)
     }
 }
 

@@ -1,8 +1,12 @@
 import SwiftUI
 
 struct PaywallView: View {
+    var onCancel: () -> Void = {}
+    var onUnlock: () -> Void = {}
+
     @Environment(\.dismiss) private var dismiss
     @Environment(StoreAccessManager.self) private var storeAccess
+    @State private var didCompleteUnlock = false
 
     var body: some View {
         NavigationStack {
@@ -19,22 +23,41 @@ struct PaywallView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Not Now") { dismiss() }
+                    Button("Not Now") {
+                        onCancel()
+                        dismiss()
+                    }
                 }
             }
         }
         .interactiveDismissDisabled(storeAccess.isPurchasing || storeAccess.isRestoring)
-        .onChange(of: storeAccess.hasUnlimitedAccess) { _, isUnlocked in
-            if isUnlocked {
-                dismiss()
+        .task {
+            if storeAccess.hasUnlimitedAccess {
+                completeUnlock()
             }
         }
+        .onChange(of: storeAccess.hasUnlimitedAccess) { _, isUnlocked in
+            if isUnlocked {
+                completeUnlock()
+            }
+        }
+    }
+
+    private func completeUnlock() {
+        guard !didCompleteUnlock else { return }
+        didCompleteUnlock = true
+        onUnlock()
+        dismiss()
     }
 
     private var purchaseSection: some View {
         VStack(spacing: AppTheme.spacingSmall) {
             AppActionButton(role: .primary(PlayerColors.palette[3])) {
-                Task { await storeAccess.purchaseUnlimitedGames() }
+                Task {
+                    if await storeAccess.purchaseUnlimitedGames() {
+                        completeUnlock()
+                    }
+                }
             } label: {
                 if storeAccess.isPurchasing {
                     ProgressView()
@@ -50,7 +73,11 @@ struct PaywallView: View {
             .accessibilityIdentifier("purchase_unlimited_button")
 
             Button {
-                Task { await storeAccess.restorePurchases() }
+                Task {
+                    if await storeAccess.restorePurchases() {
+                        completeUnlock()
+                    }
+                }
             } label: {
                 if storeAccess.isRestoring {
                     ProgressView()

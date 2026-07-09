@@ -9,6 +9,7 @@ struct Phase10ScoringView: View {
     @State private var leftoverPoints: [UUID: Int] = [:]
     @State private var completedPhase: [UUID: Bool] = [:]
     @State private var showGameCompleteAlert = false
+    @State private var completionError: String?
     @State private var scoreHapticTrigger = 0
 
     private let engine = Phase10Engine()
@@ -42,6 +43,18 @@ struct Phase10ScoringView: View {
         } message: {
             Text("At least one player has completed phase 10. You can end the game now or keep scoring.")
         }
+        .alert("Couldn’t Finish Game", isPresented: completionErrorBinding) {
+            Button("OK", role: .cancel) { completionError = nil }
+        } message: {
+            Text(completionError ?? "Please try again.")
+        }
+    }
+
+    private var completionErrorBinding: Binding<Bool> {
+        Binding(
+            get: { completionError != nil },
+            set: { if !$0 { completionError = nil } }
+        )
     }
 
     private var phaseOverview: some View {
@@ -169,9 +182,13 @@ struct Phase10ScoringView: View {
         session.isComplete = true
         session.completedAt = .now
         session.winnerID = engine.winners(session: session).first
-        if (try? modelContext.save()) != nil {
+        do {
+            try modelContext.save()
             reviewPrompt.recordSuccessfulGame()
             router.push(.gameOver(session.persistentModelID))
+        } catch {
+            modelContext.rollback()
+            completionError = "Your completed game couldn’t be saved. It is still open so you can try again."
         }
     }
 }

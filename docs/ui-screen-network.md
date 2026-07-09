@@ -1,6 +1,6 @@
 # ScoreKeeper UI Screen Network
 
-Generated for a future Argent Lens redesign pass. This is a route and screen inventory only; it does not propose or implement UI changes.
+Maintained as the release route and screen inventory. The current artifact reflects the StoreKit gating routes and the July 2026 visual-polish pass.
 
 ## Artifacts
 
@@ -9,6 +9,8 @@ Generated for a future Argent Lens redesign pass. This is a route and screen inv
 - Source screenshot folder: `screenshots/app-screens`
 - Onboarding screenshot refreshed after the onboarding redesign: `screenshots/app-screens/23-onboarding.png`
 - StoreKit paywall screenshot: `screenshots/app-screens/31-paywall.png`
+- All visibly changed screen families were refreshed during the July 2026 release pass; unchanged utility overlays remain as route/QA references.
+- `21-game-details.png` is suitable for route verification but not marketing export because the simulator attachment contains top-corner masking artifacts.
 
 ## Route Backbone
 
@@ -113,4 +115,5 @@ flowchart TD
 - UI tests run with `-in-memory-store`, which bypasses onboarding and seeds state only through user interactions.
 - Onboarding has a dedicated `-reset-onboarding` launch argument for focused UI coverage without changing the normal `-in-memory-store` test path.
 - New sessions are gated centrally by `StoreAccessManager`: existing active games remain resumable, while game 26 and later and new rematches require the verified non-consumable entitlement.
+- A paywall success callback is scoped to the presented intent, so a later entitlement update cannot navigate after the user has dismissed that paywall.
 - Static score, setup, summary, and stats surfaces use opaque semantic cards for legibility; interactive controls and chrome retain restrained iOS 26 glass treatment.

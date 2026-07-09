@@ -79,7 +79,7 @@ Review contact name, phone number, and email: **Owner input required**
 
 Repository review supports selecting: `No, we do not collect data from this app.`
 
-- Game sessions, player names, scores, history, preferences, allowance counters, and review-prompt state remain on device.
+- Game sessions, player names, scores, history, preferences, allowance counters, and review-prompt state remain on device. The anonymous allowance count uses this device’s private Keychain so reinstalling does not reset the introductory limit.
 - The developer has no server or analytics integration.
 - StoreKit handles payment entry outside the app; the developer does not receive payment information.
 - Reconfirm this answer if analytics, crash reporting, cloud sync, customer support SDKs, or any other third-party code is added.

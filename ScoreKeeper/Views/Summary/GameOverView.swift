@@ -56,22 +56,18 @@ struct GameOverView: View {
             }
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .navigationBar)
-            .sheet(isPresented: $showPaywall) {
-                PaywallView()
+            .sheet(isPresented: $showPaywall, onDismiss: {
+                continueRematchAfterUnlock = false
+            }) {
+                PaywallView(
+                    onCancel: { continueRematchAfterUnlock = false },
+                    onUnlock: { resumeRematchAfterUnlock(session) }
+                )
             }
             .alert("Couldn’t Start Rematch", isPresented: creationErrorBinding) {
                 Button("OK", role: .cancel) { creationError = nil }
             } message: {
                 Text(creationError ?? "Please try again.")
-            }
-            .onChange(of: storeAccess.hasUnlimitedAccess) { _, isUnlocked in
-                guard isUnlocked, continueRematchAfterUnlock else { return }
-                continueRematchAfterUnlock = false
-                showPaywall = false
-                Task { @MainActor in
-                    try? await Task.sleep(for: .milliseconds(350))
-                    playAgain(session)
-                }
             }
             .task {
                 await requestReviewIfEligible()
@@ -93,6 +89,16 @@ struct GameOverView: View {
             return
         }
         playAgain(session)
+    }
+
+    private func resumeRematchAfterUnlock(_ session: GameSession) {
+        guard continueRematchAfterUnlock else { return }
+        continueRematchAfterUnlock = false
+        showPaywall = false
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(350))
+            playAgain(session)
+        }
     }
 
     private func playAgain(_ session: GameSession) {

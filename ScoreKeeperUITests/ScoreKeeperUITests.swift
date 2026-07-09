@@ -83,7 +83,14 @@ final class ScoreKeeperUITests: XCTestCase {
     // MARK: - Test 2: Create Phase 10 Game → Score → End
 
     func testCreatePhase10GameAndScore() throws {
-        navigateToScoring(gameTileID: "game_tile_phase10", playerNames: ["Alice", "Bob"])
+        app.buttons["new_game_button"].tap()
+        app.buttons["game_tile_phase10"].tap()
+        fillPlayerNames(["Alice", "Bob"])
+        app.buttons["start_game_button"].tap()
+        XCTAssertTrue(app.navigationBars["Game Settings"].waitForExistence(timeout: 2))
+        attachScreenshot(named: "game-settings-phase10")
+        app.buttons["start_game_button"].tap()
+        XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 3))
         attachScreenshot(named: "scoring-phase10")
 
         // Submit one round for Phase 10
@@ -225,7 +232,13 @@ final class ScoreKeeperUITests: XCTestCase {
     // MARK: - Test 8: What's for Dinner player records a meal reveal
 
     func testWhatsForDinnerMealRevealFlow() throws {
-        navigateToScoring(gameTileID: "game_tile_whatsForDinner", playerNames: ["Mina", "Nora", "Omar"])
+        app.buttons["new_game_button"].tap()
+        app.buttons["game_tile_whatsForDinner"].tap()
+        XCTAssertTrue(app.textFields["player_name_field_0"].waitForExistence(timeout: 2))
+        attachScreenshot(named: "player-setup-whats-for-dinner")
+        fillPlayerNames(["Mina", "Nora", "Omar"])
+        app.buttons["start_game_button"].tap()
+        XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 3))
         attachScreenshot(named: "scoring-whats-for-dinner")
 
         app.buttons["meal_reveal_Mina"].tap()
@@ -287,6 +300,11 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Taylor"].exists)
         XCTAssertTrue(app.buttons["Morgan"].exists)
         attachScreenshot(named: "head-to-head-by-game")
+
+        let disclosure = app.buttons["Taylor recent Scoreboard"]
+        XCTAssertTrue(disclosure.waitForExistence(timeout: 2))
+        disclosure.tap()
+        attachScreenshot(named: "head-to-head-expanded")
     }
 
     // MARK: - Test 11: History is reachable with one completed game
@@ -305,6 +323,12 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Game History"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["Scoreboard"].exists)
         attachScreenshot(named: "game-history")
+
+        let firstGame = app.buttons.matching(identifier: "history_game_row").firstMatch
+        XCTAssertTrue(firstGame.waitForExistence(timeout: 2))
+        firstGame.tap()
+        XCTAssertTrue(app.navigationBars["Game Details"].waitForExistence(timeout: 3))
+        attachScreenshot(named: "game-details")
     }
 
     // MARK: - Test 12: Player stats navigation
@@ -382,6 +406,86 @@ final class ScoreKeeperUITests: XCTestCase {
         let productLoaded = expectation(for: enabled, evaluatedWith: purchaseButton)
         wait(for: [productLoaded], timeout: 8)
         XCTAssertTrue(purchaseButton.label.contains("$0.99"))
+    }
+
+    // MARK: - Test 16: Real local StoreKit purchase unlocks the app
+
+    func testStoreKitPurchaseUnlocksRealProduct() throws {
+        let storeKitSession = try SKTestSession(configurationFileNamed: "ScoreKeeper")
+        storeKitSession.disableDialogs = true
+        storeKitSession.clearTransactions()
+
+        relaunch(arguments: ["-in-memory-store", "-free-games-used", "25"])
+        app.buttons["new_game_button"].tap()
+
+        let purchaseButton = app.buttons["purchase_unlimited_button"]
+        XCTAssertTrue(purchaseButton.waitForExistence(timeout: 5))
+        let enabled = expectation(
+            for: NSPredicate(format: "enabled == true"),
+            evaluatedWith: purchaseButton
+        )
+        wait(for: [enabled], timeout: 8)
+        purchaseButton.tap()
+
+        XCTAssertTrue(app.buttons["game_tile_generic"].waitForExistence(timeout: 8))
+    }
+
+    // MARK: - Test 17: Dismissed pending purchase does not navigate later
+
+    func testDismissedPendingPurchaseDoesNotNavigateLater() throws {
+        relaunch(arguments: [
+            "-in-memory-store",
+            "-free-games-used", "25",
+            "-ui-test-storekit-pending"
+        ])
+        app.buttons["new_game_button"].tap()
+
+        let purchaseButton = app.buttons["purchase_unlimited_button"]
+        XCTAssertTrue(purchaseButton.waitForExistence(timeout: 3))
+        purchaseButton.tap()
+        XCTAssertTrue(app.staticTexts["Your purchase is pending approval. Unlimited games will unlock automatically when it completes."].waitForExistence(timeout: 2))
+
+        app.buttons["Not Now"].tap()
+        XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
+
+        XCTAssertTrue(app.staticTexts["Unlimited games unlocked"].waitForExistence(timeout: 8))
+        XCTAssertFalse(app.buttons["game_tile_generic"].exists)
+        XCTAssertTrue(app.buttons["new_game_button"].exists)
+    }
+
+    // MARK: - Test 18: Active game Home state
+
+    func testActiveGameHomeState() throws {
+        relaunch(arguments: ["-in-memory-store", "-seed-active-game"])
+
+        XCTAssertTrue(app.staticTexts["Resume Game"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["24 free games remaining"].exists)
+        attachScreenshot(named: "home-with-active-game")
+    }
+
+    // MARK: - Test 19: Phase 10 completion confirmation
+
+    func testPhase10CompletionConfirmation() throws {
+        app.buttons["new_game_button"].tap()
+        app.buttons["game_tile_phase10"].tap()
+        fillPlayerNames(["Taylor", "Morgan"])
+        app.buttons["start_game_button"].tap()
+
+        let skipOnFail = app.switches["No repeat rounds"]
+        XCTAssertTrue(skipOnFail.waitForExistence(timeout: 2))
+        skipOnFail.tap()
+        app.buttons["start_game_button"].tap()
+        XCTAssertTrue(app.buttons["submit_round_button"].waitForExistence(timeout: 3))
+
+        for round in 1...10 {
+            app.buttons["submit_round_button"].tap()
+            if round < 10 {
+                XCTAssertTrue(app.staticTexts["Round \(round + 1)"].waitForExistence(timeout: 2))
+            }
+        }
+
+        XCTAssertTrue(app.staticTexts["Phase 10 complete"].waitForExistence(timeout: 3))
+        attachScreenshot(named: "phase10-complete-confirmation")
     }
 
     // MARK: - Helpers

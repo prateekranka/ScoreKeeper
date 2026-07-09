@@ -11,6 +11,7 @@ struct PlayerSetupView: View {
     @FocusState private var focusedIndex: Int?
     @State private var showRoster = false
     @State private var showPaywall = false
+    @State private var continueAfterUnlock = false
     @State private var creationError: String?
 
     private var recentNames: [String] {
@@ -96,8 +97,13 @@ struct PlayerSetupView: View {
         .sheet(isPresented: $showRoster) {
             PlayerRosterSheet { names in addRosterNames(names) }
         }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView()
+        .sheet(isPresented: $showPaywall, onDismiss: {
+            continueAfterUnlock = false
+        }) {
+            PaywallView(
+                onCancel: { continueAfterUnlock = false },
+                onUnlock: resumeStartAfterUnlock
+            )
         }
         .alert("Couldn’t Start Game", isPresented: creationErrorBinding) {
             Button("OK", role: .cancel) { creationError = nil }
@@ -115,6 +121,7 @@ struct PlayerSetupView: View {
 
     private func startGame() {
         guard storeAccess.canStartNewGame else {
+            continueAfterUnlock = true
             showPaywall = true
             return
         }
@@ -125,6 +132,16 @@ struct PlayerSetupView: View {
         } else {
             guard let session = createSession(names: names) else { return }
             router.push(.scoring(session.persistentModelID))
+        }
+    }
+
+    private func resumeStartAfterUnlock() {
+        guard continueAfterUnlock else { return }
+        continueAfterUnlock = false
+        showPaywall = false
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(350))
+            startGame()
         }
     }
 

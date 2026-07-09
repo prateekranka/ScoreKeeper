@@ -24,6 +24,7 @@ struct GameHistoryListView: View {
                         } label: {
                             gameRow(session)
                         }
+                        .accessibilityIdentifier("history_game_row")
                     }
                     .onDelete(perform: deleteGames)
                 }

@@ -77,6 +77,10 @@ struct ContentView: View {
             let count = (try? modelContext.fetchCount(FetchDescriptor<GameSession>())) ?? 0
             storeAccess.reconcile(existingSessionCount: count)
 
+#if DEBUG
+            seedActiveGameIfRequested(existingSessionCount: count)
+#endif
+
             let completedDescriptor = FetchDescriptor<GameSession>(
                 predicate: #Predicate<GameSession> { $0.isComplete }
             )
@@ -84,6 +88,25 @@ struct ContentView: View {
             reviewPrompt.reconcile(existingCompletedGameCount: completedCount)
         }
     }
+
+#if DEBUG
+    private func seedActiveGameIfRequested(existingSessionCount: Int) {
+        guard ProcessInfo.processInfo.arguments.contains("-seed-active-game"),
+              existingSessionCount == 0 else { return }
+
+        let session = GameSession(gameType: .phase10)
+        modelContext.insert(session)
+        for (index, name) in ["Alice", "Bob"].enumerated() {
+            let player = Player(name: name, colorIndex: index)
+            player.session = session
+            session.players.append(player)
+        }
+
+        if (try? modelContext.save()) != nil {
+            storeAccess.recordGameStarted()
+        }
+    }
+#endif
 
     private var onboardingBinding: Binding<Bool> {
         Binding(

@@ -91,17 +91,13 @@ struct HomeView: View {
             HomeToolSheet(tool: tool, activeGame: inProgressGames.first)
                 .presentationDetents([.medium])
         }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView()
-        }
-        .onChange(of: storeAccess.hasUnlimitedAccess) { _, isUnlocked in
-            guard isUnlocked, continueAfterUnlock else { return }
+        .sheet(isPresented: $showPaywall, onDismiss: {
             continueAfterUnlock = false
-            showPaywall = false
-            Task { @MainActor in
-                try? await Task.sleep(for: .milliseconds(350))
-                router.push(.gamePicker)
-            }
+        }) {
+            PaywallView(
+                onCancel: { continueAfterUnlock = false },
+                onUnlock: continueNewGameAfterUnlock
+            )
         }
         .onAppear(perform: revealSections)
     }
@@ -113,6 +109,16 @@ struct HomeView: View {
             return
         }
         router.push(.gamePicker)
+    }
+
+    private func continueNewGameAfterUnlock() {
+        guard continueAfterUnlock else { return }
+        continueAfterUnlock = false
+        showPaywall = false
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(350))
+            router.push(.gamePicker)
+        }
     }
 
     private func cycleTheme() {

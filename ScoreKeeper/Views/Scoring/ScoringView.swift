@@ -7,6 +7,7 @@ struct ScoringView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(ReviewPromptCoordinator.self) private var reviewPrompt
     @State private var showEndGameAlert = false
+    @State private var completionError: String?
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
@@ -49,7 +50,19 @@ struct ScoringView: View {
         } message: {
             Text("This will finish the current game and determine the winner.")
         }
+        .alert("Couldn’t Finish Game", isPresented: completionErrorBinding) {
+            Button("OK", role: .cancel) { completionError = nil }
+        } message: {
+            Text(completionError ?? "Please try again.")
+        }
         .navigationBarBackButtonHidden(true)
+    }
+
+    private var completionErrorBinding: Binding<Bool> {
+        Binding(
+            get: { completionError != nil },
+            set: { if !$0 { completionError = nil } }
+        )
     }
 
     private func endGame(_ session: GameSession, engine: GameEngine) {
@@ -57,9 +70,13 @@ struct ScoringView: View {
         session.completedAt = .now
         let winnerIDs = engine.winners(session: session)
         session.winnerID = winnerIDs.first
-        if (try? modelContext.save()) != nil {
+        do {
+            try modelContext.save()
             reviewPrompt.recordSuccessfulGame()
             router.push(.gameOver(session.persistentModelID))
+        } catch {
+            modelContext.rollback()
+            completionError = "Your completed game couldn’t be saved. It is still open so you can try again."
         }
     }
 }
