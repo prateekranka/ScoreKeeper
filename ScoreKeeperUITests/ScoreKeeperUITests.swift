@@ -1,4 +1,5 @@
 import XCTest
+import StoreKitTest
 
 @MainActor
 final class ScoreKeeperUITests: XCTestCase {
@@ -40,11 +41,25 @@ final class ScoreKeeperUITests: XCTestCase {
     // MARK: - Test 1: Create Generic Game and navigate to scoring
 
     func testCreateGenericGameAndScore() throws {
-        navigateToGenericScoring(playerNames: ["Alice", "Bob", "Charlie"])
+        app.buttons["new_game_button"].tap()
+        XCTAssertTrue(app.buttons["game_tile_generic"].waitForExistence(timeout: 3))
+        attachScreenshot(named: "game-picker")
+
+        app.buttons["game_tile_generic"].tap()
+        XCTAssertTrue(app.textFields["player_name_field_0"].waitForExistence(timeout: 2))
+        attachScreenshot(named: "player-setup-scoreboard")
+
+        fillPlayerNames(["Alice", "Bob", "Charlie"])
+        app.buttons["start_game_button"].tap()
+        XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 2))
+        attachScreenshot(named: "game-settings-scoreboard")
+
+        app.buttons["start_game_button"].tap()
 
         // Verify scoring screen is shown
         XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.buttons["submit_round_button"].waitForExistence(timeout: 2))
+        attachScreenshot(named: "scoring-scoreboard")
 
         // Verify player names are visible
         XCTAssertTrue(app.staticTexts["Alice"].exists)
@@ -62,12 +77,14 @@ final class ScoreKeeperUITests: XCTestCase {
         let winnerText = app.staticTexts["winner_text"]
         XCTAssertTrue(winnerText.waitForExistence(timeout: 2))
         XCTAssertTrue(winnerText.exists)
+        attachScreenshot(named: "game-over-scoreboard")
     }
 
     // MARK: - Test 2: Create Phase 10 Game → Score → End
 
     func testCreatePhase10GameAndScore() throws {
         navigateToScoring(gameTileID: "game_tile_phase10", playerNames: ["Alice", "Bob"])
+        attachScreenshot(named: "scoring-phase10")
 
         // Submit one round for Phase 10
         app.buttons["submit_round_button"].tap()
@@ -167,6 +184,7 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Recent Games"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["Scoreboard"].exists)
         XCTAssertTrue(app.buttons["new_game_button"].exists)
+        attachScreenshot(named: "home-recent-and-stats")
     }
 
     // MARK: - Test 6: Cautious user fixes invalid setup
@@ -208,6 +226,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
     func testWhatsForDinnerMealRevealFlow() throws {
         navigateToScoring(gameTileID: "game_tile_whatsForDinner", playerNames: ["Mina", "Nora", "Omar"])
+        attachScreenshot(named: "scoring-whats-for-dinner")
 
         app.buttons["meal_reveal_Mina"].tap()
         if !app.staticTexts["Caller"].waitForExistence(timeout: 1) {
@@ -258,6 +277,7 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["Head to Head"].tap()
 
         XCTAssertTrue(app.navigationBars["Head to Head"].waitForExistence(timeout: 3))
+        attachScreenshot(named: "head-to-head-empty")
         app.buttons["Player 1, Select..."].tap()
         app.buttons["Taylor"].tap()
         app.buttons["Player 2, Select..."].tap()
@@ -266,6 +286,7 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["1 game together"].waitForExistence(timeout: 2))
         XCTAssertTrue(app.buttons["Taylor"].exists)
         XCTAssertTrue(app.buttons["Morgan"].exists)
+        attachScreenshot(named: "head-to-head-by-game")
     }
 
     // MARK: - Test 11: History is reachable with one completed game
@@ -283,6 +304,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
         XCTAssertTrue(app.navigationBars["Game History"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["Scoreboard"].exists)
+        attachScreenshot(named: "game-history")
     }
 
     // MARK: - Test 12: Player stats navigation
@@ -301,15 +323,85 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Taylor"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["Games Played"].exists)
         XCTAssertTrue(app.staticTexts["Wins"].exists)
+        attachScreenshot(named: "player-stats")
+    }
+
+    // MARK: - Test 13: Free-game limit and one-time unlock
+
+    func testPaywallUnlocksAfterFreeGameLimit() throws {
+        relaunch(arguments: ["-in-memory-store", "-free-games-used", "25", "-ui-test-storekit"])
+
+        XCTAssertTrue(app.staticTexts["0 free games remaining"].waitForExistence(timeout: 3))
+        app.buttons["new_game_button"].tap()
+
+        XCTAssertTrue(app.navigationBars["Unlimited Games"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["Your first 25 games were on us"].exists)
+        attachScreenshot(named: "paywall-unlimited-games")
+
+        let purchaseButton = app.buttons["purchase_unlimited_button"]
+        XCTAssertTrue(purchaseButton.waitForExistence(timeout: 3))
+        XCTAssertTrue(purchaseButton.isEnabled)
+        purchaseButton.tap()
+
+        XCTAssertTrue(app.buttons["game_tile_generic"].waitForExistence(timeout: 5))
+    }
+
+    // MARK: - Test 14: Rematches use the same new-game allowance
+
+    func testPlayAgainShowsPaywallAfterLastFreeGame() throws {
+        relaunch(arguments: ["-in-memory-store", "-free-games-used", "24", "-ui-test-storekit"])
+        navigateToGenericScoring(playerNames: ["Alice", "Bob"])
+
+        app.buttons["submit_round_button"].tap()
+        app.buttons["end_game_button"].tap()
+        app.alerts.buttons["End Game"].tap()
+        app.swipeUp()
+
+        let playAgainButton = app.buttons["play_again_button"]
+        XCTAssertTrue(playAgainButton.waitForExistence(timeout: 3))
+        playAgainButton.tap()
+
+        XCTAssertTrue(app.navigationBars["Unlimited Games"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["restore_purchases_button"].exists)
+    }
+
+    // MARK: - Test 15: Local StoreKit product configuration
+
+    func testStoreKitConfigurationLoadsUnlimitedProduct() throws {
+        let storeKitSession = try SKTestSession(configurationFileNamed: "ScoreKeeper")
+        storeKitSession.disableDialogs = true
+        storeKitSession.clearTransactions()
+
+        relaunch(arguments: ["-in-memory-store", "-free-games-used", "25"])
+        app.buttons["new_game_button"].tap()
+
+        let purchaseButton = app.buttons["purchase_unlimited_button"]
+        XCTAssertTrue(purchaseButton.waitForExistence(timeout: 5))
+
+        let enabled = NSPredicate(format: "enabled == true")
+        let productLoaded = expectation(for: enabled, evaluatedWith: purchaseButton)
+        wait(for: [productLoaded], timeout: 8)
+        XCTAssertTrue(purchaseButton.label.contains("$0.99"))
     }
 
     // MARK: - Helpers
 
     private func launchOnboarding() {
+        relaunch(arguments: ["-in-memory-store", "-reset-onboarding"])
+    }
+
+    private func relaunch(arguments: [String]) {
         app.terminate()
         app = XCUIApplication()
-        app.launchArguments = ["-in-memory-store", "-reset-onboarding"]
+        app.launchArguments = arguments
         app.launch()
+    }
+
+    private func attachScreenshot(named name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     private func navigateToGenericScoring(playerNames: [String]) {

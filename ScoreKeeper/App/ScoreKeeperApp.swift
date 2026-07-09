@@ -4,12 +4,19 @@ import SwiftData
 @main
 struct ScoreKeeperApp: App {
     @State private var themeManager = ThemeManager()
+    @State private var storeAccess = StoreAccessManager()
+    @State private var reviewPrompt = ReviewPromptCoordinator()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(themeManager)
+                .environment(storeAccess)
+                .environment(reviewPrompt)
                 .preferredColorScheme(themeManager.effectiveColorScheme)
+                .task {
+                    await storeAccess.prepare()
+                }
         }
         .modelContainer(sharedModelContainer)
     }

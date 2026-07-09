@@ -88,7 +88,7 @@ struct HeadToHeadView: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .appCard(cornerRadius: AppTheme.cornerRadiusMedium)
     }
 
     private func winSummary(_ record: H2HRecord) -> some View {

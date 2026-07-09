@@ -55,6 +55,10 @@
 		AA0000000000000001000331 /* ScoringComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000334 /* ScoringComponents.swift */; };
 		AA0000000000000001000332 /* StandingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000335 /* StandingsList.swift */; };
 		AA0000000000000001000336 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000337 /* PrivacyInfo.xcprivacy */; };
+		AA0000000000000001000338 /* StoreAccessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100033B /* StoreAccessManager.swift */; };
+		AA0000000000000001000339 /* ReviewPromptCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100033C /* ReviewPromptCoordinator.swift */; };
+		AA000000000000000100033A /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100033D /* PaywallView.swift */; };
+		AA0000000000000001000341 /* ScoreKeeper.storekit in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000340 /* ScoreKeeper.storekit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,6 +122,10 @@
 		AA0000000000000001000334 /* ScoringComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringComponents.swift; sourceTree = "<group>"; };
 		AA0000000000000001000335 /* StandingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandingsList.swift; sourceTree = "<group>"; };
 		AA0000000000000001000337 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AA000000000000000100033B /* StoreAccessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreAccessManager.swift; sourceTree = "<group>"; };
+		AA000000000000000100033C /* ReviewPromptCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewPromptCoordinator.swift; sourceTree = "<group>"; };
+		AA000000000000000100033D /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		AA0000000000000001000340 /* ScoreKeeper.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = ScoreKeeper.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +177,7 @@
 				AA0000000000000001000337 /* PrivacyInfo.xcprivacy */,
 				AA000000000000000000001C /* Preview Content */,
 				AA0000000000000001000328 /* Services */,
+				AA000000000000000100033F /* Configuration */,
 			);
 			path = ScoreKeeper;
 			sourceTree = "<group>";
@@ -216,6 +225,7 @@
 				AA0000000000000000000018 /* Summary */,
 				AA0000000000000000000019 /* Components */,
 				AA0000000000000001000329 /* Stats */,
+				AA000000000000000100033E /* Paywall */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -317,6 +327,8 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000001000322 /* StatsCalculator.swift */,
+				AA000000000000000100033B /* StoreAccessManager.swift */,
+				AA000000000000000100033C /* ReviewPromptCoordinator.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -328,6 +340,22 @@
 				AA0000000000000001000326 /* HeadToHeadView.swift */,
 			);
 			path = Stats;
+			sourceTree = "<group>";
+		};
+		AA000000000000000100033E /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				AA000000000000000100033D /* PaywallView.swift */,
+			);
+			path = Paywall;
+			sourceTree = "<group>";
+		};
+		AA000000000000000100033F /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000340 /* ScoreKeeper.storekit */,
+			);
+			path = Configuration;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -422,6 +450,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0000000000000001000341 /* ScoreKeeper.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,6 +504,9 @@
 				AA0000000000000001000330 /* AppSurfaces.swift in Sources */,
 				AA0000000000000001000331 /* ScoringComponents.swift in Sources */,
 				AA0000000000000001000332 /* StandingsList.swift in Sources */,
+				AA0000000000000001000338 /* StoreAccessManager.swift in Sources */,
+				AA0000000000000001000339 /* ReviewPromptCoordinator.swift in Sources */,
+				AA000000000000000100033A /* PaywallView.swift in Sources */,
 				AA0000000000000000000222 /* PreviewSampleData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -636,6 +668,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ScoreKeeper;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -670,6 +703,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = ScoreKeeper;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

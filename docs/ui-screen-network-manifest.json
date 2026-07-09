@@ -37,7 +37,8 @@
     "HB": { "file": "19-head-to-head-by-game.png", "label": "H2H By Game" },
     "HX": { "file": "20-head-to-head-expanded.png", "label": "H2H Expanded" },
     "GD": { "file": "21-game-details.png", "label": "Game Details" },
-    "PV": { "file": "29-player-stats.png", "label": "Player Stats" }
+    "PV": { "file": "29-player-stats.png", "label": "Player Stats" },
+    "PW": { "file": "31-paywall.png", "label": "Unlimited Games Paywall" }
   },
   "routes": [
     {
@@ -180,6 +181,14 @@
           ]
         },
         {
+          "label": "Free Limit Unlock",
+          "steps": [
+            { "screen": "H0", "transition": "New Game after 25" },
+            { "screen": "PW", "transition": "Purchase or Restore" },
+            { "screen": "GP", "transition": "Unlocked" }
+          ]
+        },
+        {
           "label": "Return Home",
           "steps": [
             { "screen": "GO", "transition": "Home" },
@@ -241,5 +250,5 @@
       ]
     }
   ],
-  "inventory": ["ON", "H0", "H1", "H2", "GP", "PS", "GS", "SS", "WT", "WS", "P3", "P4", "TA", "TD", "TS", "TL", "HMT", "HMD", "HMS", "HMU", "EA", "PC", "GO", "RS", "GH", "HE", "HB", "HX", "GD", "PV"]
+  "inventory": ["ON", "H0", "H1", "H2", "GP", "PS", "GS", "SS", "WT", "WS", "P3", "P4", "TA", "TD", "TS", "TL", "HMT", "HMD", "HMS", "HMU", "EA", "PC", "GO", "RS", "GH", "HE", "HB", "HX", "GD", "PV", "PW"]
 }

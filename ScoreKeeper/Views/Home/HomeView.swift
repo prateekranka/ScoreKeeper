@@ -4,8 +4,11 @@ import SwiftData
 struct HomeView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(ThemeManager.self) private var themeManager
+    @Environment(StoreAccessManager.self) private var storeAccess
     @State private var selectedTool: HomeTool?
     @State private var sectionsVisible = false
+    @State private var showPaywall = false
+    @State private var continueAfterUnlock = false
     @Query(filter: #Predicate<GameSession> { !$0.isComplete },
            sort: \GameSession.createdAt, order: .reverse)
     private var inProgressGames: [GameSession]
@@ -21,7 +24,7 @@ struct HomeView: View {
     }
 
     private var uniquePlayerCount: Int {
-        let names = completedGames
+        let names = (completedGames + inProgressGames)
             .flatMap(\.players)
             .map { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
             .filter { !$0.isEmpty }
@@ -38,30 +41,33 @@ struct HomeView: View {
                 )
                 .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                NewGameButton(action: { router.push(.gamePicker) })
+                NewGameButton(action: startNewGame)
                     .staggeredEntrance(visible: sectionsVisible, index: 1)
                     .padding(.top, AppTheme.spacingMedium)
+
+                HomeAccessStatus()
+                    .staggeredEntrance(visible: sectionsVisible, index: 2)
 
                 HomeDashboardRow(
                     gamesCount: completedGames.count,
                     activeCount: inProgressGames.count,
                     playersCount: uniquePlayerCount
                 )
-                .staggeredEntrance(visible: sectionsVisible, index: 2)
+                .staggeredEntrance(visible: sectionsVisible, index: 3)
 
                 HomeQuickToolsRow(selectedTool: $selectedTool)
-                    .staggeredEntrance(visible: sectionsVisible, index: 3)
+                    .staggeredEntrance(visible: sectionsVisible, index: 4)
 
                 if let activeGame = inProgressGames.first {
                     HomeResumeBanner(session: activeGame, onTap: { router.push(.scoring(activeGame.persistentModelID)) })
-                        .staggeredEntrance(visible: sectionsVisible, index: 4)
+                        .staggeredEntrance(visible: sectionsVisible, index: 5)
                 } else if completedGames.isEmpty {
                     EmptyStateView(
                         title: "No games yet",
                         systemImage: "sparkles",
                         message: "Start with a scoreboard, Phase 10, or What's for Dinner."
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 4)
+                    .staggeredEntrance(visible: sectionsVisible, index: 5)
                 }
 
                 if !completedGames.isEmpty {
@@ -70,10 +76,10 @@ struct HomeView: View {
                         onGameTap: { router.push(.gameDetail($0)) },
                         onSeeAll: { router.push(.gameHistory) }
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 5)
+                    .staggeredEntrance(visible: sectionsVisible, index: 6)
 
                     HomeStatsSection(sessions: completedGames)
-                        .staggeredEntrance(visible: sectionsVisible, index: 6)
+                        .staggeredEntrance(visible: sectionsVisible, index: 7)
                 }
             }
             .padding(AppTheme.spacingMedium)
@@ -85,7 +91,28 @@ struct HomeView: View {
             HomeToolSheet(tool: tool, activeGame: inProgressGames.first)
                 .presentationDetents([.medium])
         }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
+        .onChange(of: storeAccess.hasUnlimitedAccess) { _, isUnlocked in
+            guard isUnlocked, continueAfterUnlock else { return }
+            continueAfterUnlock = false
+            showPaywall = false
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(350))
+                router.push(.gamePicker)
+            }
+        }
         .onAppear(perform: revealSections)
+    }
+
+    private func startNewGame() {
+        guard storeAccess.canStartNewGame else {
+            continueAfterUnlock = true
+            showPaywall = true
+            return
+        }
+        router.push(.gamePicker)
     }
 
     private func cycleTheme() {
@@ -168,6 +195,48 @@ private struct NewGameButton: View {
             Label("New Game", systemImage: "plus.circle.fill")
         }
         .accessibilityIdentifier("new_game_button")
+    }
+}
+
+private struct HomeAccessStatus: View {
+    @Environment(StoreAccessManager.self) private var storeAccess
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            Image(systemName: storeAccess.hasUnlimitedAccess ? "infinity.circle.fill" : "ticket.fill")
+                .foregroundStyle(storeAccess.hasUnlimitedAccess ? PlayerColors.palette[1] : PlayerColors.palette[3])
+                .font(.title3)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(statusTitle)
+                    .font(AppFonts.headline)
+
+                if !storeAccess.hasUnlimitedAccess {
+                    ProgressView(
+                        value: Double(storeAccess.gamesStartedCount),
+                        total: Double(StoreAccessManager.freeGameLimit)
+                    )
+                    .tint(PlayerColors.palette[3])
+                    .accessibilityLabel("Free game allowance")
+                    .accessibilityValue("\(storeAccess.remainingFreeGames) of \(StoreAccessManager.freeGameLimit) remaining")
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(AppTheme.spacingSmall)
+        .appCard(cornerRadius: AppTheme.cornerRadiusSmall)
+        .accessibilityIdentifier("game_access_status")
+    }
+
+    private var statusTitle: String {
+        if storeAccess.hasUnlimitedAccess {
+            return "Unlimited games unlocked"
+        }
+        if storeAccess.remainingFreeGames == 1 {
+            return "1 free game remaining"
+        }
+        return "\(storeAccess.remainingFreeGames) free games remaining"
     }
 }
 

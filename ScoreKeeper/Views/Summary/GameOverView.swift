@@ -1,12 +1,19 @@
 import SwiftUI
 import SwiftData
+import StoreKit
 
 struct GameOverView: View {
     let sessionID: PersistentIdentifier
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.requestReview) private var requestReview
     @Environment(NavigationRouter.self) private var router
+    @Environment(StoreAccessManager.self) private var storeAccess
+    @Environment(ReviewPromptCoordinator.self) private var reviewPrompt
     @State private var sectionsVisible = false
+    @State private var showPaywall = false
+    @State private var continueRematchAfterUnlock = false
+    @State private var creationError: String?
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
@@ -28,7 +35,7 @@ struct GameOverView: View {
                         }
                         .staggeredEntrance(visible: sectionsVisible, index: 1)
 
-                        EndGameButtons(session: session, onPlayAgain: { playAgain(session) }, onHome: { router.goHome() })
+                        EndGameButtons(session: session, onPlayAgain: { startRematch(session) }, onHome: { router.goHome() })
                             .staggeredEntrance(visible: sectionsVisible, index: 2)
                     }
                     .padding(AppTheme.spacingMedium)
@@ -49,7 +56,43 @@ struct GameOverView: View {
             }
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showPaywall) {
+                PaywallView()
+            }
+            .alert("Couldn’t Start Rematch", isPresented: creationErrorBinding) {
+                Button("OK", role: .cancel) { creationError = nil }
+            } message: {
+                Text(creationError ?? "Please try again.")
+            }
+            .onChange(of: storeAccess.hasUnlimitedAccess) { _, isUnlocked in
+                guard isUnlocked, continueRematchAfterUnlock else { return }
+                continueRematchAfterUnlock = false
+                showPaywall = false
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(350))
+                    playAgain(session)
+                }
+            }
+            .task {
+                await requestReviewIfEligible()
+            }
         }
+    }
+
+    private var creationErrorBinding: Binding<Bool> {
+        Binding(
+            get: { creationError != nil },
+            set: { if !$0 { creationError = nil } }
+        )
+    }
+
+    private func startRematch(_ session: GameSession) {
+        guard storeAccess.canStartNewGame else {
+            continueRematchAfterUnlock = true
+            showPaywall = true
+            return
+        }
+        playAgain(session)
     }
 
     private func playAgain(_ session: GameSession) {
@@ -65,13 +108,28 @@ struct GameOverView: View {
             newSession.players.append(newPlayer)
         }
 
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+            storeAccess.recordGameStarted()
+        } catch {
+            modelContext.delete(newSession)
+            creationError = "Your rematch couldn’t be saved. No free game was used."
+            return
+        }
 
         router.goHome()
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(100))
             router.push(.scoring(newSession.persistentModelID))
         }
+    }
+
+    private func requestReviewIfEligible() async {
+        guard reviewPrompt.shouldRequestReview else { return }
+        try? await Task.sleep(for: .seconds(2))
+        guard !Task.isCancelled, reviewPrompt.shouldRequestReview else { return }
+        reviewPrompt.markRequestAttempted()
+        requestReview()
     }
 }
 
@@ -179,7 +237,7 @@ private struct GameRecapPanel: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .appCard(cornerRadius: AppTheme.cornerRadiusMedium)
     }
 }
 

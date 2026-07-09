@@ -33,6 +33,9 @@ enum AppDestination: Hashable {
 }
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(StoreAccessManager.self) private var storeAccess
+    @Environment(ReviewPromptCoordinator.self) private var reviewPrompt
     @State private var router = NavigationRouter()
     @State private var didApplyOnboardingReset = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
@@ -70,6 +73,16 @@ struct ContentView: View {
             }
         }
         .onAppear(perform: resetOnboardingIfRequested)
+        .task {
+            let count = (try? modelContext.fetchCount(FetchDescriptor<GameSession>())) ?? 0
+            storeAccess.reconcile(existingSessionCount: count)
+
+            let completedDescriptor = FetchDescriptor<GameSession>(
+                predicate: #Predicate<GameSession> { $0.isComplete }
+            )
+            let completedCount = (try? modelContext.fetchCount(completedDescriptor)) ?? 0
+            reviewPrompt.reconcile(existingCompletedGameCount: completedCount)
+        }
     }
 
     private var onboardingBinding: Binding<Bool> {

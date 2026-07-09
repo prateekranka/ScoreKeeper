@@ -41,7 +41,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                                     .font(AppFonts.body)
                                     .frame(maxWidth: .infinity)
                                     .frame(minHeight: 44)
-                                    .appGlass(cornerRadius: AppTheme.cornerRadiusSmall)
+                                    .appCard(cornerRadius: AppTheme.cornerRadiusSmall)
                             }
                             .buttonStyle(PressableButtonStyle())
                             .disabled(session.sortedRounds.isEmpty)
@@ -356,7 +356,7 @@ struct RoundBanner: View {
                 .multilineTextAlignment(.trailing)
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .appCard(cornerRadius: AppTheme.cornerRadiusMedium)
     }
 }
 

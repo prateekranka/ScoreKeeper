@@ -75,7 +75,7 @@ struct WhatsForDinnerScoringView: View {
         }
         .padding(AppTheme.spacingMedium)
         .animation(.easeOut, value: callerID)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .appCard(cornerRadius: AppTheme.cornerRadiusMedium)
     }
 
     private var playerHandsSection: some View {

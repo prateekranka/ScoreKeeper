@@ -24,7 +24,7 @@ struct ScoreCard: View {
         }
         .padding(AppTheme.spacingMedium)
         .frame(minWidth: 100)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .appCard(cornerRadius: AppTheme.cornerRadiusMedium)
         .overlay {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
                 .strokeBorder(

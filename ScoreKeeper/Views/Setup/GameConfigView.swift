@@ -7,9 +7,12 @@ struct GameConfigView: View {
 
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
+    @Environment(StoreAccessManager.self) private var storeAccess
 
     @State private var winCondition: WinCondition = .highestScore
     @State private var phase10SkipOnFail = false
+    @State private var showPaywall = false
+    @State private var creationError: String?
 
     var body: some View {
         ScrollView {
@@ -29,6 +32,14 @@ struct GameConfigView: View {
         }
         .onAppear {
             winCondition = gameType.defaultWinCondition
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
+        }
+        .alert("Couldn’t Start Game", isPresented: creationErrorBinding) {
+            Button("OK", role: .cancel) { creationError = nil }
+        } message: {
+            Text(creationError ?? "Please try again.")
         }
     }
 
@@ -68,20 +79,36 @@ struct GameConfigView: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .appCard(cornerRadius: AppTheme.cornerRadiusMedium)
     }
 
     private var startButton: some View {
         AppActionButton(role: .primary(gameType.color)) {
-            let session = createSession()
-            router.push(.scoring(session.persistentModelID))
+            startGame()
         } label: {
             Label("Start Game", systemImage: "play.fill")
         }
         .accessibilityIdentifier("start_game_button")
     }
 
-    private func createSession() -> GameSession {
+    private var creationErrorBinding: Binding<Bool> {
+        Binding(
+            get: { creationError != nil },
+            set: { if !$0 { creationError = nil } }
+        )
+    }
+
+    private func startGame() {
+        guard storeAccess.canStartNewGame else {
+            showPaywall = true
+            return
+        }
+
+        guard let session = createSession() else { return }
+        router.push(.scoring(session.persistentModelID))
+    }
+
+    private func createSession() -> GameSession? {
         let session = GameSession(gameType: gameType)
         session.winCondition = winCondition
         session.phase10SkipOnFail = phase10SkipOnFail
@@ -93,9 +120,16 @@ struct GameConfigView: View {
             session.players.append(player)
         }
 
-        try? modelContext.save()
-        savePlayersToRoster(names: playerNames)
-        return session
+        do {
+            try modelContext.save()
+            storeAccess.recordGameStarted()
+            savePlayersToRoster(names: playerNames)
+            return session
+        } catch {
+            modelContext.delete(session)
+            creationError = "Your game couldn’t be saved. No free game was used."
+            return nil
+        }
     }
 
     private func savePlayersToRoster(names: [String]) {

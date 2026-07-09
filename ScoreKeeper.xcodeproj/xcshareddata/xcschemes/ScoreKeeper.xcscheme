@@ -60,6 +60,9 @@
             ReferencedContainer = "container:ScoreKeeper.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <StoreKitConfigurationFileReference
+         identifier = "../../ScoreKeeper/Configuration/ScoreKeeper.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

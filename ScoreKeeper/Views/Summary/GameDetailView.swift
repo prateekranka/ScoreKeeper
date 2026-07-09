@@ -69,7 +69,7 @@ private struct RoundBreakdownSection: View {
                 }
             }
             .padding(AppTheme.spacingMedium)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+            .appCard(cornerRadius: AppTheme.cornerRadiusMedium)
         }
     }
 }

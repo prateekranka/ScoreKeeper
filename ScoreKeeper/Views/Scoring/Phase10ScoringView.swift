@@ -5,6 +5,7 @@ struct Phase10ScoringView: View {
     @Bindable var session: GameSession
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationRouter.self) private var router
+    @Environment(ReviewPromptCoordinator.self) private var reviewPrompt
     @State private var leftoverPoints: [UUID: Int] = [:]
     @State private var completedPhase: [UUID: Bool] = [:]
     @State private var showGameCompleteAlert = false
@@ -70,7 +71,7 @@ struct Phase10ScoringView: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .appCard(cornerRadius: AppTheme.cornerRadiusMedium)
     }
 
     private var roundEntrySection: some View {
@@ -168,7 +169,9 @@ struct Phase10ScoringView: View {
         session.isComplete = true
         session.completedAt = .now
         session.winnerID = engine.winners(session: session).first
-        try? modelContext.save()
-        router.push(.gameOver(session.persistentModelID))
+        if (try? modelContext.save()) != nil {
+            reviewPrompt.recordSuccessfulGame()
+            router.push(.gameOver(session.persistentModelID))
+        }
     }
 }

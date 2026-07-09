@@ -8,6 +8,7 @@ Generated for a future Argent Lens redesign pass. This is a route and screen inv
 - Generated route-strip PNG: `docs/ui-screen-network-route-strips.png`
 - Source screenshot folder: `screenshots/app-screens`
 - Onboarding screenshot refreshed after the onboarding redesign: `screenshots/app-screens/23-onboarding.png`
+- StoreKit paywall screenshot: `screenshots/app-screens/31-paywall.png`
 
 ## Route Backbone
 
@@ -24,7 +25,7 @@ Generated for a future Argent Lens redesign pass. This is a route and screen inv
 - `.headToHead` -> `HeadToHeadView`
 - `.playerStats(String)` -> `PlayerStatsView`
 
-`OnboardingView`, home tools, roster selection, scoring tools, and end-game confirmation are presented as covers, sheets, or alerts.
+`OnboardingView`, `PaywallView`, home tools, roster selection, scoring tools, and end-game confirmation are presented as covers, sheets, or alerts.
 
 ```mermaid
 flowchart TD
@@ -39,6 +40,10 @@ flowchart TD
     SC -->|Phase 10 complete alert confirm| GO
     GO -->|Home| H
     GO -->|Play Again| SC
+    H -->|New Game after 25 starts| PW["PaywallView"]
+    GO -->|Play Again after 25 starts| PW
+    PW -->|Verified purchase| GP
+    PW -->|Verified purchase for rematch| SC
     H -->|Recent game row| GD["GameDetailView"]
     H -->|See All, when completed games exist| GH["GameHistoryListView"]
     GH --> GD
@@ -61,6 +66,7 @@ flowchart TD
 - Resume and replay loops: Home active game -> scoring; Game Over -> Play Again -> scoring; Game Over -> Home.
 - Roster reuse: Player Setup -> Roster Sheet -> Player Setup.
 - Completed-game review and stats: Home recent games -> Game Details; Home See All -> Game History -> Game Details; Home stats -> Player Stats; Home stats -> Head to Head empty, selected, expanded, and Player Stats states.
+- Free limit and unlock: Home New Game or Game Over Play Again after 25 starts -> StoreKit paywall -> purchase/restore -> requested new game or rematch.
 
 ## Screen Inventory
 
@@ -95,6 +101,7 @@ flowchart TD
 | Home starter sheet | Sheet | Home Game Night Tools / Starter | Done -> Home | `26-home-tool-starter.png` |
 | Home undo sheet | Sheet | Home Game Night Tools / Undo | Done -> Home | `27-home-tool-undo.png` |
 | `PlayerStatsView` | Pushed route | Home Stats player chip or Head-to-Head player name | Back -> previous stats surface | `29-player-stats.png` |
+| `PaywallView` | Sheet | New Game or Play Again when 25 free game starts have been used and no verified entitlement exists | Purchase/restore success dismisses and continues; Not Now returns to the prior screen | `31-paywall.png` |
 
 ## Redesign-Relevant Notes
 
@@ -105,3 +112,5 @@ flowchart TD
 - `HeadToHeadView` and `PlayerStatsView` are centralized `AppDestination` routes.
 - UI tests run with `-in-memory-store`, which bypasses onboarding and seeds state only through user interactions.
 - Onboarding has a dedicated `-reset-onboarding` launch argument for focused UI coverage without changing the normal `-in-memory-store` test path.
+- New sessions are gated centrally by `StoreAccessManager`: existing active games remain resumable, while game 26 and later and new rematches require the verified non-consumable entitlement.
+- Static score, setup, summary, and stats surfaces use opaque semantic cards for legibility; interactive controls and chrome retain restrained iOS 26 glass treatment.

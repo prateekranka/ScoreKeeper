@@ -5,6 +5,7 @@ struct ScoringView: View {
     let sessionID: PersistentIdentifier
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationRouter.self) private var router
+    @Environment(ReviewPromptCoordinator.self) private var reviewPrompt
     @State private var showEndGameAlert = false
 
     var body: some View {
@@ -56,8 +57,10 @@ struct ScoringView: View {
         session.completedAt = .now
         let winnerIDs = engine.winners(session: session)
         session.winnerID = winnerIDs.first
-        try? modelContext.save()
-        router.push(.gameOver(session.persistentModelID))
+        if (try? modelContext.save()) != nil {
+            reviewPrompt.recordSuccessfulGame()
+            router.push(.gameOver(session.persistentModelID))
+        }
     }
 }
 

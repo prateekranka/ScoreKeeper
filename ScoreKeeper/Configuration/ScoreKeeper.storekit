@@ -1,0 +1,40 @@
+{
+  "identifier" : "3F73BBBE-CA2A-4382-BD6F-9307322B709F",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "554E4C4B",
+      "localizations" : [
+        {
+          "description" : "Start unlimited new games and rematches in ScoreKeeper.",
+          "displayName" : "Unlimited Games",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.icequeen.scorekeeper.unlimited",
+      "referenceName" : "Unlimited Games",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA"
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 6,
+    "minor" : 3
+  }
+}
