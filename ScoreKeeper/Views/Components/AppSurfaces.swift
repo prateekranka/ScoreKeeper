@@ -12,8 +12,9 @@ struct AppSurface<Content: View>: View {
     @ViewBuilder var content: Content
 
     var body: some View {
-        content
-            .appGlass(cornerRadius: cornerRadius, isInteractive: isInteractive)
+        ScorecardSurface(cornerRadius: cornerRadius, isInteractive: isInteractive) {
+            content
+        }
     }
 }
 
@@ -27,15 +28,17 @@ struct AppSectionHeader: View {
             if let systemImage {
                 Label(title, systemImage: systemImage)
                     .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
             } else {
                 Text(title)
                     .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
             }
 
             if let subtitle {
                 Text(subtitle)
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -59,8 +62,11 @@ struct AppActionButton<LabelContent: View>: View {
                 .frame(minHeight: 50)
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .foregroundStyle(foregroundStyle)
-                .background(backgroundStyle, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
-                .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+                .background(backgroundStyle, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .strokeBorder(strokeStyle, lineWidth: role.isSecondary ? 1 : 0)
+                }
         }
         .buttonStyle(PressableButtonStyle())
         .sensoryFeedback(buttonHaptic, trigger: trigger)
@@ -80,21 +86,32 @@ struct AppActionButton<LabelContent: View>: View {
     private var foregroundStyle: Color {
         switch role {
         case .primary, .destructive:
-            .white
+            ClubhouseTheme.onFelt
         case .secondary:
-            .primary
+            ClubhouseTheme.ink
         }
     }
 
     private var backgroundStyle: AnyShapeStyle {
         switch role {
-        case .primary(let color):
-            AnyShapeStyle(color.gradient)
+        case .primary:
+            AnyShapeStyle(ClubhouseTheme.felt)
         case .secondary:
-            AnyShapeStyle(.regularMaterial)
+            AnyShapeStyle(ClubhouseTheme.paperCard)
         case .destructive:
-            AnyShapeStyle(Color.red.gradient)
+            AnyShapeStyle(ClubhouseTheme.lacquer)
         }
+    }
+
+    private var strokeStyle: Color {
+        role.isSecondary ? ClubhouseTheme.rule : .clear
+    }
+}
+
+private extension AppButtonRole {
+    var isSecondary: Bool {
+        if case .secondary = self { return true }
+        return false
     }
 }
 
@@ -145,7 +162,7 @@ struct AppGlassModifier: ViewModifier {
                 content.glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
             }
         } else {
-            content.background(.regularMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+            content.background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         }
     }
 }

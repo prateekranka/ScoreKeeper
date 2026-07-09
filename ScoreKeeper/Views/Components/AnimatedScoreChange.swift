@@ -9,7 +9,7 @@ struct AnimatedScoreChange: View {
             Text(delta > 0 ? "+\(delta)" : "\(delta)")
                 .font(.callout.bold())
                 .monospacedDigit()
-                .foregroundStyle(delta > 0 ? .green : .red)
+                .foregroundStyle(delta > 0 ? ClubhouseTheme.felt : ClubhouseTheme.lacquer)
                 .transition(.move(edge: .bottom).combined(with: .opacity))
                 .onAppear {
                     withAnimation(.easeOut(duration: 1.5).delay(0.5)) {

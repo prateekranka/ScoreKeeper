@@ -68,7 +68,9 @@ private struct GenericFocusScoreTable: View {
         VStack(spacing: 0) {
             header
 
-            Divider()
+            Rectangle()
+                .fill(ClubhouseTheme.rule)
+                .frame(height: 1)
                 .padding(.horizontal, AppTheme.spacingMedium)
 
             VStack(spacing: 0) {
@@ -83,7 +85,9 @@ private struct GenericFocusScoreTable: View {
                     )
 
                     if index < session.players.count - 1 {
-                        Divider()
+                        Rectangle()
+                            .fill(ClubhouseTheme.rule)
+                            .frame(height: 1)
                             .padding(.leading, 64)
                     }
                 }
@@ -91,7 +95,7 @@ private struct GenericFocusScoreTable: View {
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.bottom, AppTheme.spacingMedium)
         }
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Round \(session.currentRoundNumber) score table, \(winConditionLabel)")
     }
@@ -100,17 +104,17 @@ private struct GenericFocusScoreTable: View {
         HStack(alignment: .firstTextBaseline, spacing: AppTheme.spacingSmall) {
             Label("Round \(session.currentRoundNumber)", systemImage: session.gameType.icon)
                 .font(AppFonts.title)
-                .foregroundStyle(session.gameType.color)
+                .foregroundStyle(ClubhouseTheme.ink)
                 .monospacedDigit()
 
             Spacer(minLength: AppTheme.spacingSmall)
 
             Text(winConditionLabel)
-                .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .columnHeaderStyle()
                 .padding(.horizontal, 10)
                 .frame(minHeight: 28)
-                .background(session.gameType.color.opacity(0.12), in: Capsule())
+                .background(ClubhouseTheme.paperSunken, in: Capsule())
+                .overlay { Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1) }
         }
         .padding(AppTheme.spacingMedium)
     }
@@ -124,9 +128,7 @@ private struct GenericFocusScoreTable: View {
             Text("This round")
                 .frame(width: 128, alignment: .trailing)
         }
-        .font(AppFonts.caption)
-        .foregroundStyle(.secondary)
-        .textCase(.uppercase)
+        .columnHeaderStyle()
         .padding(.vertical, AppTheme.spacingSmall)
     }
 
@@ -174,29 +176,29 @@ private struct FocusScoreRow: View {
                 Circle()
                     .fill(PlayerColors.color(for: player.colorIndex))
                     .frame(width: 38, height: 38)
+                    .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
 
                 Text(String(player.name.prefix(1)).uppercased())
                     .font(.subheadline.bold())
-                    .foregroundStyle(.white)
+                    .foregroundStyle(ClubhouseTheme.onFelt)
             }
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
                     Text(player.name)
                         .font(AppFonts.headline)
+                        .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
 
                     if isLeading {
-                        Image(systemName: "crown.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.yellow)
+                        BrassCrown()
                             .accessibilityLabel("Leading")
                     }
                 }
 
                 Text("Round points")
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -207,47 +209,19 @@ private struct FocusScoreRow: View {
             Text("\(totalScore)")
                 .font(AppFonts.scoreSmall)
                 .monospacedDigit()
-                .foregroundStyle(isLeading ? PlayerColors.color(for: player.colorIndex) : .primary)
-                .contentTransition(.numericText())
+                .foregroundStyle(isLeading ? ClubhouseTheme.brass : ClubhouseTheme.ink)
+                .contentTransition(.numericText(value: Double(totalScore)))
 
             Text("total")
-                .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .columnHeaderStyle()
         }
         .frame(width: 56, alignment: .trailing)
     }
 
     private var scoreStepper: some View {
-        HStack(spacing: 6) {
-            stepButton(systemImage: "minus.circle.fill", label: "Decrease score") {
-                apply(-step)
-            }
-
-            Text("\(value)")
-                .font(AppFonts.scoreSmall)
-                .monospacedDigit()
-                .frame(width: 42)
-                .contentTransition(.numericText())
-                .accessibilityLabel("Score \(value)")
-
-            stepButton(systemImage: "plus.circle.fill", label: "Increase score") {
-                apply(step)
-            }
-        }
-        .frame(width: 128, alignment: .trailing)
-    }
-
-    private func stepButton(systemImage: String, label: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.title3)
-                .foregroundStyle(.secondary)
-                .frame(width: 34, height: 34)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(PressableButtonStyle())
-        .accessibilityLabel(label)
-        .accessibilityIdentifier(identifierPrefix + (label.hasPrefix("Decrease") ? "decrement" : "increment"))
+        PipStepper(value: $value, range: range, step: step, identifierPrefix: identifierPrefix)
+            .scaleEffect(0.82)
+            .frame(width: 142, alignment: .trailing)
     }
 
     private func quickButton(_ amount: Int) -> some View {
@@ -256,10 +230,11 @@ private struct FocusScoreRow: View {
         }
         .font(AppFonts.caption)
         .monospacedDigit()
-        .foregroundStyle(.secondary)
+        .foregroundStyle(ClubhouseTheme.ink)
         .padding(.horizontal, 9)
         .frame(minHeight: 30)
-        .background(.regularMaterial, in: Capsule())
+        .background(ClubhouseTheme.paperSunken, in: Capsule())
+        .overlay { Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1) }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(identifierPrefix + "quick_\(amount)")
         .accessibilityLabel("Add \(amount) points")

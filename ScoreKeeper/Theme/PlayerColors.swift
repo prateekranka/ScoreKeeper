@@ -2,12 +2,14 @@ import SwiftUI
 
 struct PlayerColors {
     static let palette: [Color] = [
-        Color(red: 1.0, green: 0.42, blue: 0.42),   // Coral Red
-        Color(red: 0.31, green: 0.80, blue: 0.77),   // Teal
-        Color(red: 1.0, green: 0.85, blue: 0.24),    // Sunny Yellow
-        Color(red: 0.42, green: 0.36, blue: 0.91),   // Purple
-        Color(red: 1.0, green: 0.54, blue: 0.36),    // Orange
-        Color(red: 0.66, green: 0.90, blue: 0.81),   // Mint Green
+        Color(light: 0xC0554A, dark: 0xD87369), // Lacquer
+        Color(light: 0x2E6B52, dark: 0x4B8B70), // Pine
+        Color(light: 0xA9843B, dark: 0xC7A95E), // Brass
+        Color(light: 0x34557E, dark: 0x5878A0), // Navy
+        Color(light: 0xBC7434, dark: 0xD79254), // Terracotta
+        Color(light: 0x6E4B72, dark: 0x906D94), // Plum
+        Color(light: 0x3F7C86, dark: 0x62A0AA), // Slate teal
+        Color(light: 0x8E4A5B, dark: 0xAD6E7D), // Rosewood
     ]
 
     static func color(for index: Int) -> Color {
@@ -15,6 +17,6 @@ struct PlayerColors {
     }
 
     static func lightColor(for index: Int) -> Color {
-        color(for: index).opacity(0.2)
+        color(for: index).opacity(0.12)
     }
 }

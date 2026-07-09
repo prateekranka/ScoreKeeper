@@ -55,6 +55,8 @@
 		AA0000000000000001000331 /* ScoringComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000334 /* ScoringComponents.swift */; };
 		AA0000000000000001000332 /* StandingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000335 /* StandingsList.swift */; };
 		AA0000000000000001000336 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000337 /* PrivacyInfo.xcprivacy */; };
+		AA0000000000000001000339 /* ClubhouseTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000338 /* ClubhouseTheme.swift */; };
+		AA000000000000000100033B /* ClubhouseComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100033A /* ClubhouseComponents.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,6 +120,8 @@
 		AA0000000000000001000334 /* ScoringComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringComponents.swift; sourceTree = "<group>"; };
 		AA0000000000000001000335 /* StandingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandingsList.swift; sourceTree = "<group>"; };
 		AA0000000000000001000337 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AA0000000000000001000338 /* ClubhouseTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClubhouseTheme.swift; sourceTree = "<group>"; };
+		AA000000000000000100033A /* ClubhouseComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClubhouseComponents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -271,6 +275,7 @@
 				AA000000000000000000011C /* AnimatedScoreChange.swift */,
 				AA000000000000000000011D /* ConfettiOverlay.swift */,
 				AA0000000000000001000313 /* PressableButtonStyle.swift */,
+				AA000000000000000100033A /* ClubhouseComponents.swift */,
 				AA0000000000000001000333 /* AppSurfaces.swift */,
 				AA0000000000000001000334 /* ScoringComponents.swift */,
 				AA0000000000000001000335 /* StandingsList.swift */,
@@ -282,6 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				AA000000000000000000011E /* AppTheme.swift */,
+				AA0000000000000001000338 /* ClubhouseTheme.swift */,
 				AA000000000000000000011F /* PlayerColors.swift */,
 				AA0000000000000000000120 /* AppFonts.swift */,
 				AA0000000000000001000315 /* ThemeManager.swift */,
@@ -475,6 +481,8 @@
 				AA0000000000000001000330 /* AppSurfaces.swift in Sources */,
 				AA0000000000000001000331 /* ScoringComponents.swift in Sources */,
 				AA0000000000000001000332 /* StandingsList.swift in Sources */,
+				AA0000000000000001000339 /* ClubhouseTheme.swift in Sources */,
+				AA000000000000000100033B /* ClubhouseComponents.swift in Sources */,
 				AA0000000000000000000222 /* PreviewSampleData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

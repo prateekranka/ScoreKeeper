@@ -54,20 +54,20 @@ struct PlayerRosterSheet: View {
             }
         } label: {
             VStack(spacing: AppTheme.spacingSmall) {
-                PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .medium)
+                PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small)
                 Text("\(player.gamesPlayed) games")
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
             .padding(AppTheme.spacingSmall)
             .frame(maxWidth: .infinity)
             .background(
                 selectedNames.contains(player.name)
-                    ? Color.accentColor.opacity(0.15)
+                    ? PlayerColors.lightColor(for: player.colorIndex)
                     : Color.clear,
                 in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
             )
-            .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityLabel("\(player.name), \(player.gamesPlayed) games played")

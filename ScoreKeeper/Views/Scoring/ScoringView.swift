@@ -37,7 +37,7 @@ struct ScoringView: View {
                 }
                 .accessibilityIdentifier("end_game_button")
                 .font(AppFonts.body)
-                .foregroundStyle(.red)
+                .foregroundStyle(ClubhouseTheme.lacquer)
             }
         }
         .alert("End Game?", isPresented: $showEndGameAlert) {

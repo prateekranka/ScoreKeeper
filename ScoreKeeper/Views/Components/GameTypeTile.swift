@@ -9,33 +9,33 @@ struct GameTypeTile: View {
         Button(action: action) {
             VStack(spacing: AppTheme.spacingSmall) {
                 GameTypeArtwork(gameType: gameType)
-                    .frame(height: 64)
+                    .frame(height: 58)
 
                 Text(gameType.displayName)
-                    .font(AppFonts.headline)
-                    .foregroundStyle(.white)
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .multilineTextAlignment(.center)
 
                 Text(gameType.subtitle)
                     .font(AppFonts.caption)
-                    .foregroundStyle(.white.opacity(0.82))
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 144)
+            .frame(minHeight: 168)
             .padding(.vertical, AppTheme.spacingLarge)
             .padding(.horizontal, AppTheme.spacingMedium)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge)
-                    .fill(
-                        LinearGradient(
-                            colors: [gameType.color, gameType.color.opacity(0.7)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            )
-            .shadow(color: gameType.color.opacity(0.3), radius: 8, y: 4)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
+                    .strokeBorder(gameType.color, lineWidth: 1)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge - 4, style: .continuous)
+                    .inset(by: 4)
+                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.5)
+            }
+            .shadow(color: ClubhouseTheme.paperShadow, radius: 10, y: 4)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(accessibilityID ?? "")
@@ -49,18 +49,10 @@ struct GameTypeArtwork: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                .fill(.white.opacity(0.18))
-                .overlay(alignment: .topLeading) {
-                    Circle()
-                        .fill(.white.opacity(0.16))
-                        .frame(width: 58, height: 58)
-                        .offset(x: -18, y: -22)
-                }
-                .overlay(alignment: .bottomTrailing) {
-                    Circle()
-                        .fill(.black.opacity(0.12))
-                        .frame(width: 72, height: 72)
-                        .offset(x: 22, y: 26)
+                .fill(ClubhouseTheme.paperSunken)
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
                 }
 
             artwork
@@ -75,10 +67,11 @@ struct GameTypeArtwork: View {
             HStack(spacing: 8) {
                 ForEach(["#", "+", "-"], id: \.self) { symbol in
                     Text(symbol)
-                        .font(.system(size: 24, weight: .heavy, design: .rounded))
-                        .foregroundStyle(.white)
+                        .font(.system(size: 24, weight: .heavy, design: .default))
+                        .foregroundStyle(ClubhouseTheme.ink)
                         .frame(width: 34, height: 34)
-                        .background(.white.opacity(0.18), in: Circle())
+                        .background(ClubhouseTheme.paperCard, in: Circle())
+                        .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
                 }
             }
         case .whatsForDinner:
@@ -93,21 +86,23 @@ struct GameTypeArtwork: View {
                     }
                 }
             }
-            .foregroundStyle(.white)
+            .foregroundStyle(gameType.color)
         case .phase10:
             HStack(spacing: 5) {
                 ForEach(1...10, id: \.self) { phase in
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(phase <= 4 ? .white : .white.opacity(0.35))
-                        .frame(width: 8, height: CGFloat(18 + phase * 2))
+                    Circle()
+                        .fill(phase <= 4 ? ClubhouseTheme.felt : ClubhouseTheme.paperCard)
+                        .frame(width: 11, height: 11)
+                        .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
                 }
             }
             .overlay {
                 Text("10")
-                    .font(.system(size: 24, weight: .black, design: .rounded))
+                    .font(.system(size: 24, weight: .black, design: .default))
                     .foregroundStyle(gameType.color)
                     .padding(8)
-                    .background(.white, in: Circle())
+                    .background(ClubhouseTheme.paperCard, in: Circle())
+                    .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
             }
         }
     }

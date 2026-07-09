@@ -55,7 +55,7 @@ private struct GamePickerHero: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -73,13 +73,18 @@ private struct SetupFeatureChip: View {
 
             Text(title)
                 .font(AppFonts.caption)
+                .foregroundStyle(ClubhouseTheme.ink)
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.78)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 70)
         .padding(.horizontal, 4)
-        .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+        .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+        }
     }
 }
 
@@ -97,7 +102,7 @@ private struct SmartSetupPreview: View {
             FeatureRow(systemImage: "fork.knife.circle.fill", title: "Dinner", detail: "Caller, card values, lowest total wins")
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -116,9 +121,10 @@ private struct FeatureRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.ink)
                 Text(detail)
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
                     .lineLimit(2)
             }
 

@@ -125,17 +125,20 @@ private struct HomeHeader: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("ScoreKeeper")
                         .font(AppFonts.largeTitle)
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [PlayerColors.palette[0], PlayerColors.palette[3], PlayerColors.palette[1]],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .foregroundStyle(ClubhouseTheme.ink)
 
                     Text(subtitle)
                         .font(AppFonts.body)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+
+                    Rectangle()
+                        .fill(ClubhouseTheme.rule)
+                        .frame(width: 132, height: 1)
+                        .overlay(alignment: .trailing) {
+                            Rectangle()
+                                .fill(ClubhouseTheme.brass)
+                                .frame(width: 34, height: 2)
+                        }
                 }
 
                 Spacer()
@@ -146,6 +149,7 @@ private struct HomeHeader: View {
                 } label: {
                     Image(systemName: themeIconName)
                         .font(.title3)
+                        .foregroundStyle(ClubhouseTheme.ink)
                         .frame(width: 44, height: 44)
                         .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
                 }
@@ -177,12 +181,10 @@ private struct HomeDashboardRow: View {
     let playersCount: Int
 
     var body: some View {
-        glassGroup(spacing: AppTheme.spacingSmall) {
-            HStack(spacing: AppTheme.spacingSmall) {
-                HomeMetricCard(title: "Games", value: "\(gamesCount)", systemImage: "trophy.fill", tint: PlayerColors.palette[2])
-                HomeMetricCard(title: "Active", value: "\(activeCount)", systemImage: "play.circle.fill", tint: .green)
-                HomeMetricCard(title: "Players", value: "\(playersCount)", systemImage: "person.2.fill", tint: PlayerColors.palette[1])
-            }
+        HStack(spacing: AppTheme.spacingSmall) {
+            HomeMetricCard(title: "Games", value: "\(gamesCount)", systemImage: "trophy.fill", tint: ClubhouseTheme.brass)
+            HomeMetricCard(title: "Active", value: "\(activeCount)", systemImage: "play.circle.fill", tint: ClubhouseTheme.felt)
+            HomeMetricCard(title: "Players", value: "\(playersCount)", systemImage: "person.2.fill", tint: PlayerColors.palette[1])
         }
     }
 }
@@ -202,14 +204,16 @@ private struct HomeMetricCard: View {
             Text(value)
                 .font(AppFonts.scoreSmall)
                 .monospacedDigit()
+                .contentTransition(.numericText(value: Double(Int(value) ?? 0)))
+                .foregroundStyle(ClubhouseTheme.ink)
 
             Text(title)
                 .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppTheme.spacingSmall)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusSmall)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall)
         .accessibilityElement(children: .combine)
     }
 }
@@ -219,11 +223,8 @@ private struct HomeQuickToolsRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(
-                title: "Game Night Tools",
-                subtitle: "Timer, dice, starter, and undo help are one tap away.",
-                systemImage: "sparkles"
-            )
+            Text("Game Night Tools")
+                .columnHeaderStyle()
 
             glassGroup(spacing: AppTheme.spacingSmall) {
                 HStack(spacing: AppTheme.spacingSmall) {
@@ -248,7 +249,8 @@ private struct HomeToolButton: View {
                 Image(systemName: tool.systemImage)
                     .font(.title3)
                     .frame(width: 36, height: 36)
-                    .background(tool.tint.opacity(0.16), in: Circle())
+                    .background(ClubhouseTheme.paperCard.opacity(0.74), in: Circle())
+                    .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
                     .foregroundStyle(tool.tint)
 
                 Text(tool.title)
@@ -275,13 +277,16 @@ private struct HomeResumeBanner: View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 HStack {
-                    Image(systemName: "play.circle.fill")
-                        .foregroundStyle(.green)
                     Text("Resume Game")
-                        .font(AppFonts.headline)
+                        .font(AppFonts.title)
+                        .foregroundStyle(ClubhouseTheme.ink)
                     Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundStyle(.secondary)
+                    Label("Resume", systemImage: "play.fill")
+                        .font(AppFonts.headline)
+                        .foregroundStyle(ClubhouseTheme.onFelt)
+                        .padding(.horizontal, AppTheme.spacingMedium)
+                        .frame(minHeight: 44)
+                        .background(ClubhouseTheme.felt, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
                 }
 
                 HStack(spacing: AppTheme.spacingSmall) {
@@ -289,24 +294,28 @@ private struct HomeResumeBanner: View {
                         .foregroundStyle(session.gameType.color)
                     Text(session.gameType.displayName)
                         .font(AppFonts.body)
-                    Text("·").foregroundStyle(.secondary)
+                    Text("/").foregroundStyle(ClubhouseTheme.inkMuted)
                     Text("\(session.players.count) players")
                         .font(AppFonts.body)
-                        .foregroundStyle(.secondary)
-                    Text("·").foregroundStyle(.secondary)
-                    Text("Round \(session.sortedRounds.count)")
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                    Text("/").foregroundStyle(ClubhouseTheme.inkMuted)
+                    Text("Round \(session.currentRoundNumber)")
                         .font(AppFonts.body)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
-                HStack(spacing: AppTheme.spacingSmall) {
-                    ForEach(session.players, id: \.id) { player in
-                        PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small, showName: false)
+                VStack(spacing: 0) {
+                    ForEach(Array(session.players.prefix(4).enumerated()), id: \.element.id) { _, player in
+                        LedgerRow(
+                            player: player,
+                            score: player.totalScore(in: session),
+                            isLeader: false
+                        )
                     }
                 }
             }
             .padding(AppTheme.spacingMedium)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier("resume_game_card")
@@ -322,11 +331,13 @@ private struct HomeRecentGamesSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             HStack {
-                AppSectionHeader(title: "Recent Games", systemImage: "clock")
+                Text("Recent Games")
+                    .columnHeaderStyle()
                 Spacer()
                 if !sessions.isEmpty {
                     Button("See All", action: onSeeAll)
                         .font(AppFonts.body)
+                        .foregroundStyle(ClubhouseTheme.felt)
                         .accessibilityIdentifier("see_all_button")
                 }
             }
@@ -360,23 +371,23 @@ private struct RecentGameRow: View {
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: session.gameType.icon)
-                .font(.title3)
-                .foregroundStyle(session.gameType.color)
-                .frame(width: 32)
-
             VStack(alignment: .leading, spacing: 2) {
-                Text(session.gameType.displayName)
-                    .font(AppFonts.body)
+                HStack {
+                    Text(session.gameType.displayName)
+                        .font(AppFonts.headline)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                    Spacer()
+                    StampBadge(text: "Final")
+                }
 
                 if let resultText {
                     Text(resultText)
                         .font(AppFonts.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ClubhouseTheme.brass)
                 } else {
                     Text("\(session.players.count) players")
                         .font(AppFonts.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
             }
 
@@ -384,8 +395,7 @@ private struct RecentGameRow: View {
 
             if let date = session.completedAt {
                 Text(date, style: .date)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .columnHeaderStyle()
             }
 
             Image(systemName: "chevron.right")
@@ -393,7 +403,8 @@ private struct RecentGameRow: View {
                 .foregroundStyle(.tertiary)
         }
         .padding(AppTheme.spacingSmall)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
+        .rotationEffect(.degrees(session.id.uuidString.hashValue.isMultiple(of: 2) ? 0.7 : -0.7))
     }
 }
 
@@ -407,15 +418,13 @@ private struct HomeStatsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "Stats", subtitle: "Compare players across completed games", systemImage: "chart.bar")
+            Text("Stats")
+                .columnHeaderStyle()
 
             Button {
                 router.push(.headToHead)
             } label: {
-                Label("Head to Head", systemImage: "person.2.slash")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(AppTheme.spacingMedium)
-                    .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+                QuietLinkRow(title: "Head to Head", systemImage: "person.2.slash")
             }
             .buttonStyle(PressableButtonStyle())
             .accessibilityIdentifier("head_to_head_button")
@@ -429,9 +438,11 @@ private struct HomeStatsSection: View {
                             } label: {
                                 Label(name, systemImage: "person.crop.circle")
                                     .font(AppFonts.body)
+                                    .foregroundStyle(ClubhouseTheme.ink)
                                     .padding(.horizontal, AppTheme.spacingSmall)
                                     .frame(minHeight: 42)
-                                    .background(.regularMaterial, in: Capsule())
+                                    .background(ClubhouseTheme.paperCard, in: Capsule())
+                                    .overlay { Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1) }
                             }
                             .buttonStyle(PressableButtonStyle())
                             .accessibilityIdentifier("player_stats_\(name)")
@@ -440,6 +451,28 @@ private struct HomeStatsSection: View {
                 }
                 .accessibilityIdentifier("player_stats_entry_list")
             }
+        }
+    }
+}
+
+private struct QuietLinkRow: View {
+    let title: String
+    let systemImage: String
+
+    var body: some View {
+        HStack {
+            Label(title, systemImage: systemImage)
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.ink)
+            Spacer()
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, AppTheme.spacingSmall)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
         }
     }
 }
@@ -504,10 +537,11 @@ private struct HomeToolSheet: View {
         NavigationStack {
             VStack(spacing: AppTheme.spacingLarge) {
                 Image(systemName: tool.systemImage)
-                    .font(.system(size: 52, weight: .semibold, design: .rounded))
+                    .font(.system(size: 52, weight: .semibold, design: .default))
                     .foregroundStyle(tool.tint)
                     .frame(width: 96, height: 96)
-                    .background(tool.tint.opacity(0.16), in: Circle())
+                    .background(ClubhouseTheme.paperSunken, in: Circle())
+                    .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
                     .accessibilityHidden(true)
 
                 VStack(spacing: AppTheme.spacingSmall) {
@@ -515,7 +549,7 @@ private struct HomeToolSheet: View {
                         .font(AppFonts.title)
                     Text(toolMessage)
                         .font(AppFonts.body)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                         .multilineTextAlignment(.center)
                 }
 
@@ -571,8 +605,9 @@ private struct ToolSheetContent: View {
         case .dice:
             VStack(spacing: AppTheme.spacingSmall) {
                 Text("\(dieRoll)")
-                    .font(.system(size: 72, weight: .bold, design: .rounded))
+                    .font(.system(size: 72, weight: .heavy, design: .default))
                     .monospacedDigit()
+                    .foregroundStyle(ClubhouseTheme.ink)
                 AppActionButton(role: .primary(tool.tint)) {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
                         dieRoll = Int.random(in: 1...6)

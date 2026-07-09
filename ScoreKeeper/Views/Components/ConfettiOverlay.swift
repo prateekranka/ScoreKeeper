@@ -14,7 +14,7 @@ struct ConfettiPiece: Identifiable {
 struct ConfettiOverlay: View {
     @State private var pieces: [ConfettiPiece] = []
     @State private var animationProgress: CGFloat = 0
-    let colors: [Color] = PlayerColors.palette + [.white, .pink]
+    let colors: [Color] = PlayerColors.palette + [ClubhouseTheme.paperCard, ClubhouseTheme.brass, ClubhouseTheme.lacquer]
 
     var body: some View {
         TimelineView(.animation) { timeline in

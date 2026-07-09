@@ -49,28 +49,38 @@ struct Phase10ScoringView: View {
 
             ForEach(session.players, id: \.id) { player in
                 let currentPhase = engine.currentPhase(for: player.id, in: session)
-                HStack(spacing: AppTheme.spacingSmall) {
-                    PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small, showName: false)
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: AppTheme.spacingSmall) {
+                        PlayerColorPip(colorIndex: player.colorIndex)
 
-                    Text(player.name)
-                        .font(AppFonts.body)
+                        Text(player.name)
+                            .font(AppFonts.body)
+                            .foregroundStyle(ClubhouseTheme.ink)
 
-                    Spacer()
+                        Spacer()
 
-                    Text("Phase \(currentPhase)/10")
-                        .font(AppFonts.scoreSmall)
-                        .monospacedDigit()
-                        .foregroundStyle(currentPhase >= 10 ? .green : GameType.phase10.color)
+                        Text("Phase \(currentPhase)/10")
+                            .font(AppFonts.scoreSmall)
+                            .monospacedDigit()
+                            .contentTransition(.numericText(value: Double(currentPhase)))
+                            .foregroundStyle(currentPhase >= 10 ? ClubhouseTheme.felt : ClubhouseTheme.ink)
 
-                    if currentPhase >= 10 {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
+                        if currentPhase >= 10 {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(ClubhouseTheme.felt)
+                        }
                     }
+
+                    PegBoardStrip(currentPhase: currentPhase)
+                }
+                .padding(.vertical, AppTheme.spacingSmall)
+                .overlay(alignment: .bottom) {
+                    Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
                 }
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private var roundEntrySection: some View {
@@ -99,19 +109,19 @@ struct Phase10ScoringView: View {
             if session.phase10SkipOnFail {
                 Label("Phase \(currentPhase + 1) completed", systemImage: "checkmark.circle.fill")
                     .font(AppFonts.caption)
-                    .foregroundStyle(.green)
+                    .foregroundStyle(ClubhouseTheme.felt)
             } else {
                 Toggle(isOn: completedPhaseBinding(for: player)) {
                     Text("Phase \(currentPhase + 1)")
                         .font(AppFonts.caption)
                 }
                 .toggleStyle(.switch)
-                .tint(.green)
+                .tint(ClubhouseTheme.felt)
             }
         } else {
             Label("All phases done", systemImage: "checkmark.seal.fill")
                 .font(AppFonts.caption)
-                .foregroundStyle(.green)
+                .foregroundStyle(ClubhouseTheme.felt)
         }
     }
 
@@ -170,5 +180,24 @@ struct Phase10ScoringView: View {
         session.winnerID = engine.winners(session: session).first
         try? modelContext.save()
         router.push(.gameOver(session.persistentModelID))
+    }
+}
+
+private struct PegBoardStrip: View {
+    let currentPhase: Int
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(1...10, id: \.self) { phase in
+                Circle()
+                    .fill(phase < currentPhase ? ClubhouseTheme.felt : phase == currentPhase ? ClubhouseTheme.brass : ClubhouseTheme.paperSunken)
+                    .frame(width: 13, height: 13)
+                    .overlay {
+                        Circle()
+                            .stroke(ClubhouseTheme.rule, lineWidth: 1)
+                    }
+                    .accessibilityHidden(true)
+            }
+        }
     }
 }

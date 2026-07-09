@@ -20,11 +20,9 @@ struct GameOverView: View {
                         WinnerHeroSection(session: session, winners: winners, sectionsVisible: sectionsVisible)
                             .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                        glassGroup(spacing: AppTheme.spacingLarge) {
-                            VStack(spacing: AppTheme.spacingLarge) {
-                                GameRecapPanel(session: session, engine: engine)
-                                StandingsList(title: "Final Scores", standings: session.standings(using: engine))
-                            }
+                        VStack(spacing: AppTheme.spacingLarge) {
+                            GameRecapPanel(session: session, engine: engine)
+                            StandingsList(title: "Final Scores", standings: session.standings(using: engine))
                         }
                         .staggeredEntrance(visible: sectionsVisible, index: 1)
 
@@ -86,7 +84,7 @@ private struct WinnerHeroSection: View {
         VStack(spacing: AppTheme.spacingSmall) {
             Image(systemName: winners.isEmpty ? "flag.checkered" : "trophy.fill")
                 .font(AppFonts.scoreDisplay)
-                .foregroundStyle(winners.isEmpty ? session.gameType.color : .yellow)
+                .foregroundStyle(winners.isEmpty ? session.gameType.color : ClubhouseTheme.brass)
                 .accessibilityHidden(true)
                 .scaleEffect(sectionsVisible ? 1 : 0.5)
                 .animation(.spring(response: 0.6, dampingFraction: 0.5).delay(0.2), value: sectionsVisible)
@@ -95,7 +93,9 @@ private struct WinnerHeroSection: View {
 
             Text(session.gameType.displayName)
                 .font(AppFonts.body)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+
+            StampBadge(text: "Winner")
         }
         .padding(.top, AppTheme.spacingXLarge)
         .accessibilityElement(children: .combine)
@@ -106,7 +106,7 @@ private struct WinnerHeroSection: View {
         if winners.count == 1, let winner = winners.first {
             Text("\(winner.name) wins!")
                 .font(AppFonts.largeTitle)
-                .foregroundStyle(PlayerColors.color(for: winner.colorIndex))
+                .foregroundStyle(ClubhouseTheme.brass)
                 .multilineTextAlignment(.center)
                 .accessibilityIdentifier("winner_text")
         } else if winners.count > 1 {
@@ -179,7 +179,7 @@ private struct GameRecapPanel: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -198,14 +198,20 @@ private struct RecapMetric: View {
             Text(value)
                 .font(AppFonts.scoreSmall)
                 .monospacedDigit()
+                .contentTransition(.numericText(value: Double(Int(value) ?? 0)))
+                .foregroundStyle(ClubhouseTheme.ink)
 
             Text(title)
                 .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppTheme.spacingSmall)
-        .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+        .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+        }
         .accessibilityElement(children: .combine)
     }
 }
@@ -222,7 +228,11 @@ private struct ScoreSparkline: View {
 
             ZStack(alignment: .bottomLeading) {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall)
-                    .fill(.thinMaterial)
+                    .fill(ClubhouseTheme.paperSunken)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall)
+                            .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                    }
 
                 ForEach(series) { playerSeries in
                     Path { path in

@@ -18,16 +18,23 @@ struct GameHistoryListView: View {
                 )
             } else {
                 List {
-                    ForEach(completedGames) { session in
-                        Button {
-                            router.push(.gameDetail(session.persistentModelID))
-                        } label: {
-                            gameRow(session)
+                    Section {
+                        ForEach(completedGames) { session in
+                            Button {
+                                router.push(.gameDetail(session.persistentModelID))
+                            } label: {
+                                gameRow(session)
+                            }
+                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                            .listRowBackground(Color.clear)
                         }
+                        .onDelete(perform: deleteGames)
+                    } header: {
+                        Text("Archive")
+                            .columnHeaderStyle()
                     }
-                    .onDelete(perform: deleteGames)
                 }
-                .listStyle(.insetGrouped)
+                .listStyle(.plain)
                 .scrollContentBackground(.hidden)
                 .accessibilityIdentifier("game_history_list")
             }
@@ -37,37 +44,41 @@ struct GameHistoryListView: View {
     }
 
     private func gameRow(_ session: GameSession) -> some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: session.gameType.icon)
-                .font(.title3)
-                .foregroundStyle(session.gameType.color)
-                .frame(width: 32)
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(session.gameType.displayName)
+                        .font(AppFonts.headline)
+                        .foregroundStyle(ClubhouseTheme.ink)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(session.gameType.displayName)
-                    .font(AppFonts.body)
+                    if let date = session.completedAt {
+                        Text(date, style: .date)
+                            .columnHeaderStyle()
+                    }
+                }
+                Spacer()
+                StampBadge(text: "Final")
+            }
 
-                HStack(spacing: 4) {
+            HStack(spacing: 4) {
+                VStack(alignment: .leading, spacing: 2) {
                     if let resultText = resultText(for: session) {
                         Text(resultText)
+                            .foregroundStyle(ClubhouseTheme.brass)
                     }
-                    Text("·")
-                    Text("\(session.players.count) players")
-                    Text("·")
-                    Text("\(session.rounds.count) rounds")
+                    Text("\(session.players.count) players / \(session.rounds.count) rounds")
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
                 .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
-            }
 
-            Spacer()
-
-            if let date = session.completedAt {
-                Text(date, style: .date)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
+        .padding(AppTheme.spacingSmall)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
         .accessibilityElement(children: .combine)
     }
 

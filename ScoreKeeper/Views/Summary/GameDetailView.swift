@@ -45,13 +45,17 @@ private struct DetailHeader: View {
 
             Text(session.gameType.displayName)
                 .font(AppFonts.title)
+                .foregroundStyle(ClubhouseTheme.ink)
 
             if let date = session.completedAt {
                 Text(date, style: .date)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .columnHeaderStyle()
             }
+
+            StampBadge(text: "Final")
         }
+        .padding(AppTheme.spacingLarge)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
         .accessibilityElement(children: .combine)
     }
 }
@@ -69,7 +73,7 @@ private struct RoundBreakdownSection: View {
                 }
             }
             .padding(AppTheme.spacingMedium)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
         }
     }
 }
@@ -81,8 +85,7 @@ private struct RoundCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Round \(round.roundNumber)")
-                .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .columnHeaderStyle()
 
             ForEach(players, id: \.id) { player in
                 HStack(spacing: AppTheme.spacingSmall) {
@@ -93,16 +96,23 @@ private struct RoundCard: View {
 
                     Text(player.name)
                         .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.ink)
 
                     Spacer()
 
                     Text("\(round.entry(for: player.id)?.points ?? 0)")
                         .font(AppFonts.caption)
                         .monospacedDigit()
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .contentTransition(.numericText(value: Double(round.entry(for: player.id)?.points ?? 0)))
                 }
             }
         }
         .padding(AppTheme.spacingSmall)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+        .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+        }
     }
 }

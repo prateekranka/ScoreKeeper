@@ -39,6 +39,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                             } label: {
                                 Label("Undo Last", systemImage: "arrow.uturn.backward")
                                     .font(AppFonts.body)
+                                    .foregroundStyle(ClubhouseTheme.ink)
                                     .frame(maxWidth: .infinity)
                                     .frame(minHeight: 44)
                                     .appGlass(cornerRadius: AppTheme.cornerRadiusSmall)
@@ -125,7 +126,7 @@ private struct ScoringToolsBar: View {
         HStack(spacing: AppTheme.spacingSmall) {
             Label("\(session.gameType.displayName) · Round \(session.currentRoundNumber)", systemImage: session.gameType.icon)
                 .font(AppFonts.body)
-                .foregroundStyle(session.gameType.color)
+                .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
 
@@ -137,9 +138,10 @@ private struct ScoringToolsBar: View {
                 } label: {
                     Image(systemName: tool.systemImage)
                         .font(.headline)
-                        .foregroundStyle(tool.tint)
-                        .frame(width: 36, height: 36)
-                        .background(.regularMaterial, in: Circle())
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .frame(width: 40, height: 40)
+                        .background(ClubhouseTheme.paperCard.opacity(0.72), in: Circle())
+                        .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
                 }
                 .buttonStyle(PressableButtonStyle())
                 .accessibilityLabel(tool.title)
@@ -192,8 +194,9 @@ private struct ScoringToolSheet: View {
         case .timer:
             VStack(spacing: AppTheme.spacingMedium) {
                 Text(formattedTimer)
-                    .font(.system(size: 64, weight: .bold, design: .rounded))
+                    .font(.system(size: 64, weight: .heavy, design: .default))
                     .monospacedDigit()
+                    .foregroundStyle(ClubhouseTheme.ink)
 
                 HStack(spacing: AppTheme.spacingSmall) {
                     timerButton("30s", seconds: 30)
@@ -204,8 +207,9 @@ private struct ScoringToolSheet: View {
         case .dice:
             VStack(spacing: AppTheme.spacingMedium) {
                 Text("\(dieRoll)")
-                    .font(.system(size: 72, weight: .bold, design: .rounded))
+                    .font(.system(size: 72, weight: .heavy, design: .default))
                     .monospacedDigit()
+                    .foregroundStyle(ClubhouseTheme.ink)
                 AppActionButton(role: .primary(tool.tint)) {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
                         dieRoll = Int.random(in: 1...6)
@@ -236,13 +240,15 @@ private struct ScoringToolSheet: View {
                         HStack {
                             Text("Round \(round.roundNumber)")
                                 .font(AppFonts.body)
+                                .foregroundStyle(ClubhouseTheme.ink)
                             Spacer()
                             Text(round.entries.map(\.points).reduce(0, +), format: .number)
                                 .font(AppFonts.scoreSmall)
                                 .monospacedDigit()
+                                .foregroundStyle(ClubhouseTheme.ink)
                         }
                         .padding(AppTheme.spacingSmall)
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+                        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall)
                     }
                 }
             }
@@ -262,7 +268,12 @@ private struct ScoringToolSheet: View {
         .font(AppFonts.body)
         .frame(maxWidth: .infinity)
         .frame(minHeight: 44)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+        .foregroundStyle(ClubhouseTheme.ink)
+        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+        }
         .buttonStyle(PressableButtonStyle())
     }
 }
@@ -273,34 +284,33 @@ private struct ToolArtwork: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                .fill(tool.tint.opacity(0.18))
-                .overlay(alignment: .bottomTrailing) {
-                    Circle()
-                        .fill(tool.tint.opacity(0.25))
-                        .frame(width: 72, height: 72)
-                        .offset(x: 20, y: 24)
+                .fill(ClubhouseTheme.paperSunken)
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
                 }
 
             if tool == .starter {
                 HStack(spacing: 8) {
                     ForEach(0..<3, id: \.self) { index in
                         Circle()
-                            .fill(index == 1 ? tool.tint : .white.opacity(0.75))
+                            .fill(index == 1 ? tool.tint : ClubhouseTheme.paperCard)
                             .frame(width: index == 1 ? 34 : 24, height: index == 1 ? 34 : 24)
+                            .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
                     }
                 }
                 .overlay {
                     Image(systemName: "shuffle")
                         .font(.system(size: 32, weight: .bold))
-                        .foregroundStyle(.white)
-                        .shadow(radius: 4)
+                        .foregroundStyle(ClubhouseTheme.onFelt)
                 }
             } else {
                 Image(systemName: tool.systemImage)
-                    .font(.system(size: 48, weight: .semibold, design: .rounded))
+                    .font(.system(size: 48, weight: .semibold, design: .default))
                     .foregroundStyle(tool.tint)
                     .frame(width: 72, height: 72)
-                    .background(tool.tint.opacity(0.16), in: Circle())
+                    .background(ClubhouseTheme.paperCard, in: Circle())
+                    .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
             }
         }
     }
@@ -347,16 +357,17 @@ struct RoundBanner: View {
             Text(title)
                 .font(AppFonts.headline)
                 .monospacedDigit()
+                .foregroundStyle(ClubhouseTheme.ink)
 
             Spacer()
 
             Text(subtitle)
                 .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
                 .multilineTextAlignment(.trailing)
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium)
     }
 }
 
@@ -381,7 +392,7 @@ struct ScoreEntryRow<Accessory: View>: View {
                 if let title {
                     Text(title)
                         .font(AppFonts.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
                 Spacer()
@@ -396,7 +407,7 @@ struct ScoreEntryRow<Accessory: View>: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
         .accessibilityElement(children: .contain)
     }
 }
@@ -427,8 +438,7 @@ struct RoundHistoryStrip: View {
     private func roundCard(_ round: Round) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Round \(round.roundNumber)")
-                .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .columnHeaderStyle()
 
             ForEach(session.players, id: \.id) { player in
                 HStack(spacing: 6) {
@@ -439,6 +449,7 @@ struct RoundHistoryStrip: View {
 
                     Text(player.name)
                         .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
 
                     Spacer(minLength: AppTheme.spacingSmall)
@@ -446,12 +457,13 @@ struct RoundHistoryStrip: View {
                     Text("\(round.entry(for: player.id)?.points ?? 0)")
                         .font(AppFonts.caption)
                         .monospacedDigit()
+                        .foregroundStyle(ClubhouseTheme.ink)
                 }
             }
         }
         .padding(AppTheme.spacingSmall)
         .frame(width: 132, alignment: .leading)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall)
         .accessibilityLabel("Round \(round.roundNumber)")
     }
 }

@@ -54,7 +54,7 @@ struct WhatsForDinnerScoringView: View {
 
                                 if callerID == player.id {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(.green)
+                                        .foregroundStyle(ClubhouseTheme.felt)
                                         .font(.caption)
                                         .transition(.scale.combined(with: .opacity))
                                 }
@@ -75,7 +75,7 @@ struct WhatsForDinnerScoringView: View {
         }
         .padding(AppTheme.spacingMedium)
         .animation(.easeOut, value: callerID)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private var playerHandsSection: some View {
@@ -92,7 +92,7 @@ struct WhatsForDinnerScoringView: View {
                     if callerID == player.id {
                         Label("Caller", systemImage: "checkmark.circle.fill")
                             .font(AppFonts.caption)
-                            .foregroundStyle(.green)
+                            .foregroundStyle(ClubhouseTheme.felt)
                     } else {
                         EmptyView()
                     }

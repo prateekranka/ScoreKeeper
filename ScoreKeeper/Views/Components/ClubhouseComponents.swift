@@ -1,0 +1,208 @@
+import SwiftUI
+
+struct ScorecardSurface<Content: View>: View {
+    var cornerRadius: CGFloat = AppTheme.cornerRadiusMedium
+    var isInteractive = false
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        content
+            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+            }
+            .shadow(color: ClubhouseTheme.paperShadow, radius: isInteractive ? 12 : 10, y: isInteractive ? 5 : 4)
+    }
+}
+
+extension View {
+    func scorecardSurface(cornerRadius: CGFloat = AppTheme.cornerRadiusMedium, isInteractive: Bool = false) -> some View {
+        ScorecardSurface(cornerRadius: cornerRadius, isInteractive: isInteractive) {
+            self
+        }
+    }
+}
+
+struct LedgerRow: View {
+    let player: Player
+    let score: Int
+    var rank: Int?
+    var subtitle: String?
+    var isLeader = false
+    var isHighlighted = false
+    var trailingLabel: String?
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            if let rank {
+                Text("\(rank)")
+                    .font(AppFonts.columnHeader)
+                    .monospacedDigit()
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .frame(width: 24, alignment: .leading)
+            }
+
+            PlayerColorPip(colorIndex: player.colorIndex)
+
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 5) {
+                    Text(player.name)
+                        .font(AppFonts.body)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .lineLimit(1)
+
+                    if isLeader {
+                        BrassCrown()
+                    }
+                }
+
+                if let subtitle {
+                    Text(subtitle)
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer(minLength: AppTheme.spacingSmall)
+
+            if let trailingLabel {
+                Text(trailingLabel)
+                    .columnHeaderStyle()
+            }
+
+            Text("\(score)")
+                .font(AppFonts.scoreSmall)
+                .monospacedDigit()
+                .contentTransition(.numericText(value: Double(score)))
+                .foregroundStyle(isLeader ? ClubhouseTheme.brass : ClubhouseTheme.ink)
+                .frame(minWidth: 48, alignment: .trailing)
+        }
+        .padding(.vertical, AppTheme.spacingSmall)
+        .padding(.horizontal, AppTheme.spacingSmall)
+        .background(isHighlighted ? PlayerColors.lightColor(for: player.colorIndex) : Color.clear)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(ClubhouseTheme.rule)
+                .frame(height: 1)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+struct PlayerColorPip: View {
+    let colorIndex: Int
+    var size: CGFloat = 14
+
+    var body: some View {
+        Circle()
+            .fill(PlayerColors.color(for: colorIndex))
+            .frame(width: size, height: size)
+            .overlay {
+                Circle()
+                    .stroke(ClubhouseTheme.paperCard, lineWidth: 2)
+            }
+            .overlay {
+                Circle()
+                    .stroke(ClubhouseTheme.rule, lineWidth: 1)
+            }
+            .accessibilityHidden(true)
+    }
+}
+
+struct StampBadge: View {
+    let text: String
+
+    var body: some View {
+        Text(text.uppercased())
+            .font(AppFonts.columnHeader)
+            .tracking(1.8)
+            .foregroundStyle(ClubhouseTheme.lacquer.opacity(0.85))
+            .padding(.horizontal, 9)
+            .padding(.vertical, 5)
+            .overlay {
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .strokeBorder(ClubhouseTheme.lacquer.opacity(0.85), lineWidth: 1.5)
+            }
+            .rotationEffect(.degrees(-4))
+            .opacity(0.92)
+            .accessibilityLabel(text)
+    }
+}
+
+struct BrassCrown: View {
+    var body: some View {
+        Image(systemName: "crown.fill")
+            .font(.caption2)
+            .foregroundStyle(ClubhouseTheme.brass)
+            .accessibilityLabel("Leader")
+    }
+}
+
+struct PaperChip<Content: View>: View {
+    var isSelected = false
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        content
+            .font(AppFonts.caption)
+            .foregroundStyle(isSelected ? ClubhouseTheme.onFelt : ClubhouseTheme.ink)
+            .padding(.horizontal, 10)
+            .frame(minHeight: 36)
+            .background(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.paperCard, in: Capsule())
+            .overlay {
+                Capsule()
+                    .strokeBorder(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.rule, lineWidth: 1)
+            }
+    }
+}
+
+struct PipStepper: View {
+    @Binding var value: Int
+    var range: ClosedRange<Int> = -9999...9999
+    var step = 1
+    var identifierPrefix = ""
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
+
+            Text("\(value)")
+                .font(AppFonts.scoreMedium)
+                .monospacedDigit()
+                .contentTransition(.numericText(value: Double(value)))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .frame(minWidth: 60)
+                .accessibilityLabel("Score \(value)")
+
+            stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
+        }
+    }
+
+    private func stepButton(systemImage: String, delta: Int, identifier: String, label: String) -> some View {
+        Button {
+            apply(delta)
+        } label: {
+            Image(systemName: systemImage)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .frame(width: 56, height: 56)
+                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                }
+        }
+        .buttonStyle(ClubhousePressableButtonStyle())
+        .accessibilityIdentifier(identifierPrefix + identifier)
+        .accessibilityLabel(label)
+    }
+
+    private func apply(_ delta: Int) {
+        let newValue = value + delta
+        if range.contains(newValue) {
+            value = newValue
+        }
+    }
+}
