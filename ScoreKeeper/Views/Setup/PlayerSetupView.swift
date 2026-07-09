@@ -86,9 +86,11 @@ struct PlayerSetupView: View {
             }
             .accessibilityIdentifier("start_game_button")
             .disabled(!canStart)
-            .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.vertical, AppTheme.spacingSmall)
-            .background(.ultraThinMaterial)
+            .padding(.horizontal, AppTheme.spacingSmall)
+            .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.bottom, AppTheme.spacingSmall)
         }
         .sheet(isPresented: $showRoster) {
             PlayerRosterSheet { names in addRosterNames(names) }

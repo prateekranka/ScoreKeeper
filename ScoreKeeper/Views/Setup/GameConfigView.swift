@@ -23,9 +23,11 @@ struct GameConfigView: View {
         .navigationTitle("Game Settings")
         .safeAreaInset(edge: .bottom) {
             startButton
-                .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.vertical, AppTheme.spacingSmall)
-                .background(.ultraThinMaterial)
+                .padding(.horizontal, AppTheme.spacingSmall)
+                .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+                .padding(.horizontal, AppTheme.spacingMedium)
+                .padding(.bottom, AppTheme.spacingSmall)
         }
         .onAppear {
             winCondition = gameType.defaultWinCondition

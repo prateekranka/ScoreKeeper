@@ -22,17 +22,17 @@ final class ScoreKeeperUITests: XCTestCase {
     func testOnboardingSkipAndStartFlows() throws {
         launchOnboarding()
 
-        XCTAssertTrue(app.staticTexts["Score every round fast"].waitForExistence(timeout: 3))
+        assertOnboardingTitle("Put the score pad down.")
         app.buttons["onboarding_skip_button"].tap()
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
 
         launchOnboarding()
 
-        XCTAssertTrue(app.staticTexts["Score every round fast"].waitForExistence(timeout: 3))
+        assertOnboardingTitle("Put the score pad down.")
         app.buttons["onboarding_primary_button"].tap()
-        XCTAssertTrue(app.staticTexts["Set up the table in seconds"].waitForExistence(timeout: 2))
+        assertOnboardingTitle("Set up in seconds.")
         app.buttons["onboarding_primary_button"].tap()
-        XCTAssertTrue(app.staticTexts["Keep the night going"].waitForExistence(timeout: 2))
+        assertOnboardingTitle("Every night becomes history.")
         app.buttons["onboarding_primary_button"].tap()
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
     }
@@ -310,6 +310,12 @@ final class ScoreKeeperUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments = ["-in-memory-store", "-reset-onboarding"]
         app.launch()
+    }
+
+    private func assertOnboardingTitle(_ title: String) {
+        let pageTitle = app.staticTexts["onboarding_page_title"]
+        XCTAssertTrue(pageTitle.waitForExistence(timeout: 3))
+        XCTAssertEqual(pageTitle.label, title)
     }
 
     private func navigateToGenericScoring(playerNames: [String]) {

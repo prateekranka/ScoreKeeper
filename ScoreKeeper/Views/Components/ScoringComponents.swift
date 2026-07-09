@@ -62,7 +62,9 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                     .padding(.horizontal, AppTheme.spacingMedium)
                     .padding(.top, AppTheme.spacingSmall)
                     .padding(.bottom, AppTheme.spacingSmall)
-                    .background(.ultraThinMaterial)
+                    .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+                    .padding(.horizontal, AppTheme.spacingMedium)
+                    .padding(.bottom, AppTheme.spacingSmall)
                 }
             }
         }
@@ -149,7 +151,9 @@ private struct ScoringToolsBar: View {
         }
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.vertical, AppTheme.spacingSmall)
-        .background(.ultraThinMaterial)
+        .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .padding(.top, AppTheme.spacingSmall)
     }
 }
 
@@ -334,7 +338,9 @@ struct ScoreboardHeader: View {
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.vertical, AppTheme.spacingSmall)
         }
-        .background(.ultraThinMaterial)
+        .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .padding(.vertical, AppTheme.spacingSmall)
     }
 
     private var leadingPlayers: [UUID] {
