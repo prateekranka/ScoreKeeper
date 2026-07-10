@@ -2,15 +2,17 @@ import SwiftUI
 
 struct PlayerColors {
     static let palette: [Color] = [
-        Color(light: 0xC0554A, dark: 0xD87369), // Lacquer
-        Color(light: 0x2E6B52, dark: 0x4B8B70), // Pine
-        Color(light: 0xA9843B, dark: 0xC7A95E), // Brass
-        Color(light: 0x34557E, dark: 0x5878A0), // Navy
-        Color(light: 0xBC7434, dark: 0xD79254), // Terracotta
-        Color(light: 0x6E4B72, dark: 0x906D94), // Plum
-        Color(light: 0x3F7C86, dark: 0x62A0AA), // Slate teal
-        Color(light: 0x8E4A5B, dark: 0xAD6E7D), // Rosewood
+        Color(light: 0x5D538F, dark: 0xE9A63A),
+        Color(light: 0x2F5E93, dark: 0xE0662E),
+        Color(light: 0x3F6630, dark: 0xA8B060),
+        Color(light: 0x8A4E2A, dark: 0xD89B6A),
+        Color(light: 0x7A6210, dark: 0xF2C94C),
+        Color(light: 0x555B60, dark: 0xC9B8A0),
+        Color(light: 0x7C3A55, dark: 0xC97B8E),
+        Color(light: 0x2F6E6A, dark: 0x7FBDB5),
     ]
+
+    private static let glyphs = ["◆", "●", "▲", "■", "★", "✚", "◗", "⬢"]
 
     static func color(for index: Int) -> Color {
         palette[index % palette.count]
@@ -18,5 +20,9 @@ struct PlayerColors {
 
     static func lightColor(for index: Int) -> Color {
         color(for: index).opacity(0.12)
+    }
+
+    static func glyph(for index: Int) -> String {
+        glyphs[index % glyphs.count]
     }
 }

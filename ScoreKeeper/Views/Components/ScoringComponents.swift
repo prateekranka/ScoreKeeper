@@ -43,7 +43,11 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                                     .foregroundStyle(ClubhouseTheme.ink)
                                     .frame(maxWidth: .infinity)
                                     .frame(minHeight: 44)
-                                    .appGlass(cornerRadius: AppTheme.cornerRadiusSmall)
+                                    .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                            .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 2)
+                                    }
                             }
                             .buttonStyle(PressableButtonStyle())
                             .disabled(session.sortedRounds.isEmpty)
@@ -127,11 +131,12 @@ private struct ScoringToolsBar: View {
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Label("\(session.gameType.displayName) · Round \(session.currentRoundNumber)", systemImage: session.gameType.icon)
+            Label("Round \(session.currentRoundNumber)", systemImage: session.gameType.icon)
                 .font(AppFonts.body)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
+                .accessibilityLabel("\(session.gameType.displayName), Round \(session.currentRoundNumber)")
 
             Spacer()
 
@@ -228,6 +233,7 @@ private struct ScoringToolSheet: View {
                 Text(selectedStarter?.name ?? "Pick from \(session.players.count.quantityText("player"))")
                     .font(AppFonts.scoreSmall)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                 AppActionButton(role: .primary(tool.tint)) {
                     withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
                         selectedStarter = session.players.randomElement()
@@ -459,6 +465,8 @@ struct RoundHistoryStrip: View {
                         .fill(PlayerColors.color(for: player.colorIndex))
                         .frame(width: 9, height: 9)
                         .accessibilityHidden(true)
+
+                    PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
 
                     Text(player.name)
                         .font(AppFonts.caption)

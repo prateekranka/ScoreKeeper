@@ -491,6 +491,128 @@ final class ScoreKeeperUITests: XCTestCase {
         snap("14-review-ask")
     }
 
+    func testScreenshotTourExtended() throws {
+        guard let dir = ProcessInfo.processInfo.environment["SCREENSHOT_DIR"] else {
+            throw XCTSkip("SCREENSHOT_DIR not set")
+        }
+        try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+
+        func snap(_ name: String) {
+            let png = XCUIScreen.main.screenshot().pngRepresentation
+            try? png.write(to: URL(fileURLWithPath: "\(dir)/\(name).png"))
+        }
+
+        func dismissSheet() {
+            if app.buttons["Done"].exists {
+                app.buttons["Done"].tap()
+            } else if app.buttons["Close"].exists {
+                app.buttons["Close"].tap()
+            } else {
+                app.swipeDown(velocity: .fast)
+            }
+            sleep(1)
+        }
+
+        // Tool sheets from Home
+        XCTAssertTrue(app.buttons["Open game timer"].waitForExistence(timeout: 3))
+        app.buttons["Open game timer"].tap()
+        sleep(1); snap("15-tool-timer")
+        dismissSheet()
+
+        app.buttons["Roll dice"].tap()
+        sleep(1); snap("16-tool-dice")
+        dismissSheet()
+
+        app.buttons["Pick a random starter"].tap()
+        sleep(1); snap("17-tool-starter")
+        dismissSheet()
+
+        app.buttons["Learn about undo"].tap()
+        sleep(1); snap("18-tool-undo")
+        dismissSheet()
+
+        // Complete a game, snapping the end-game confirmation on the way
+        navigateToGenericScoring(playerNames: ["Taylor", "Morgan"])
+        app.buttons["submit_round_button"].tap()
+        app.buttons["end_game_button"].tap()
+        XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 2))
+        snap("19-end-game-confirm")
+        app.alerts.buttons["End Game"].tap()
+        sleep(2)
+        app.swipeUp()
+        XCTAssertTrue(app.buttons["home_button"].waitForExistence(timeout: 3))
+        app.buttons["home_button"].tap()
+        _ = app.buttons["new_game_button"].waitForExistence(timeout: 3)
+
+        // Game history + detail
+        let seeAll = app.buttons["see_all_button"]
+        if !seeAll.waitForExistence(timeout: 1) { app.swipeUp() }
+        XCTAssertTrue(seeAll.waitForExistence(timeout: 3))
+        seeAll.tap()
+        XCTAssertTrue(app.navigationBars["Game History"].waitForExistence(timeout: 3))
+        sleep(1); snap("20-game-history")
+
+        app.staticTexts["Scoreboard"].firstMatch.tap()
+        sleep(1); snap("21-game-detail")
+        app.navigationBars.buttons.firstMatch.tap()
+        sleep(1)
+        app.navigationBars.buttons.firstMatch.tap()
+        sleep(1)
+
+        // Head to head
+        let h2h = app.buttons["Head to Head"]
+        if !h2h.waitForExistence(timeout: 1) { app.swipeUp() }
+        XCTAssertTrue(h2h.waitForExistence(timeout: 3))
+        h2h.tap()
+        XCTAssertTrue(app.navigationBars["Head to Head"].waitForExistence(timeout: 3))
+        app.buttons["Player 1, Select..."].tap()
+        app.buttons["Taylor"].tap()
+        app.buttons["Player 2, Select..."].tap()
+        app.buttons["Morgan"].tap()
+        _ = app.staticTexts["1 game together"].waitForExistence(timeout: 2)
+        snap("22-head-to-head")
+        app.navigationBars.buttons.firstMatch.tap()
+        sleep(1)
+
+        // Player stats
+        let playerStats = app.buttons["player_stats_Taylor"]
+        if !playerStats.waitForExistence(timeout: 1) { app.swipeUp() }
+        XCTAssertTrue(playerStats.waitForExistence(timeout: 3))
+        playerStats.tap()
+        XCTAssertTrue(app.navigationBars["Taylor"].waitForExistence(timeout: 3))
+        sleep(1); snap("23-player-stats")
+        app.navigationBars.buttons.firstMatch.tap()
+        sleep(1)
+
+        // Dark mode: cycle system -> light -> dark, then fresh scoring and game over
+        app.swipeDown()
+        let theme = app.buttons["theme_button"]
+        XCTAssertTrue(theme.waitForExistence(timeout: 3))
+        theme.tap(); sleep(1)
+        theme.tap(); sleep(1)
+        snap("24-home-dark")
+
+        navigateToGenericScoring(playerNames: ["Ada", "Ben"])
+        app.buttons["Ada_increment"].tap()
+        app.buttons["submit_round_button"].tap()
+        sleep(1); snap("25-scoring-dark")
+
+        app.buttons["end_game_button"].tap()
+        if app.alerts.buttons["End Game"].waitForExistence(timeout: 2) {
+            app.alerts.buttons["End Game"].tap()
+        }
+        sleep(2); snap("26-game-over-dark")
+
+        // Restore theme to system
+        app.swipeUp()
+        if app.buttons["home_button"].waitForExistence(timeout: 3) {
+            app.buttons["home_button"].tap()
+        }
+        if theme.waitForExistence(timeout: 3) {
+            theme.tap()
+        }
+    }
+
     private func replaceText(in field: XCUIElement, with text: String) {
         XCTAssertTrue(field.waitForExistence(timeout: 1))
         field.tap()

@@ -103,30 +103,34 @@ struct HeadToHeadView: View {
 
     private func winSummary(_ record: H2HRecord) -> some View {
         HStack(spacing: 0) {
-            playerWinColumn(name: record.playerA, wins: record.aWins, rate: record.aWinRate, color: PlayerColors.palette[3])
+            playerWinColumn(name: record.playerA, wins: record.aWins, rate: record.aWinRate, colorIndex: 3)
 
             Text("vs")
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .padding(.horizontal)
 
-            playerWinColumn(name: record.playerB, wins: record.bWins, rate: record.bWinRate, color: PlayerColors.palette[4])
+            playerWinColumn(name: record.playerB, wins: record.bWins, rate: record.bWinRate, colorIndex: 4)
         }
     }
 
-    private func playerWinColumn(name: String, wins: Int, rate: Double, color: Color) -> some View {
+    private func playerWinColumn(name: String, wins: Int, rate: Double, colorIndex: Int) -> some View {
         Button {
             router.push(.playerStats(name))
         } label: {
             VStack(spacing: 4) {
-                Text(name)
-                    .font(AppFonts.body)
-                    .bold()
-                    .foregroundStyle(ClubhouseTheme.ink)
+                HStack(spacing: 4) {
+                    PlayerGlyph(colorIndex: colorIndex, font: AppFonts.caption)
+
+                    Text(name)
+                        .font(AppFonts.body)
+                        .bold()
+                        .foregroundStyle(ClubhouseTheme.ink)
+                }
                 Text("\(wins) \(wins == 1 ? "win" : "wins")")
                     .font(AppFonts.scoreSmall)
                     .monospacedDigit()
-                    .foregroundStyle(color)
+                    .foregroundStyle(PlayerColors.color(for: colorIndex))
                 Text(String(format: "%.0f%%", rate * 100))
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
@@ -164,6 +168,8 @@ struct HeadToHeadView: View {
             toggleExpanded(player: name, record: record)
         } label: {
             HStack {
+                PlayerGlyph(colorIndex: name == record.playerA ? 3 : 4, font: AppFonts.caption)
+
                 Text(name)
                     .font(AppFonts.body)
                     .foregroundStyle(ClubhouseTheme.ink)

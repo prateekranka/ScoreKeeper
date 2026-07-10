@@ -1,16 +1,17 @@
 import SwiftUI
 
 struct AppFonts {
-    static let display = Font.system(.largeTitle, design: .serif, weight: .bold)
-    static let largeTitle = Font.system(.largeTitle, design: .serif, weight: .bold)
-    static let title = Font.system(.title2, design: .serif, weight: .bold)
-    static let headline = Font.system(.headline, design: .default, weight: .semibold)
-    static let body = Font.system(.body, design: .default)
-    static let caption = Font.system(.caption, design: .default)
-    static let columnHeader = Font.system(.caption2, design: .default, weight: .semibold)
-    static let scoreDisplay = Font.system(.largeTitle, design: .default, weight: .heavy)
-    static let scoreMedium = Font.system(.title, design: .default, weight: .heavy)
-    static let scoreSmall = Font.system(.title3, design: .default, weight: .heavy)
+    static let display = Font.custom("Press Start 2P", size: 22, relativeTo: .largeTitle)
+    static let largeTitle = Font.custom("Press Start 2P", size: 22, relativeTo: .largeTitle)
+    static let title = Font.custom("Press Start 2P", size: 15, relativeTo: .title2)
+    static let headline = Font.custom("Press Start 2P", size: 11, relativeTo: .headline)
+    static let tileTitle = Font.custom("Press Start 2P", size: 12, relativeTo: .title3)
+    static let body = Font.custom("VT323", size: 19, relativeTo: .body)
+    static let caption = Font.custom("VT323", size: 15, relativeTo: .caption)
+    static let columnHeader = Font.custom("VT323", size: 14, relativeTo: .caption2)
+    static let scoreDisplay = Font.custom("VT323", size: 44, relativeTo: .largeTitle)
+    static let scoreMedium = Font.custom("VT323", size: 32, relativeTo: .title)
+    static let scoreSmall = Font.custom("VT323", size: 24, relativeTo: .title3)
 }
 
 struct ColumnHeaderModifier: ViewModifier {

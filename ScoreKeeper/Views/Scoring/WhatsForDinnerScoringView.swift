@@ -13,7 +13,7 @@ struct WhatsForDinnerScoringView: View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "Submit Meal Reveal",
+            actionTitle: "Submit",
             actionSystemImage: "fork.knife",
             action: submitRound
         ) {

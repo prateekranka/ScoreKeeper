@@ -55,11 +55,15 @@ struct PlayerBadge: View {
             }
 
             if showName {
-                Text(name)
-                    .font(size.nameFont)
-                    .foregroundStyle(ClubhouseTheme.ink)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
+                HStack(spacing: 4) {
+                    PlayerGlyph(colorIndex: colorIndex, font: AppFonts.caption)
+
+                    Text(name)
+                        .font(size.nameFont)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
             }
         }
         .accessibilityElement(children: .ignore)
@@ -68,5 +72,17 @@ struct PlayerBadge: View {
 
     private var initial: String {
         String(name.prefix(1)).uppercased()
+    }
+}
+
+struct PlayerGlyph: View {
+    let colorIndex: Int
+    var font: Font = AppFonts.caption
+
+    var body: some View {
+        Text(PlayerColors.glyph(for: colorIndex))
+            .font(font)
+            .foregroundStyle(PlayerColors.color(for: colorIndex))
+            .accessibilityHidden(true)
     }
 }

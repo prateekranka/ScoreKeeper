@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct AppTheme {
-    static let cornerRadiusSmall: CGFloat = 10
-    static let cornerRadiusMedium: CGFloat = 14
-    static let cornerRadiusLarge: CGFloat = 20
+    static let cornerRadiusSmall: CGFloat = 2
+    static let cornerRadiusMedium: CGFloat = 4
+    static let cornerRadiusLarge: CGFloat = 6
 
     static let spacingSmall: CGFloat = 8
     static let spacingMedium: CGFloat = 16

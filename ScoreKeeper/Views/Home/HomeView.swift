@@ -586,6 +586,7 @@ private struct HomeToolSheet: View {
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 ToolSheetContent(tool: tool, activeGame: activeGame, dieRoll: $dieRoll, selectedStarter: $selectedStarter)

@@ -12,7 +12,7 @@ struct GenericScoringView: View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "Submit Round",
+            actionTitle: "Submit",
             actionSystemImage: "checkmark.circle.fill",
             showsScoreboardHeader: false,
             action: submitRound
@@ -126,7 +126,7 @@ private struct GenericFocusScoreTable: View {
             Text("Total")
                 .frame(width: 64, alignment: .trailing)
             Text("This round")
-                .frame(width: 132, alignment: .trailing)
+                .frame(width: 140, alignment: .trailing)
         }
         .columnHeaderStyle()
         .padding(.vertical, AppTheme.spacingSmall)
@@ -185,10 +185,13 @@ private struct FocusScoreRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
+                    PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
+
                     Text(player.name)
-                        .font(AppFonts.headline)
+                        .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                         .layoutPriority(1)
 
                     if isLeading {
@@ -220,7 +223,7 @@ private struct FocusScoreRow: View {
 
     private var scoreStepper: some View {
         CompactScoreStepper(value: $value, range: range, step: step, identifierPrefix: identifierPrefix)
-            .frame(width: 132, alignment: .trailing)
+            .frame(width: 140, alignment: .trailing)
     }
 
     private func quickButton(_ amount: Int) -> some View {
@@ -265,13 +268,19 @@ private struct CompactScoreStepper: View {
         HStack(spacing: 6) {
             stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
 
-            Text("\(value)")
-                .font(AppFonts.scoreSmall)
-                .monospacedDigit()
-                .contentTransition(.numericText(value: Double(value)))
-                .foregroundStyle(ClubhouseTheme.ink)
-                .frame(width: 36)
-                .accessibilityLabel("Score \(value)")
+            VStack(spacing: 0) {
+                Text("RD")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+
+                Text(roundScoreText)
+                    .font(AppFonts.scoreSmall)
+                    .monospacedDigit()
+                    .contentTransition(.numericText(value: Double(value)))
+                    .foregroundStyle(ClubhouseTheme.ink)
+            }
+            .frame(width: 44)
+            .accessibilityLabel("Round score \(value)")
 
             stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
         }
@@ -284,7 +293,7 @@ private struct CompactScoreStepper: View {
             Image(systemName: systemImage)
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.ink)
-                .frame(width: 42, height: 42)
+                .frame(width: 44, height: 44)
                 .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
@@ -301,5 +310,9 @@ private struct CompactScoreStepper: View {
         if range.contains(newValue) {
             value = newValue
         }
+    }
+
+    private var roundScoreText: String {
+        value >= 0 ? "+\(value)" : "\(value)"
     }
 }

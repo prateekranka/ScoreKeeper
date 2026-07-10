@@ -47,6 +47,8 @@ struct LedgerRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 5) {
+                    PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
+
                     Text(player.name)
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.ink)
@@ -173,13 +175,19 @@ struct PipStepper: View {
         HStack(spacing: AppTheme.spacingSmall) {
             stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
 
-            Text("\(value)")
-                .font(AppFonts.scoreMedium)
-                .monospacedDigit()
-                .contentTransition(.numericText(value: Double(value)))
-                .foregroundStyle(ClubhouseTheme.ink)
+            VStack(spacing: 0) {
+                Text("RD")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+
+                Text(roundScoreText)
+                    .font(AppFonts.scoreMedium)
+                    .monospacedDigit()
+                    .contentTransition(.numericText(value: Double(value)))
+                    .foregroundStyle(ClubhouseTheme.ink)
+            }
                 .frame(minWidth: 60)
-                .accessibilityLabel("Score \(value)")
+                .accessibilityLabel("Round score \(value)")
 
             stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
         }
@@ -209,5 +217,9 @@ struct PipStepper: View {
         if range.contains(newValue) {
             value = newValue
         }
+    }
+
+    private var roundScoreText: String {
+        value >= 0 ? "+\(value)" : "\(value)"
     }
 }

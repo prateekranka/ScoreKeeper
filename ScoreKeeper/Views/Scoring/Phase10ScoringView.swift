@@ -18,7 +18,7 @@ struct Phase10ScoringView: View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "Submit Round",
+            actionTitle: "Submit",
             actionSystemImage: "checkmark.circle.fill",
             action: submitRound
         ) {
@@ -37,7 +37,7 @@ struct Phase10ScoringView: View {
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
         .alert("Phase 10 complete", isPresented: $showGameCompleteAlert) {
             Button("Keep Playing", role: .cancel) {}
-            Button("End Game") {
+            Button("End Game", role: .destructive) {
                 finishGame()
             }
         } message: {
@@ -54,6 +54,8 @@ struct Phase10ScoringView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: AppTheme.spacingSmall) {
                         PlayerColorPip(colorIndex: player.colorIndex)
+
+                        PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
 
                         Text(player.name)
                             .font(AppFonts.body)

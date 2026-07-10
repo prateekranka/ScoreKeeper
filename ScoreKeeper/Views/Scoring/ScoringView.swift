@@ -33,6 +33,17 @@ struct ScoringView: View {
         .navigationTitle(session.gameType.displayName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button {
+                    router.goHome()
+                } label: {
+                    Image(systemName: "house")
+                }
+                .accessibilityLabel("Home")
+                .accessibilityIdentifier("scoring_home_button")
+                .foregroundStyle(ClubhouseTheme.ink)
+            }
+
             ToolbarItem(placement: .topBarTrailing) {
                 Button("End Game") {
                     showEndGameAlert = true

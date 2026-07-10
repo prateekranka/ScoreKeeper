@@ -94,6 +94,8 @@ private struct RoundCard: View {
                         .frame(width: 10, height: 10)
                         .accessibilityHidden(true)
 
+                    PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
+
                     Text(player.name)
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.ink)

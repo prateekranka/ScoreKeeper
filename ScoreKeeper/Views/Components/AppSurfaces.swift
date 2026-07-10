@@ -64,6 +64,8 @@ struct AppActionButton<LabelContent: View>: View {
         } label: {
             label
                 .font(AppFonts.headline)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: 50)
                 .padding(.horizontal, AppTheme.spacingMedium)
@@ -91,7 +93,9 @@ struct AppActionButton<LabelContent: View>: View {
 
     private var foregroundStyle: Color {
         switch role {
-        case .primary, .destructive:
+        case .primary:
+            ClubhouseTheme.onPrimary
+        case .destructive:
             ClubhouseTheme.onFelt
         case .secondary:
             ClubhouseTheme.ink
@@ -101,16 +105,16 @@ struct AppActionButton<LabelContent: View>: View {
     private var backgroundStyle: AnyShapeStyle {
         switch role {
         case .primary:
-            AnyShapeStyle(ClubhouseTheme.felt)
+            AnyShapeStyle(ClubhouseTheme.primaryFill)
         case .secondary:
             AnyShapeStyle(ClubhouseTheme.paperCard)
         case .destructive:
-            AnyShapeStyle(ClubhouseTheme.lacquer)
+            AnyShapeStyle(ClubhouseTheme.danger)
         }
     }
 
     private var strokeStyle: Color {
-        role.isSecondary ? ClubhouseTheme.rule : .clear
+        role.isSecondary ? ClubhouseTheme.panelBorder : .clear
     }
 }
 

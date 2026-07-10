@@ -110,12 +110,19 @@ private struct WinnerHeroSection: View {
 
     var body: some View {
         VStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: winners.isEmpty ? "flag.checkered" : "trophy.fill")
-                .font(AppFonts.scoreDisplay)
-                .foregroundStyle(winners.isEmpty ? session.gameType.color : ClubhouseTheme.brass)
-                .accessibilityHidden(true)
-                .scaleEffect(sectionsVisible ? 1 : 0.5)
-                .animation(.spring(response: 0.6, dampingFraction: 0.5).delay(0.2), value: sectionsVisible)
+            if winners.isEmpty {
+                Image(systemName: "flag.checkered")
+                    .font(AppFonts.scoreDisplay)
+                    .foregroundStyle(session.gameType.color)
+                    .accessibilityHidden(true)
+                    .scaleEffect(sectionsVisible ? 1 : 0.5)
+                    .animation(.spring(response: 0.6, dampingFraction: 0.5).delay(0.2), value: sectionsVisible)
+            } else {
+                CupMascotView()
+                    .frame(width: 72, height: 60)
+                    .scaleEffect(sectionsVisible ? 1 : 0.5)
+                    .animation(.spring(response: 0.6, dampingFraction: 0.5).delay(0.2), value: sectionsVisible)
+            }
 
             winnerText
 
