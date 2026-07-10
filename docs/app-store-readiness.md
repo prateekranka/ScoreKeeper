@@ -16,8 +16,8 @@ This tracks product, release, and App Store Connect work that must be true befor
 | --- | --- | --- |
 | Privacy manifest | Present and validates | Keep `PrivacyInfo.xcprivacy` aligned with actual app behavior. |
 | UI regression tests | Monetization, onboarding, all three game modes, history, stats, and screenshot-capture slices pass. The real local `$0.99` StoreKit purchase test passes on iOS 27, including verified unlock continuation; iOS 26.4/26.5 CLI StoreKitTest sync has a known Apple regression. | Run sandbox cancellation, refund/revocation, and restore checks after the App Store Connect product exists. |
-| Archive validation | Unsigned and development-signed archives validate. App Store export fails with `No signing certificate "iOS Distribution" found` for team `4JRB53LG5C`. | Install/use the team’s Apple Distribution certificate/private key and App Store profile before upload. |
-| App Store Connect build | Not uploaded from this thread | Upload a distribution-signed archive. |
+| Archive validation | Distribution signing is configured for team `4JRB53LG5C`; the signed `1.0 (2)` IPA passes strict local signature, entitlement, and embedded-profile validation. | Done for build 2. Keep the dedicated signing keychain and Store profile valid for future uploads. |
+| App Store Connect build | `1.0 (2)` uploaded on July 10, 2026; App Store Connect build state is `VALID` with no upload warnings or errors. | Done for build 2. Select this build for TestFlight or the App Store version after metadata is complete. |
 | Product page metadata | Drafted in `docs/app-store-metadata.md` | Provide owner/contact/legal values and enter the approved copy in App Store Connect. |
 | Privacy nutrition label | Repository-reviewed draft is "Data Not Collected" | Confirm in App Store Connect and keep accurate if SDKs, sync, servers, or analytics are added. |
 | Privacy policy | Drafted in `docs/privacy-policy.md` | Add a monitored contact method and host it at the required public URL. |
@@ -30,4 +30,4 @@ This tracks product, release, and App Store Connect work that must be true befor
 3. Add the required support/privacy URLs, legal owner, review contact, age rating, and metadata from `docs/app-store-metadata.md`.
 4. Run sandbox purchase, pending, cancellation, refund/revocation, and restore validation against the App Store Connect product. Local StoreKit coverage already verifies product loading, purchase/unlock continuation, paywall gating, and safe dismissal of a pending purchase.
 5. Select App Store marketing screenshots from the refreshed screen inventory. All visibly changed screen families are refreshed; unchanged utility overlays remain available as route/QA references. Avoid the `21-game-details.png` attachment for marketing because its simulator capture includes top-corner masking artifacts.
-6. Install/configure Apple Distribution signing for team `4JRB53LG5C`, export the validated archive, and upload.
+6. **Done:** Apple Distribution signing and a matching ScoreKeeper App Store profile are installed for team `4JRB53LG5C`; version `1.0` build `2` is uploaded and valid.

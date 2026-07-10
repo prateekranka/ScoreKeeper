@@ -9,6 +9,7 @@ Drafted for App Store Connect on July 10, 2026. Values marked **Owner input requ
 - Primary language: English (U.S.)
 - Bundle ID: `com.icequeen.scorekeeper`
 - Version: `1.0`
+- Uploaded build: `2` (`VALID` in App Store Connect on July 10, 2026)
 - Primary category: Utilities
 - Secondary category: Entertainment
 - Copyright: **Owner input required: legal owner name and year**
