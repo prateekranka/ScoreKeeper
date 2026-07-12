@@ -16,41 +16,7 @@ struct ScoreEntryField: View {
             }
 
             HStack(spacing: AppTheme.spacingMedium) {
-                Button("Decrease", systemImage: "minus.circle.fill") {
-                    let newValue = value - step
-                    if newValue >= range.lowerBound {
-                        value = newValue
-                    }
-                }
-                .labelStyle(.iconOnly)
-                .font(.title2)
-                .foregroundStyle(.secondary)
-                .frame(minWidth: 44, minHeight: 44)
-                .contentShape(Rectangle())
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityIdentifier(identifierPrefix + "decrement")
-                .accessibilityLabel("Decrease score")
-
-                Text("\(value)")
-                    .font(AppFonts.scoreSmall)
-                    .monospacedDigit()
-                    .frame(minWidth: 56)
-                    .accessibilityLabel("Score \(value)")
-
-                Button("Increase", systemImage: "plus.circle.fill") {
-                    let newValue = value + step
-                    if newValue <= range.upperBound {
-                        value = newValue
-                    }
-                }
-                .labelStyle(.iconOnly)
-                .font(.title2)
-                .foregroundStyle(.secondary)
-                .frame(minWidth: 44, minHeight: 44)
-                .contentShape(Rectangle())
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityIdentifier(identifierPrefix + "increment")
-                .accessibilityLabel("Increase score")
+                PipStepper(value: $value, range: range, step: step, identifierPrefix: identifierPrefix)
             }
 
             HStack(spacing: 6) {
@@ -60,10 +26,13 @@ struct ScoreEntryField: View {
                     }
                     .font(AppFonts.caption)
                     .monospacedDigit()
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.ink)
                     .padding(.horizontal, 9)
                     .frame(minHeight: 30)
-                    .background(.regularMaterial, in: Capsule())
+                    .background(ClubhouseTheme.paperSunken, in: Capsule())
+                    .overlay {
+                        Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                    }
                     .buttonStyle(PressableButtonStyle())
                     .accessibilityIdentifier(identifierPrefix + "quick_\(amount)")
                     .accessibilityLabel("Add \(amount) points")

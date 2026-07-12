@@ -12,40 +12,43 @@ struct ConfettiPiece: Identifiable {
 }
 
 struct ConfettiOverlay: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var pieces: [ConfettiPiece] = []
     @State private var animationProgress: CGFloat = 0
-    let colors: [Color] = PlayerColors.palette + [.white, .pink]
+    let colors: [Color] = PlayerColors.palette + [ClubhouseTheme.paperCard, ClubhouseTheme.brass, ClubhouseTheme.lacquer]
 
     var body: some View {
-        TimelineView(.animation) { timeline in
-            Canvas { context, size in
-                for piece in pieces {
-                    let elapsed = animationProgress
-                    let adjustedY = piece.y + piece.speed * elapsed * size.height
-                    let adjustedX = piece.x * size.width + sin(elapsed * 3 + piece.wobble) * 30
+        if !reduceMotion {
+            TimelineView(.animation) { timeline in
+                Canvas { context, size in
+                    for piece in pieces {
+                        let elapsed = animationProgress
+                        let adjustedY = piece.y + piece.speed * elapsed * size.height
+                        let adjustedX = piece.x * size.width + sin(elapsed * 3 + piece.wobble) * 30
 
-                    guard adjustedY < size.height + 20 else { continue }
+                        guard adjustedY < size.height + 20 else { continue }
 
-                    let rect = CGRect(
-                        x: adjustedX - piece.size / 2,
-                        y: adjustedY - piece.size / 2,
-                        width: piece.size,
-                        height: piece.size * 0.6
-                    )
+                        let rect = CGRect(
+                            x: adjustedX - piece.size / 2,
+                            y: adjustedY - piece.size / 2,
+                            width: piece.size,
+                            height: piece.size * 0.6
+                        )
 
-                    context.opacity = max(0, 1 - Double(elapsed) * 0.5)
-                    context.fill(
-                        Path(ellipseIn: rect),
-                        with: .color(piece.color)
-                    )
+                        context.opacity = max(0, 1 - Double(elapsed) * 0.5)
+                        context.fill(
+                            Path(ellipseIn: rect),
+                            with: .color(piece.color)
+                        )
+                    }
                 }
             }
-        }
-        .allowsHitTesting(false)
-        .onAppear {
-            generatePieces()
-            withAnimation(.linear(duration: 3)) {
-                animationProgress = 1
+            .allowsHitTesting(false)
+            .onAppear {
+                generatePieces()
+                withAnimation(.linear(duration: 3)) {
+                    animationProgress = 1
+                }
             }
         }
     }

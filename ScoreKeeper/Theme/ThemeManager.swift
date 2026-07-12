@@ -7,7 +7,12 @@ final class ThemeManager {
     }
 
     init() {
-        mode = UserDefaults.standard.string(forKey: "themeMode") ?? "system"
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-in-memory-store"), arguments.contains("-force-light-theme") {
+            mode = "light"
+        } else {
+            mode = UserDefaults.standard.string(forKey: "themeMode") ?? "system"
+        }
     }
 
     var effectiveColorScheme: ColorScheme? {

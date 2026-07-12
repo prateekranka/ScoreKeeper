@@ -11,15 +11,18 @@ struct RoundTracker: View {
                     ForEach(1...max(totalRounds, currentRound), id: \.self) { round in
                         VStack(spacing: 2) {
                             Circle()
-                                .fill(round < currentRound ? .green :
-                                      round == currentRound ? PlayerColors.palette[3] :
-                                      Color.secondary.opacity(0.3))
+                                .fill(round < currentRound ? ClubhouseTheme.felt :
+                                      round == currentRound ? ClubhouseTheme.brass :
+                                      ClubhouseTheme.paperSunken)
                                 .frame(width: round == currentRound ? 14 : 10,
                                        height: round == currentRound ? 14 : 10)
+                                .overlay {
+                                    Circle().stroke(ClubhouseTheme.rule, lineWidth: 1)
+                                }
 
                             Text("\(round)")
                                 .font(round == currentRound ? AppFonts.caption.bold() : AppFonts.caption)
-                                .foregroundStyle(round == currentRound ? .primary : .secondary)
+                                .foregroundStyle(round == currentRound ? ClubhouseTheme.ink : ClubhouseTheme.inkMuted)
                         }
                         .id(round)
                     }

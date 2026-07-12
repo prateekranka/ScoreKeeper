@@ -6,7 +6,12 @@ struct GameOverView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationRouter.self) private var router
+    @Environment(StoreManager.self) private var storeManager
+    @Environment(ReviewAskManager.self) private var reviewAskManager
+    @Query(filter: #Predicate<GameSession> { $0.isComplete }) private var completedGames: [GameSession]
     @State private var sectionsVisible = false
+    @State private var showPaywall = false
+    @State private var didEvaluateReviewAsk = false
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
@@ -20,11 +25,9 @@ struct GameOverView: View {
                         WinnerHeroSection(session: session, winners: winners, sectionsVisible: sectionsVisible)
                             .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                        glassGroup(spacing: AppTheme.spacingLarge) {
-                            VStack(spacing: AppTheme.spacingLarge) {
-                                GameRecapPanel(session: session, engine: engine)
-                                StandingsList(title: "Final Scores", standings: session.standings(using: engine))
-                            }
+                        VStack(spacing: AppTheme.spacingLarge) {
+                            GameRecapPanel(session: session, engine: engine)
+                            StandingsList(title: "Final Scores", standings: session.standings(using: engine))
                         }
                         .staggeredEntrance(visible: sectionsVisible, index: 1)
 
@@ -35,17 +38,24 @@ struct GameOverView: View {
                 }
 
                 if !reduceMotion, !ProcessInfo.processInfo.arguments.contains("-in-memory-store") {
-                    ConfettiOverlay()
-                        .ignoresSafeArea()
-                        .opacity(sectionsVisible ? 1 : 0)
-                        .animation(.easeOut(duration: 0.6).delay(0.3), value: sectionsVisible)
+                    if sectionsVisible {
+                        ConfettiOverlay()
+                            .ignoresSafeArea()
+                    }
                 }
             }
             .appBackground()
             .onAppear {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.78)) {
-                    sectionsVisible = true
-                }
+                sectionsVisible = true
+            }
+            .sensoryFeedback(.success, trigger: sectionsVisible)
+            .task(id: session.persistentModelID) {
+                try? await Task.sleep(for: .milliseconds(750))
+                evaluateReviewAskIfNeeded()
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView(onUnlocked: { playAgain(session) })
+                    .presentationDetents([.large])
             }
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .navigationBar)
@@ -53,6 +63,11 @@ struct GameOverView: View {
     }
 
     private func playAgain(_ session: GameSession) {
+        guard storeManager.canStartNewGame else {
+            showPaywall = true
+            return
+        }
+
         let newSession = GameSession(gameType: session.gameType)
         newSession.winCondition = session.winCondition
         newSession.targetScore = session.targetScore
@@ -66,12 +81,22 @@ struct GameOverView: View {
         }
 
         try? modelContext.save()
+        storeManager.recordGameStarted()
 
         router.goHome()
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(100))
             router.push(.scoring(newSession.persistentModelID))
         }
+    }
+
+    private func evaluateReviewAskIfNeeded() {
+        guard !didEvaluateReviewAsk else { return }
+        didEvaluateReviewAsk = true
+        reviewAskManager.considerReviewAsk(
+            completedGameCount: completedGames.count,
+            paywallPresentedThisSession: storeManager.paywallPresentedThisSession
+        )
     }
 }
 
@@ -81,21 +106,35 @@ private struct WinnerHeroSection: View {
     let session: GameSession
     let winners: [Player]
     let sectionsVisible: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: winners.isEmpty ? "flag.checkered" : "trophy.fill")
-                .font(AppFonts.scoreDisplay)
-                .foregroundStyle(winners.isEmpty ? session.gameType.color : .yellow)
-                .accessibilityHidden(true)
-                .scaleEffect(sectionsVisible ? 1 : 0.5)
-                .animation(.spring(response: 0.6, dampingFraction: 0.5).delay(0.2), value: sectionsVisible)
+            if winners.isEmpty {
+                Image(systemName: "flag.checkered")
+                    .font(AppFonts.scoreDisplay)
+                    .foregroundStyle(session.gameType.color)
+                    .accessibilityHidden(true)
+                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
+                    .opacity(sectionsVisible ? 1 : 0)
+                    .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.06), value: sectionsVisible)
+            } else {
+                CupMascotView()
+                    .frame(width: 72, height: 60)
+                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
+                    .opacity(sectionsVisible ? 1 : 0)
+                    .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.06), value: sectionsVisible)
+            }
 
             winnerText
 
             Text(session.gameType.displayName)
                 .font(AppFonts.body)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+
+            if !winners.isEmpty {
+                StampBadge(text: "Winner")
+            }
         }
         .padding(.top, AppTheme.spacingXLarge)
         .accessibilityElement(children: .combine)
@@ -106,7 +145,7 @@ private struct WinnerHeroSection: View {
         if winners.count == 1, let winner = winners.first {
             Text("\(winner.name) wins!")
                 .font(AppFonts.largeTitle)
-                .foregroundStyle(PlayerColors.color(for: winner.colorIndex))
+                .foregroundStyle(ClubhouseTheme.brass)
                 .multilineTextAlignment(.center)
                 .accessibilityIdentifier("winner_text")
         } else if winners.count > 1 {
@@ -172,14 +211,18 @@ private struct GameRecapPanel: View {
                 RecapMetric(title: "Margin", value: "\(winningMargin)", systemImage: "arrow.left.and.right", tint: PlayerColors.palette[0])
             }
 
-            if !standings.isEmpty {
+            if showsScoreTrend {
                 ScoreSparkline(session: session, standings: standings)
                     .frame(height: 86)
                     .accessibilityLabel("Score trend")
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+    }
+
+    private var showsScoreTrend: Bool {
+        !standings.isEmpty && session.sortedRounds.count > 1
     }
 }
 
@@ -198,14 +241,20 @@ private struct RecapMetric: View {
             Text(value)
                 .font(AppFonts.scoreSmall)
                 .monospacedDigit()
+                .contentTransition(.numericText(value: Double(Int(value) ?? 0)))
+                .foregroundStyle(ClubhouseTheme.ink)
 
             Text(title)
                 .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppTheme.spacingSmall)
-        .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+        .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+        }
         .accessibilityElement(children: .combine)
     }
 }
@@ -222,7 +271,11 @@ private struct ScoreSparkline: View {
 
             ZStack(alignment: .bottomLeading) {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall)
-                    .fill(.thinMaterial)
+                    .fill(ClubhouseTheme.paperSunken)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall)
+                            .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                    }
 
                 ForEach(series) { playerSeries in
                     Path { path in

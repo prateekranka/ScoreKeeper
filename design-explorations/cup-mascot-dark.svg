@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" id="cup-mascot-dark" viewBox="0 0 96 80" width="384" height="320">
+  <!--
+    Cup — ScoreKeeper mascot (dark / wood-cabinet skin: marquee gold on transparent).
+    Built on an 8px pixel grid for Rive import. Every animatable part is a named group:
+
+    #cup-root      whole character — jump, squash-and-stretch (set origin to 48,72 bottom-center)
+    #handle-left / #handle-right  wiggle on celebration (origin at bowl attach points 16,20 / 80,20)
+    #bowl          head — tilt for "thinking"
+    #eye-left / #eye-right        blink = scaleY to 0.1 (origin center of each rect)
+    #mouth         swap/scale for expressions (smile rect provided; scaleX for grin)
+    #shine         gleam — translate diagonally across bowl, or opacity pulse
+    #sparkles > #spark-1..4       win-state particles; stagger opacity/scale from 0
+    #base          anchor — keep static during jump anticipation frames
+
+    Palette (dark skin): body #E9A63A · shine #F2C94C · cutouts #211711 · sparks #E0662E / #A8B060
+  -->
+  <g id="sparkles">
+    <rect id="spark-1" x="8" y="0" width="6" height="6" fill="#E0662E"/>
+    <rect id="spark-2" x="84" y="6" width="6" height="6" fill="#A8B060"/>
+    <rect id="spark-3" x="0" y="44" width="6" height="6" fill="#A8B060"/>
+    <rect id="spark-4" x="90" y="50" width="6" height="6" fill="#E0662E"/>
+  </g>
+  <g id="cup-root">
+    <g id="handles">
+      <g id="handle-left">
+        <rect x="0" y="16" width="16" height="8" fill="#E9A63A"/>
+        <rect x="0" y="24" width="8" height="8" fill="#E9A63A"/>
+      </g>
+      <g id="handle-right">
+        <rect x="80" y="16" width="16" height="8" fill="#E9A63A"/>
+        <rect x="88" y="24" width="8" height="8" fill="#E9A63A"/>
+      </g>
+    </g>
+    <g id="bowl">
+      <rect id="bowl-rim" x="16" y="8" width="64" height="8" fill="#E9A63A"/>
+      <rect id="bowl-body" x="16" y="16" width="64" height="32" fill="#E9A63A"/>
+      <rect id="shine" x="22" y="20" width="8" height="12" fill="#F2C94C"/>
+      <g id="face">
+        <rect id="eye-left" x="30" y="24" width="8" height="8" fill="#211711"/>
+        <rect id="eye-right" x="58" y="24" width="8" height="8" fill="#211711"/>
+        <rect id="mouth" x="38" y="38" width="20" height="6" fill="#211711"/>
+      </g>
+    </g>
+    <g id="stem">
+      <rect x="40" y="48" width="16" height="8" fill="#E9A63A"/>
+    </g>
+    <g id="base">
+      <rect id="base-top" x="32" y="56" width="32" height="8" fill="#E9A63A"/>
+      <rect id="base-bottom" x="24" y="64" width="48" height="8" fill="#E9A63A"/>
+    </g>
+  </g>
+</svg>

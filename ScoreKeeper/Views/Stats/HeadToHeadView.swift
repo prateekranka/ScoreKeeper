@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HeadToHeadView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(NavigationRouter.self) private var router
     @Query(sort: \GameSession.createdAt, order: .reverse) private var allSessions: [GameSession]
     @State private var playerA = ""
@@ -22,40 +23,27 @@ struct HeadToHeadView: View {
     }
 
     var body: some View {
-        List {
-            Section("Select Players") {
-                Picker("Player 1", selection: $playerA) {
-                    Text("Select...").tag("")
-                    ForEach(playerNames, id: \.self) {
-                        Text($0).tag($0)
-                    }
-                }
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                selectionPanel
 
-                Picker("Player 2", selection: $playerB) {
-                    Text("Select...").tag("")
-                    ForEach(playerNames.filter { $0 != playerA }, id: \.self) {
-                        Text($0).tag($0)
-                    }
-                }
-            }
+                if !records.isEmpty {
+                    Text("Head to Head by Game")
+                        .columnHeaderStyle()
 
-            if !records.isEmpty {
-                Section("Head to Head by Game") {
                     ForEach(records, id: \.id) { record in
                         recordCard(record)
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowBackground(Color.clear)
                     }
+                } else if !playerA.isEmpty && !playerB.isEmpty && playerA != playerB {
+                    ContentUnavailableView(
+                        "No Games Together",
+                        systemImage: "person.2.slash",
+                        description: Text("\(playerA) and \(playerB) haven't played this matchup yet.")
+                    )
                 }
-            } else if !playerA.isEmpty && !playerB.isEmpty && playerA != playerB {
-                ContentUnavailableView(
-                    "No Games Together",
-                    systemImage: "person.2.slash",
-                    description: Text("\(playerA) and \(playerB) haven't played this matchup yet.")
-                )
             }
+            .padding(AppTheme.spacingMedium)
         }
-        .scrollContentBackground(.hidden)
         .appBackground()
         .navigationTitle("Head to Head")
         .navigationBarTitleDisplayMode(.inline)
@@ -63,18 +51,41 @@ struct HeadToHeadView: View {
         .onChange(of: playerB) { _, _ in expandedKeys = [] }
     }
 
+    private var selectionPanel: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text("Select Players")
+                .columnHeaderStyle()
+
+            Picker("Player 1", selection: $playerA) {
+                Text("Select...").tag("")
+                ForEach(playerNames, id: \.self) {
+                    Text($0).tag($0)
+                }
+            }
+
+            Picker("Player 2", selection: $playerB) {
+                Text("Select...").tag("")
+                ForEach(playerNames.filter { $0 != playerA }, id: \.self) {
+                    Text($0).tag($0)
+                }
+            }
+        }
+        .padding(AppTheme.spacingMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+    }
+
     private func recordCard(_ record: H2HRecord) -> some View {
         VStack(spacing: AppTheme.spacingMedium) {
             HStack {
                 Label(record.gameType?.displayName ?? "All Games", systemImage: record.gameType?.icon ?? "chart.bar")
                     .font(AppFonts.headline)
-                    .foregroundStyle(record.gameType?.color ?? .primary)
+                    .foregroundStyle(record.gameType?.color ?? ClubhouseTheme.ink)
 
                 Spacer()
 
                 Text("\(record.gamesTogether) \(record.gamesTogether == 1 ? "game" : "games") together")
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
             winSummary(record)
@@ -88,37 +99,42 @@ struct HeadToHeadView: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private func winSummary(_ record: H2HRecord) -> some View {
         HStack(spacing: 0) {
-            playerWinColumn(name: record.playerA, wins: record.aWins, rate: record.aWinRate, color: .blue)
+            playerWinColumn(name: record.playerA, wins: record.aWins, rate: record.aWinRate, colorIndex: 3)
 
             Text("vs")
                 .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
                 .padding(.horizontal)
 
-            playerWinColumn(name: record.playerB, wins: record.bWins, rate: record.bWinRate, color: .orange)
+            playerWinColumn(name: record.playerB, wins: record.bWins, rate: record.bWinRate, colorIndex: 4)
         }
     }
 
-    private func playerWinColumn(name: String, wins: Int, rate: Double, color: Color) -> some View {
+    private func playerWinColumn(name: String, wins: Int, rate: Double, colorIndex: Int) -> some View {
         Button {
             router.push(.playerStats(name))
         } label: {
             VStack(spacing: 4) {
-                Text(name)
-                    .font(AppFonts.body)
-                    .bold()
+                HStack(spacing: 4) {
+                    PlayerGlyph(colorIndex: colorIndex, font: AppFonts.caption)
+
+                    Text(name)
+                        .font(AppFonts.body)
+                        .bold()
+                        .foregroundStyle(ClubhouseTheme.ink)
+                }
                 Text("\(wins) \(wins == 1 ? "win" : "wins")")
                     .font(AppFonts.scoreSmall)
-                    .bold()
-                    .foregroundStyle(color)
+                    .monospacedDigit()
+                    .foregroundStyle(PlayerColors.color(for: colorIndex))
                 Text(String(format: "%.0f%%", rate * 100))
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
             .frame(maxWidth: .infinity)
         }
@@ -135,12 +151,12 @@ struct HeadToHeadView: View {
 
             HStack(spacing: 4) {
                 Rectangle()
-                    .fill(.blue)
+                    .fill(PlayerColors.palette[3])
                     .frame(width: max(geo.size.width * aFraction, totalWins == 0 ? geo.size.width / 2 : 4), height: 20)
                     .clipShape(.rect(cornerRadius: 6))
 
                 Rectangle()
-                    .fill(.orange)
+                    .fill(PlayerColors.palette[4])
                     .frame(width: max(geo.size.width * (1 - aFraction), totalWins == 0 ? geo.size.width / 2 : 4), height: 20)
                     .clipShape(.rect(cornerRadius: 6))
             }
@@ -153,14 +169,17 @@ struct HeadToHeadView: View {
             toggleExpanded(player: name, record: record)
         } label: {
             HStack {
+                PlayerGlyph(colorIndex: name == record.playerA ? 3 : 4, font: AppFonts.caption)
+
                 Text(name)
                     .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.ink)
 
                 Spacer()
 
                 Image(systemName: isExpanded(player: name, record: record) ? "chevron.down" : "chevron.right")
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
             .contentShape(.rect)
         }
@@ -192,24 +211,28 @@ struct HeadToHeadView: View {
         return HStack {
             Text(session.completedAt ?? session.createdAt, style: .date)
                 .font(AppFonts.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
 
             Spacer()
 
             Text(isWinner ? "Win" : winnerIDs.isEmpty ? "No winner" : "Loss")
                 .font(AppFonts.caption)
-                .foregroundStyle(isWinner ? .green : .secondary)
+                .foregroundStyle(isWinner ? ClubhouseTheme.felt : ClubhouseTheme.inkMuted)
 
             if let player {
                 Text("\(player.totalScore(in: session))")
                     .font(AppFonts.caption)
                     .monospacedDigit()
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.ink)
             }
         }
         .padding(.vertical, 6)
         .padding(.horizontal, AppTheme.spacingSmall)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+        .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+        }
     }
 
     private func key(player: String, record: H2HRecord) -> String {
@@ -222,10 +245,12 @@ struct HeadToHeadView: View {
 
     private func toggleExpanded(player: String, record: H2HRecord) {
         let key = key(player: player, record: record)
-        if expandedKeys.contains(key) {
-            expandedKeys.remove(key)
-        } else {
-            expandedKeys.insert(key)
+        withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
+            if expandedKeys.contains(key) {
+                expandedKeys.remove(key)
+            } else {
+                expandedKeys.insert(key)
+            }
         }
     }
 }

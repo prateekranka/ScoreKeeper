@@ -5,10 +5,12 @@ struct PlayerSetupView: View {
     let gameType: GameType
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
+    @Environment(StoreManager.self) private var storeManager
     @Query(sort: \Player.name) private var allPlayers: [Player]
     @State private var playerNames: [String] = ["", ""]
     @FocusState private var focusedIndex: Int?
     @State private var showRoster = false
+    @State private var showPaywall = false
 
     private var recentNames: [String] {
         Array(Set(allPlayers.map(\.name)).filter { !$0.isEmpty }).sorted().prefix(20).map { $0 }
@@ -72,7 +74,7 @@ struct PlayerSetupView: View {
                 if let validationMessage {
                     Text(validationMessage)
                         .font(AppFonts.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ClubhouseTheme.lacquer)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
@@ -86,12 +88,18 @@ struct PlayerSetupView: View {
             }
             .accessibilityIdentifier("start_game_button")
             .disabled(!canStart)
-            .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.vertical, AppTheme.spacingSmall)
-            .background(.ultraThinMaterial)
+            .padding(.horizontal, AppTheme.spacingSmall)
+            .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.bottom, AppTheme.spacingSmall)
         }
         .sheet(isPresented: $showRoster) {
             PlayerRosterSheet { names in addRosterNames(names) }
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(onUnlocked: startGame)
+                .presentationDetents([.large])
         }
     }
 
@@ -107,7 +115,13 @@ struct PlayerSetupView: View {
         if gameType == .generic || gameType == .phase10 {
             router.push(.gameConfig(gameType, names))
         } else {
+            guard storeManager.canStartNewGame else {
+                showPaywall = true
+                return
+            }
+
             let session = createSession(names: names)
+            storeManager.recordGameStarted()
             router.push(.scoring(session.persistentModelID))
         }
     }
@@ -170,9 +184,10 @@ private struct SetupPlayerHeader: View {
                     .foregroundStyle(gameType.color)
                 Text(gameType.displayName)
                     .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
                 Text("\(gameType.minPlayers)-\(gameType.maxPlayers) players")
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
             HStack(spacing: AppTheme.spacingSmall) {
@@ -187,7 +202,7 @@ private struct SetupPlayerHeader: View {
             .frame(maxWidth: .infinity)
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -211,11 +226,9 @@ private struct SavedPlayersBar: View {
                         Button {
                             onTap([name])
                         } label: {
-                            Label(name, systemImage: alreadyAdded ? "checkmark.circle.fill" : "plus.circle.fill")
-                                .font(AppFonts.body)
-                                .padding(.horizontal, AppTheme.spacingSmall)
-                                .frame(minHeight: 38)
-                                .background(.regularMaterial, in: Capsule())
+                            PaperChip(isSelected: alreadyAdded) {
+                                Label(name, systemImage: alreadyAdded ? "checkmark.circle.fill" : "plus.circle.fill")
+                            }
                         }
                         .buttonStyle(PressableButtonStyle())
                         .disabled(alreadyAdded)
@@ -270,12 +283,16 @@ private struct PlayerNameRow: View {
 
             TextField("Player \(index + 1)", text: $name)
                 .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.ink)
                 .textFieldStyle(.plain)
                 .focused(focusedIndex, equals: index)
                 .autocorrectionDisabled()
                 .padding(.horizontal, AppTheme.spacingSmall)
                 .padding(.vertical, AppTheme.spacingSmall)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+                .background(ClubhouseTheme.paperCard)
+                .overlay(alignment: .bottom) {
+                    Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
+                }
                 .accessibilityIdentifier("player_name_field_\(index)")
 
             if canRemove {
@@ -306,7 +323,7 @@ private struct AddPlayerControls: View {
                         Text("Add Player")
                     }
                     .font(AppFonts.body)
-                    .foregroundStyle(gameType.color)
+                    .foregroundStyle(ClubhouseTheme.felt)
                 }
                 .accessibilityIdentifier("add_player_button")
             }
@@ -314,7 +331,7 @@ private struct AddPlayerControls: View {
             Button(action: onRoster) {
                 Label("From Roster", systemImage: "person.2.fill")
                     .font(AppFonts.body)
-                    .foregroundStyle(gameType.color)
+                    .foregroundStyle(ClubhouseTheme.felt)
             }
             .accessibilityIdentifier("roster_button")
         }

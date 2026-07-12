@@ -9,33 +9,35 @@ struct GameTypeTile: View {
         Button(action: action) {
             VStack(spacing: AppTheme.spacingSmall) {
                 GameTypeArtwork(gameType: gameType)
-                    .frame(height: 64)
+                    .frame(height: 58)
 
                 Text(gameType.displayName)
-                    .font(AppFonts.headline)
-                    .foregroundStyle(.white)
+                    .font(AppFonts.tileTitle)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.75)
 
                 Text(gameType.subtitle)
                     .font(AppFonts.caption)
-                    .foregroundStyle(.white.opacity(0.82))
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
             .frame(minHeight: 144)
-            .padding(.vertical, AppTheme.spacingLarge)
+            .padding(.vertical, 12)
             .padding(.horizontal, AppTheme.spacingMedium)
-            .background(
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge)
-                    .fill(
-                        LinearGradient(
-                            colors: [gameType.color, gameType.color.opacity(0.7)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            )
-            .shadow(color: gameType.color.opacity(0.3), radius: 8, y: 4)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
+                    .strokeBorder(gameType.color, lineWidth: 1)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge - 4, style: .continuous)
+                    .inset(by: 4)
+                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.5)
+            }
+            .shadow(color: ClubhouseTheme.paperShadow, radius: 5, y: 2)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(accessibilityID ?? "")
@@ -49,66 +51,95 @@ struct GameTypeArtwork: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                .fill(.white.opacity(0.18))
-                .overlay(alignment: .topLeading) {
-                    Circle()
-                        .fill(.white.opacity(0.16))
-                        .frame(width: 58, height: 58)
-                        .offset(x: -18, y: -22)
-                }
-                .overlay(alignment: .bottomTrailing) {
-                    Circle()
-                        .fill(.black.opacity(0.12))
-                        .frame(width: 72, height: 72)
-                        .offset(x: 22, y: 26)
+                .fill(ClubhouseTheme.paperSunken)
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
                 }
 
-            artwork
+            GeometryReader { proxy in
+                artwork
+                    .scaleEffect(min(1, proxy.size.height / 58))
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+            }
         }
         .accessibilityHidden(true)
     }
 
-    @ViewBuilder
     private var artwork: some View {
+        ScoreSheetArtwork(gameType: gameType)
+    }
+}
+
+private struct ScoreSheetArtwork: View {
+    let gameType: GameType
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                .fill(ClubhouseTheme.paperCard)
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                }
+
+            sheetContent
+                .padding(7)
+        }
+        .frame(width: 62, height: 46)
+    }
+
+    @ViewBuilder
+    private var sheetContent: some View {
         switch gameType {
         case .generic:
-            HStack(spacing: 8) {
-                ForEach(["#", "+", "-"], id: \.self) { symbol in
-                    Text(symbol)
-                        .font(.system(size: 24, weight: .heavy, design: .rounded))
-                        .foregroundStyle(.white)
-                        .frame(width: 34, height: 34)
-                        .background(.white.opacity(0.18), in: Circle())
-                }
+            VStack(spacing: 5) {
+                ledgerLine(colorIndex: 0, score: "12")
+                ledgerLine(colorIndex: 1, score: "7")
+                ledgerLine(colorIndex: 2, score: "24")
             }
         case .whatsForDinner:
-            HStack(spacing: 10) {
+            HStack(spacing: 6) {
                 Image(systemName: "fork.knife")
-                    .font(.system(size: 30, weight: .bold))
-                VStack(spacing: 4) {
-                    ForEach(0..<3, id: \.self) { index in
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(.white.opacity(index == 1 ? 0.95 : 0.55))
-                            .frame(width: 42, height: 8)
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundStyle(gameType.color)
+                VStack(spacing: 5) {
+                    ledgerLine(colorIndex: 3, score: "3")
+                    ledgerLine(colorIndex: 4, score: "9")
+                }
+            }
+        case .phase10:
+            VStack(spacing: 4) {
+                ForEach(0..<2, id: \.self) { row in
+                    HStack(spacing: 4) {
+                        ForEach(0..<5, id: \.self) { column in
+                            RoundedRectangle(cornerRadius: 1.5)
+                                .fill(row * 5 + column < 3 ? gameType.color : ClubhouseTheme.paperSunken)
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 1.5)
+                                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.75)
+                                }
+                                .frame(width: 8, height: 8)
+                        }
                     }
                 }
             }
-            .foregroundStyle(.white)
-        case .phase10:
-            HStack(spacing: 5) {
-                ForEach(1...10, id: \.self) { phase in
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(phase <= 4 ? .white : .white.opacity(0.35))
-                        .frame(width: 8, height: CGFloat(18 + phase * 2))
-                }
-            }
-            .overlay {
-                Text("10")
-                    .font(.system(size: 24, weight: .black, design: .rounded))
-                    .foregroundStyle(gameType.color)
-                    .padding(8)
-                    .background(.white, in: Circle())
-            }
+        }
+    }
+
+    private func ledgerLine(colorIndex: Int, score: String) -> some View {
+        HStack(spacing: 4) {
+            Circle()
+                .fill(PlayerColors.color(for: colorIndex))
+                .frame(width: 5, height: 5)
+
+            Rectangle()
+                .fill(ClubhouseTheme.rule)
+                .frame(height: 1)
+
+            Text(score)
+                .font(Font.custom("VT323", size: 12))
+                .foregroundStyle(ClubhouseTheme.ink)
         }
     }
 }

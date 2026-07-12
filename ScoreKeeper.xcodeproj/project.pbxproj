@@ -55,6 +55,15 @@
 		AA0000000000000001000331 /* ScoringComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000334 /* ScoringComponents.swift */; };
 		AA0000000000000001000332 /* StandingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000335 /* StandingsList.swift */; };
 		AA0000000000000001000336 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000337 /* PrivacyInfo.xcprivacy */; };
+		AA0000000000000001000339 /* ClubhouseTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000338 /* ClubhouseTheme.swift */; };
+		AA000000000000000100033B /* ClubhouseComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100033A /* ClubhouseComponents.swift */; };
+		AA0000000000000001000341 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000340 /* StoreManager.swift */; };
+		AA0000000000000001000343 /* ReviewAskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000342 /* ReviewAskManager.swift */; };
+		AA0000000000000001000346 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000345 /* PaywallView.swift */; };
+		AA0000000000000001000349 /* ReviewAskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000348 /* ReviewAskView.swift */; };
+		AA000000000000000100034C /* CupMascotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100034B /* CupMascotView.swift */; };
+		AA0000000000000001000351 /* PressStart2P-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100034F /* PressStart2P-Regular.ttf */; };
+		AA0000000000000001000352 /* VT323-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000350 /* VT323-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -118,6 +127,17 @@
 		AA0000000000000001000334 /* ScoringComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringComponents.swift; sourceTree = "<group>"; };
 		AA0000000000000001000335 /* StandingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StandingsList.swift; sourceTree = "<group>"; };
 		AA0000000000000001000337 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AA0000000000000001000338 /* ClubhouseTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClubhouseTheme.swift; sourceTree = "<group>"; };
+		AA000000000000000100033A /* ClubhouseComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClubhouseComponents.swift; sourceTree = "<group>"; };
+		AA0000000000000001000340 /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
+		AA0000000000000001000342 /* ReviewAskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewAskManager.swift; sourceTree = "<group>"; };
+		AA0000000000000001000345 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		AA0000000000000001000348 /* ReviewAskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewAskView.swift; sourceTree = "<group>"; };
+		AA000000000000000100034A /* ScoreKeeper.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = ScoreKeeper.storekit; sourceTree = "<group>"; };
+		AA000000000000000100034B /* CupMascotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CupMascotView.swift; sourceTree = "<group>"; };
+		AA000000000000000100034D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA000000000000000100034F /* PressStart2P-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PressStart2P-Regular.ttf"; sourceTree = "<group>"; };
+		AA0000000000000001000350 /* VT323-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VT323-Regular.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +186,9 @@
 				AA000000000000000000001A /* Theme */,
 				AA000000000000000000001B /* Utilities */,
 				AA0000000000000000000123 /* Assets.xcassets */,
+				AA000000000000000100034E /* Fonts */,
+				AA000000000000000100034A /* ScoreKeeper.storekit */,
+				AA000000000000000100034D /* Info.plist */,
 				AA0000000000000001000337 /* PrivacyInfo.xcprivacy */,
 				AA000000000000000000001C /* Preview Content */,
 				AA0000000000000001000328 /* Services */,
@@ -215,6 +238,8 @@
 				AA0000000000000000000017 /* Scoring */,
 				AA0000000000000000000018 /* Summary */,
 				AA0000000000000000000019 /* Components */,
+				AA0000000000000001000344 /* Paywall */,
+				AA0000000000000001000347 /* ReviewAsk */,
 				AA0000000000000001000329 /* Stats */,
 			);
 			path = Views;
@@ -271,9 +296,11 @@
 				AA000000000000000000011C /* AnimatedScoreChange.swift */,
 				AA000000000000000000011D /* ConfettiOverlay.swift */,
 				AA0000000000000001000313 /* PressableButtonStyle.swift */,
+				AA000000000000000100033A /* ClubhouseComponents.swift */,
 				AA0000000000000001000333 /* AppSurfaces.swift */,
 				AA0000000000000001000334 /* ScoringComponents.swift */,
 				AA0000000000000001000335 /* StandingsList.swift */,
+				AA000000000000000100034B /* CupMascotView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -282,6 +309,7 @@
 			isa = PBXGroup;
 			children = (
 				AA000000000000000000011E /* AppTheme.swift */,
+				AA0000000000000001000338 /* ClubhouseTheme.swift */,
 				AA000000000000000000011F /* PlayerColors.swift */,
 				AA0000000000000000000120 /* AppFonts.swift */,
 				AA0000000000000001000315 /* ThemeManager.swift */,
@@ -317,8 +345,26 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000001000322 /* StatsCalculator.swift */,
+				AA0000000000000001000340 /* StoreManager.swift */,
+				AA0000000000000001000342 /* ReviewAskManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		AA0000000000000001000344 /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000345 /* PaywallView.swift */,
+			);
+			path = Paywall;
+			sourceTree = "<group>";
+		};
+		AA0000000000000001000347 /* ReviewAsk */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000348 /* ReviewAskView.swift */,
+			);
+			path = ReviewAsk;
 			sourceTree = "<group>";
 		};
 		AA0000000000000001000329 /* Stats */ = {
@@ -328,6 +374,15 @@
 				AA0000000000000001000326 /* HeadToHeadView.swift */,
 			);
 			path = Stats;
+			sourceTree = "<group>";
+		};
+		AA000000000000000100034E /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				AA000000000000000100034F /* PressStart2P-Regular.ttf */,
+				AA0000000000000001000350 /* VT323-Regular.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -415,6 +470,8 @@
 			files = (
 				AA0000000000000000000223 /* Assets.xcassets in Resources */,
 				AA0000000000000001000336 /* PrivacyInfo.xcprivacy in Resources */,
+				AA0000000000000001000351 /* PressStart2P-Regular.ttf in Resources */,
+				AA0000000000000001000352 /* VT323-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,6 +532,13 @@
 				AA0000000000000001000330 /* AppSurfaces.swift in Sources */,
 				AA0000000000000001000331 /* ScoringComponents.swift in Sources */,
 				AA0000000000000001000332 /* StandingsList.swift in Sources */,
+				AA000000000000000100034C /* CupMascotView.swift in Sources */,
+				AA0000000000000001000339 /* ClubhouseTheme.swift in Sources */,
+				AA000000000000000100033B /* ClubhouseComponents.swift in Sources */,
+				AA0000000000000001000341 /* StoreManager.swift in Sources */,
+				AA0000000000000001000343 /* ReviewAskManager.swift in Sources */,
+				AA0000000000000001000346 /* PaywallView.swift in Sources */,
+				AA0000000000000001000349 /* ReviewAskView.swift in Sources */,
 				AA0000000000000000000222 /* PreviewSampleData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -534,7 +598,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = Y9DN5B7884;
+				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -599,7 +663,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = Y9DN5B7884;
+				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -630,11 +694,12 @@
 				CODE_SIGN_IDENTITY = "-";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ScoreKeeper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScoreKeeper;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -662,13 +727,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ScoreKeeper/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScoreKeeper;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -682,7 +748,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.icequeen.scorekeeper;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "ScoreKeeper App Store Build 3";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;

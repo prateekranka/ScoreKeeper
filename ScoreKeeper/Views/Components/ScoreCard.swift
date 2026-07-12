@@ -12,23 +12,22 @@ struct ScoreCard: View {
             Text("\(totalScore)")
                 .font(AppFonts.scoreMedium)
                 .monospacedDigit()
-                .foregroundStyle(isLeading ? PlayerColors.color(for: player.colorIndex) : .primary)
-                .contentTransition(.numericText())
+                .foregroundStyle(isLeading ? ClubhouseTheme.brass : ClubhouseTheme.ink)
+                .contentTransition(.numericText(value: Double(totalScore)))
 
             if isLeading {
-                Image(systemName: "crown.fill")
-                    .font(.caption)
-                    .foregroundStyle(.yellow)
-                    .transition(.scale.combined(with: .opacity))
+                BrassCrown()
+                    .transition(.scale(scale: 0.96).combined(with: .opacity))
             }
         }
         .padding(AppTheme.spacingMedium)
         .frame(minWidth: 100)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .background(isLeading ? PlayerColors.lightColor(for: player.colorIndex) : Color.clear)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium)
         .overlay {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
                 .strokeBorder(
-                    isLeading ? PlayerColors.color(for: player.colorIndex).opacity(0.5) : .clear,
+                    isLeading ? ClubhouseTheme.brass : .clear,
                     lineWidth: 2
                 )
         }

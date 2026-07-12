@@ -14,51 +14,28 @@ struct StandingsList: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: title, systemImage: "trophy")
+            HStack {
+                Text(title)
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                Spacer()
+                StampBadge(text: "Final")
+            }
 
             ForEach(standings) { standing in
-                HStack(spacing: AppTheme.spacingSmall) {
-                    Text("\(standing.rank)")
-                        .font(AppFonts.headline)
-                        .foregroundStyle(.secondary)
-                        .monospacedDigit()
-                        .frame(width: 28)
-
-                    PlayerBadge(
-                        name: standing.player.name,
-                        colorIndex: standing.player.colorIndex,
-                        size: .small,
-                        showName: false
-                    )
-
-                    Text(standing.player.name)
-                        .font(AppFonts.body)
-                        .lineLimit(1)
-
-                    Spacer()
-
-                    Text("\(standing.score)")
-                        .font(AppFonts.scoreSmall)
-                        .foregroundStyle(standing.isWinner ? PlayerColors.color(for: standing.player.colorIndex) : .primary)
-                        .monospacedDigit()
-
-                    if standing.isWinner {
-                        Image(systemName: "crown.fill")
-                            .foregroundStyle(.yellow)
-                            .accessibilityLabel("Winner")
-                    }
-                }
-                .padding(AppTheme.spacingSmall)
-                .background(
-                    standing.isWinner ? PlayerColors.lightColor(for: standing.player.colorIndex) : Color.clear,
-                    in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall)
+                LedgerRow(
+                    player: standing.player,
+                    score: standing.score,
+                    rank: standing.rank,
+                    isLeader: standing.isWinner,
+                    isHighlighted: standing.isWinner
                 )
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel("\(standing.player.name), rank \(standing.rank), score \(standing.score)\(standing.isWinner ? ", winner" : "")")
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 

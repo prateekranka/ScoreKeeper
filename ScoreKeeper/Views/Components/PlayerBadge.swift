@@ -40,17 +40,30 @@ struct PlayerBadge: View {
                 Circle()
                     .fill(PlayerColors.color(for: colorIndex))
                     .frame(width: size.diameter, height: size.diameter)
+                    .overlay {
+                        Circle()
+                            .stroke(ClubhouseTheme.paperCard, lineWidth: 3)
+                    }
+                    .overlay {
+                        Circle()
+                            .stroke(ClubhouseTheme.rule, lineWidth: 1)
+                    }
 
                 Text(initial)
                     .font(size.font)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(ClubhouseTheme.onFelt)
             }
 
             if showName {
-                Text(name)
-                    .font(size.nameFont)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
+                HStack(spacing: 4) {
+                    PlayerGlyph(colorIndex: colorIndex, font: AppFonts.caption)
+
+                    Text(name)
+                        .font(size.nameFont)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                }
             }
         }
         .accessibilityElement(children: .ignore)
@@ -59,5 +72,17 @@ struct PlayerBadge: View {
 
     private var initial: String {
         String(name.prefix(1)).uppercased()
+    }
+}
+
+struct PlayerGlyph: View {
+    let colorIndex: Int
+    var font: Font = AppFonts.caption
+
+    var body: some View {
+        Text(PlayerColors.glyph(for: colorIndex))
+            .font(font)
+            .foregroundStyle(PlayerColors.color(for: colorIndex))
+            .accessibilityHidden(true)
     }
 }

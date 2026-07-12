@@ -13,7 +13,7 @@ struct WhatsForDinnerScoringView: View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "Submit Meal Reveal",
+            actionTitle: "Submit",
             actionSystemImage: "fork.knife",
             action: submitRound
         ) {
@@ -28,7 +28,6 @@ struct WhatsForDinnerScoringView: View {
         } footer: {
             RoundHistoryStrip(session: session)
         }
-        .animation(.easeOut, value: session.sortedRounds.isEmpty)
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
     }
 
@@ -40,7 +39,7 @@ struct WhatsForDinnerScoringView: View {
                 HStack(spacing: AppTheme.spacingSmall) {
                     ForEach(session.players, id: \.id) { player in
                         Button {
-                            withAnimation {
+                            withAnimation(AppMotion.state) {
                                 callerID = player.id
                             }
                         } label: {
@@ -54,9 +53,9 @@ struct WhatsForDinnerScoringView: View {
 
                                 if callerID == player.id {
                                     Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(.green)
+                                        .foregroundStyle(ClubhouseTheme.felt)
                                         .font(.caption)
-                                        .transition(.scale.combined(with: .opacity))
+                                        .transition(.scale(scale: 0.96).combined(with: .opacity))
                                 }
                             }
                             .padding(AppTheme.spacingSmall)
@@ -74,8 +73,7 @@ struct WhatsForDinnerScoringView: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .animation(.easeOut, value: callerID)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private var playerHandsSection: some View {
@@ -92,7 +90,7 @@ struct WhatsForDinnerScoringView: View {
                     if callerID == player.id {
                         Label("Caller", systemImage: "checkmark.circle.fill")
                             .font(AppFonts.caption)
-                            .foregroundStyle(.green)
+                            .foregroundStyle(ClubhouseTheme.felt)
                     } else {
                         EmptyView()
                     }

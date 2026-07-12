@@ -1,5 +1,11 @@
 import SwiftUI
 
+extension Int {
+    func quantityText(_ singular: String, plural: String? = nil) -> String {
+        "\(self) \(self == 1 ? singular : plural ?? singular + "s")"
+    }
+}
+
 enum AppButtonRole {
     case primary(Color)
     case secondary
@@ -12,8 +18,9 @@ struct AppSurface<Content: View>: View {
     @ViewBuilder var content: Content
 
     var body: some View {
-        content
-            .appGlass(cornerRadius: cornerRadius, isInteractive: isInteractive)
+        ScorecardSurface(cornerRadius: cornerRadius, isInteractive: isInteractive) {
+            content
+        }
     }
 }
 
@@ -27,22 +34,78 @@ struct AppSectionHeader: View {
             if let systemImage {
                 Label(title, systemImage: systemImage)
                     .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
             } else {
                 Text(title)
                     .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
             }
 
             if let subtitle {
                 Text(subtitle)
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
+struct ReleaseSheetHeader<Trailing: View>: View {
+    let title: String
+    let subtitle: String
+    let systemImage: String
+    var titleIdentifier: String?
+    @ViewBuilder var trailing: Trailing
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            Image(systemName: systemImage)
+                .font(.headline)
+                .foregroundStyle(ClubhouseTheme.felt)
+                .frame(width: 40, height: 40)
+                .background(ClubhouseTheme.felt.opacity(0.10), in: Circle())
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                titleText
+
+                Text(subtitle)
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+
+            Spacer(minLength: AppTheme.spacingSmall)
+            trailing
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private var titleText: some View {
+        if let titleIdentifier {
+            Text(title)
+                .font(AppFonts.headline)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .accessibilityIdentifier(titleIdentifier)
+        } else {
+            Text(title)
+                .font(AppFonts.headline)
+                .foregroundStyle(ClubhouseTheme.ink)
+        }
+    }
+}
+
+extension ReleaseSheetHeader where Trailing == EmptyView {
+    init(title: String, subtitle: String, systemImage: String, titleIdentifier: String? = nil) {
+        self.init(title: title, subtitle: subtitle, systemImage: systemImage, titleIdentifier: titleIdentifier) {
+            EmptyView()
+        }
+    }
+}
+
 struct AppActionButton<LabelContent: View>: View {
+    @Environment(\.isEnabled) private var isEnabled
     let role: AppButtonRole
     let action: () -> Void
     @ViewBuilder var label: LabelContent
@@ -55,14 +118,20 @@ struct AppActionButton<LabelContent: View>: View {
         } label: {
             label
                 .font(AppFonts.headline)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity)
-                .frame(minHeight: 50)
+                .frame(minHeight: 52)
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .foregroundStyle(foregroundStyle)
-                .background(backgroundStyle, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
-                .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+                .background(backgroundStyle, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .strokeBorder(strokeStyle, lineWidth: role.isSecondary ? 1 : 0)
+                }
         }
         .buttonStyle(PressableButtonStyle())
+        .opacity(isEnabled ? 1 : 0.48)
         .sensoryFeedback(buttonHaptic, trigger: trigger)
     }
 
@@ -79,22 +148,35 @@ struct AppActionButton<LabelContent: View>: View {
 
     private var foregroundStyle: Color {
         switch role {
-        case .primary, .destructive:
-            .white
+        case .primary:
+            ClubhouseTheme.onPrimary
+        case .destructive:
+            ClubhouseTheme.onFelt
         case .secondary:
-            .primary
+            ClubhouseTheme.ink
         }
     }
 
     private var backgroundStyle: AnyShapeStyle {
         switch role {
         case .primary(let color):
-            AnyShapeStyle(color.gradient)
+            AnyShapeStyle(color)
         case .secondary:
-            AnyShapeStyle(.regularMaterial)
+            AnyShapeStyle(ClubhouseTheme.paperCard)
         case .destructive:
-            AnyShapeStyle(Color.red.gradient)
+            AnyShapeStyle(ClubhouseTheme.danger)
         }
+    }
+
+    private var strokeStyle: Color {
+        role.isSecondary ? ClubhouseTheme.panelBorder : .clear
+    }
+}
+
+private extension AppButtonRole {
+    var isSecondary: Bool {
+        if case .secondary = self { return true }
+        return false
     }
 }
 
@@ -145,7 +227,7 @@ struct AppGlassModifier: ViewModifier {
                 content.glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
             }
         } else {
-            content.background(.regularMaterial, in: RoundedRectangle(cornerRadius: cornerRadius))
+            content.background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
         }
     }
 }
@@ -157,13 +239,8 @@ struct StaggeredEntranceModifier: ViewModifier {
     let index: Int
 
     func body(content: Content) -> some View {
+        // Frequent navigation should arrive immediately. Rare celebration motion is
+        // owned by the destination itself rather than this global modifier.
         content
-            .opacity(visible ? 1 : 0)
-            .offset(y: visible ? 0 : 10)
-            .animation(
-                .spring(response: 0.45, dampingFraction: 0.78)
-                    .delay(Double(index) * 0.06),
-                value: visible
-            )
     }
 }

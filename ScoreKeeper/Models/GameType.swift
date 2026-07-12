@@ -38,9 +38,9 @@ enum GameType: String, Codable, CaseIterable, Identifiable {
 
     var color: Color {
         switch self {
-        case .generic: return Color(red: 0.58, green: 0.65, blue: 0.71)
-        case .whatsForDinner: return Color(red: 0.91, green: 0.12, blue: 0.55)
-        case .phase10: return Color(red: 0.20, green: 0.60, blue: 0.86)
+        case .generic: return ClubhouseTheme.felt
+        case .whatsForDinner: return PlayerColors.palette[4]
+        case .phase10: return PlayerColors.palette[3]
         }
     }
 

@@ -7,9 +7,11 @@ struct GameConfigView: View {
 
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
+    @Environment(StoreManager.self) private var storeManager
 
     @State private var winCondition: WinCondition = .highestScore
     @State private var phase10SkipOnFail = false
+    @State private var showPaywall = false
 
     var body: some View {
         ScrollView {
@@ -23,12 +25,18 @@ struct GameConfigView: View {
         .navigationTitle("Game Settings")
         .safeAreaInset(edge: .bottom) {
             startButton
-                .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.vertical, AppTheme.spacingSmall)
-                .background(.ultraThinMaterial)
+                .padding(.horizontal, AppTheme.spacingSmall)
+                .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+                .padding(.horizontal, AppTheme.spacingMedium)
+                .padding(.bottom, AppTheme.spacingSmall)
         }
         .onAppear {
             winCondition = gameType.defaultWinCondition
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(onUnlocked: startConfiguredGame)
+                .presentationDetents([.large])
         }
     }
 
@@ -39,14 +47,18 @@ struct GameConfigView: View {
                 .foregroundStyle(gameType.color)
             Text(gameType.displayName)
                 .font(AppFonts.title)
+                .foregroundStyle(ClubhouseTheme.ink)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(AppTheme.spacingMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private var configSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             if gameType == .generic {
                 Text("How to win?")
-                    .font(AppFonts.headline)
+                    .columnHeaderStyle()
 
                 Picker("Win Condition", selection: $winCondition) {
                     Text("Highest Score Wins").tag(WinCondition.highestScore)
@@ -60,25 +72,34 @@ struct GameConfigView: View {
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                     Toggle("No repeat rounds", isOn: $phase10SkipOnFail)
                         .font(AppFonts.body)
+                        .tint(ClubhouseTheme.felt)
 
                     Text("Players advance to the next phase every round, even when they do not complete the current phase.")
                         .font(AppFonts.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
             }
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private var startButton: some View {
-        AppActionButton(role: .primary(gameType.color)) {
-            let session = createSession()
-            router.push(.scoring(session.persistentModelID))
-        } label: {
+        AppActionButton(role: .primary(gameType.color), action: startConfiguredGame) {
             Label("Start Game", systemImage: "play.fill")
         }
         .accessibilityIdentifier("start_game_button")
+    }
+
+    private func startConfiguredGame() {
+        guard storeManager.canStartNewGame else {
+            showPaywall = true
+            return
+        }
+
+        let session = createSession()
+        storeManager.recordGameStarted()
+        router.push(.scoring(session.persistentModelID))
     }
 
     private func createSession() -> GameSession {

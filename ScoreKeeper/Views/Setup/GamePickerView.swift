@@ -32,9 +32,7 @@ struct GamePickerView: View {
         .appBackground()
         .navigationTitle("Games")
         .onAppear {
-            withAnimation(.spring(response: 0.5, dampingFraction: 0.78)) {
-                sectionsVisible = true
-            }
+            sectionsVisible = true
         }
     }
 }
@@ -48,14 +46,43 @@ private struct GamePickerHero: View {
                 systemImage: "dice"
             )
 
-            HStack(spacing: AppTheme.spacingSmall) {
-                SetupFeatureChip(title: "Smart defaults", systemImage: "wand.and.stars", tint: PlayerColors.palette[2])
-                SetupFeatureChip(title: "Saved crews", systemImage: "person.2.fill", tint: PlayerColors.palette[1])
-                SetupFeatureChip(title: "Fast rematch", systemImage: "arrow.counterclockwise", tint: PlayerColors.palette[0])
-            }
+            SetupFeatureStrip()
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+    }
+}
+
+private struct SetupFeature: Identifiable {
+    let title: String
+    let systemImage: String
+    let tint: Color
+    var id: String { title }
+}
+
+private struct SetupFeatureStrip: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private let features = [
+        SetupFeature(title: "Smart defaults", systemImage: "wand.and.stars", tint: PlayerColors.palette[2]),
+        SetupFeature(title: "Saved crews", systemImage: "person.2.fill", tint: PlayerColors.palette[1]),
+        SetupFeature(title: "Fast rematch", systemImage: "arrow.counterclockwise", tint: PlayerColors.palette[0])
+    ]
+
+    var body: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
+            : AnyLayout(HStackLayout(spacing: AppTheme.spacingSmall))
+
+        layout {
+            ForEach(features) { feature in
+                SetupFeatureChip(
+                    title: feature.title,
+                    systemImage: feature.systemImage,
+                    tint: feature.tint
+                )
+            }
+        }
     }
 }
 
@@ -65,21 +92,20 @@ private struct SetupFeatureChip: View {
     let tint: Color
 
     var body: some View {
-        VStack(spacing: 6) {
+        HStack(spacing: 6) {
             Image(systemName: systemImage)
-                .font(.headline)
+                .font(.caption.weight(.semibold))
                 .foregroundStyle(tint)
                 .accessibilityHidden(true)
 
             Text(title)
                 .font(AppFonts.caption)
-                .multilineTextAlignment(.center)
-                .minimumScaleFactor(0.78)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .lineLimit(2)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 70)
-        .padding(.horizontal, 4)
-        .background(tint.opacity(0.12), in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+        .frame(minHeight: 44)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -97,7 +123,7 @@ private struct SmartSetupPreview: View {
             FeatureRow(systemImage: "fork.knife.circle.fill", title: "Dinner", detail: "Caller, card values, lowest total wins")
         }
         .padding(AppTheme.spacingMedium)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -116,9 +142,10 @@ private struct FeatureRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.ink)
                 Text(detail)
                     .font(AppFonts.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
                     .lineLimit(2)
             }
 
