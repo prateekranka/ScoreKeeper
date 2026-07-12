@@ -96,10 +96,20 @@ struct SessionLoader<Content: View>: View {
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
-        if let session = modelContext.model(for: sessionID) as? GameSession {
+        if let session = fetchSession() {
             content(session)
         } else {
             ContentUnavailableView("Game Not Found", systemImage: "exclamationmark.triangle")
         }
+    }
+
+    private func fetchSession() -> GameSession? {
+        let descriptor = FetchDescriptor<GameSession>(
+            predicate: #Predicate<GameSession> { session in
+                session.persistentModelID == sessionID
+            }
+        )
+
+        return try? modelContext.fetch(descriptor).first
     }
 }
