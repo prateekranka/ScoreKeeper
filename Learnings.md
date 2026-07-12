@@ -26,9 +26,9 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 
 ## Current Worktree Snapshot
 
-- Current worktree: `/Users/prateekranka/Cowork/billbandit_fable/ScoreKeeper-redesign` on branch `redesign/ios26-scorecard`.
-- Last observed commit: `3123c93 Round E: pixel-font pass — layout fixes, score-sheet tile icons, scoring escape hatch`.
-- The July 12 premium-polish pass is uncommitted until explicitly reviewed: selective pixel typography, native SF task typography, refined light/dark palette, 10/14/18 radii, restrained elevation, compact Home metrics, adaptive game-picker features, and polished paywall/review surfaces.
+- Canonical worktree: `/Users/prateekranka/Cowork/ScoreKeeper`. The remote default branch now includes the complete trophy-mascot pixel redesign through merged PR #1 (`9246145`).
+- The former default UI is preserved locally under `archive/pre-pixel-release-20260712` and `archive/old-default-20260712`; do not use those branches for release builds.
+- App Store release work continues on `codex/app-store-release` from the merged canonical redesign.
 
 ## App Store Readiness
 
@@ -68,6 +68,7 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 - `.asc/metadata` contains English app-info/version drafts and passes `asc metadata validate`. URLs, copyright, review contact, categories, age rating, privacy answers, and pricing still require account-owner input.
 - `docs/privacy-policy.md` reflects the redesign implementation: SwiftData/UserDefaults on-device storage, StoreKit purchases, and no analytics, tracking, ads, server, or Keychain claim.
 - `screenshots/app-store-raw/` contains a 14-screen iPhone 17 Pro Max tour; `screenshots/app-store-69/` is the curated 10-screen upload set. Both use 1320×2868 PNGs and pass `asc screenshots validate --device-type IPHONE_69`.
-- Distribution archive compilation reaches the Apple Distribution identity `CAE26F5B5BED4BC39DFA4BCAD84727C7ED68795F` and profile `ScoreKeeper App Store Build 2`, but the dedicated `ScoreKeeper-signing.keychain-db` is locked in this environment. Unlock it before running the manual archive/export again.
+- Distribution signing uses Apple Distribution identity `CAE26F5B5BED4BC39DFA4BCAD84727C7ED68795F` and installed profile `ScoreKeeper App Store Build 3`; archive only from the canonical trophy-mascot code.
 - `asc auth status`/`asc auth doctor` show no App Store Connect API credentials. Upload and metadata apply require `ASC_KEY_ID`, `ASC_ISSUER_ID`, and a private `.p8` path, plus public support/privacy URLs.
 - The sibling `ColorFlow` GitHub repository (`prateekranka/Coloringbook`) has Actions secrets named `ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_KEY_P8_BASE64`; GitHub does not expose secret values locally, and no public support/privacy URLs were found there.
+- Final PipCount marketing screenshots are generated with the ParthJadhav screenshot editor under `release/app-store-screenshots/`; the upload-ready 6.9-inch English set lives at `screenshots/app-store-final/iphone-6.9-en/`.
