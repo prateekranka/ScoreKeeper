@@ -39,7 +39,7 @@ final class ReviewAskManager {
             return
         }
 
-        guard (completedGameCount == 2 || completedGameCount == 5),
+        guard completedGameCount >= 2,
               !isFirstAppSession,
               !paywallPresentedThisSession,
               !defaults.bool(forKey: ReviewAskKeys.didAcceptReviewAsk) else {

@@ -155,8 +155,11 @@ final class StoreManager {
             isUnlocked = transaction.revocationDate == nil
         }
 
-        if !foundCurrentEntitlement, defaults.bool(forKey: Keys.proUnlocked) {
-            isUnlocked = true
+        if !foundCurrentEntitlement {
+            let arguments = ProcessInfo.processInfo.arguments
+            let forceUnlockForTesting = arguments.contains("-in-memory-store")
+                && arguments.contains("-unlock-pro")
+            isUnlocked = forceUnlockForTesting
         }
     }
 
