@@ -24,8 +24,8 @@ struct GameTypeTile: View {
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 168)
-            .padding(.vertical, AppTheme.spacingLarge)
+            .frame(minHeight: 144)
+            .padding(.vertical, 12)
             .padding(.horizontal, AppTheme.spacingMedium)
             .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
             .overlay {
@@ -37,7 +37,7 @@ struct GameTypeTile: View {
                     .inset(by: 4)
                     .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.5)
             }
-            .shadow(color: ClubhouseTheme.paperShadow, radius: 10, y: 4)
+            .shadow(color: ClubhouseTheme.paperShadow, radius: 5, y: 2)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(accessibilityID ?? "")

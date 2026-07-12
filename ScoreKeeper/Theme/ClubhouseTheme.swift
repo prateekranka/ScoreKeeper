@@ -1,28 +1,28 @@
 import SwiftUI
 
 struct ClubhouseTheme {
-    static let paper = Color(light: 0xE6E1D3, dark: 0x211711)
-    static let paperCard = Color(light: 0xF2EEE2, dark: 0x2E2118)
-    static let paperSunken = Color(light: 0xDED8C6, dark: 0x1B1209)
-    static let ink = Color(light: 0x33383D, dark: 0xF2E3C2)
-    static let inkMuted = Color(light: 0x5F594D, dark: 0xB29578)
-    static let felt = Color(light: 0x3F6630, dark: 0xA8B060)
-    static let feltDeep = Color(light: 0x2E4F24, dark: 0x2E4F24)
-    static let lacquer = Color(light: 0xA93226, dark: 0xE2574B)
-    static let brass = Color(light: 0x7A6210, dark: 0xE9A63A)
-    static let onFelt = Color(light: 0xF4F2EA, dark: 0xF4F2EA)
-    static let primaryFill = Color(light: 0x33383D, dark: 0xF2E3C2)
-    static let onPrimary = Color(light: 0xF4F2EA, dark: 0x211711)
-    static let panelBorder = Color(light: 0xB8B2A0, dark: 0x4A3626)
-    static let woodgrain = Color(light: 0xB8B2A0, dark: 0x5C3D24)
+    static let paper = Color(light: 0xF4F2EC, dark: 0x151310)
+    static let paperCard = Color(light: 0xFFFDF8, dark: 0x211E19)
+    static let paperSunken = Color(light: 0xEAE6DC, dark: 0x100F0D)
+    static let ink = Color(light: 0x242522, dark: 0xF5F1E8)
+    static let inkMuted = Color(light: 0x65645E, dark: 0xB9B2A6)
+    static let felt = Color(light: 0x2F664B, dark: 0x74B58E)
+    static let feltDeep = Color(light: 0x244F3A, dark: 0x4B8D68)
+    static let lacquer = Color(light: 0xA73D32, dark: 0xF07164)
+    static let brass = Color(light: 0x80661C, dark: 0xE4B44A)
+    static let onFelt = Color(light: 0xFFFFFF, dark: 0x102016)
+    static let primaryFill = Color(light: 0x242522, dark: 0xF5F1E8)
+    static let onPrimary = Color(light: 0xFFFFFF, dark: 0x151310)
+    static let panelBorder = Color(light: 0xCBC6BA, dark: 0x403A32)
+    static let woodgrain = Color(light: 0xCBC6BA, dark: 0x584634)
     static let danger = lacquer
 
     static var rule: Color {
-        ink.opacity(0.16)
+        ink.opacity(0.14)
     }
 
     static var paperShadow: Color {
-        ink.opacity(0.08)
+        ink.opacity(0.10)
     }
 }
 

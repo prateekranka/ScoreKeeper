@@ -26,7 +26,6 @@ struct GenericScoringView: View {
         } footer: {
             RoundHistoryStrip(session: session)
         }
-        .animation(.easeOut, value: session.sortedRounds.isEmpty)
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
     }
 
@@ -280,7 +279,9 @@ private struct CompactScoreStepper: View {
                     .foregroundStyle(ClubhouseTheme.ink)
             }
             .frame(width: 44)
-            .accessibilityLabel("Round score \(value)")
+            .accessibilityElement(children: .ignore)
+            .accessibilityIdentifier(identifierPrefix + "score")
+            .accessibilityLabel("Score \(value)")
 
             stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
         }

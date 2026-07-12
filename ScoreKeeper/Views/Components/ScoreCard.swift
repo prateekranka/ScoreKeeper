@@ -17,7 +17,7 @@ struct ScoreCard: View {
 
             if isLeading {
                 BrassCrown()
-                    .transition(.scale.combined(with: .opacity))
+                    .transition(.scale(scale: 0.96).combined(with: .opacity))
             }
         }
         .padding(AppTheme.spacingMedium)

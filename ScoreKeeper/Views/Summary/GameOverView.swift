@@ -38,18 +38,17 @@ struct GameOverView: View {
                 }
 
                 if !reduceMotion, !ProcessInfo.processInfo.arguments.contains("-in-memory-store") {
-                    ConfettiOverlay()
-                        .ignoresSafeArea()
-                        .opacity(sectionsVisible ? 1 : 0)
-                        .animation(.easeOut(duration: 0.6).delay(0.3), value: sectionsVisible)
+                    if sectionsVisible {
+                        ConfettiOverlay()
+                            .ignoresSafeArea()
+                    }
                 }
             }
             .appBackground()
             .onAppear {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.78)) {
-                    sectionsVisible = true
-                }
+                sectionsVisible = true
             }
+            .sensoryFeedback(.success, trigger: sectionsVisible)
             .task(id: session.persistentModelID) {
                 try? await Task.sleep(for: .milliseconds(750))
                 evaluateReviewAskIfNeeded()
@@ -107,6 +106,7 @@ private struct WinnerHeroSection: View {
     let session: GameSession
     let winners: [Player]
     let sectionsVisible: Bool
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: AppTheme.spacingSmall) {
@@ -115,13 +115,15 @@ private struct WinnerHeroSection: View {
                     .font(AppFonts.scoreDisplay)
                     .foregroundStyle(session.gameType.color)
                     .accessibilityHidden(true)
-                    .scaleEffect(sectionsVisible ? 1 : 0.5)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.5).delay(0.2), value: sectionsVisible)
+                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
+                    .opacity(sectionsVisible ? 1 : 0)
+                    .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.06), value: sectionsVisible)
             } else {
                 CupMascotView()
                     .frame(width: 72, height: 60)
-                    .scaleEffect(sectionsVisible ? 1 : 0.5)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.5).delay(0.2), value: sectionsVisible)
+                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
+                    .opacity(sectionsVisible ? 1 : 0)
+                    .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.06), value: sectionsVisible)
             }
 
             winnerText

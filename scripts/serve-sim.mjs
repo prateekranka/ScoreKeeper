@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 
 const project = "ScoreKeeper.xcodeproj";
 const scheme = "ScoreKeeper";
-const bundleId = "com.prateekranka.scorekeeper";
+const bundleId = "com.icequeen.scorekeeper";
 const derivedDataPath = "build/ServeSimDerivedData";
 
 const passthroughArgs = process.argv.slice(2);

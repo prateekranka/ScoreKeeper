@@ -7,31 +7,24 @@ struct PaywallView: View {
     var onUnlocked: (() -> Void)?
 
     @State private var isCompleting = false
-    @State private var showBrassConfetti = false
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
-            ClubhouseTheme.paper.ignoresSafeArea()
+        VStack(spacing: 0) {
+            sheetHeader
 
             ScrollView {
-                VStack(spacing: AppTheme.spacingLarge) {
-                    membershipCard
-                    restoreButton
+                VStack(spacing: AppTheme.spacingMedium) {
+                    unlockSummary
+                    benefitsPanel
                 }
-                .padding(AppTheme.spacingMedium)
-                .padding(.top, AppTheme.spacingXLarge)
+                .padding(.horizontal, AppTheme.spacingMedium)
+                .padding(.bottom, AppTheme.spacingLarge)
             }
 
-            closeButton
-                .padding(AppTheme.spacingMedium)
-
-            if showBrassConfetti {
-                BrassConfetti()
-                    .transition(.opacity)
-                    .allowsHitTesting(false)
-            }
+            purchaseFooter
         }
-        .accessibilityIdentifier("paywall_sheet")
+        .appBackground()
+        .sensoryFeedback(.success, trigger: storeManager.isUnlocked)
         .onAppear {
             storeManager.paywallPresentedThisSession = true
             Task { await storeManager.loadProduct() }
@@ -43,72 +36,134 @@ struct PaywallView: View {
         }
     }
 
-    private var membershipCard: some View {
-        VStack(spacing: AppTheme.spacingLarge) {
-            VStack(spacing: AppTheme.spacingSmall) {
-                Text("ScoreKeeper Pro")
-                    .font(AppFonts.display)
-                    .foregroundStyle(ClubhouseTheme.ink)
-                    .multilineTextAlignment(.center)
-
-                StampBadge(text: "LIFETIME")
-            }
-
-            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                benefitLine("Unlimited games")
-                benefitLine("One-time purchase, no subscription")
-                benefitLine("Every future feature included")
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            statusText
-
-            AppActionButton(role: .primary(ClubhouseTheme.felt)) {
-                Task {
-                    if await storeManager.purchase() {
-                        completeUnlockFlow()
-                    }
-                }
-            } label: {
-                Label("Unlock forever — \(storeManager.displayPrice)", systemImage: "checkmark.seal.fill")
-            }
-            .accessibilityIdentifier("paywall_unlock_button")
-            .disabled(isPurchaseButtonDisabled)
-
-            Text("Made by one person who also just wanted game night to be simpler. — Prateek")
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
+    private var sheetHeader: some View {
+        ReleaseSheetHeader(
+            title: "ScoreKeeper Pro",
+            subtitle: "One unlock. Every game night.",
+            systemImage: "trophy.fill",
+            titleIdentifier: "paywall_title"
+        ) {
+            closeButton
         }
-        .padding(AppTheme.spacingLarge)
-        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
-                .strokeBorder(ClubhouseTheme.ink.opacity(0.25), lineWidth: 1)
-                .padding(5)
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
-                .strokeBorder(ClubhouseTheme.brass.opacity(0.8), lineWidth: 1)
-                .padding(10)
-        }
-        .shadow(color: ClubhouseTheme.paperShadow, radius: 14, y: 6)
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .padding(.vertical, AppTheme.spacingSmall)
     }
 
-    private var restoreButton: some View {
-        Button("Restore purchase") {
-            Task {
-                if await storeManager.restore() {
-                    completeUnlockFlow()
+    private var unlockSummary: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            HStack(alignment: .firstTextBaseline, spacing: AppTheme.spacingSmall) {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("LIFETIME UNLOCK")
+                        .columnHeaderStyle()
+
+                    Text(storeManager.displayPrice)
+                        .font(AppFonts.scoreDisplay)
+                        .monospacedDigit()
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .accessibilityLabel("\(storeManager.displayPrice), one-time purchase")
                 }
+
+                Spacer()
+
+                Label("ONE-TIME", systemImage: "checkmark.circle.fill")
+                    .font(AppFonts.columnHeader)
+                    .foregroundStyle(ClubhouseTheme.feltDeep)
+                    .padding(.horizontal, 10)
+                    .frame(minHeight: 32)
+                    .background(ClubhouseTheme.felt.opacity(0.10), in: Capsule())
+                    .overlay {
+                        Capsule()
+                            .strokeBorder(ClubhouseTheme.felt.opacity(0.24), lineWidth: 1)
+                    }
+            }
+
+            Rectangle()
+                .fill(ClubhouseTheme.rule)
+                .frame(height: 1)
+
+            Text("Your first 25 games are free. Pro removes the game limit permanently.")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(AppTheme.spacingMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+    }
+
+    private var benefitsPanel: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            AppSectionHeader(
+                title: "What Pro unlocks",
+                subtitle: "The same ScoreKeeper, with no game limit.",
+                systemImage: "checkmark.seal.fill"
+            )
+
+            VStack(spacing: 0) {
+                benefitRow(
+                    systemImage: "infinity",
+                    title: "Unlimited scorecards",
+                    detail: "Start as many games as your table can handle"
+                )
+                divider
+                benefitRow(
+                    systemImage: "creditcard.fill",
+                    title: "Pay once",
+                    detail: "No subscription, renewal, or recurring charge"
+                )
+                divider
+                benefitRow(
+                    systemImage: "dice.fill",
+                    title: "Every game mode",
+                    detail: "Scoreboard, Phase 10, and What's for Dinner"
+                )
             }
         }
-        .font(AppFonts.body)
-        .foregroundStyle(ClubhouseTheme.inkMuted)
-        .frame(minHeight: 44)
-        .accessibilityIdentifier("paywall_restore_button")
-        .disabled(isPurchaseButtonDisabled)
+        .padding(AppTheme.spacingMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+    }
+
+    private var divider: some View {
+        Rectangle()
+            .fill(ClubhouseTheme.rule)
+            .frame(height: 1)
+            .padding(.leading, 44)
+    }
+
+    private var purchaseFooter: some View {
+        glassGroup(spacing: AppTheme.spacingSmall) {
+            VStack(spacing: AppTheme.spacingSmall) {
+                statusText
+
+                AppActionButton(role: .primary(ClubhouseTheme.felt)) {
+                    Task {
+                        if await storeManager.purchase() {
+                            completeUnlockFlow()
+                        }
+                    }
+                } label: {
+                    purchaseButtonLabel
+                }
+                .accessibilityIdentifier("paywall_unlock_button")
+                .disabled(isPurchaseButtonDisabled)
+
+                Button("Restore purchase") {
+                    Task {
+                        if await storeManager.restore() {
+                            completeUnlockFlow()
+                        }
+                    }
+                }
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .frame(minHeight: 44)
+                .accessibilityIdentifier("paywall_restore_button")
+                .disabled(isPurchaseButtonDisabled)
+            }
+            .padding(AppTheme.spacingSmall)
+            .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
+        }
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .padding(.bottom, AppTheme.spacingSmall)
     }
 
     private var closeButton: some View {
@@ -116,11 +171,10 @@ struct PaywallView: View {
             dismiss()
         } label: {
             Image(systemName: "xmark")
-                .font(.headline)
+                .font(.body.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.ink)
                 .frame(width: 44, height: 44)
-                .background(ClubhouseTheme.paperCard, in: Circle())
-                .overlay { Circle().strokeBorder(ClubhouseTheme.rule, lineWidth: 1) }
+                .appGlass(cornerRadius: 22, isInteractive: true)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityLabel("Close")
@@ -133,20 +187,36 @@ struct PaywallView: View {
         case .idle:
             EmptyView()
         case .loading:
-            Text("Loading membership details...")
+            Text("Loading purchase details...")
                 .statusStyle()
         case .purchasing:
-            Text("Unlocking...")
+            Text("Unlocking ScoreKeeper Pro...")
                 .statusStyle()
         case .restoring:
             Text("Checking past purchases...")
                 .statusStyle()
         case .success:
             Text("Unlocked. Starting your game...")
-                .statusStyle(color: ClubhouseTheme.brass)
+                .statusStyle(color: ClubhouseTheme.felt)
         case .failed(let message):
             Text(message)
                 .statusStyle(color: ClubhouseTheme.lacquer)
+        }
+    }
+
+    @ViewBuilder
+    private var purchaseButtonLabel: some View {
+        switch storeManager.purchaseState {
+        case .loading, .purchasing, .restoring:
+            HStack(spacing: AppTheme.spacingSmall) {
+                ProgressView()
+                    .tint(ClubhouseTheme.onFelt)
+                Text("Please wait")
+            }
+        case .success:
+            Label("Pro unlocked", systemImage: "checkmark.seal.fill")
+        case .idle, .failed:
+            Label("Unlock Pro — \(storeManager.displayPrice)", systemImage: "checkmark.seal.fill")
         }
     }
 
@@ -159,53 +229,42 @@ struct PaywallView: View {
         }
     }
 
-    private func benefitLine(_ text: String) -> some View {
+    private func benefitRow(systemImage: String, title: String, detail: String) -> some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: "checkmark.circle.fill")
+            Image(systemName: systemImage)
+                .font(.body.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.felt)
+                .frame(width: 36, height: 36)
+                .background(ClubhouseTheme.felt.opacity(0.10), in: Circle())
                 .accessibilityHidden(true)
 
-            Text(text)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(AppFonts.body.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Text(detail)
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Spacer(minLength: 0)
         }
+        .padding(.vertical, AppTheme.spacingSmall)
+        .accessibilityElement(children: .combine)
     }
 
     private func completeUnlockFlow() {
         guard storeManager.isUnlocked, !isCompleting else { return }
 
         isCompleting = true
-        withAnimation(.easeOut(duration: 0.2)) {
-            showBrassConfetti = true
-        }
 
         Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(650))
+            try? await Task.sleep(for: .milliseconds(300))
             dismiss()
             onUnlocked?()
         }
-    }
-}
-
-private struct BrassConfetti: View {
-    private let offsets: [CGSize] = [
-        .init(width: -110, height: -140),
-        .init(width: 80, height: -120),
-        .init(width: -60, height: 30),
-        .init(width: 120, height: 60),
-        .init(width: 0, height: -30)
-    ]
-
-    var body: some View {
-        ZStack {
-            ForEach(offsets.indices, id: \.self) { index in
-                Circle()
-                    .fill(index.isMultiple(of: 2) ? ClubhouseTheme.brass : ClubhouseTheme.felt)
-                    .frame(width: 12, height: 12)
-                    .offset(offsets[index])
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

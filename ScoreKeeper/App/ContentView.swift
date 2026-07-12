@@ -75,6 +75,7 @@ struct ContentView: View {
         .sheet(isPresented: $reviewAskManager.isPresentingReviewAsk) {
             ReviewAskView()
                 .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
         .onAppear(perform: resetOnboardingIfRequested)
     }
@@ -167,7 +168,7 @@ private struct OnboardingView: View {
             return
         }
 
-        withAnimation(reduceMotion ? nil : .spring(response: 0.45, dampingFraction: 0.78)) {
+        withAnimation(reduceMotion ? AppMotion.fade : AppMotion.page) {
             selectedPage += 1
         }
     }
@@ -203,12 +204,11 @@ private struct OnboardingPageView: View {
                 VStack(spacing: AppTheme.spacingSmall) {
                     ForEach(Array(page.highlights.enumerated()), id: \.element) { index, highlight in
                         OnboardingHighlightRow(highlight: highlight, tint: page.tint)
-                            .opacity(highlightsVisible || reduceMotion ? 1 : 0)
-                            .offset(y: highlightsVisible || reduceMotion ? 0 : 8)
+                            .opacity(highlightsVisible ? 1 : 0)
+                            .offset(y: highlightsVisible || reduceMotion ? 0 : 6)
                             .animation(
-                                reduceMotion ? nil :
-                                    .spring(response: 0.4, dampingFraction: 0.7)
-                                    .delay(Double(index) * 0.06),
+                                reduceMotion ? AppMotion.fade :
+                                    AppMotion.page.delay(Double(index) * 0.04),
                                 value: highlightsVisible
                             )
                     }
@@ -232,8 +232,9 @@ private struct OnboardingArtwork: View {
             .padding(AppTheme.spacingMedium)
         .frame(maxWidth: .infinity)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-        .scaleEffect(isVisible || reduceMotion ? 1 : 0.96)
-        .animation(reduceMotion ? nil : .spring(response: 0.5, dampingFraction: 0.72), value: isVisible)
+        .scaleEffect(isVisible || reduceMotion ? 1 : 0.97)
+        .opacity(isVisible ? 1 : 0)
+        .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped, value: isVisible)
         .accessibilityHidden(true)
     }
 
@@ -434,14 +435,17 @@ private struct OnboardingHighlightRow: View {
 private struct OnboardingPageDots: View {
     let count: Int
     let selectedPage: Int
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(spacing: 7) {
             ForEach(0..<count, id: \.self) { index in
                 Circle()
                     .fill(index == selectedPage ? ClubhouseTheme.felt : ClubhouseTheme.ink.opacity(0.28))
-                    .frame(width: index == selectedPage ? 10 : 7, height: index == selectedPage ? 10 : 7)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.75), value: selectedPage)
+                    .frame(width: 8, height: 8)
+                    .scaleEffect(index == selectedPage && !reduceMotion ? 1.25 : 1)
+                    .opacity(index == selectedPage ? 1 : 0.55)
+                    .animation(reduceMotion ? AppMotion.fade : AppMotion.state, value: selectedPage)
             }
         }
         .accessibilityLabel("Onboarding page \(selectedPage + 1) of \(count)")

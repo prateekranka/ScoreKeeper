@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HeadToHeadView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(NavigationRouter.self) private var router
     @Query(sort: \GameSession.createdAt, order: .reverse) private var allSessions: [GameSession]
     @State private var playerA = ""
@@ -244,10 +245,12 @@ struct HeadToHeadView: View {
 
     private func toggleExpanded(player: String, record: H2HRecord) {
         let key = key(player: player, record: record)
-        if expandedKeys.contains(key) {
-            expandedKeys.remove(key)
-        } else {
-            expandedKeys.insert(key)
+        withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
+            if expandedKeys.contains(key) {
+                expandedKeys.remove(key)
+            } else {
+                expandedKeys.insert(key)
+            }
         }
     }
 }

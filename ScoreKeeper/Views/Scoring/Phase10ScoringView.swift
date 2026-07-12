@@ -33,7 +33,6 @@ struct Phase10ScoringView: View {
         } footer: {
             RoundHistoryStrip(session: session)
         }
-        .animation(.easeOut, value: session.sortedRounds.isEmpty)
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
         .alert("Phase 10 complete", isPresented: $showGameCompleteAlert) {
             Button("Keep Playing", role: .cancel) {}

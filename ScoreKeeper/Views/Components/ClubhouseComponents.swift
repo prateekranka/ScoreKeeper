@@ -12,7 +12,11 @@ struct ScorecardSurface<Content: View>: View {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
             }
-            .shadow(color: ClubhouseTheme.paperShadow, radius: isInteractive ? 12 : 10, y: isInteractive ? 5 : 4)
+            .shadow(
+                color: isInteractive ? ClubhouseTheme.paperShadow : .clear,
+                radius: isInteractive ? 6 : 0,
+                y: isInteractive ? 3 : 0
+            )
     }
 }
 

@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(NavigationRouter.self) private var router
     @Environment(ThemeManager.self) private var themeManager
     @Environment(StoreManager.self) private var storeManager
@@ -103,13 +104,13 @@ struct HomeView: View {
     }
 
     private func cycleTheme() {
-        themeManager.cycle()
+        withAnimation(reduceMotion ? nil : AppMotion.theme) {
+            themeManager.cycle()
+        }
     }
 
     private func revealSections() {
-        withAnimation(.spring(response: 0.5, dampingFraction: 0.78)) {
-            sectionsVisible = true
-        }
+        sectionsVisible = true
     }
 
     private func resultText(for session: GameSession) -> String? {
@@ -182,7 +183,7 @@ private struct NewGameButton: View {
     let action: () -> Void
 
     var body: some View {
-        AppActionButton(role: .primary(PlayerColors.palette[3]), action: action) {
+        AppActionButton(role: .primary(ClubhouseTheme.felt), action: action) {
             Label("New Game", systemImage: "plus.circle.fill")
         }
         .accessibilityIdentifier("new_game_button")
@@ -216,39 +217,50 @@ private struct HomeDashboardRow: View {
     let playersCount: Int
 
     var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            HomeMetricCard(title: "Games", value: "\(gamesCount)", systemImage: "trophy.fill", tint: ClubhouseTheme.brass)
-            HomeMetricCard(title: "Active", value: "\(activeCount)", systemImage: "play.circle.fill", tint: ClubhouseTheme.felt)
-            HomeMetricCard(title: "Players", value: "\(playersCount)", systemImage: "person.2.fill", tint: PlayerColors.palette[1])
+        HStack(spacing: 0) {
+            HomeMetric(title: "Games", value: gamesCount, tint: ClubhouseTheme.brass)
+            dashboardDivider
+            HomeMetric(title: "Active", value: activeCount, tint: ClubhouseTheme.felt)
+            dashboardDivider
+            HomeMetric(title: "Players", value: playersCount, tint: PlayerColors.palette[1])
         }
+        .padding(.vertical, AppTheme.spacingSmall)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium)
+    }
+
+    private var dashboardDivider: some View {
+        Rectangle()
+            .fill(ClubhouseTheme.rule)
+            .frame(width: 1, height: 40)
     }
 }
 
-private struct HomeMetricCard: View {
+private struct HomeMetric: View {
     let title: String
-    let value: String
-    let systemImage: String
+    let value: Int
     let tint: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Image(systemName: systemImage)
-                .foregroundStyle(tint)
-                .accessibilityHidden(true)
-
-            Text(value)
-                .font(AppFonts.scoreSmall)
+        VStack(spacing: 3) {
+            Text("\(value)")
+                .font(.title2.weight(.bold))
                 .monospacedDigit()
-                .contentTransition(.numericText(value: Double(Int(value) ?? 0)))
+                .contentTransition(.numericText(value: Double(value)))
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            Text(title)
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
+            HStack(spacing: 5) {
+                Circle()
+                    .fill(tint)
+                    .frame(width: 6, height: 6)
+                    .accessibilityHidden(true)
+
+                Text(title)
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(AppTheme.spacingSmall)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 4)
         .accessibilityElement(children: .combine)
     }
 }
@@ -644,8 +656,9 @@ private struct ToolSheetContent: View {
                     .font(.system(size: 72, weight: .heavy, design: .default))
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.ink)
+                    .contentTransition(.numericText(value: Double(dieRoll)))
                 AppActionButton(role: .primary(tool.tint)) {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                    withAnimation(AppMotion.state) {
                         dieRoll = Int.random(in: 1...6)
                     }
                 } label: {
@@ -657,8 +670,9 @@ private struct ToolSheetContent: View {
                 Text(selectedStarter?.name ?? "Pick from the active game")
                     .font(AppFonts.scoreSmall)
                     .multilineTextAlignment(.center)
+                    .contentTransition(.opacity)
                 AppActionButton(role: .primary(tool.tint)) {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                    withAnimation(AppMotion.state) {
                         selectedStarter = activeGame?.players.randomElement()
                     }
                 } label: {

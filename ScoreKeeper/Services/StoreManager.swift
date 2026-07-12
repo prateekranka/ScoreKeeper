@@ -5,8 +5,9 @@ import StoreKit
 @MainActor
 @Observable
 final class StoreManager {
-    static let productID = "com.icequeen.scorekeeper.pro"
-    static let freeGameLimit = 10
+    // Keep this identifier aligned with the existing App Store Connect product.
+    static let productID = "com.icequeen.scorekeeper.unlimited"
+    static let freeGameLimit = 25
 
     enum PurchaseState: Equatable {
         case idle
@@ -40,7 +41,7 @@ final class StoreManager {
     }
 
     var shouldShowFreeGamesSignal: Bool {
-        !isUnlocked && gamesStartedCount >= 7
+        !isUnlocked && gamesStartedCount >= Self.freeGameLimit - 3
     }
 
     @ObservationIgnored private let defaults: UserDefaults

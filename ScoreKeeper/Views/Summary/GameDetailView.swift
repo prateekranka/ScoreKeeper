@@ -25,9 +25,7 @@ struct GameDetailView: View {
             .navigationTitle("Game Details")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
-                withAnimation(.spring(response: 0.5, dampingFraction: 0.78)) {
-                    sectionsVisible = true
-                }
+                sectionsVisible = true
             }
         }
     }

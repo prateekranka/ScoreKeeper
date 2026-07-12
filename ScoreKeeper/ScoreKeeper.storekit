@@ -15,7 +15,7 @@
           "locale" : "en_US"
         }
       ],
-      "productID" : "com.icequeen.scorekeeper.pro",
+      "productID" : "com.icequeen.scorekeeper.unlimited",
       "referenceName" : "ScoreKeeper Pro",
       "type" : "NonConsumable"
     }

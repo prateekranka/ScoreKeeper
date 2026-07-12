@@ -28,7 +28,6 @@ struct WhatsForDinnerScoringView: View {
         } footer: {
             RoundHistoryStrip(session: session)
         }
-        .animation(.easeOut, value: session.sortedRounds.isEmpty)
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
     }
 
@@ -40,7 +39,7 @@ struct WhatsForDinnerScoringView: View {
                 HStack(spacing: AppTheme.spacingSmall) {
                     ForEach(session.players, id: \.id) { player in
                         Button {
-                            withAnimation {
+                            withAnimation(AppMotion.state) {
                                 callerID = player.id
                             }
                         } label: {
@@ -56,7 +55,7 @@ struct WhatsForDinnerScoringView: View {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundStyle(ClubhouseTheme.felt)
                                         .font(.caption)
-                                        .transition(.scale.combined(with: .opacity))
+                                        .transition(.scale(scale: 0.96).combined(with: .opacity))
                                 }
                             }
                             .padding(AppTheme.spacingSmall)
@@ -74,7 +73,6 @@ struct WhatsForDinnerScoringView: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .animation(.easeOut, value: callerID)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 

@@ -220,8 +220,9 @@ private struct ScoringToolSheet: View {
                     .font(.system(size: 72, weight: .heavy, design: .default))
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.ink)
+                    .contentTransition(.numericText(value: Double(dieRoll)))
                 AppActionButton(role: .primary(tool.tint)) {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                    withAnimation(AppMotion.state) {
                         dieRoll = Int.random(in: 1...6)
                     }
                 } label: {
@@ -234,8 +235,9 @@ private struct ScoringToolSheet: View {
                     .font(AppFonts.scoreSmall)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
+                    .contentTransition(.opacity)
                 AppActionButton(role: .primary(tool.tint)) {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                    withAnimation(AppMotion.state) {
                         selectedStarter = session.players.randomElement()
                     }
                 } label: {

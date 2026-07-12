@@ -163,8 +163,8 @@ final class ScoreKeeperUITests: XCTestCase {
         homeButton2.tap()
         sleep(1)
 
-        // Verify Home screen with recent games
-        XCTAssertTrue(app.staticTexts["Recent Games"].waitForExistence(timeout: 3))
+        // Verify Home screen with recent games using the section's stable control identifier.
+        XCTAssertTrue(scrollToHittable(app.buttons["see_all_button"]))
         XCTAssertTrue(app.staticTexts["Scoreboard"].exists)
         XCTAssertTrue(app.buttons["new_game_button"].exists)
     }
@@ -195,8 +195,8 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["Alice_increment"].tap()
         app.buttons["Bob_decrement"].tap()
 
-        XCTAssertTrue(app.staticTexts["Score 2"].exists)
-        XCTAssertTrue(app.staticTexts["Score -1"].exists)
+        XCTAssertEqual(app.descendants(matching: .any)["Alice_score"].label, "Score 2")
+        XCTAssertEqual(app.descendants(matching: .any)["Bob_score"].label, "Score -1")
 
         app.buttons["submit_round_button"].tap()
 
@@ -254,8 +254,9 @@ final class ScoreKeeperUITests: XCTestCase {
 
         completeGenericGame(playerNames: ["Taylor", "Morgan"])
 
-        XCTAssertTrue(app.staticTexts["Stats"].waitForExistence(timeout: 3))
-        app.buttons["Head to Head"].tap()
+        let headToHeadButton = app.buttons["head_to_head_button"]
+        XCTAssertTrue(scrollToHittable(headToHeadButton))
+        headToHeadButton.tap()
 
         XCTAssertTrue(app.navigationBars["Head to Head"].waitForExistence(timeout: 3))
         app.buttons["Player 1, Select..."].tap()
@@ -306,14 +307,14 @@ final class ScoreKeeperUITests: XCTestCase {
     // MARK: - Test 13: Exhausted free games shows paywall
 
     func testFreeGamesExhaustedShowsPaywallWhenStartingNewGame() throws {
-        relaunch(arguments: ["-in-memory-store", "-free-games-exhausted"])
+        relaunch(arguments: ["-in-memory-store", "-free-games-exhausted", "-force-light-theme"])
 
         app.buttons["new_game_button"].tap()
         app.buttons["game_tile_whatsForDinner"].tap()
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
 
-        XCTAssertTrue(app.staticTexts["ScoreKeeper Pro"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.descendants(matching: .any)["paywall_title"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.buttons["paywall_unlock_button"].exists)
     }
 
@@ -334,7 +335,7 @@ final class ScoreKeeperUITests: XCTestCase {
     // MARK: - Test 15: Forced review ask appears after Game Over
 
     func testForceReviewAskAppearsAfterCompletingGame() throws {
-        relaunch(arguments: ["-in-memory-store", "-force-review-ask"])
+        relaunch(arguments: ["-in-memory-store", "-force-review-ask", "-force-light-theme"])
 
         navigateToGenericScoring(playerNames: ["Ada", "Ben"])
         app.buttons["submit_round_button"].tap()
@@ -401,6 +402,8 @@ final class ScoreKeeperUITests: XCTestCase {
             let field = app.textFields["player_name_field_\(index)"]
             XCTAssertTrue(field.waitForExistence(timeout: 1))
             field.tap()
+            // Keep the semantic tap for scrolling, then target the field directly so iOS 26 transfers keyboard focus before typeText.
+            field.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
             field.typeText(name)
         }
     }
@@ -472,15 +475,15 @@ final class ScoreKeeperUITests: XCTestCase {
             sleep(1)
         }
 
-        relaunch(arguments: ["-in-memory-store", "-free-games-exhausted"])
+        relaunch(arguments: ["-in-memory-store", "-free-games-exhausted", "-force-light-theme"])
         app.buttons["new_game_button"].tap()
         app.buttons["game_tile_whatsForDinner"].tap()
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
-        _ = app.staticTexts["ScoreKeeper Pro"].waitForExistence(timeout: 3)
+        _ = app.descendants(matching: .any)["paywall_title"].waitForExistence(timeout: 3)
         snap("13-paywall")
 
-        relaunch(arguments: ["-in-memory-store", "-force-review-ask"])
+        relaunch(arguments: ["-in-memory-store", "-force-review-ask", "-force-light-theme"])
         navigateToGenericScoring(playerNames: ["Ada", "Ben"])
         app.buttons["submit_round_button"].tap()
         app.buttons["end_game_button"].tap()
@@ -656,6 +659,16 @@ final class ScoreKeeperUITests: XCTestCase {
         }
 
         return expectedValues.isSubset(of: Set(fields.compactMap { $0.value as? String }))
+    }
+
+    private func scrollToHittable(_ element: XCUIElement, maxSwipes: Int = 5) -> Bool {
+        for _ in 0..<maxSwipes {
+            if element.exists && element.isHittable {
+                return true
+            }
+            app.swipeUp(velocity: .fast)
+        }
+        return element.exists && element.isHittable
     }
 
     private func completeGenericGame(playerNames: [String]) {

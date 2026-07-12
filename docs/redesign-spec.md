@@ -30,17 +30,17 @@ light AND dark via dynamic `Color(light:dark:)` helper (UIColor trait initialize
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `paper` | #F6F1E7 | #15181B | App background (dark = midnight clubhouse, slightly blue-black) |
-| `paperCard` | #FCF9F2 | #1E2226 | Cards, sheets, score slips |
-| `paperSunken` | #EFE8DA | #14161A | Inset wells, grouped rows |
-| `ink` | #26221A | #EDE7DA | Primary text |
-| `inkMuted` | #6F6757 | #9A937F | Secondary text |
-| `rule` | ink 14% | ink 18% | Hairline ruled lines, borders |
-| `felt` | #1E5240 | #4E8A6E | Primary brand green (buttons, selection, links) |
-| `feltDeep` | #163D30 | #163D30 | Pressed states, hero surfaces |
-| `lacquer` | #B44A3B | #CE6A56 | Destructive, negative deltas, "FINAL" stamp |
-| `brass` | #A0803D | #C2A254 | Winner/leader accents, crowns, premium |
-| `onFelt` | #F6F1E7 | #F6F1E7 | Text/icons on felt or lacquer fills |
+| `paper` | #F4F2EC | #151310 | App background (dark = near-black clubhouse) |
+| `paperCard` | #FFFDF8 | #211E19 | Cards, sheets, score slips |
+| `paperSunken` | #EAE6DC | #100F0D | Inset wells, grouped rows |
+| `ink` | #242522 | #F5F1E8 | Primary text |
+| `inkMuted` | #65645E | #B9B2A6 | Secondary text |
+| `rule` | ink 14% | ink 14% | Hairline ruled lines, borders |
+| `felt` | #2F664B | #74B58E | Primary brand green (buttons, selection, links) |
+| `feltDeep` | #244F3A | #4B8D68 | Pressed states, hero surfaces |
+| `lacquer` | #A73D32 | #F07164 | Destructive, negative deltas, "FINAL" stamp |
+| `brass` | #80661C | #E4B44A | Winner/leader accents, crowns, premium |
+| `onFelt` | #FFFFFF | #102016 | Text/icons on felt fills |
 
 ### Player palette (`PlayerColors.palette`, muted print-ink colors, same order semantics)
 
@@ -51,21 +51,23 @@ Keep `color(for:)` API. `lightColor(for:)` should return a 12% tint wash (used s
 
 ### Typography (`AppFonts` rewrite, keep member names, add new ones)
 
-- `display` / `largeTitle` / `title`: **serif** (`design: .serif`, i.e. New York), bold — print
-  scorecard headlines. Use for screen titles, onboarding titles, winner names, paywall headline.
-- `headline`, `body`, `caption`: SF default design (drop `.rounded`).
-- NEW `columnHeader`: caption2, semibold, `design: .default`, uppercase with tracking(1.4) —
+- `display` / `largeTitle`: Press Start 2P, scaled with Dynamic Type — reserve the pixel voice for
+  brand moments, onboarding statements, game covers, winner moments, and the paywall headline.
+- `title`, `headline`, `body`, `caption`: SF default design. Task UI, instructions, controls, and
+  player names must prioritize native iOS legibility over decorative pixel styling.
+- `tileTitle`: Press Start 2P for the three game-cover titles only.
+- `columnHeader`: caption, semibold, `design: .default`, uppercase with tracking(0.8) —
   scorecard column-header style ("ROUND", "TOTAL", "PLAYER"). Provide a `View` helper
   `.columnHeaderStyle()` that applies uppercase + tracking + `inkMuted`.
-- Scores: `scoreDisplay`/`scoreMedium`/`scoreSmall` stay but become `design: .default`,
-  weight `.heavy`, and every score render site must use `.monospacedDigit()` and
+- Scores: `scoreDisplay`/`scoreMedium`/`scoreSmall` use VT323 for the scoreboard voice, and every
+  score render site must use `.monospacedDigit()` and
   `.contentTransition(.numericText(value:))` — the digital equivalent of a flip scoreboard.
 
 ### Shape & texture
 
-- Corner radii: 10 (small), 14 (medium), 20 (large sheets). Slightly tighter than today.
-- Cards: `paperCard` fill + 1pt `rule` stroke + shadow(ink 8%, radius 10, y 4). NO material fills
-  on content surfaces.
+- Corner radii: 10 (small), 14 (medium), 18 (large sheets).
+- Cards: `paperCard` fill + 1pt `rule` stroke. Static content surfaces stay flat; only interactive
+  surfaces receive a restrained 6pt shadow. NO material fills on content surfaces.
 - Background: flat `paper` (kill both gradients). Optional: an ultra-subtle procedural paper-grain
   (Canvas dots at 1.5% ink opacity) behind Home only — skip if it costs any scroll performance.
 - Ruled ledger: score tables use hairline `rule` dividers between rows, like a printed score pad.
@@ -81,7 +83,7 @@ Keep `color(for:)` API. `lightColor(for:)` should return a 12% tint wash (used s
    lacquer text at 85% opacity, rotated -4°, slight texture via opacity. Used for "FINAL" on
    completed games, "WINNER" on game over, "PRO" where relevant.
 4. `BrassCrown` — small crown icon in `brass` (replaces yellow `crown.fill` tints).
-5. Primary button style: felt fill, `onFelt` serif-semibold label, pressed = `feltDeep`,
+5. Primary button style: felt fill, `onFelt` SF-semibold label, pressed = `feltDeep`,
    14pt radius. Secondary: paper fill + rule stroke + ink label. Destructive: lacquer.
    Rework `AppActionButton`/`PressableButtonStyle` to these.
 6. `PipStepper` — the scoring +/- control: large 56pt-tall paper buttons with ink glyphs and a
@@ -144,21 +146,21 @@ Change:
 - IMPORTANT: onboarding must only promise features that actually exist in the app. Verify before
   writing copy (e.g. if there is no dice/timer tool, don't show one).
 
-## Monetization — $0.99 one-time unlock, 10 free games
+## Monetization — $0.99 one-time unlock, 25 free games
 
 New files: `ScoreKeeper/Services/StoreManager.swift`, `ScoreKeeper/Views/Paywall/PaywallView.swift`,
 `ScoreKeeper/ScoreKeeper.storekit`.
 
-- Product: non-consumable, id `com.icequeen.scorekeeper.pro`, display name "ScoreKeeper Pro",
+- Product: non-consumable, id `com.icequeen.scorekeeper.unlimited`, display name "ScoreKeeper Pro",
   $0.99. Create the `.storekit` config file with this product and register it in the project
   (document in `docs/monetization.md` how to select it in the scheme for local testing).
 - `StoreManager` (@MainActor @Observable, StoreKit 2): loads product, `purchase()`, `restore()`,
   entitlement from `Transaction.currentEntitlements`, background `Transaction.updates` listener,
   `isUnlocked` published state persisted defensively to UserDefaults (`proUnlocked`) so offline
   launches stay unlocked.
-- Free limit: **10 games**. Monotonic counter `gamesStartedCount` in UserDefaults, incremented
+- Free limit: **25 games**. Monotonic counter `gamesStartedCount` in UserDefaults, incremented
   whenever a `GameSession` is created (GameConfig start path + rematch path). Deleting games must
-  NOT refund free slots. Remaining-games logic: `remainingFreeGames = max(0, 10 - count)`.
+  NOT refund free slots. Remaining-games logic: `remainingFreeGames = max(0, 25 - count)`.
 - Gate: when the user initiates a new game (or rematch) with `remainingFreeGames == 0` and not
   unlocked → present `PaywallView` as a sheet instead of creating the session. Never gate viewing
   history/stats or finishing an in-progress game. No paywall during onboarding or first launch.
@@ -173,7 +175,7 @@ New files: `ScoreKeeper/Services/StoreManager.swift`, `ScoreKeeper/Views/Paywall
   states (loading/success/failure) gracefully; success = brief brass confetti + auto-dismiss +
   proceed into the game the user was trying to start.
 - Test hooks: launch args `-unlock-pro` (forces unlocked), `-free-games-exhausted` (sets counter
-  to 10), both only honored alongside the existing test-argument patterns.
+  to 25), both only honored alongside the existing test-argument patterns.
 
 ## Review Ask — a personal note, not a system beg
 
@@ -195,6 +197,14 @@ New: `ScoreKeeper/Services/ReviewAskManager.swift` + small sheet `ReviewAskView`
 - Test hook: launch arg `-force-review-ask` presents it after the next game over.
 
 ## Engineering constraints
+
+### Motion system
+
+- Use `AppMotion` rather than one-off curves: press feedback is 100/140ms, fades 160ms, state changes 180ms, page changes 240ms, and theme changes 220ms.
+- Frequent navigation and screen loading are immediate. Animate only the state that changed; do not attach broad implicit animation to an entire scoring screen.
+- Press feedback scales to 0.97. Other entrances must start at 0.96 or above and use strong ease-out or a critically damped spring, never decorative bounce.
+- Reduce Motion replaces movement and scale with short fades. Game-over confetti is the sole long-running celebration and is disabled when Reduce Motion is enabled.
+- Motion must be interruptible: cancel delayed score-feedback tasks when a newer score arrives or the view disappears.
 
 - iOS 26.0 deployment target; use iOS 26 APIs freely (`.glassEffect`, `.contentTransition`).
 - Classic pbxproj (objectVersion 77, explicit PBXFileReference/PBXBuildFile): every new file MUST
