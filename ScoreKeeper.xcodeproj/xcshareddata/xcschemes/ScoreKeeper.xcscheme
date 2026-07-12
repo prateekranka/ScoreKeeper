@@ -32,6 +32,16 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AA000000000000000100035B"
+               BuildableName = "ScoreKeeperTests.xctest"
+               BlueprintName = "ScoreKeeperTests"
+               ReferencedContainer = "container:ScoreKeeper.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
                BlueprintIdentifier = "AA0000000000000001000306"
                BuildableName = "ScoreKeeperUITests.xctest"
                BlueprintName = "ScoreKeeperUITests"
@@ -60,6 +70,9 @@
             ReferencedContainer = "container:ScoreKeeper.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <StoreKitConfigurationFileReference
+         identifier = "../../ScoreKeeper/ScoreKeeper.storekit">
+      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

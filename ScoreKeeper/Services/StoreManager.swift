@@ -117,7 +117,7 @@ final class StoreManager {
                 return false
             }
         } catch {
-            purchaseState = .failed("The purchase could not be completed.")
+            purchaseState = Self.purchaseState(for: error)
             return false
         }
     }
@@ -143,7 +143,7 @@ final class StoreManager {
     }
 
     func refreshEntitlements() async {
-        var foundCurrentEntitlement = false
+        var hasActiveEntitlement = false
 
         for await result in Transaction.currentEntitlements {
             guard let transaction = verifiedTransaction(from: result),
@@ -151,13 +151,25 @@ final class StoreManager {
                 continue
             }
 
-            foundCurrentEntitlement = true
-            isUnlocked = transaction.revocationDate == nil
+            if transaction.revocationDate == nil {
+                hasActiveEntitlement = true
+            }
         }
 
-        if !foundCurrentEntitlement, defaults.bool(forKey: Keys.proUnlocked) {
-            isUnlocked = true
+        applyEntitlementSnapshot(hasActiveEntitlement: hasActiveEntitlement)
+    }
+
+    // StoreKit's verified entitlement cache is the source of truth, including
+    // when a refund or revocation removes a previously cached unlock.
+    func applyEntitlementSnapshot(hasActiveEntitlement: Bool) {
+        isUnlocked = hasActiveEntitlement
+    }
+
+    static func purchaseState(for error: Error) -> PurchaseState {
+        if case StoreKitError.userCancelled = error {
+            return .idle
         }
+        return .failed("The purchase could not be completed.")
     }
 
     func recordGameStarted() {
@@ -199,6 +211,7 @@ final class StoreManager {
         if arguments.contains("-unlock-pro") {
             isUnlocked = true
         }
+
     }
 }
 

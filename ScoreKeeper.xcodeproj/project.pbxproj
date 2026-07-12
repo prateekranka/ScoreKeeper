@@ -63,6 +63,8 @@
 		AA0000000000000001000349 /* ReviewAskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000348 /* ReviewAskView.swift */; };
 		AA000000000000000100034C /* CupMascotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100034B /* CupMascotView.swift */; };
 		AA0000000000000001000351 /* PressStart2P-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100034F /* PressStart2P-Regular.ttf */; };
+		AA0000000000000001000354 /* StoreManagerStoreKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */; };
+		AA0000000000000001000362 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000340 /* StoreManager.swift */; };
 		AA0000000000000001000352 /* VT323-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000350 /* VT323-Regular.ttf */; };
 /* End PBXBuildFile section */
 
@@ -138,6 +140,8 @@
 		AA000000000000000100034D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA000000000000000100034F /* PressStart2P-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PressStart2P-Regular.ttf"; sourceTree = "<group>"; };
 		AA0000000000000001000350 /* VT323-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VT323-Regular.ttf"; sourceTree = "<group>"; };
+		AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManagerStoreKitTests.swift; sourceTree = "<group>"; };
+		AA0000000000000001000358 /* ScoreKeeperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScoreKeeperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,6 +159,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA0000000000000001000359 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -162,6 +173,7 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000000000010 /* ScoreKeeper */,
+				AA000000000000000100035A /* ScoreKeeperTests */,
 				AA0000000000000001000305 /* ScoreKeeperUITests */,
 				AA0000000000000000000003 /* Products */,
 			);
@@ -171,6 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				AA000000000000000000000E /* ScoreKeeper.app */,
+				AA0000000000000001000358 /* ScoreKeeperTests.xctest */,
 				AA000000000000000100030F /* ScoreKeeperUITests.xctest */,
 			);
 			name = Products;
@@ -341,6 +354,14 @@
 			path = ScoreKeeperUITests;
 			sourceTree = "<group>";
 		};
+		AA000000000000000100035A /* ScoreKeeperTests */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */,
+			);
+			path = ScoreKeeperTests;
+			sourceTree = "<group>";
+		};
 		AA0000000000000001000328 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -423,6 +444,23 @@
 			productReference = AA000000000000000100030F /* ScoreKeeperUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		AA000000000000000100035B /* ScoreKeeperTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA000000000000000100035C /* Build configuration list for PBXNativeTarget "ScoreKeeperTests" */;
+			buildPhases = (
+				AA000000000000000100035D /* Sources */,
+				AA0000000000000001000359 /* Frameworks */,
+				AA000000000000000100035E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ScoreKeeperTests;
+			productName = ScoreKeeperTests;
+			productReference = AA0000000000000001000358 /* ScoreKeeperTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -441,6 +479,9 @@
 						CreatedOnToolsVersion = 16.0;
 						TestTargetID = AA0000000000000000000007;
 					};
+					AA000000000000000100035B = {
+						CreatedOnToolsVersion = 27.0;
+					};
 				};
 			};
 			buildConfigurationList = AA0000000000000000000004 /* Build configuration list for PBXProject "ScoreKeeper" */;
@@ -458,6 +499,7 @@
 			projectRoot = "";
 			targets = (
 				AA0000000000000000000007 /* ScoreKeeper */,
+				AA000000000000000100035B /* ScoreKeeperTests */,
 				AA0000000000000001000306 /* ScoreKeeperUITests */,
 			);
 		};
@@ -476,6 +518,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		AA000000000000000100030C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA000000000000000100035E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -549,6 +598,15 @@
 			files = (
 				AA0000000000000001000303 /* ScoreKeeperUITests.swift in Sources */,
 				AA0000000000000001000304 /* ScoreKeeperUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA000000000000000100035D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000000000000001000354 /* StoreManagerStoreKitTests.swift in Sources */,
+				AA0000000000000001000362 /* StoreManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,7 +752,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
@@ -729,7 +787,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
@@ -791,6 +849,38 @@
 			};
 			name = Release;
 		};
+		AA0000000000000001000360 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.icequeen.scorekeeper.unit-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		AA0000000000000001000361 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.icequeen.scorekeeper.unit-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -817,6 +907,15 @@
 			buildConfigurations = (
 				AA0000000000000001000308 /* Debug */,
 				AA0000000000000001000309 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA000000000000000100035C /* Build configuration list for PBXNativeTarget "ScoreKeeperTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA0000000000000001000360 /* Debug */,
+				AA0000000000000001000361 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

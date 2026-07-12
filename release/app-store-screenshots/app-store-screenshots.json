@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 2,
+  "appName": "PipCount",
+  "themeId": "pipcount-scorecard",
+  "connectedCanvas": true,
+  "locales": [
+    "en"
+  ],
+  "locale": "en",
+  "device": "iphone",
+  "orientation": "portrait",
+  "appIcon": "/app-icon.png",
+  "slidesByDevice": {
+    "iphone": [
+      {
+        "id": "pipcount-hero",
+        "layout": "hero",
+        "label": {
+          "en": "MEET PIPCOUNT"
+        },
+        "headline": {
+          "en": "Game night,\nunder control."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/01.png"
+      },
+      {
+        "id": "pipcount-score",
+        "layout": "device-top",
+        "label": {
+          "en": "LIVE SCORECARD"
+        },
+        "headline": {
+          "en": "Skip the\nscore math."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/02.png"
+      },
+      {
+        "id": "pipcount-games",
+        "layout": "device-bottom",
+        "label": {
+          "en": "THREE WAYS TO PLAY"
+        },
+        "headline": {
+          "en": "Pick your\ngame."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/03.png"
+      },
+      {
+        "id": "pipcount-rounds",
+        "layout": "device-top",
+        "label": {
+          "en": "FAST ROUNDS"
+        },
+        "headline": {
+          "en": "Score every\nround fast."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/04.png",
+        "inverted": true
+      },
+      {
+        "id": "pipcount-history",
+        "layout": "device-bottom",
+        "label": {
+          "en": "SAVED AUTOMATICALLY"
+        },
+        "headline": {
+          "en": "Every game\nsaved."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/05.png",
+        "transforms": {
+          "caption": {
+            "x": 118.8982998454403,
+            "y": 127.48636785162314,
+            "width": 1108.8,
+            "height": 803.0400000000001,
+            "rotation": 0,
+            "zIndex": 4
+          },
+          "device": {
+            "x": 153.1822478386166,
+            "y": 856.4991653786718,
+            "width": 1013.6355043227666,
+            "height": 2064.96,
+            "rotation": 0,
+            "zIndex": 3
+          }
+        }
+      },
+      {
+        "id": "pipcount-unlimited",
+        "layout": "device-top",
+        "label": {
+          "en": "UNLIMITED GAMES"
+        },
+        "headline": {
+          "en": "25 free games.\nPay once."
+        },
+        "screenshot": "/screenshots/apple/iphone/{locale}/06.png",
+        "inverted": true,
+        "transforms": {
+          "device": {
+            "x": 153.1822478386166,
+            "y": -286.8,
+            "width": 1013.6355043227666,
+            "height": 2064.96,
+            "rotation": 0,
+            "zIndex": 3
+          }
+        }
+      }
+    ],
+    "android": [],
+    "ipad": [],
+    "android-7": [],
+    "android-10": [],
+    "feature-graphic": []
+  }
+}
