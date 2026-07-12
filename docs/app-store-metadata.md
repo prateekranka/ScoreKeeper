@@ -1,15 +1,17 @@
-# ScoreKeeper App Store Metadata
+# PipCount App Store Metadata
 
 Drafted for App Store Connect on July 10, 2026. Values marked **Owner input required** cannot be completed from the repository alone.
 
+The App Store public name is `PipCount`; `ScoreKeeper` remains the internal project and in-app product name.
+
 ## App Information
 
-- Name: `ScoreKeeper`
+- Name: `PipCount`
 - Subtitle: `Fast scores for game night`
 - Primary language: English (U.S.)
 - Bundle ID: `com.icequeen.scorekeeper`
 - Version: `1.0`
-- Uploaded build: `2` (`VALID` in App Store Connect on July 10, 2026)
+- Uploaded build: `2` (`VALID` in App Store Connect on July 10, 2026); release build `3` is prepared locally and pending upload
 - Primary category: Utilities
 - Secondary category: Entertainment
 - Copyright: **Owner input required: legal owner name and year**
@@ -23,9 +25,9 @@ Set up the table, score every round, settle the winner, and keep game-night hist
 
 ## Description
 
-ScoreKeeper keeps casual game nights moving.
+PipCount keeps casual game nights moving.
 
-Choose a game, add your players, and record each round with clear totals and generous controls. ScoreKeeper supports a flexible scoreboard, Phase 10, and What’s for Dinner, with the right scoring flow for each game.
+Choose a game, add your players, and record each round with clear totals and generous controls. PipCount supports a flexible scoreboard, Phase 10, and What’s for Dinner, with the right scoring flow for each game.
 
 During play, built-in tools keep the table organized:
 
@@ -34,11 +36,11 @@ During play, built-in tools keep the table organized:
 - Timer, dice, and random starter tools
 - Saved rosters for quicker rematches
 
-When the game ends, ScoreKeeper saves the result on your device so you can revisit final standings, compare players, view head-to-head results, and start a rematch.
+When the game ends, PipCount saves the result on your device so you can revisit final standings, compare players, view head-to-head results, and start a rematch.
 
 Your first 25 games are free. After that, a one-time in-app purchase unlocks unlimited new games and rematches. There is no subscription.
 
-ScoreKeeper requires no account and includes no advertising or tracking.
+PipCount requires no account and includes no advertising or tracking.
 
 ## Keywords
 
@@ -61,7 +63,7 @@ Before sandbox testing, the Account Holder must have an active Paid Apps Agreeme
 
 ## App Review Notes
 
-ScoreKeeper does not require an account, login, network content, or special hardware.
+PipCount does not require an account, login, network content, or special hardware.
 
 To review the core workflow:
 
