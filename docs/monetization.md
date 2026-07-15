@@ -1,9 +1,9 @@
-# Monetization
+# PipCount Monetization
 
-ScoreKeeper Pro is a one-time StoreKit 2 non-consumable:
+PipCount Pro is a one-time StoreKit 2 non-consumable:
 
 - Product id: `com.icequeen.scorekeeper.unlimited`
-- Display name: `ScoreKeeper Pro`
+- Display name: `PipCount Pro`
 - Price: `$0.99`
 - Local config: `ScoreKeeper/ScoreKeeper.storekit`
 
@@ -19,6 +19,6 @@ The UI tests do not depend on the StoreKit config or network state. They use lau
 
 - `-free-games-exhausted`: sets the monotonic `gamesStartedCount` to 25.
 - `-unlock-pro`: forces the local Pro entitlement.
-- `-force-review-ask`: shows the review note after the next Game Over screen.
+- `-force-review-ask`: makes the next eligible Game Over screen call Apple's native review request API; no custom review sheet is shown.
 
 These hooks are only honored with the existing `-in-memory-store` UI-test pattern.

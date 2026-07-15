@@ -38,7 +38,7 @@ struct PaywallView: View {
 
     private var sheetHeader: some View {
         ReleaseSheetHeader(
-            title: "ScoreKeeper Pro",
+            title: "PipCount Pro",
             subtitle: "One unlock. Every game night.",
             systemImage: "trophy.fill",
             titleIdentifier: "paywall_title"
@@ -94,7 +94,7 @@ struct PaywallView: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             AppSectionHeader(
                 title: "What Pro unlocks",
-                subtitle: "The same ScoreKeeper, with no game limit.",
+                subtitle: "The same PipCount, with no game limit.",
                 systemImage: "checkmark.seal.fill"
             )
 
@@ -114,7 +114,7 @@ struct PaywallView: View {
                 benefitRow(
                     systemImage: "dice.fill",
                     title: "Every game mode",
-                    detail: "Scoreboard, Phase 10, and What's for Dinner"
+                    detail: "Scoreboard, Ten Phases, and What's for Dinner"
                 )
             }
         }
@@ -157,7 +157,7 @@ struct PaywallView: View {
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .frame(minHeight: 44)
                 .accessibilityIdentifier("paywall_restore_button")
-                .disabled(isPurchaseButtonDisabled)
+                .disabled(isRestoreButtonDisabled)
             }
             .padding(AppTheme.spacingSmall)
             .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
@@ -183,49 +183,80 @@ struct PaywallView: View {
 
     @ViewBuilder
     private var statusText: some View {
-        switch storeManager.purchaseState {
-        case .idle:
-            EmptyView()
-        case .loading:
-            Text("Loading purchase details...")
-                .statusStyle()
-        case .purchasing:
-            Text("Unlocking ScoreKeeper Pro...")
-                .statusStyle()
-        case .restoring:
-            Text("Checking past purchases...")
-                .statusStyle()
-        case .success:
-            Text("Unlocked. Starting your game...")
-                .statusStyle(color: ClubhouseTheme.felt)
-        case .failed(let message):
-            Text(message)
-                .statusStyle(color: ClubhouseTheme.lacquer)
+        switch storeManager.productState {
+        case .unavailable(let message):
+            VStack(spacing: AppTheme.spacingSmall) {
+                Text(message)
+                    .statusStyle(color: ClubhouseTheme.lacquer)
+
+                Button("Retry loading purchase details") {
+                    Task { await storeManager.retryProductLoad() }
+                }
+                .font(AppFonts.caption.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .frame(minHeight: 44)
+                .accessibilityIdentifier("paywall_retry_button")
+            }
+        case .notLoaded, .loading, .loaded:
+            switch storeManager.purchaseState {
+            case .idle:
+                EmptyView()
+            case .loading:
+                Text("Loading purchase details...")
+                    .statusStyle()
+            case .purchasing:
+                Text("Unlocking PipCount Pro...")
+                    .statusStyle()
+            case .restoring:
+                Text("Checking past purchases...")
+                    .statusStyle()
+            case .success:
+                Text("Unlocked. Starting your game...")
+                    .statusStyle(color: ClubhouseTheme.felt)
+            case .failed(let message):
+                Text(message)
+                    .statusStyle(color: ClubhouseTheme.lacquer)
+            }
         }
     }
 
     @ViewBuilder
     private var purchaseButtonLabel: some View {
-        switch storeManager.purchaseState {
-        case .loading, .purchasing, .restoring:
-            HStack(spacing: AppTheme.spacingSmall) {
-                ProgressView()
-                    .tint(ClubhouseTheme.onFelt)
-                Text("Please wait")
+        switch storeManager.productState {
+        case .unavailable:
+            Label("Unlock unavailable", systemImage: "exclamationmark.triangle")
+        case .notLoaded, .loading, .loaded:
+            switch storeManager.purchaseState {
+            case .loading, .purchasing, .restoring:
+                HStack(spacing: AppTheme.spacingSmall) {
+                    ProgressView()
+                        .tint(ClubhouseTheme.onFelt)
+                    Text("Please wait")
+                }
+            case .success:
+                Label("Pro unlocked", systemImage: "checkmark.seal.fill")
+            case .idle, .failed:
+                if storeManager.product == nil {
+                    Label("Unlock unavailable", systemImage: "exclamationmark.triangle")
+                } else {
+                    Label("Unlock Pro — \(storeManager.displayPrice)", systemImage: "checkmark.seal.fill")
+                }
             }
-        case .success:
-            Label("Pro unlocked", systemImage: "checkmark.seal.fill")
-        case .idle, .failed:
-            Label("Unlock Pro — \(storeManager.displayPrice)", systemImage: "checkmark.seal.fill")
         }
     }
 
     private var isPurchaseButtonDisabled: Bool {
+        !storeManager.canPurchase || isCompleting
+    }
+
+    private var isRestoreButtonDisabled: Bool {
+        if isCompleting { return true }
+
         switch storeManager.purchaseState {
-        case .loading, .purchasing, .restoring:
+        case .purchasing, .restoring:
             return true
-        case .idle, .success, .failed:
-            return isCompleting
+        case .loading, .idle, .success, .failed:
+            return false
         }
     }
 

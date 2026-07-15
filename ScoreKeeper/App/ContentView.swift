@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import StoreKit
 
 @MainActor @Observable
 class NavigationRouter {
@@ -30,19 +31,31 @@ enum AppDestination: Hashable {
     case gameHistory
     case headToHead
     case playerStats(String)
+    case legalSupport
 }
 
 struct ContentView: View {
     @Environment(ReviewAskManager.self) private var reviewAskManager
+    @Environment(\.requestReview) private var requestReview
     @State private var router = NavigationRouter()
     @State private var didApplyOnboardingReset = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
-        @Bindable var reviewAskManager = reviewAskManager
-
         NavigationStack(path: $router.path) {
             HomeView()
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    NavigationLink(value: AppDestination.legalSupport) {
+                            Label("PipCount Legal & Support", systemImage: "questionmark.circle")
+                            .font(AppFonts.caption)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                            .frame(maxWidth: .infinity, minHeight: 44)
+                    }
+                    .accessibilityLabel("PipCount legal and support")
+                    .accessibilityHint("Open PipCount privacy policy and support links")
+                    .accessibilityIdentifier("legal_support_button")
+                    .background(ClubhouseTheme.paperCard.opacity(0.92))
+                }
                 .navigationDestination(for: AppDestination.self) { destination in
                     switch destination {
                     case .gamePicker:
@@ -63,6 +76,8 @@ struct ContentView: View {
                         HeadToHeadView()
                     case .playerStats(let playerName):
                         PlayerStatsView(playerName: playerName)
+                    case .legalSupport:
+                        LegalSupportView()
                     }
                 }
         }
@@ -72,10 +87,10 @@ struct ContentView: View {
                 hasCompletedOnboarding = true
             }
         }
-        .sheet(isPresented: $reviewAskManager.isPresentingReviewAsk) {
-            ReviewAskView()
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
+        .onChange(of: reviewAskManager.reviewRequestPending) { _, isPending in
+            guard isPending else { return }
+            reviewAskManager.consumeReviewRequest()
+            requestReview()
         }
         .onAppear(perform: resetOnboardingIfRequested)
     }
@@ -119,7 +134,7 @@ private struct OnboardingView: View {
         VStack(spacing: 0) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("ScoreKeeper")
+                    Text("PipCount")
                         .font(AppFonts.headline)
                     Text("Game night, under control")
                         .font(AppFonts.caption)
@@ -473,7 +488,7 @@ private enum OnboardingPage: CaseIterable, Identifiable {
     var message: String {
         switch self {
         case .scoreFast:
-            return "ScoreKeeper replaces the notes app, napkin, and 'who's winning?'"
+            return "PipCount replaces the notes app, napkin, and 'who's winning?'"
         case .setupFast:
             return "Pick a game, add your crew once, reuse them every night."
         case .toolsAndHistory:
@@ -486,7 +501,7 @@ private enum OnboardingPage: CaseIterable, Identifiable {
         case .scoreFast:
             return ["Live ledger totals", "Large score controls", "Undo for scoring mistakes"]
         case .setupFast:
-            return ["Scoreboard, Phase 10, and What's for Dinner", "Reusable player roster", "Game-specific setup"]
+            return ["Scoreboard, Ten Phases, and What's for Dinner", "Reusable player roster", "Game-specific setup"]
         case .toolsAndHistory:
             return ["Final standings archive", "Player stats and head-to-heads", "Rematches with the same crew"]
         }

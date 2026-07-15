@@ -8,6 +8,7 @@ struct ScoringView: View {
     @Environment(StoreManager.self) private var storeManager
     @Environment(ReviewAskManager.self) private var reviewAskManager
     @State private var showEndGameAlert = false
+    @State private var saveError: String?
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
@@ -61,6 +62,17 @@ struct ScoringView: View {
         } message: {
             Text("This will finish the current game and determine the winner.")
         }
+        .alert(
+            "Couldn’t save game",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "Please try again.")
+        }
         .navigationBarBackButtonHidden(true)
     }
 
@@ -69,7 +81,14 @@ struct ScoringView: View {
         session.completedAt = .now
         let winnerIDs = engine.winners(session: session)
         session.winnerID = winnerIDs.first
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return
+        }
         let completedGameCount = fetchCompletedGameCount()
         let paywallPresentedThisSession = storeManager.paywallPresentedThisSession
         router.push(.gameOver(session.persistentModelID))

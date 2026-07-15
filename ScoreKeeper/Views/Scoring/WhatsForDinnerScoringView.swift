@@ -7,6 +7,7 @@ struct WhatsForDinnerScoringView: View {
     @State private var handValues: [UUID: Int] = [:]
     @State private var callerID: UUID?
     @State private var scoreHapticTrigger = 0
+    @State private var saveError: String?
     private let engine = WhatsForDinnerEngine()
 
     var body: some View {
@@ -29,6 +30,17 @@ struct WhatsForDinnerScoringView: View {
             RoundHistoryStrip(session: session)
         }
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
+        .alert(
+            "Couldn’t save round",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "Please try again.")
+        }
     }
 
     private var mealRevealSection: some View {
@@ -118,7 +130,14 @@ struct WhatsForDinnerScoringView: View {
         }
 
         session.rounds.append(round)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return
+        }
 
         handValues = [:]
         callerID = nil

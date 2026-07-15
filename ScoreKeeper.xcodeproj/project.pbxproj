@@ -60,16 +60,27 @@
 		AA0000000000000001000341 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000340 /* StoreManager.swift */; };
 		AA0000000000000001000343 /* ReviewAskManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000342 /* ReviewAskManager.swift */; };
 		AA0000000000000001000346 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000345 /* PaywallView.swift */; };
-		AA0000000000000001000349 /* ReviewAskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000348 /* ReviewAskView.swift */; };
 		AA000000000000000100034C /* CupMascotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100034B /* CupMascotView.swift */; };
 		AA0000000000000001000351 /* PressStart2P-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100034F /* PressStart2P-Regular.ttf */; };
 		AA0000000000000001000354 /* StoreManagerStoreKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */; };
 		AA0000000000000001000362 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000340 /* StoreManager.swift */; };
+		AA0000000000000001000401 /* GameAllowanceStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000406 /* GameAllowanceStorage.swift */; };
+		AA0000000000000001000402 /* LegalSupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000407 /* LegalSupportView.swift */; };
+		AA0000000000000001000403 /* LegalSupportAndReviewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000408 /* LegalSupportAndReviewUITests.swift */; };
+		AA0000000000000001000404 /* GameAllowanceStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000406 /* GameAllowanceStorage.swift */; };
+		AA000000000000000100040B /* TargetScoreEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100040A /* TargetScoreEngineTests.swift */; };
 		AA0000000000000001000352 /* VT323-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000350 /* VT323-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		AA000000000000000100030D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA0000000000000000000007;
+			remoteInfo = ScoreKeeper;
+		};
+		AA0000000000000001000411 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AA0000000000000000000001 /* Project object */;
 			proxyType = 1;
@@ -134,7 +145,6 @@
 		AA0000000000000001000340 /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
 		AA0000000000000001000342 /* ReviewAskManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewAskManager.swift; sourceTree = "<group>"; };
 		AA0000000000000001000345 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
-		AA0000000000000001000348 /* ReviewAskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewAskView.swift; sourceTree = "<group>"; };
 		AA000000000000000100034A /* ScoreKeeper.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = ScoreKeeper.storekit; sourceTree = "<group>"; };
 		AA000000000000000100034B /* CupMascotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CupMascotView.swift; sourceTree = "<group>"; };
 		AA000000000000000100034D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -142,6 +152,10 @@
 		AA0000000000000001000350 /* VT323-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VT323-Regular.ttf"; sourceTree = "<group>"; };
 		AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManagerStoreKitTests.swift; sourceTree = "<group>"; };
 		AA0000000000000001000358 /* ScoreKeeperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScoreKeeperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000001000406 /* GameAllowanceStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameAllowanceStorage.swift; sourceTree = "<group>"; };
+		AA0000000000000001000407 /* LegalSupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalSupportView.swift; sourceTree = "<group>"; };
+		AA0000000000000001000408 /* LegalSupportAndReviewUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalSupportAndReviewUITests.swift; sourceTree = "<group>"; };
+		AA000000000000000100040A /* TargetScoreEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetScoreEngineTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,7 +266,7 @@
 				AA0000000000000000000018 /* Summary */,
 				AA0000000000000000000019 /* Components */,
 				AA0000000000000001000344 /* Paywall */,
-				AA0000000000000001000347 /* ReviewAsk */,
+				AA0000000000000001000410 /* Settings */,
 				AA0000000000000001000329 /* Stats */,
 			);
 			path = Views;
@@ -350,6 +364,7 @@
 			children = (
 				AA0000000000000001000301 /* ScoreKeeperUITests.swift */,
 				AA0000000000000001000302 /* ScoreKeeperUITestsLaunchTests.swift */,
+				AA0000000000000001000408 /* LegalSupportAndReviewUITests.swift */,
 			);
 			path = ScoreKeeperUITests;
 			sourceTree = "<group>";
@@ -358,6 +373,7 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */,
+				AA000000000000000100040A /* TargetScoreEngineTests.swift */,
 			);
 			path = ScoreKeeperTests;
 			sourceTree = "<group>";
@@ -368,6 +384,7 @@
 				AA0000000000000001000322 /* StatsCalculator.swift */,
 				AA0000000000000001000340 /* StoreManager.swift */,
 				AA0000000000000001000342 /* ReviewAskManager.swift */,
+				AA0000000000000001000406 /* GameAllowanceStorage.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -380,12 +397,12 @@
 			path = Paywall;
 			sourceTree = "<group>";
 		};
-		AA0000000000000001000347 /* ReviewAsk */ = {
+		AA0000000000000001000410 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				AA0000000000000001000348 /* ReviewAskView.swift */,
+				AA0000000000000001000407 /* LegalSupportView.swift */,
 			);
-			path = ReviewAsk;
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		AA0000000000000001000329 /* Stats */ = {
@@ -455,6 +472,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				AA0000000000000001000412 /* PBXTargetDependency */,
 			);
 			name = ScoreKeeperTests;
 			productName = ScoreKeeperTests;
@@ -587,7 +605,8 @@
 				AA0000000000000001000341 /* StoreManager.swift in Sources */,
 				AA0000000000000001000343 /* ReviewAskManager.swift in Sources */,
 				AA0000000000000001000346 /* PaywallView.swift in Sources */,
-				AA0000000000000001000349 /* ReviewAskView.swift in Sources */,
+				AA0000000000000001000401 /* GameAllowanceStorage.swift in Sources */,
+				AA0000000000000001000402 /* LegalSupportView.swift in Sources */,
 				AA0000000000000000000222 /* PreviewSampleData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -598,6 +617,7 @@
 			files = (
 				AA0000000000000001000303 /* ScoreKeeperUITests.swift in Sources */,
 				AA0000000000000001000304 /* ScoreKeeperUITestsLaunchTests.swift in Sources */,
+				AA0000000000000001000403 /* LegalSupportAndReviewUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -606,7 +626,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0000000000000001000354 /* StoreManagerStoreKitTests.swift in Sources */,
-				AA0000000000000001000362 /* StoreManager.swift in Sources */,
+				AA000000000000000100040B /* TargetScoreEngineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,6 +637,11 @@
 			isa = PBXTargetDependency;
 			target = AA0000000000000000000007 /* ScoreKeeper */;
 			targetProxy = AA000000000000000100030D /* PBXContainerItemProxy */;
+		};
+		AA0000000000000001000412 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AA0000000000000000000007 /* ScoreKeeper */;
+			targetProxy = AA0000000000000001000411 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -752,13 +777,13 @@
 				CODE_SIGN_IDENTITY = "-";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ScoreKeeper/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ScoreKeeper;
+				INFOPLIST_KEY_CFBundleDisplayName = PipCount;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -787,13 +812,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ScoreKeeper/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = ScoreKeeper;
+				INFOPLIST_KEY_CFBundleDisplayName = PipCount;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -862,6 +887,9 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = ScoreKeeper;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ScoreKeeper.app/ScoreKeeper";
+				TEST_HOST = "$(BUNDLE_LOADER)";
 			};
 			name = Debug;
 		};
@@ -878,6 +906,9 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = ScoreKeeper;
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ScoreKeeper.app/ScoreKeeper";
+				TEST_HOST = "$(BUNDLE_LOADER)";
 			};
 			name = Release;
 		};

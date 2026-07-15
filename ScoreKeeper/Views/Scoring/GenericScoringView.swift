@@ -4,8 +4,13 @@ import SwiftData
 struct GenericScoringView: View {
     @Bindable var session: GameSession
     @Environment(\.modelContext) private var modelContext
+    @Environment(NavigationRouter.self) private var router
+    @Environment(StoreManager.self) private var storeManager
+    @Environment(ReviewAskManager.self) private var reviewAskManager
     @State private var scores: [UUID: Int] = [:]
     @State private var scoreHapticTrigger = 0
+    @State private var saveError: String?
+    @State private var didRouteToGameOver = false
     private let engine = GenericEngine()
 
     var body: some View {
@@ -27,6 +32,17 @@ struct GenericScoringView: View {
             RoundHistoryStrip(session: session)
         }
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
+        .alert(
+            "Couldn’t save round",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "Please try again.")
+        }
     }
 
     private func scoreBinding(for player: Player) -> Binding<Int> {
@@ -48,12 +64,59 @@ struct GenericScoringView: View {
         }
 
         session.rounds.append(round)
-        try? modelContext.save()
+
+        do {
+            try modelContext.save()
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return
+        }
 
         // Reset scores
         scores = [:]
 
         scoreHapticTrigger += 1
+
+        if engine.isGameOver(session: session) {
+            finishGame()
+        }
+    }
+
+    private func finishGame() {
+        guard !didRouteToGameOver else { return }
+
+        session.isComplete = true
+        session.completedAt = .now
+        session.winnerID = engine.winners(session: session).first
+
+        do {
+            try modelContext.save()
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return
+        }
+
+        didRouteToGameOver = true
+        let completedGameCount = fetchCompletedGameCount()
+        let paywallPresentedThisSession = storeManager.paywallPresentedThisSession
+        router.push(.gameOver(session.persistentModelID))
+
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(1_000))
+            reviewAskManager.considerReviewAsk(
+                completedGameCount: completedGameCount,
+                paywallPresentedThisSession: paywallPresentedThisSession
+            )
+        }
+    }
+
+    private func fetchCompletedGameCount() -> Int {
+        let descriptor = FetchDescriptor<GameSession>(predicate: #Predicate { $0.isComplete })
+        return (try? modelContext.fetch(descriptor).count) ?? 0
     }
 }
 

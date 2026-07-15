@@ -64,12 +64,12 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(winnerText.exists)
     }
 
-    // MARK: - Test 2: Create Phase 10 Game → Score → End
+    // MARK: - Test 2: Create Ten Phases Game → Score → End
 
     func testCreatePhase10GameAndScore() throws {
         navigateToScoring(gameTileID: "game_tile_phase10", playerNames: ["Alice", "Bob"])
 
-        // Submit one round for Phase 10
+        // Submit one round for Ten Phases
         app.buttons["submit_round_button"].tap()
 
         // End Game
@@ -329,10 +329,10 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["start_game_button"].tap()
 
         XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 3))
-        XCTAssertFalse(app.staticTexts["ScoreKeeper Pro"].waitForExistence(timeout: 1))
+        XCTAssertFalse(app.staticTexts["PipCount Pro"].waitForExistence(timeout: 1))
     }
 
-    // MARK: - Test 15: Forced review ask appears after Game Over
+    // MARK: - Test 15: Forced review ask uses Apple's native flow
 
     func testForceReviewAskAppearsAfterCompletingGame() throws {
         relaunch(arguments: ["-in-memory-store", "-force-review-ask", "-force-light-theme"])
@@ -342,8 +342,73 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["end_game_button"].tap()
         app.alerts.buttons["End Game"].tap()
 
-        XCTAssertTrue(app.buttons["review_ask_rate_button"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["review_ask_later_button"].exists)
+        XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["review_ask_rate_button"].waitForExistence(timeout: 2))
+        XCTAssertFalse(app.buttons["review_ask_later_button"].exists)
+        XCTAssertFalse(app.staticTexts["How was game night?"].exists)
+    }
+
+    // MARK: - Test 16: Active games remain individually resumable
+
+    func testActiveGamesListShowsEveryResumableGame() throws {
+        navigateToGenericScoring(playerNames: ["Alice", "Bob"])
+        app.buttons["scoring_home_button"].tap()
+        XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
+
+        navigateToGenericScoring(playerNames: ["Cara", "Dan"])
+        app.buttons["scoring_home_button"].tap()
+
+        let activeList = app.descendants(matching: .any)["active_games_list"]
+        XCTAssertTrue(activeList.waitForExistence(timeout: 3))
+
+        let activeRows = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'active_game_'"))
+        XCTAssertEqual(activeRows.count, 2)
+        XCTAssertTrue(activeRows.element(boundBy: 0).exists)
+        XCTAssertTrue(activeRows.element(boundBy: 1).exists)
+    }
+
+    // MARK: - Test 17: Target score completes after a qualifying submitted round
+
+    func testTargetScoreConfigurationCompletesGenericGame() throws {
+        app.buttons["new_game_button"].tap()
+        app.buttons["game_tile_generic"].tap()
+        fillPlayerNames(["Alice", "Bob"])
+        app.buttons["start_game_button"].tap()
+
+        let targetField = app.textFields["target_score_field"]
+        XCTAssertTrue(targetField.waitForExistence(timeout: 2))
+        targetField.tap()
+        targetField.typeText("5")
+
+        app.buttons["start_game_button"].tap()
+        XCTAssertTrue(app.buttons["submit_round_button"].waitForExistence(timeout: 3))
+        app.buttons["Alice_quick_5"].tap()
+        app.buttons["submit_round_button"].tap()
+
+        XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 4))
+        XCTAssertEqual(app.staticTexts["winner_text"].label, "Alice wins!")
+    }
+
+    // MARK: - Test 18: Saved roster deletion is explicit
+
+    func testSavedRosterDeletionRequiresConfirmation() throws {
+        completeGenericGame(playerNames: ["Alice", "Bob"])
+
+        app.buttons["new_game_button"].tap()
+        app.buttons["game_tile_generic"].tap()
+        app.buttons["roster_button"].tap()
+
+        let deleteAlice = app.buttons["delete_roster_player_Alice"]
+        XCTAssertTrue(deleteAlice.waitForExistence(timeout: 3))
+        deleteAlice.tap()
+
+        let destructiveButton = app.buttons["Delete Alice"]
+        XCTAssertTrue(destructiveButton.waitForExistence(timeout: 2))
+        destructiveButton.tap()
+
+        XCTAssertFalse(app.buttons["roster_player_Alice"].exists)
+        XCTAssertTrue(app.buttons["roster_player_Bob"].exists)
     }
 
     // MARK: - Helpers
@@ -384,7 +449,7 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons[gameTileID].tap()
         fillPlayerNames(playerNames)
 
-        // Scoreboard and Phase 10 include a game config step before scoring.
+        // Scoreboard and Ten Phases include a game config step before scoring.
         if gameTileID == "game_tile_generic" || gameTileID == "game_tile_phase10" {
             app.buttons["start_game_button"].tap()
             XCTAssertTrue(app.navigationBars["Game Settings"].waitForExistence(timeout: 2))
@@ -490,8 +555,8 @@ final class ScoreKeeperUITests: XCTestCase {
         if app.alerts.buttons["End Game"].waitForExistence(timeout: 2) {
             app.alerts.buttons["End Game"].tap()
         }
-        _ = app.buttons["review_ask_rate_button"].waitForExistence(timeout: 5)
-        snap("14-review-ask")
+        _ = app.staticTexts["winner_text"].waitForExistence(timeout: 3)
+        snap("14-review-eligible-game-over")
     }
 
     func testScreenshotTourExtended() throws {

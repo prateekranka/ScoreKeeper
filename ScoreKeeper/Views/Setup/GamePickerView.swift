@@ -42,7 +42,7 @@ private struct GamePickerHero: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             AppSectionHeader(
                 title: "Choose a Game",
-                subtitle: "Pick a rule set, then ScoreKeeper will shape the score sheet.",
+                subtitle: "Pick a rule set, then PipCount will shape the score sheet.",
                 systemImage: "dice"
             )
 
@@ -119,7 +119,7 @@ private struct SmartSetupPreview: View {
             )
 
             FeatureRow(systemImage: "plus.forwardslash.minus", title: "Scoreboard", detail: "Highest or lowest score, target score, any game")
-            FeatureRow(systemImage: "10.circle.fill", title: "Phase 10", detail: "Phase progress, leftover points, completion toggles")
+            FeatureRow(systemImage: "10.circle.fill", title: "Ten Phases", detail: "ten-stage card-game scoring")
             FeatureRow(systemImage: "fork.knife.circle.fill", title: "Dinner", detail: "Caller, card values, lowest total wins")
         }
         .padding(AppTheme.spacingMedium)

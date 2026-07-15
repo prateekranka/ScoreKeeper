@@ -12,6 +12,7 @@ struct GameOverView: View {
     @State private var sectionsVisible = false
     @State private var showPaywall = false
     @State private var didEvaluateReviewAsk = false
+    @State private var saveError: String?
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
@@ -59,6 +60,17 @@ struct GameOverView: View {
             }
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .navigationBar)
+            .alert(
+                "Couldn’t save rematch",
+                isPresented: Binding(
+                    get: { saveError != nil },
+                    set: { if !$0 { saveError = nil } }
+                )
+            ) {
+                Button("OK", role: .cancel) { saveError = nil }
+            } message: {
+                Text(saveError ?? "Please try again.")
+            }
         }
     }
 
@@ -80,7 +92,14 @@ struct GameOverView: View {
             newSession.players.append(newPlayer)
         }
 
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return
+        }
         storeManager.recordGameStarted()
 
         router.goHome()

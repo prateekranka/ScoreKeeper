@@ -11,7 +11,22 @@ struct GameConfigView: View {
 
     @State private var winCondition: WinCondition = .highestScore
     @State private var phase10SkipOnFail = false
+    @State private var targetScoreText = ""
     @State private var showPaywall = false
+    @State private var saveError: String?
+
+    private var targetScoreError: String? {
+        guard gameType == .generic else { return nil }
+        return TargetScoreConfiguration.validationMessage(for: targetScoreText)
+    }
+
+    private var targetScore: Int? {
+        TargetScoreConfiguration.value(from: targetScoreText)
+    }
+
+    private var canStart: Bool {
+        targetScoreError == nil
+    }
 
     var body: some View {
         ScrollView {
@@ -37,6 +52,17 @@ struct GameConfigView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView(onUnlocked: startConfiguredGame)
                 .presentationDetents([.large])
+        }
+        .alert(
+            "Couldn’t save game",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "Please try again.")
         }
     }
 
@@ -66,6 +92,8 @@ struct GameConfigView: View {
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("win_condition_picker")
+
+                targetScoreSection
             }
 
             if gameType == .phase10 {
@@ -74,7 +102,7 @@ struct GameConfigView: View {
                         .font(AppFonts.body)
                         .tint(ClubhouseTheme.felt)
 
-                    Text("Players advance to the next phase every round, even when they do not complete the current phase.")
+                    Text("Players advance to the next stage every round, even when they do not complete the current stage.")
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
@@ -84,11 +112,46 @@ struct GameConfigView: View {
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
+    private var targetScoreSection: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text("Target score (optional)")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.ink)
+
+            TextField("Manual end only", text: $targetScoreText)
+                .font(AppFonts.body)
+                .keyboardType(.numberPad)
+                .textFieldStyle(.roundedBorder)
+                .accessibilityLabel("Target score, optional")
+                .accessibilityHint("Leave blank to end the game manually")
+                .accessibilityIdentifier("target_score_field")
+
+            if let targetScoreError {
+                Text(targetScoreError)
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.lacquer)
+                    .accessibilityIdentifier("target_score_error")
+            } else if let targetScore {
+                Text(winCondition == .highestScore
+                     ? "The first player to reach \(targetScore) after a submitted round ends the game; highest total wins."
+                     : "When any player reaches \(targetScore) after a submitted round, the game ends; lowest total wins.")
+                .font(AppFonts.caption)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+            } else {
+                Text("Leave blank for manual-only completion.")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+        }
+        .padding(.top, AppTheme.spacingSmall)
+    }
+
     private var startButton: some View {
         AppActionButton(role: .primary(gameType.color), action: startConfiguredGame) {
             Label("Start Game", systemImage: "play.fill")
         }
         .accessibilityIdentifier("start_game_button")
+        .disabled(!canStart)
     }
 
     private func startConfiguredGame() {
@@ -97,14 +160,15 @@ struct GameConfigView: View {
             return
         }
 
-        let session = createSession()
+        guard let session = createSession() else { return }
         storeManager.recordGameStarted()
         router.push(.scoring(session.persistentModelID))
     }
 
-    private func createSession() -> GameSession {
+    private func createSession() -> GameSession? {
         let session = GameSession(gameType: gameType)
         session.winCondition = winCondition
+        session.targetScore = gameType == .generic ? targetScore : nil
         session.phase10SkipOnFail = phase10SkipOnFail
         modelContext.insert(session)
 
@@ -114,14 +178,21 @@ struct GameConfigView: View {
             session.players.append(player)
         }
 
-        try? modelContext.save()
-        savePlayersToRoster(names: playerNames)
-        return session
+        do {
+            try savePlayersToRoster(names: playerNames)
+            try modelContext.save()
+            return session
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return nil
+        }
     }
 
-    private func savePlayersToRoster(names: [String]) {
+    private func savePlayersToRoster(names: [String]) throws {
         for name in names {
-            let existing = try? modelContext.fetch(
+            let existing = try modelContext.fetch(
                 FetchDescriptor<SavedPlayer>(predicate: #Predicate { $0.name == name })
             ).first
 

@@ -13,7 +13,7 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 ## Project Context
 
 - ScoreKeeper is a native iOS scorekeeping app built with SwiftUI and SwiftData.
-- Supported game types currently include Scoreboard, What's for Dinner, and Phase 10.
+- User-facing game types currently include Scoreboard, What's for Dinner, and Ten Phases. Internal model/file names may still use `phase10` for persistence compatibility.
 - Navigation is centralized through `NavigationRouter` and `AppDestination` in `ScoreKeeper/App/ContentView.swift`.
 - The UI screen network artifact for redesign prep lives at `docs/ui-screen-network.md`, with a generated route-strip PNG at `docs/ui-screen-network-route-strips.png`.
 - Head-to-Head and Player Stats are centralized `AppDestination` routes; Home exposes Game History whenever at least one completed game exists.
@@ -50,7 +50,7 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 ## Clubhouse Scorecard Redesign (July 2026)
 
 - Branch `redesign/ios26-scorecard` carries the full visual redesign (spec: `docs/redesign-spec.md`): ClubhouseTheme paper/ink/felt/lacquer/brass tokens, selective Press Start 2P/VT323 accents with SF task typography, ledger components, onboarding, StoreKit 2 paywall ($0.99 one-time after 25 free games), and the personal review ask.
-- `ScoreKeeperUITests/testScreenshotTour` is an env-gated design-QA tour: set `SCREENSHOT_DIR=<dir>` in the test-run environment (or the generated `.xctestrun` `TestingEnvironmentVariables`) and run it with `-only-testing` to capture every screen (onboarding, setup, scoring, game over, paywall, review ask) as PNGs.
+- `ScoreKeeperUITests/testScreenshotTour` is an env-gated design-QA tour: set `SCREENSHOT_DIR=<dir>` in the test-run environment (or the generated `.xctestrun` `TestingEnvironmentVariables`) and run it with `-only-testing` to capture the main flows. The review milestone captures the eligible Game Over screen because Apple's native review prompt is not deterministic in UI tests.
 - Monetization test hooks (honored only with `-in-memory-store`): `-unlock-pro`, `-free-games-exhausted`, `-force-review-ask`.
 - Premium-polish verification captures live under `screenshots/premium-polish/`; the July 12 tour passed on `ScoreKeeper App Store Review` (iOS 26.5).
 - Motion uses the shared `AppMotion` tokens in `AppTheme.swift`: 100/140ms press feedback, 160ms fades, 180ms state changes, 240ms page changes, and a critically damped spring only for rare entrance emphasis. Frequent navigation and page loads arrive immediately.
@@ -63,16 +63,23 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 
 ## App Store Submission Prep (July 12, 2026)
 
-- The existing ASC product is `com.icequeen.scorekeeper.unlimited`; redesign `StoreManager` and `ScoreKeeper.storekit` now use that identifier (the UI may still call the product “ScoreKeeper Pro”).
-- Version `1.0` is prepared as build `3` because the sibling release already has build `2` in ASC. The target and project signing team are `4JRB53LG5C`.
-- `.asc/metadata` contains English app-info/version drafts and passes `asc metadata validate`. URLs, copyright, review contact, categories, age rating, privacy answers, and pricing still require account-owner input.
-- `docs/privacy-policy.md` reflects the redesign implementation: SwiftData/UserDefaults on-device storage, StoreKit purchases, and no analytics, tracking, ads, server, or Keychain claim.
+- The ASC product is `com.icequeen.scorekeeper.unlimited`; `StoreManager`, `ScoreKeeper.storekit`, and the UI identify it as PipCount Pro.
+- Version `1.0` build `6` is valid in ASC. Live preflight on July 15 confirmed build `7` as the next unused number; the target/project signing team is `4JRB53LG5C`.
+- `.asc/metadata` contains English PipCount app-info/version drafts. Support and privacy URLs are live; App Store privacy answers, refreshed screenshots, export compliance, IAP submission, and final agreement/banking/tax status remain release gates.
+- `docs/privacy-policy.md` reflects the implementation: SwiftData/UserDefaults and a device-only Keychain allowance counter, StoreKit purchases, and no analytics, tracking, ads, developer server, or cloud sync.
 - `screenshots/app-store-raw/` contains a 14-screen iPhone 17 Pro Max tour; `screenshots/app-store-69/` is the curated 10-screen upload set. Both use 1320×2868 PNGs and pass `asc screenshots validate --device-type IPHONE_69`.
 - Distribution signing uses Apple Distribution identity `CAE26F5B5BED4BC39DFA4BCAD84727C7ED68795F` and installed profile `ScoreKeeper App Store Build 3`; archive only from the canonical trophy-mascot code.
 - ASC CLI authentication uses issuer `50b76771-2e18-454c-81fd-845e94864820` and Admin key ID `Y3G56JD647`; the separate subscription key is for IAP server APIs, not ASC uploads.
 - The sibling `ColorFlow` GitHub repository (`prateekranka/Coloringbook`) has Actions secrets named `ASC_KEY_ID`, `ASC_ISSUER_ID`, and `ASC_KEY_P8_BASE64`; GitHub does not expose secret values locally, and no public support/privacy URLs were found there.
 - Final PipCount marketing screenshots are generated with the ParthJadhav screenshot editor under `release/app-store-screenshots/`; the upload-ready 6.9-inch English set lives at `screenshots/app-store-final/iphone-6.9-en/`.
-- The final six 1320×2868 screenshots are processed in ASC, build 3 was valid and attached, and the non-consumable `com.icequeen.scorekeeper.unlimited` is attached to version 1.0 and Ready to Submit.
+- The existing six 1320×2868 storefront screenshots are stale because some frames still show ScoreKeeper/Phase 10 wording. Refresh them from the reviewed PipCount/Ten Phases build before App Store version submission.
 - Build 3 must not ship: release QA found that a refunded/revoked purchase could remain unlocked from cached UserDefaults. `StoreManager` now treats verified `Transaction.currentEntitlements` as authoritative, maps thrown user cancellation back to idle, and has four deterministic unit regressions. The corrected release binary starts at build 4.
 - Use stable Xcode 26.6 for release archives. Xcode 27 beta StoreKitTest is unreliable across suites; its isolated purchase case passed, but deterministic StoreManager tests are the durable CI surface. On July 12, 2026, those tests passed 4/4 on the iOS 26.4 review simulator.
-- Paid Apps agreement is effective but Pending User Info: HDFC banking is Processing and U.S. tax forms remain Missing Tax Info. These external account items block a fully paid-ready submission until completed.
+- Paid Apps agreement, banking, and tax status must be rechecked in App Store Connect immediately before paid submission because the public API does not expose a reliable final status.
+
+## PipCount Hero Icon Release Handoff (July 15, 2026)
+
+- PipCount Hero is the approved shipping icon. Its pixel-exact 1024px source is `design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon/Assets/reference-hero-cup.png`; the complete Apple Icon Composer package is `design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon`.
+- `ScoreKeeper/Assets.xcassets/AppIcon.appiconset` now uses that artwork. `Icon-1024.png` is byte-for-byte identical to the approved source; smaller iPhone/iPad slots were regenerated with nearest-neighbor scaling to preserve the pixel treatment.
+- The current target is PipCount 1.0 build 7, the next unused ASC build number confirmed on July 15. Use stable Xcode 26.6, preserve/review the release changes, archive from the exact pushed commit, verify the embedded version/build, then upload with the ASC Admin-key keychain profile.
+- Public TestFlight distribution is separate from App Store version review: after upload/processing, add build 7 to an external group, complete beta metadata/compliance, submit Beta App Review, and enable the public link after approval. Submit App Store version 1.0 only when metadata, IAP, agreements, privacy, and refreshed screenshots are ready.

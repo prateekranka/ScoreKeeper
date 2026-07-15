@@ -9,8 +9,18 @@ struct GenericEngine: GameEngine {
     }
 
     func isGameOver(session: GameSession) -> Bool {
-        // Generic games end manually
-        session.isComplete
+        // Manual completion remains authoritative. A configured target is an
+        // automatic trigger, but only after a real scoring round has been
+        // submitted. This keeps a target-configured game open at launch and
+        // allows a zero-point round to count as a submitted round without
+        // accidentally ending the game.
+        guard !session.isComplete else { return true }
+        guard let targetScore = session.targetScore, targetScore > 0 else { return false }
+        guard !session.rounds.isEmpty else { return false }
+
+        return session.players.contains { player in
+            player.totalScore(in: session) >= targetScore
+        }
     }
 
     func winners(session: GameSession) -> [UUID] {

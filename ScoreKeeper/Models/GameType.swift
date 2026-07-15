@@ -16,7 +16,7 @@ enum GameType: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .generic: return "Scoreboard"
         case .whatsForDinner: return "What's for Dinner"
-        case .phase10: return "Phase 10"
+        case .phase10: return "Ten Phases"
         }
     }
 
@@ -24,7 +24,7 @@ enum GameType: String, Codable, CaseIterable, Identifiable {
         switch self {
         case .generic: return "Track any game"
         case .whatsForDinner: return "Lowest hand wins"
-        case .phase10: return "Complete all 10 phases"
+        case .phase10: return "ten-stage card-game scoring"
         }
     }
 
@@ -54,4 +54,24 @@ enum GameType: String, Codable, CaseIterable, Identifiable {
 
     var minPlayers: Int { 2 }
     var maxPlayers: Int { 15 }
+}
+
+/// Shared parsing and validation for the optional target-score field.
+/// Empty input intentionally means that the game is completed manually.
+enum TargetScoreConfiguration {
+    static func validationMessage(for rawValue: String) -> String? {
+        let value = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return nil }
+
+        guard let score = Int(value), score > 0 else {
+            return "Enter a whole number greater than zero, or leave it blank."
+        }
+        return nil
+    }
+
+    static func value(from rawValue: String) -> Int? {
+        let value = rawValue.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty, let score = Int(value), score > 0 else { return nil }
+        return score
+    }
 }

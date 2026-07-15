@@ -4,7 +4,9 @@ import Observation
 @MainActor
 @Observable
 final class ReviewAskManager {
-    var isPresentingReviewAsk = false
+    /// Signals that ContentView should invoke Apple's native review request.
+    /// This is intentionally a transient state value; there is no custom review UI.
+    var reviewRequestPending = false
 
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let isFirstAppSession: Bool
@@ -30,12 +32,13 @@ final class ReviewAskManager {
     }
 
     func considerReviewAsk(completedGameCount: Int, paywallPresentedThisSession: Bool, now: Date = .now) {
-        guard !isPresentingReviewAsk else { return }
+        guard !reviewRequestPending else { return }
 
         if forceReviewAskPending || (shouldForceFromLaunchArguments && !didConsumeForceReviewAsk) {
             forceReviewAskPending = false
             didConsumeForceReviewAsk = true
-            isPresentingReviewAsk = true
+            defaults.set(now, forKey: ReviewAskKeys.lastReviewAskDate)
+            reviewRequestPending = true
             return
         }
 
@@ -52,16 +55,15 @@ final class ReviewAskManager {
         }
 
         defaults.set(now, forKey: ReviewAskKeys.lastReviewAskDate)
-        isPresentingReviewAsk = true
+        reviewRequestPending = true
     }
 
-    func acceptedReviewAsk() {
-        defaults.set(true, forKey: ReviewAskKeys.didAcceptReviewAsk)
-        isPresentingReviewAsk = false
-    }
-
-    func declinedReviewAsk() {
-        isPresentingReviewAsk = false
+    /// Clears the transient signal after ContentView invokes the native request.
+    /// The existing date throttle remains the source of truth for a future ask;
+    /// native StoreKit review requests do not expose whether a user responded.
+    func consumeReviewRequest() {
+        guard reviewRequestPending else { return }
+        reviewRequestPending = false
     }
 
     private var shouldForceFromLaunchArguments: Bool {

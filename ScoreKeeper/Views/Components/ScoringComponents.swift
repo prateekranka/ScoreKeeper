@@ -13,6 +13,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
+    @State private var saveError: String?
     private let bottomBarContentInset: CGFloat = 132
 
     var body: some View {
@@ -77,6 +78,17 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
             ScoringToolSheet(tool: tool, session: session)
                 .presentationDetents([.medium])
         }
+        .alert(
+            "Couldn’t update rounds",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "Please try again.")
+        }
     }
 
     private func undoLastRound() {
@@ -85,7 +97,13 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
         }
 
         modelContext.delete(lastRound)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+        }
     }
 }
 

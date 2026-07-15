@@ -6,9 +6,13 @@ struct HomeView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(ThemeManager.self) private var themeManager
     @Environment(StoreManager.self) private var storeManager
+    @Environment(\.modelContext) private var modelContext
     @State private var selectedTool: HomeTool?
     @State private var sectionsVisible = false
     @State private var showPaywall = false
+    @State private var pendingDeletionID: PersistentIdentifier?
+    @State private var showDeleteConfirmation = false
+    @State private var saveError: String?
     @Query(filter: #Predicate<GameSession> { !$0.isComplete },
            sort: \GameSession.createdAt, order: .reverse)
     private var inProgressGames: [GameSession]
@@ -17,8 +21,11 @@ struct HomeView: View {
     private var completedGames: [GameSession]
 
     private var headerSubtitle: String {
-        if let activeGame = inProgressGames.first {
+        if inProgressGames.count == 1, let activeGame = inProgressGames.first {
             return "Round \(activeGame.currentRoundNumber) is waiting."
+        }
+        if inProgressGames.count > 1 {
+            return "\(inProgressGames.count) active games are waiting."
         }
         return completedGames.isEmpty ? "Ready to play?" : completedGames.count.quantityText("completed game")
     }
@@ -51,6 +58,9 @@ struct HomeView: View {
                         onUnlock: { showPaywall = true }
                     )
                     .staggeredEntrance(visible: sectionsVisible, index: 2)
+                } else if !storeManager.isUnlocked {
+                    PipCountUpgradeEntry(onUpgrade: { showPaywall = true })
+                        .staggeredEntrance(visible: sectionsVisible, index: 2)
                 }
 
                 HomeDashboardRow(
@@ -63,14 +73,18 @@ struct HomeView: View {
                 HomeQuickToolsRow(selectedTool: $selectedTool)
                     .staggeredEntrance(visible: sectionsVisible, index: 4)
 
-                if let activeGame = inProgressGames.first {
-                    HomeResumeBanner(session: activeGame, onTap: { router.push(.scoring(activeGame.persistentModelID)) })
+                if !inProgressGames.isEmpty {
+                    HomeActiveGamesSection(
+                        sessions: inProgressGames,
+                        onGameTap: { router.push(.scoring($0.persistentModelID)) },
+                        onDelete: requestDelete
+                    )
                         .staggeredEntrance(visible: sectionsVisible, index: 5)
                 } else if completedGames.isEmpty {
                     EmptyStateView(
                         title: "No games yet",
                         systemImage: "sparkles",
-                        message: "Start with a scoreboard, Phase 10, or What's for Dinner."
+                        message: "Start with a scoreboard, Ten Phases, or What's for Dinner."
                     )
                     .staggeredEntrance(visible: sectionsVisible, index: 5)
                 }
@@ -100,6 +114,29 @@ struct HomeView: View {
             PaywallView()
                 .presentationDetents([.large])
         }
+        .confirmationDialog(
+            "Delete active game?",
+            isPresented: $showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete Game", role: .destructive) {
+                deletePendingGame()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This permanently removes the saved game and its rounds.")
+        }
+        .alert(
+            "Couldn’t update games",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "Please try again.")
+        }
         .onAppear(perform: revealSections)
     }
 
@@ -111,6 +148,28 @@ struct HomeView: View {
 
     private func revealSections() {
         sectionsVisible = true
+    }
+
+    private func requestDelete(_ session: GameSession) {
+        pendingDeletionID = session.persistentModelID
+        showDeleteConfirmation = true
+    }
+
+    private func deletePendingGame() {
+        guard let pendingDeletionID,
+              let session = inProgressGames.first(where: { $0.persistentModelID == pendingDeletionID }) else {
+            return
+        }
+
+        modelContext.delete(session)
+        do {
+            try modelContext.save()
+            self.pendingDeletionID = nil
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+        }
     }
 
     private func resultText(for session: GameSession) -> String? {
@@ -138,7 +197,7 @@ private struct HomeHeader: View {
         VStack(spacing: AppTheme.spacingSmall) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("ScoreKeeper")
+                    Text("PipCount")
                         .font(AppFonts.largeTitle)
                         .foregroundStyle(ClubhouseTheme.ink)
 
@@ -200,14 +259,127 @@ private struct FreeGamesNote: View {
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .monospacedDigit()
+                .accessibilityIdentifier("free_games_note")
 
-            Button("Unlock", action: onUnlock)
+            Button("Upgrade to PipCount Pro", action: onUnlock)
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.brass)
-                .accessibilityIdentifier("home_unlock_link")
+                .accessibilityIdentifier("home_upgrade_button")
+                .accessibilityLabel("Upgrade to PipCount Pro")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityIdentifier("free_games_note")
+    }
+}
+
+private struct PipCountUpgradeEntry: View {
+    let onUpgrade: () -> Void
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            Text("25 free games included")
+                .font(AppFonts.caption)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .accessibilityIdentifier("home_upgrade_entry")
+
+            Spacer(minLength: AppTheme.spacingSmall)
+
+            Button("Upgrade to PipCount Pro", action: onUpgrade)
+                .font(AppFonts.caption.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.brass)
+                .frame(minHeight: 44)
+                .accessibilityLabel("Upgrade to PipCount Pro")
+                .accessibilityIdentifier("home_upgrade_button")
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct HomeActiveGamesSection: View {
+    let sessions: [GameSession]
+    let onGameTap: (GameSession) -> Void
+    let onDelete: (GameSession) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            HStack {
+                Text("Active Games")
+                    .columnHeaderStyle()
+                    .accessibilityIdentifier("active_games_list")
+                Spacer()
+                Text("\(sessions.count)")
+                    .font(AppFonts.caption)
+                    .monospacedDigit()
+                    .foregroundStyle(ClubhouseTheme.felt)
+                    .accessibilityLabel("\(sessions.count) active games")
+            }
+
+            VStack(spacing: AppTheme.spacingSmall) {
+                ForEach(sessions) { session in
+                    HStack(spacing: AppTheme.spacingSmall) {
+                        Button {
+                            onGameTap(session)
+                        } label: {
+                            ActiveGameRow(session: session)
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .accessibilityIdentifier("active_game_\(session.id.uuidString)")
+                        .accessibilityLabel("Resume \(session.gameType.displayName), round \(session.currentRoundNumber)")
+
+                        Button(role: .destructive) {
+                            onDelete(session)
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.caption.weight(.semibold))
+                                .frame(width: 44, height: 44)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .accessibilityLabel("Delete active \(session.gameType.displayName) game")
+                        .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct ActiveGameRow: View {
+    let session: GameSession
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            HStack {
+                Label(session.gameType.displayName, systemImage: session.gameType.icon)
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                Spacer()
+                Label("Resume", systemImage: "play.fill")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.felt)
+            }
+
+            HStack(spacing: AppTheme.spacingSmall) {
+                Text(session.players.count.quantityText("player"))
+                Text("/")
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                Text("Round \(session.currentRoundNumber)")
+            }
+            .font(AppFonts.body)
+            .foregroundStyle(ClubhouseTheme.inkMuted)
+
+            VStack(spacing: 0) {
+                ForEach(Array(session.players.prefix(4).enumerated()), id: \.element.id) { _, player in
+                    LedgerRow(
+                        player: player,
+                        score: player.totalScore(in: session),
+                        isLeader: false
+                    )
+                }
+            }
+        }
+        .padding(AppTheme.spacingMedium)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
     }
 }
 

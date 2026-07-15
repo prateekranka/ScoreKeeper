@@ -3,6 +3,18 @@ import Observation
 import StoreKit
 
 @MainActor
+protocol StoreProductLoading {
+    func product(withID productID: String) async throws -> Product?
+}
+
+@MainActor
+struct LiveStoreProductLoader: StoreProductLoading {
+    func product(withID productID: String) async throws -> Product? {
+        try await Product.products(for: [productID]).first
+    }
+}
+
+@MainActor
 @Observable
 final class StoreManager {
     // Keep this identifier aligned with the existing App Store Connect product.
@@ -18,18 +30,35 @@ final class StoreManager {
         case failed(String)
     }
 
+    enum ProductState: Equatable {
+        case notLoaded
+        case loading
+        case loaded
+        case unavailable(String)
+    }
+
     var product: Product?
+    var productState: ProductState = .notLoaded
     var purchaseState: PurchaseState = .idle
     var isUnlocked: Bool {
         didSet { defaults.set(isUnlocked, forKey: Keys.proUnlocked) }
     }
-    var gamesStartedCount: Int {
-        didSet { defaults.set(gamesStartedCount, forKey: Keys.gamesStartedCount) }
-    }
+    private(set) var gamesStartedCount: Int
     var paywallPresentedThisSession = false
 
     var displayPrice: String {
-        product?.displayPrice ?? "$0.99"
+        product?.displayPrice ?? "Price unavailable"
+    }
+
+    var canPurchase: Bool {
+        guard product != nil else { return false }
+        guard case .loaded = productState else { return false }
+        switch purchaseState {
+        case .loading, .purchasing, .restoring:
+            return false
+        case .idle, .success, .failed:
+            return true
+        }
     }
 
     var remainingFreeGames: Int {
@@ -45,22 +74,53 @@ final class StoreManager {
     }
 
     @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private let allowanceStorage: any GameAllowanceStorage
+    @ObservationIgnored private let productLoader: any StoreProductLoading
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
 
-    init(defaults: UserDefaults = .standard) {
+    init(
+        defaults: UserDefaults = .standard,
+        allowanceStorage: (any GameAllowanceStorage)? = nil,
+        productLoader: (any StoreProductLoading)? = nil,
+        startStoreKitTasks: Bool = true
+    ) {
         self.defaults = defaults
         self.isUnlocked = defaults.bool(forKey: Keys.proUnlocked)
-        self.gamesStartedCount = max(0, defaults.integer(forKey: Keys.gamesStartedCount))
+        let isInMemoryStore = ProcessInfo.processInfo.arguments.contains("-in-memory-store")
+        let resolvedAllowanceStorage = allowanceStorage
+            ?? (isInMemoryStore ? InMemoryGameAllowanceStorage() : KeychainGameAllowanceStorage())
+        self.allowanceStorage = resolvedAllowanceStorage
+        self.productLoader = productLoader ?? LiveStoreProductLoader()
+
+        if isInMemoryStore && allowanceStorage == nil {
+            // UI tests must never read/write the user's persistent Keychain or
+            // carry a prior device allowance into an in-memory launch.
+            self.gamesStartedCount = 0
+            resolvedAllowanceStorage.writeCount(0)
+            defaults.set(0, forKey: Keys.gamesStartedCount)
+        } else {
+            self.gamesStartedCount = GameAllowanceMigration.migrate(
+                defaults: defaults,
+                storage: resolvedAllowanceStorage,
+                defaultsKey: Keys.gamesStartedCount
+            )
+        }
 
         applyLaunchArguments()
 
-        transactionUpdatesTask = Task { [weak self] in
-            await self?.listenForTransactionUpdates()
+        guard startStoreKitTasks else { return }
+
+        if !isInMemoryStore {
+            transactionUpdatesTask = Task { [weak self] in
+                await self?.listenForTransactionUpdates()
+            }
         }
 
-        Task {
-            await loadProduct()
-            await refreshEntitlements()
+        Task { [weak self] in
+            await self?.loadProduct()
+            if !isInMemoryStore {
+                await self?.refreshEntitlements()
+            }
         }
     }
 
@@ -68,16 +128,30 @@ final class StoreManager {
         transactionUpdatesTask?.cancel()
     }
 
-    func loadProduct() async {
-        guard product == nil else { return }
+    func loadProduct(forceRetry: Bool = false) async {
+        guard product == nil, productState != .loading || forceRetry else { return }
 
+        product = nil
+        productState = .loading
         purchaseState = .loading
         do {
-            product = try await Product.products(for: [Self.productID]).first
+            guard let loadedProduct = try await productLoader.product(withID: Self.productID) else {
+                productState = .unavailable("PipCount Pro is unavailable right now.")
+                purchaseState = .failed("The unlock is unavailable right now.")
+                return
+            }
+
+            product = loadedProduct
+            productState = .loaded
             purchaseState = .idle
         } catch {
+            productState = .unavailable("Unable to load PipCount Pro right now.")
             purchaseState = .failed("Unable to load the unlock right now.")
         }
+    }
+
+    func retryProductLoad() async {
+        await loadProduct(forceRetry: true)
     }
 
     @discardableResult
@@ -87,6 +161,11 @@ final class StoreManager {
         }
 
         guard let product else {
+            purchaseState = .failed("The unlock is not available right now.")
+            return false
+        }
+
+        guard case .loaded = productState else {
             purchaseState = .failed("The unlock is not available right now.")
             return false
         }
@@ -133,7 +212,7 @@ final class StoreManager {
                 purchaseState = .success
                 return true
             } else {
-                purchaseState = .failed("No ScoreKeeper Pro purchase was found.")
+                purchaseState = .failed("No PipCount Pro purchase was found.")
                 return false
             }
         } catch {
@@ -173,7 +252,8 @@ final class StoreManager {
     }
 
     func recordGameStarted() {
-        gamesStartedCount = max(gamesStartedCount, defaults.integer(forKey: Keys.gamesStartedCount)) + 1
+        let persistedCount = max(0, allowanceStorage.readCount() ?? 0)
+        setGamesStartedCount(max(gamesStartedCount, persistedCount) + 1)
     }
 
     private func listenForTransactionUpdates() async {
@@ -202,16 +282,27 @@ final class StoreManager {
         guard arguments.contains("-in-memory-store") else { return }
 
         isUnlocked = false
-        gamesStartedCount = 0
+        setGamesStartedCount(0)
 
         if arguments.contains("-free-games-exhausted") {
-            gamesStartedCount = Self.freeGameLimit
+            setGamesStartedCount(Self.freeGameLimit)
         }
 
         if arguments.contains("-unlock-pro") {
             isUnlocked = true
         }
 
+    }
+
+    private func setGamesStartedCount(_ proposedCount: Int) {
+        let currentCount = max(0, gamesStartedCount)
+        let storedCount = max(0, allowanceStorage.readCount() ?? 0)
+        let nextCount = max(max(currentCount, storedCount), proposedCount)
+
+        gamesStartedCount = nextCount
+        allowanceStorage.writeCount(nextCount)
+        // Keep the legacy mirror for compatibility with older app builds.
+        defaults.set(nextCount, forKey: Keys.gamesStartedCount)
     }
 }
 

@@ -11,6 +11,7 @@ struct Phase10ScoringView: View {
     @State private var completedPhase: [UUID: Bool] = [:]
     @State private var showGameCompleteAlert = false
     @State private var scoreHapticTrigger = 0
+    @State private var saveError: String?
 
     private let engine = Phase10Engine()
 
@@ -26,7 +27,7 @@ struct Phase10ScoringView: View {
                 icon: GameType.phase10.icon,
                 color: GameType.phase10.color,
                 title: "Round \(session.currentRoundNumber)",
-                subtitle: "Complete all 10 phases"
+                subtitle: "Ten-stage card-game scoring"
             )
             phaseOverview
             roundEntrySection
@@ -34,19 +35,30 @@ struct Phase10ScoringView: View {
             RoundHistoryStrip(session: session)
         }
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
-        .alert("Phase 10 complete", isPresented: $showGameCompleteAlert) {
+        .alert("Ten Phases complete", isPresented: $showGameCompleteAlert) {
             Button("Keep Playing", role: .cancel) {}
             Button("End Game", role: .destructive) {
                 finishGame()
             }
         } message: {
-            Text("At least one player has completed phase 10. You can end the game now or keep scoring.")
+            Text("At least one player has completed all ten stages. You can end the game now or keep scoring.")
+        }
+        .alert(
+            "Couldn’t save round",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "Please try again.")
         }
     }
 
     private var phaseOverview: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "Current Phases", systemImage: "flag.checkered")
+            AppSectionHeader(title: "Current Stages", systemImage: "flag.checkered")
 
             ForEach(session.players, id: \.id) { player in
                 let currentPhase = engine.currentPhase(for: player.id, in: session)
@@ -62,7 +74,7 @@ struct Phase10ScoringView: View {
 
                         Spacer()
 
-                        Text("Phase \(currentPhase)/10")
+                        Text("Stage \(currentPhase)/10")
                             .font(AppFonts.scoreSmall)
                             .monospacedDigit()
                             .contentTransition(.numericText(value: Double(currentPhase)))
@@ -110,19 +122,19 @@ struct Phase10ScoringView: View {
     private func phaseAccessory(for player: Player, currentPhase: Int) -> some View {
         if currentPhase < 10 {
             if session.phase10SkipOnFail {
-                Label("Phase \(currentPhase + 1) completed", systemImage: "checkmark.circle.fill")
+                    Label("Stage \(currentPhase + 1) completed", systemImage: "checkmark.circle.fill")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.felt)
             } else {
                 Toggle(isOn: completedPhaseBinding(for: player)) {
-                    Text("Phase \(currentPhase + 1)")
+                    Text("Stage \(currentPhase + 1)")
                         .font(AppFonts.caption)
                 }
                 .toggleStyle(.switch)
                 .tint(ClubhouseTheme.felt)
             }
         } else {
-            Label("All phases done", systemImage: "checkmark.seal.fill")
+                Label("All ten stages done", systemImage: "checkmark.seal.fill")
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.felt)
         }
@@ -165,11 +177,18 @@ struct Phase10ScoringView: View {
 
         session.rounds.append(round)
 
+        do {
+            try modelContext.save()
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return
+        }
+
         if engine.isGameOver(session: session) {
             showGameCompleteAlert = true
         }
-
-        try? modelContext.save()
 
         leftoverPoints = [:]
         completedPhase = [:]
@@ -181,7 +200,14 @@ struct Phase10ScoringView: View {
         session.isComplete = true
         session.completedAt = .now
         session.winnerID = engine.winners(session: session).first
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return
+        }
         let completedGameCount = fetchCompletedGameCount()
         let paywallPresentedThisSession = storeManager.paywallPresentedThisSession
         router.push(.gameOver(session.persistentModelID))

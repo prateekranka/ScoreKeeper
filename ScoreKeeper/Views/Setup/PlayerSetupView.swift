@@ -11,6 +11,7 @@ struct PlayerSetupView: View {
     @FocusState private var focusedIndex: Int?
     @State private var showRoster = false
     @State private var showPaywall = false
+    @State private var saveError: String?
 
     private var recentNames: [String] {
         Array(Set(allPlayers.map(\.name)).filter { !$0.isEmpty }).sorted().prefix(20).map { $0 }
@@ -101,6 +102,17 @@ struct PlayerSetupView: View {
             PaywallView(onUnlocked: startGame)
                 .presentationDetents([.large])
         }
+        .alert(
+            "Couldn’t save game",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "Please try again.")
+        }
     }
 
     private func addPlayer() {
@@ -120,7 +132,7 @@ struct PlayerSetupView: View {
                 return
             }
 
-            let session = createSession(names: names)
+            guard let session = createSession(names: names) else { return }
             storeManager.recordGameStarted()
             router.push(.scoring(session.persistentModelID))
         }
@@ -137,7 +149,7 @@ struct PlayerSetupView: View {
         }
     }
 
-    private func createSession(names: [String], winCondition: WinCondition? = nil) -> GameSession {
+    private func createSession(names: [String], winCondition: WinCondition? = nil) -> GameSession? {
         let session = GameSession(gameType: gameType)
         if let wc = winCondition { session.winCondition = wc }
         modelContext.insert(session)
@@ -148,14 +160,21 @@ struct PlayerSetupView: View {
             session.players.append(player)
         }
 
-        try? modelContext.save()
-        savePlayersToRoster(names: names)
-        return session
+        do {
+            try savePlayersToRoster(names: names)
+            try modelContext.save()
+            return session
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return nil
+        }
     }
 
-    private func savePlayersToRoster(names: [String]) {
+    private func savePlayersToRoster(names: [String]) throws {
         for name in names {
-            let existing = try? modelContext.fetch(
+            let existing = try modelContext.fetch(
                 FetchDescriptor<SavedPlayer>(predicate: #Predicate { $0.name == name })
             ).first
 
