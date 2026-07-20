@@ -22,9 +22,9 @@ enum GameType: String, Codable, CaseIterable, Identifiable {
 
     var subtitle: String {
         switch self {
-        case .generic: return "Track any game"
-        case .whatsForDinner: return "Lowest hand wins"
-        case .phase10: return "ten-stage card-game scoring"
+        case .generic: return "Classic head-to-head score keeping."
+        case .whatsForDinner: return "Friendly debate, ranked by everyone."
+        case .phase10: return "10 rounds. Rotate the challenge. Keep it moving."
         }
     }
 
@@ -38,9 +38,17 @@ enum GameType: String, Codable, CaseIterable, Identifiable {
 
     var color: Color {
         switch self {
-        case .generic: return ClubhouseTheme.felt
-        case .whatsForDinner: return PlayerColors.palette[4]
-        case .phase10: return PlayerColors.palette[3]
+        case .generic: return ClubhouseTheme.bauhausBlue
+        case .whatsForDinner: return ClubhouseTheme.bauhausYellow
+        case .phase10: return ClubhouseTheme.bauhausRed
+        }
+    }
+
+    var accentColor: Color {
+        switch self {
+        case .generic: return ClubhouseTheme.bauhausBlue
+        case .whatsForDinner: return ClubhouseTheme.bauhausGreen
+        case .phase10: return ClubhouseTheme.bauhausYellow
         }
     }
 

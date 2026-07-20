@@ -10,6 +10,7 @@ struct HomeView: View {
     @State private var selectedTool: HomeTool?
     @State private var sectionsVisible = false
     @State private var showPaywall = false
+    @State private var showPlayerRoster = false
     @State private var pendingDeletionID: PersistentIdentifier?
     @State private var showDeleteConfirmation = false
     @State private var saveError: String?
@@ -20,92 +21,93 @@ struct HomeView: View {
            sort: \GameSession.createdAt, order: .reverse)
     private var completedGames: [GameSession]
 
-    private var headerSubtitle: String {
+    private var statusLine: String? {
         if inProgressGames.count == 1, let activeGame = inProgressGames.first {
             return "Round \(activeGame.currentRoundNumber) is waiting."
         }
         if inProgressGames.count > 1 {
             return "\(inProgressGames.count) active games are waiting."
         }
-        return completedGames.isEmpty ? "Ready to play?" : completedGames.count.quantityText("completed game")
-    }
-
-    private var uniquePlayerCount: Int {
-        let names = completedGames
-            .flatMap(\.players)
-            .map { $0.name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
-            .filter { !$0.isEmpty }
-        return Set(names).count
+        if completedGames.isEmpty {
+            return "Ready to play?"
+        }
+        return completedGames.count.quantityText("completed game")
     }
 
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
-                HomeHeader(
-                    subtitle: headerSubtitle,
+                BauhausHomeHeader(
+                    statusLine: statusLine,
                     themeIconName: themeManager.iconName,
                     onThemeTap: cycleTheme
                 )
                 .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                NewGameButton(action: { router.push(.gamePicker) })
+                if let heroGame = inProgressGames.first {
+                    BauhausActiveGameHeroCard(
+                        session: heroGame,
+                        onResume: { router.push(.scoring(heroGame.persistentModelID)) }
+                    )
                     .staggeredEntrance(visible: sectionsVisible, index: 1)
-                    .padding(.top, AppTheme.spacingMedium)
+
+                    if inProgressGames.count > 1 {
+                        BauhausOtherActiveGamesSection(
+                            sessions: Array(inProgressGames.dropFirst()),
+                            onGameTap: { router.push(.scoring($0.persistentModelID)) },
+                            onDelete: requestDelete
+                        )
+                        .staggeredEntrance(visible: sectionsVisible, index: 2)
+                    }
+                }
+
+                BauhausNewGameButton(action: { router.push(.gamePicker) })
+                    .staggeredEntrance(visible: sectionsVisible, index: inProgressGames.isEmpty ? 1 : 3)
 
                 if storeManager.shouldShowFreeGamesSignal {
                     FreeGamesNote(
                         remainingFreeGames: storeManager.remainingFreeGames,
                         onUnlock: { showPaywall = true }
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 2)
+                    .staggeredEntrance(visible: sectionsVisible, index: paywallEntranceIndex)
                 } else if !storeManager.isUnlocked {
                     PipCountUpgradeEntry(onUpgrade: { showPaywall = true })
-                        .staggeredEntrance(visible: sectionsVisible, index: 2)
+                        .staggeredEntrance(visible: sectionsVisible, index: paywallEntranceIndex)
                 }
 
-                HomeDashboardRow(
-                    gamesCount: completedGames.count,
-                    activeCount: inProgressGames.count,
-                    playersCount: uniquePlayerCount
-                )
-                .staggeredEntrance(visible: sectionsVisible, index: 3)
-
-                HomeQuickToolsRow(selectedTool: $selectedTool)
-                    .staggeredEntrance(visible: sectionsVisible, index: 4)
-
-                if !inProgressGames.isEmpty {
-                    HomeActiveGamesSection(
-                        sessions: inProgressGames,
-                        onGameTap: { router.push(.scoring($0.persistentModelID)) },
-                        onDelete: requestDelete
-                    )
-                        .staggeredEntrance(visible: sectionsVisible, index: 5)
-                } else if completedGames.isEmpty {
+                if inProgressGames.isEmpty && completedGames.isEmpty {
                     EmptyStateView(
                         title: "No games yet",
                         systemImage: "sparkles",
                         message: "Start with a scoreboard, Ten Phases, or What's for Dinner."
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 5)
+                    .staggeredEntrance(visible: sectionsVisible, index: emptyStateEntranceIndex)
                 }
 
                 if !completedGames.isEmpty {
-                    HomeRecentGamesSection(
+                    BauhausRecentGamesSection(
                         sessions: completedGames,
                         onGameTap: { router.push(.gameDetail($0)) },
                         onSeeAll: { router.push(.gameHistory) }
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 6)
+                    .staggeredEntrance(visible: sectionsVisible, index: recentGamesEntranceIndex)
 
-                    HomeStatsSection(sessions: completedGames)
-                        .staggeredEntrance(visible: sectionsVisible, index: 7)
+                    BauhausStatsHistorySection(sessions: completedGames)
+                        .staggeredEntrance(visible: sectionsVisible, index: statsEntranceIndex)
                 }
+
+                HomeQuickToolsRow(selectedTool: $selectedTool)
+                    .staggeredEntrance(visible: sectionsVisible, index: toolsEntranceIndex)
             }
             .padding(AppTheme.spacingMedium)
+            .padding(.bottom, AppTheme.spacingLarge)
         }
         .appBackground()
         .navigationTitle("")
         .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            PipCountTabBar(selected: .home, onSelect: handleTabSelection)
+        }
         .sheet(item: $selectedTool) { tool in
             HomeToolSheet(tool: tool, activeGame: inProgressGames.first)
                 .presentationDetents([.medium])
@@ -113,6 +115,9 @@ struct HomeView: View {
         .sheet(isPresented: $showPaywall) {
             PaywallView()
                 .presentationDetents([.large])
+        }
+        .sheet(isPresented: $showPlayerRoster) {
+            PlayerRosterSheet { _ in }
         }
         .confirmationDialog(
             "Delete active game?",
@@ -140,6 +145,34 @@ struct HomeView: View {
         .onAppear(perform: revealSections)
     }
 
+    private var paywallEntranceIndex: Int {
+        inProgressGames.isEmpty ? 2 : 4
+    }
+
+    private var emptyStateEntranceIndex: Int {
+        paywallEntranceIndex + 1
+    }
+
+    private var recentGamesEntranceIndex: Int {
+        if inProgressGames.isEmpty && completedGames.isEmpty {
+            return emptyStateEntranceIndex + 1
+        }
+        return paywallEntranceIndex + 1
+    }
+
+    private var statsEntranceIndex: Int {
+        recentGamesEntranceIndex + 1
+    }
+
+    private var toolsEntranceIndex: Int {
+        if completedGames.isEmpty {
+            return inProgressGames.isEmpty && completedGames.isEmpty
+                ? emptyStateEntranceIndex + 1
+                : paywallEntranceIndex + 1
+        }
+        return statsEntranceIndex + 1
+    }
+
     private func cycleTheme() {
         withAnimation(reduceMotion ? nil : AppMotion.theme) {
             themeManager.cycle()
@@ -148,6 +181,23 @@ struct HomeView: View {
 
     private func revealSections() {
         sectionsVisible = true
+    }
+
+    private func handleTabSelection(_ tab: PipCountTab) {
+        switch tab {
+        case .home:
+            break
+        case .games:
+            if completedGames.isEmpty && inProgressGames.isEmpty {
+                router.push(.gamePicker)
+            } else {
+                router.push(.gameHistory)
+            }
+        case .players:
+            showPlayerRoster = true
+        case .more:
+            router.push(.legalSupport)
+        }
     }
 
     private func requestDelete(_ session: GameSession) {
@@ -171,83 +221,228 @@ struct HomeView: View {
             saveError = message
         }
     }
-
-    private func resultText(for session: GameSession) -> String? {
-        let engine = GameEngineFactory.engine(for: session.gameType)
-        let winnerIDs = engine.winners(session: session)
-        guard !winnerIDs.isEmpty else { return "No winner" }
-
-        let names = session.players
-            .filter { winnerIDs.contains($0.id) }
-            .map(\.name)
-
-        return names.count == 1 ? "\(names[0]) won" : "\(names.joined(separator: " & ")) won"
-    }
 }
 
-// MARK: - Subviews
+// MARK: - Header
 
-private struct HomeHeader: View {
-    let subtitle: String
+private struct BauhausHomeHeader: View {
+    let statusLine: String?
     let themeIconName: String
     let onThemeTap: () -> Void
     @State private var themeTrigger = 0
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingSmall) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("PipCount")
-                        .font(AppFonts.largeTitle)
-                        .foregroundStyle(ClubhouseTheme.ink)
+        HStack(alignment: .top, spacing: AppTheme.spacingSmall) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("PipCount")
+                    .font(AppFonts.largeTitle)
+                    .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text(subtitle)
-                        .font(AppFonts.body)
+                Text("Game night, organized.")
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.ink.opacity(0.75))
+
+                if let statusLine {
+                    Text(statusLine)
+                        .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
-
-                    Rectangle()
-                        .fill(ClubhouseTheme.rule)
-                        .frame(width: 132, height: 1)
-                        .overlay(alignment: .trailing) {
-                            Rectangle()
-                                .fill(ClubhouseTheme.brass)
-                                .frame(width: 34, height: 2)
-                        }
                 }
+            }
 
-                Spacer()
+            Spacer(minLength: 0)
+
+            ZStack(alignment: .topTrailing) {
+                BauhausHeroArt(style: .home, height: 110)
 
                 Button {
                     themeTrigger &+= 1
                     onThemeTap()
                 } label: {
                     Image(systemName: themeIconName)
-                        .font(.title3)
+                        .font(.body.weight(.semibold))
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .frame(width: 44, height: 44)
-                        .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+                        .frame(width: 40, height: 40)
+                        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                        }
                 }
                 .accessibilityLabel("Change appearance")
                 .accessibilityIdentifier("theme_button")
                 .buttonStyle(PressableButtonStyle())
                 .sensoryFeedback(.selection, trigger: themeTrigger)
+                .offset(x: 4, y: -4)
             }
-            .frame(maxWidth: .infinity)
         }
-        .padding(.top, 40)
+        .padding(.top, 8)
     }
 }
 
-private struct NewGameButton: View {
-    let action: () -> Void
+// MARK: - Active Games
+
+private struct BauhausActiveGameHeroCard: View {
+    let session: GameSession
+    let onResume: () -> Void
+
+    private var isPhase10: Bool { session.gameType == .phase10 }
+    private let phase10TotalRounds = 10
 
     var body: some View {
-        AppActionButton(role: .primary(ClubhouseTheme.felt), action: action) {
-            Label("New Game", systemImage: "plus.circle.fill")
+        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            HStack {
+                Text("Active Game")
+                    .columnHeaderStyle()
+                    .accessibilityIdentifier("active_games_list")
+                Spacer()
+                StatusPill(kind: .inProgress)
+            }
+
+            Text(session.gameType.displayName)
+                .font(AppFonts.tileTitle)
+                .foregroundStyle(ClubhouseTheme.ink)
+
+            roundProgress
+
+            BauhausActivePlayerScoresRow(session: session)
+
+            BauhausPrimaryButton(
+                title: "Resume Game",
+                systemImage: "play.fill",
+                action: onResume
+            )
+            .accessibilityIdentifier("resume_game_card")
+            .accessibilityLabel("Resume \(session.gameType.displayName), round \(session.currentRoundNumber)")
         }
-        .accessibilityIdentifier("new_game_button")
+        .padding(AppTheme.spacingMedium)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("active_game_\(session.id.uuidString)")
+    }
+
+    @ViewBuilder
+    private var roundProgress: some View {
+        if isPhase10 {
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                Text("Round \(session.currentRoundNumber) of \(phase10TotalRounds)")
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .monospacedDigit()
+
+                BauhausRoundDots(
+                    current: session.currentRoundNumber,
+                    total: phase10TotalRounds
+                )
+            }
+        } else {
+            Text("Round \(session.currentRoundNumber)")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .monospacedDigit()
+        }
     }
 }
+
+private struct BauhausActivePlayerScoresRow: View {
+    let session: GameSession
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: AppTheme.spacingMedium) {
+                ForEach(session.players) { player in
+                    VStack(spacing: 6) {
+                        PlayerShapeIcon(colorIndex: player.colorIndex, size: 32)
+
+                        Text(player.name)
+                            .font(AppFonts.caption.weight(.semibold))
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(1)
+
+                        Text("\(player.totalScore(in: session))")
+                            .font(AppFonts.scoreSmall)
+                            .monospacedDigit()
+                            .foregroundStyle(PlayerColors.color(for: player.colorIndex))
+                    }
+                    .frame(minWidth: 72)
+                }
+            }
+            .padding(.vertical, 2)
+        }
+    }
+}
+
+private struct BauhausOtherActiveGamesSection: View {
+    let sessions: [GameSession]
+    let onGameTap: (GameSession) -> Void
+    let onDelete: (GameSession) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text("More Active Games")
+                .columnHeaderStyle()
+
+            VStack(spacing: AppTheme.spacingSmall) {
+                ForEach(sessions) { session in
+                    HStack(spacing: AppTheme.spacingSmall) {
+                        Button {
+                            onGameTap(session)
+                        } label: {
+                            BauhausCompactActiveGameRow(session: session)
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .accessibilityIdentifier("active_game_\(session.id.uuidString)")
+                        .accessibilityLabel("Resume \(session.gameType.displayName), round \(session.currentRoundNumber)")
+
+                        Button(role: .destructive) {
+                            onDelete(session)
+                        } label: {
+                            Image(systemName: "trash")
+                                .font(.caption.weight(.semibold))
+                                .frame(width: 44, height: 44)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .accessibilityLabel("Delete active \(session.gameType.displayName) game")
+                        .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
+                    }
+                }
+            }
+        }
+    }
+}
+
+private struct BauhausCompactActiveGameRow: View {
+    let session: GameSession
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(session.gameType.displayName)
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Text("Round \(session.currentRoundNumber) · \(session.players.count.quantityText("player"))")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .monospacedDigit()
+            }
+
+            Spacer(minLength: AppTheme.spacingSmall)
+
+            StatusPill(kind: .inProgress)
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+        }
+        .padding(AppTheme.spacingSmall)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
+    }
+}
+
+// MARK: - Paywall Notes
 
 private struct FreeGamesNote: View {
     let remainingFreeGames: Int
@@ -294,148 +489,183 @@ private struct PipCountUpgradeEntry: View {
     }
 }
 
-private struct HomeActiveGamesSection: View {
+// MARK: - Recent Games
+
+private struct BauhausRecentGamesSection: View {
     let sessions: [GameSession]
-    let onGameTap: (GameSession) -> Void
-    let onDelete: (GameSession) -> Void
+    let onGameTap: (PersistentIdentifier) -> Void
+    let onSeeAll: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             HStack {
-                Text("Active Games")
+                Text("Recent Games")
                     .columnHeaderStyle()
-                    .accessibilityIdentifier("active_games_list")
                 Spacer()
-                Text("\(sessions.count)")
-                    .font(AppFonts.caption)
-                    .monospacedDigit()
-                    .foregroundStyle(ClubhouseTheme.felt)
-                    .accessibilityLabel("\(sessions.count) active games")
+                if !sessions.isEmpty {
+                    Button(action: onSeeAll) {
+                        HStack(spacing: 4) {
+                            Text("See All")
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                        }
+                        .font(AppFonts.body.weight(.semibold))
+                        .foregroundStyle(ClubhouseTheme.bauhausBlue)
+                    }
+                    .accessibilityIdentifier("see_all_button")
+                }
             }
 
-            VStack(spacing: AppTheme.spacingSmall) {
-                ForEach(sessions) { session in
-                    HStack(spacing: AppTheme.spacingSmall) {
-                        Button {
-                            onGameTap(session)
-                        } label: {
-                            ActiveGameRow(session: session)
-                        }
-                        .buttonStyle(PressableButtonStyle())
-                        .accessibilityIdentifier("active_game_\(session.id.uuidString)")
-                        .accessibilityLabel("Resume \(session.gameType.displayName), round \(session.currentRoundNumber)")
+            ForEach(sessions.prefix(5)) { session in
+                Button {
+                    onGameTap(session.persistentModelID)
+                } label: {
+                    BauhausRecentGameRow(session: session)
+                }
+                .buttonStyle(PressableButtonStyle())
+            }
+        }
+    }
+}
 
-                        Button(role: .destructive) {
-                            onDelete(session)
-                        } label: {
-                            Image(systemName: "trash")
-                                .font(.caption.weight(.semibold))
-                                .frame(width: 44, height: 44)
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(PressableButtonStyle())
-                        .accessibilityLabel("Delete active \(session.gameType.displayName) game")
-                        .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
+private struct BauhausRecentGameRow: View {
+    let session: GameSession
+
+    private var resultText: String? {
+        let engine = GameEngineFactory.engine(for: session.gameType)
+        let winnerIDs = engine.winners(session: session)
+        guard !winnerIDs.isEmpty else { return nil }
+
+        let names = session.players
+            .filter { winnerIDs.contains($0.id) }
+            .map(\.name)
+
+        return names.count == 1 ? "\(names[0]) won" : "\(names.joined(separator: " & ")) won"
+    }
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(session.gameType.displayName)
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                HStack(spacing: AppTheme.spacingSmall) {
+                    if let date = session.completedAt {
+                        Text(date, style: .date)
+                            .font(AppFonts.caption)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                    }
+
+                    Text(session.players.count.quantityText("player"))
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
+
+                HStack(spacing: AppTheme.spacingSmall) {
+                    StatusPill(kind: .completed)
+
+                    if let resultText {
+                        Text(resultText)
+                            .font(AppFonts.caption.weight(.semibold))
+                            .foregroundStyle(ClubhouseTheme.bauhausGreen)
+                            .lineLimit(1)
                     }
                 }
             }
+
+            Spacer(minLength: AppTheme.spacingSmall)
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.inkMuted)
         }
+        .padding(AppTheme.spacingSmall)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
     }
 }
 
-private struct ActiveGameRow: View {
-    let session: GameSession
+// MARK: - Stats & History
+
+private struct BauhausStatsHistorySection: View {
+    @Environment(NavigationRouter.self) private var router
+    let sessions: [GameSession]
+
+    private var playerNames: [String] {
+        StatsCalculator.allPlayerNames(from: sessions)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            HStack {
-                Label(session.gameType.displayName, systemImage: session.gameType.icon)
+            Text("Stats & History")
+                .columnHeaderStyle()
+
+            Button {
+                router.push(.headToHead)
+            } label: {
+                BauhausStatsHistoryRow(
+                    title: "Head to Head",
+                    subtitle: "Compare players across every game night."
+                )
+            }
+            .buttonStyle(PressableButtonStyle())
+            .accessibilityIdentifier("head_to_head_button")
+
+            if !playerNames.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: AppTheme.spacingSmall) {
+                        ForEach(playerNames, id: \.self) { name in
+                            Button {
+                                router.push(.playerStats(name))
+                            } label: {
+                                Label(name, systemImage: "person.crop.circle")
+                                    .font(AppFonts.body)
+                                    .foregroundStyle(ClubhouseTheme.ink)
+                                    .padding(.horizontal, AppTheme.spacingSmall)
+                                    .frame(minHeight: 42)
+                                    .background(ClubhouseTheme.paperCard, in: Capsule())
+                                    .overlay { Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1) }
+                            }
+                            .buttonStyle(PressableButtonStyle())
+                            .accessibilityIdentifier("player_stats_\(name)")
+                        }
+                    }
+                }
+                .accessibilityIdentifier("player_stats_entry_list")
+            }
+        }
+    }
+}
+
+private struct BauhausStatsHistoryRow: View {
+    let title: String
+    let subtitle: String
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
-                Spacer()
-                Label("Resume", systemImage: "play.fill")
+                Text(subtitle)
                     .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.felt)
-            }
-
-            HStack(spacing: AppTheme.spacingSmall) {
-                Text(session.players.count.quantityText("player"))
-                Text("/")
                     .foregroundStyle(ClubhouseTheme.inkMuted)
-                Text("Round \(session.currentRoundNumber)")
             }
-            .font(AppFonts.body)
-            .foregroundStyle(ClubhouseTheme.inkMuted)
 
-            VStack(spacing: 0) {
-                ForEach(Array(session.players.prefix(4).enumerated()), id: \.element.id) { _, player in
-                    LedgerRow(
-                        player: player,
-                        score: player.totalScore(in: session),
-                        isLeader: false
-                    )
-                }
-            }
+            Spacer(minLength: AppTheme.spacingSmall)
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.bauhausBlue)
         }
-        .padding(AppTheme.spacingMedium)
+        .padding(AppTheme.spacingSmall)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
     }
 }
 
-private struct HomeDashboardRow: View {
-    let gamesCount: Int
-    let activeCount: Int
-    let playersCount: Int
-
-    var body: some View {
-        HStack(spacing: 0) {
-            HomeMetric(title: "Games", value: gamesCount, tint: ClubhouseTheme.brass)
-            dashboardDivider
-            HomeMetric(title: "Active", value: activeCount, tint: ClubhouseTheme.felt)
-            dashboardDivider
-            HomeMetric(title: "Players", value: playersCount, tint: PlayerColors.palette[1])
-        }
-        .padding(.vertical, AppTheme.spacingSmall)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium)
-    }
-
-    private var dashboardDivider: some View {
-        Rectangle()
-            .fill(ClubhouseTheme.rule)
-            .frame(width: 1, height: 40)
-    }
-}
-
-private struct HomeMetric: View {
-    let title: String
-    let value: Int
-    let tint: Color
-
-    var body: some View {
-        VStack(spacing: 3) {
-            Text("\(value)")
-                .font(.title2.weight(.bold))
-                .monospacedDigit()
-                .contentTransition(.numericText(value: Double(value)))
-                .foregroundStyle(ClubhouseTheme.ink)
-
-            HStack(spacing: 5) {
-                Circle()
-                    .fill(tint)
-                    .frame(width: 6, height: 6)
-                    .accessibilityHidden(true)
-
-                Text(title)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 4)
-        .accessibilityElement(children: .combine)
-    }
-}
+// MARK: - Quick Tools
 
 private struct HomeQuickToolsRow: View {
     @Binding var selectedTool: HomeTool?
@@ -485,214 +715,6 @@ private struct HomeToolButton: View {
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityLabel(tool.accessibilityLabel)
-    }
-}
-
-private struct HomeResumeBanner: View {
-    let session: GameSession
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                HStack {
-                    Text("Resume Game")
-                        .font(AppFonts.title)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                    Spacer()
-                    Label("Resume", systemImage: "play.fill")
-                        .font(AppFonts.headline)
-                        .foregroundStyle(ClubhouseTheme.onFelt)
-                        .padding(.horizontal, AppTheme.spacingMedium)
-                        .frame(minHeight: 44)
-                        .background(ClubhouseTheme.felt, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
-                }
-
-                HStack(spacing: AppTheme.spacingSmall) {
-                    Image(systemName: session.gameType.icon)
-                        .foregroundStyle(session.gameType.color)
-                    Text(session.gameType.displayName)
-                        .font(AppFonts.body)
-                    Text("/").foregroundStyle(ClubhouseTheme.inkMuted)
-                    Text(session.players.count.quantityText("player"))
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                    Text("/").foregroundStyle(ClubhouseTheme.inkMuted)
-                    Text("Round \(session.currentRoundNumber)")
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                }
-
-                VStack(spacing: 0) {
-                    ForEach(Array(session.players.prefix(4).enumerated()), id: \.element.id) { _, player in
-                        LedgerRow(
-                            player: player,
-                            score: player.totalScore(in: session),
-                            isLeader: false
-                        )
-                    }
-                }
-            }
-            .padding(AppTheme.spacingMedium)
-            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
-        }
-        .buttonStyle(PressableButtonStyle())
-        .accessibilityIdentifier("resume_game_card")
-        .accessibilityLabel("Resume \(session.gameType.displayName), round \(session.currentRoundNumber)")
-    }
-}
-
-private struct HomeRecentGamesSection: View {
-    let sessions: [GameSession]
-    let onGameTap: (PersistentIdentifier) -> Void
-    let onSeeAll: () -> Void
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            HStack {
-                Text("Recent Games")
-                    .columnHeaderStyle()
-                Spacer()
-                if !sessions.isEmpty {
-                    Button("See All", action: onSeeAll)
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.felt)
-                        .accessibilityIdentifier("see_all_button")
-                }
-            }
-
-            ForEach(sessions.prefix(5)) { session in
-                Button {
-                    onGameTap(session.persistentModelID)
-                } label: {
-                    RecentGameRow(session: session)
-                }
-                .buttonStyle(PressableButtonStyle())
-            }
-        }
-    }
-}
-
-private struct RecentGameRow: View {
-    let session: GameSession
-
-    private var resultText: String? {
-        let engine = GameEngineFactory.engine(for: session.gameType)
-        let winnerIDs = engine.winners(session: session)
-        guard !winnerIDs.isEmpty else { return "No winner" }
-
-        let names = session.players
-            .filter { winnerIDs.contains($0.id) }
-            .map(\.name)
-
-        return names.count == 1 ? "\(names[0]) won" : "\(names.joined(separator: " & ")) won"
-    }
-
-    var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack {
-                    Text(session.gameType.displayName)
-                        .font(AppFonts.headline)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                    Spacer()
-                    StampBadge(text: "Final")
-                }
-
-                if let resultText {
-                    Text(resultText)
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.brass)
-                } else {
-                    Text(session.players.count.quantityText("player"))
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                }
-            }
-
-            Spacer()
-
-            if let date = session.completedAt {
-                Text(date, style: .date)
-                    .columnHeaderStyle()
-            }
-
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-        }
-        .padding(AppTheme.spacingSmall)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
-        .rotationEffect(.degrees(session.id.uuidString.hashValue.isMultiple(of: 2) ? 0.7 : -0.7))
-    }
-}
-
-private struct HomeStatsSection: View {
-    @Environment(NavigationRouter.self) private var router
-    let sessions: [GameSession]
-
-    private var playerNames: [String] {
-        StatsCalculator.allPlayerNames(from: sessions)
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Stats")
-                .columnHeaderStyle()
-
-            Button {
-                router.push(.headToHead)
-            } label: {
-                QuietLinkRow(title: "Head to Head", systemImage: "person.2.slash")
-            }
-            .buttonStyle(PressableButtonStyle())
-            .accessibilityIdentifier("head_to_head_button")
-
-            if !playerNames.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: AppTheme.spacingSmall) {
-                        ForEach(playerNames, id: \.self) { name in
-                            Button {
-                                router.push(.playerStats(name))
-                            } label: {
-                                Label(name, systemImage: "person.crop.circle")
-                                    .font(AppFonts.body)
-                                    .foregroundStyle(ClubhouseTheme.ink)
-                                    .padding(.horizontal, AppTheme.spacingSmall)
-                                    .frame(minHeight: 42)
-                                    .background(ClubhouseTheme.paperCard, in: Capsule())
-                                    .overlay { Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1) }
-                            }
-                            .buttonStyle(PressableButtonStyle())
-                            .accessibilityIdentifier("player_stats_\(name)")
-                        }
-                    }
-                }
-                .accessibilityIdentifier("player_stats_entry_list")
-            }
-        }
-    }
-}
-
-private struct QuietLinkRow: View {
-    let title: String
-    let systemImage: String
-
-    var body: some View {
-        HStack {
-            Label(title, systemImage: systemImage)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
-            Spacer()
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, AppTheme.spacingSmall)
-        .overlay(alignment: .bottom) {
-            Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
-        }
     }
 }
 

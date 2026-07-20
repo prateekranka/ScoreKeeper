@@ -34,36 +34,43 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
             .safeAreaInset(edge: .bottom) {
                 glassGroup(spacing: AppTheme.spacingSmall) {
                     VStack(spacing: AppTheme.spacingSmall) {
-                        HStack(spacing: AppTheme.spacingSmall) {
-                            Button {
-                                undoTrigger &+= 1
-                                undoLastRound()
-                            } label: {
-                                Label("Undo Last", systemImage: "arrow.uturn.backward")
-                                    .font(AppFonts.body)
-                                    .foregroundStyle(ClubhouseTheme.ink)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(minHeight: 44)
-                                    .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                                            .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 2)
-                                    }
-                            }
-                            .buttonStyle(PressableButtonStyle())
-                            .disabled(session.sortedRounds.isEmpty)
-                            .sensoryFeedback(.warning, trigger: undoTrigger)
-                            .accessibilityIdentifier("undo_last_round_button")
-
-                            AppActionButton(role: .primary(session.gameType.color), action: action) {
-                                if let actionSystemImage {
-                                    Label(actionTitle, systemImage: actionSystemImage)
-                                } else {
-                                    Text(actionTitle)
-                                }
-                            }
+                        if actionTitle == "Submit" {
+                            BauhausPrimaryButton(
+                                title: "Submit Round",
+                                systemImage: nil,
+                                fill: ClubhouseTheme.ink,
+                                action: action
+                            )
+                            .accessibilityIdentifier("submit_round_button")
+                        } else {
+                            BauhausPrimaryButton(
+                                title: actionTitle,
+                                systemImage: actionSystemImage,
+                                fill: session.gameType.color,
+                                action: action
+                            )
                             .accessibilityIdentifier("submit_round_button")
                         }
+
+                        Button {
+                            undoTrigger &+= 1
+                            undoLastRound()
+                        } label: {
+                            Label("Undo Last Round", systemImage: "arrow.uturn.backward")
+                                .font(AppFonts.body.weight(.semibold))
+                                .foregroundStyle(ClubhouseTheme.ink)
+                                .frame(maxWidth: .infinity)
+                                .frame(minHeight: 48)
+                                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                                        .strokeBorder(ClubhouseTheme.ink, lineWidth: 1.5)
+                                }
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .disabled(session.sortedRounds.isEmpty)
+                        .sensoryFeedback(.warning, trigger: undoTrigger)
+                        .accessibilityIdentifier("undo_last_round_button")
                     }
                     .padding(.horizontal, AppTheme.spacingMedium)
                     .padding(.top, AppTheme.spacingSmall)
@@ -143,41 +150,121 @@ private enum ScoringTool: String, CaseIterable, Identifiable {
     }
 }
 
+private enum ScoringRoundProgress {
+    static func knownTotalRounds(for session: GameSession) -> Int? {
+        switch session.gameType {
+        case .phase10:
+            return 10
+        case .generic, .whatsForDinner:
+            return nil
+        }
+    }
+
+    static func cappedDotTotal(for session: GameSession) -> Int {
+        min(max(session.currentRoundNumber, 1), 10)
+    }
+}
+
 private struct ScoringToolsBar: View {
     let session: GameSession
     @Binding var selectedTool: ScoringTool?
 
+    private var knownTotal: Int? {
+        ScoringRoundProgress.knownTotalRounds(for: session)
+    }
+
     var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Label("Round \(session.currentRoundNumber)", systemImage: session.gameType.icon)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-                .accessibilityLabel("\(session.gameType.displayName), Round \(session.currentRoundNumber)")
-
-            Spacer()
-
-            ForEach(ScoringTool.allCases) { tool in
-                Button {
-                    selectedTool = tool
-                } label: {
-                    Image(systemName: tool.systemImage)
-                        .font(.headline)
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            HStack(alignment: .top, spacing: AppTheme.spacingSmall) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(session.gameType.displayName)
+                        .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .frame(width: 40, height: 40)
-                        .background(ClubhouseTheme.paperCard.opacity(0.72), in: Circle())
-                        .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+
+                    roundLabel
                 }
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel(tool.title)
+
+                Spacer(minLength: AppTheme.spacingSmall)
+
+                Text("PipCount")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted.opacity(0.72))
+                    .accessibilityHidden(true)
+            }
+
+            HStack(alignment: .center) {
+                if let knownTotal {
+                    BauhausRoundDots(
+                        current: session.currentRoundNumber,
+                        total: knownTotal
+                    )
+                } else {
+                    BauhausRoundDots(
+                        current: session.currentRoundNumber,
+                        total: ScoringRoundProgress.cappedDotTotal(for: session)
+                    )
+                }
+
+                Spacer(minLength: AppTheme.spacingSmall)
+
+                HStack(spacing: 6) {
+                    ForEach(ScoringTool.allCases) { tool in
+                        Button {
+                            selectedTool = tool
+                        } label: {
+                            Image(systemName: tool.systemImage)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(ClubhouseTheme.ink)
+                                .frame(width: 38, height: 38)
+                                .background(ClubhouseTheme.paperCard, in: Circle())
+                                .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .accessibilityLabel(tool.title)
+                    }
+                }
             }
         }
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.vertical, AppTheme.spacingSmall)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.top, AppTheme.spacingSmall)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(scoringAccessibilityLabel)
+    }
+
+    private var roundLabel: some View {
+        HStack(spacing: 4) {
+            Text("Round")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+
+            Text("\(session.currentRoundNumber)")
+                .font(AppFonts.body.weight(.bold))
+                .foregroundStyle(ClubhouseTheme.bauhausBlue)
+                .monospacedDigit()
+
+            if let knownTotal {
+                Text("of")
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+
+                Text("\(knownTotal)")
+                    .font(AppFonts.body.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .monospacedDigit()
+            }
+        }
+    }
+
+    private var scoringAccessibilityLabel: String {
+        if let knownTotal {
+            return "\(session.gameType.displayName), Round \(session.currentRoundNumber) of \(knownTotal)"
+        }
+        return "\(session.gameType.displayName), Round \(session.currentRoundNumber)"
     }
 }
 
@@ -355,17 +442,51 @@ struct ScoreboardHeader: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: AppTheme.spacingSmall) {
                 ForEach(session.players, id: \.id) { player in
-                    ScoreCard(
-                        player: player,
-                        totalScore: player.totalScore(in: session),
-                        isLeading: leadingPlayers.contains(player.id)
+                    let isLeading = leadingPlayers.contains(player.id)
+                    VStack(spacing: 6) {
+                        PlayerShapeIcon(colorIndex: player.colorIndex, size: 28)
+
+                        Text(player.name)
+                            .font(AppFonts.caption.weight(.semibold))
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(1)
+
+                        Text("\(player.totalScore(in: session))")
+                            .font(AppFonts.scoreSmall)
+                            .monospacedDigit()
+                            .foregroundStyle(
+                                isLeading
+                                    ? ClubhouseTheme.bauhausYellow
+                                    : PlayerColors.color(for: player.colorIndex)
+                            )
+                            .contentTransition(.numericText(value: Double(player.totalScore(in: session))))
+
+                        if isLeading {
+                            BrassCrown()
+                        }
+                    }
+                    .padding(AppTheme.spacingSmall)
+                    .frame(minWidth: 88)
+                    .background(
+                        isLeading ? PlayerColors.lightColor(for: player.colorIndex) : ClubhouseTheme.paperCard,
+                        in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                    )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                            .strokeBorder(
+                                isLeading ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.rule,
+                                lineWidth: isLeading ? 2 : 1
+                            )
+                    }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(
+                        "\(player.name), total score \(player.totalScore(in: session))\(isLeading ? ", leading" : "")"
                     )
                 }
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.vertical, AppTheme.spacingSmall)
         }
-        .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.vertical, AppTheme.spacingSmall)
     }
@@ -481,12 +602,7 @@ struct RoundHistoryStrip: View {
 
             ForEach(session.players, id: \.id) { player in
                 HStack(spacing: 6) {
-                    Circle()
-                        .fill(PlayerColors.color(for: player.colorIndex))
-                        .frame(width: 9, height: 9)
-                        .accessibilityHidden(true)
-
-                    PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
+                    PlayerShapeIcon(colorIndex: player.colorIndex, size: 12)
 
                     Text(player.name)
                         .font(AppFonts.caption)
