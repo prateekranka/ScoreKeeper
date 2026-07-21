@@ -23,6 +23,7 @@ class NavigationRouter {
 
 enum AppDestination: Hashable {
     case gamePicker
+    case players
     case playerSetup(GameType)
     case gameConfig(GameType, [String])
     case scoring(PersistentIdentifier)
@@ -44,22 +45,12 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $router.path) {
             HomeView()
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    NavigationLink(value: AppDestination.legalSupport) {
-                            Label("PipCount Legal & Support", systemImage: "questionmark.circle")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                    }
-                    .accessibilityLabel("PipCount legal and support")
-                    .accessibilityHint("Open PipCount privacy policy and support links")
-                    .accessibilityIdentifier("legal_support_button")
-                    .background(ClubhouseTheme.paperCard.opacity(0.92))
-                }
                 .navigationDestination(for: AppDestination.self) { destination in
                     switch destination {
                     case .gamePicker:
                         GamePickerView()
+                    case .players:
+                        SavedPlayersView()
                     case .playerSetup(let gameType):
                         PlayerSetupView(gameType: gameType)
                     case .gameConfig(let gameType, let playerNames):
@@ -133,21 +124,13 @@ private struct OnboardingView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("PipCount")
-                        .font(AppFonts.headline)
-                    Text("Game night, under control")
-                        .font(AppFonts.caption)
-                        .foregroundStyle(.secondary)
-                }
+                Text("PipCount")
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                BauhausStarburst(color: ClubhouseTheme.blue, size: 18)
 
                 Spacer()
-
-                Button("Skip", action: finish)
-                    .font(AppFonts.body)
-                    .foregroundStyle(.secondary)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .accessibilityIdentifier("onboarding_skip_button")
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
@@ -165,9 +148,15 @@ private struct OnboardingView: View {
 
                 AppActionButton(role: .primary(ClubhouseTheme.felt), action: primaryAction) {
                     Label(selectedPage == pages.count - 1 ? "Start keeping score" : "Continue",
-                          systemImage: selectedPage == pages.count - 1 ? "play.fill" : "arrow.right")
+                          systemImage: "arrow.right.circle.fill")
                 }
                 .accessibilityIdentifier("onboarding_primary_button")
+
+                Button("Skip", action: finish)
+                    .font(AppFonts.body.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .accessibilityIdentifier("onboarding_skip_button")
             }
             .padding(AppTheme.spacingMedium)
             .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
@@ -193,41 +182,31 @@ private struct OnboardingPageView: View {
     let page: OnboardingPage
     let highlightsVisible: Bool
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 12) {
-                OnboardingArtwork(page: page, isVisible: highlightsVisible)
-                    .padding(.top, 10)
-
-                VStack(spacing: AppTheme.spacingSmall) {
+            VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                     Text(page.title)
-                        .font(AppFonts.largeTitle)
+                        .font(.system(size: 49, weight: .black, design: .default).width(.condensed))
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .multilineTextAlignment(.center)
+                        .multilineTextAlignment(.leading)
                         .accessibilityIdentifier("onboarding_page_title")
                         .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 0.82 : 1)
 
                     Text(page.message)
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .multilineTextAlignment(.center)
+                        .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
+
+                    Rectangle()
+                        .fill(page.tint)
+                        .frame(width: 78, height: 4)
                 }
 
-                VStack(spacing: AppTheme.spacingSmall) {
-                    ForEach(Array(page.highlights.enumerated()), id: \.element) { index, highlight in
-                        OnboardingHighlightRow(highlight: highlight, tint: page.tint)
-                            .opacity(highlightsVisible ? 1 : 0)
-                            .offset(y: highlightsVisible || reduceMotion ? 0 : 6)
-                            .animation(
-                                reduceMotion ? AppMotion.fade :
-                                    AppMotion.page.delay(Double(index) * 0.04),
-                                value: highlightsVisible
-                            )
-                    }
-                }
+                OnboardingArtwork(page: page, isVisible: highlightsVisible)
+                    .padding(.top, 4)
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.bottom, 132)
@@ -243,14 +222,65 @@ private struct OnboardingArtwork: View {
     @State private var scoreInput = 12
 
     var body: some View {
-        artworkContent
-            .padding(AppTheme.spacingMedium)
-        .frame(maxWidth: .infinity)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        ZStack {
+            artworkBackdrop
+
+            artworkContent
+                .padding(AppTheme.spacingMedium)
+                .background(ClubhouseTheme.paperCard)
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge)
+                        .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge))
+                .shadow(color: ClubhouseTheme.ink.opacity(0.18), radius: 0, x: 5, y: 6)
+                .padding(.horizontal, 22)
+                .rotationEffect(.degrees(page == .setupFast ? 2 : page == .toolsAndHistory ? -1.5 : 0))
+        }
+        .frame(maxWidth: .infinity, minHeight: 322)
         .scaleEffect(isVisible || reduceMotion ? 1 : 0.97)
         .opacity(isVisible ? 1 : 0)
         .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped, value: isVisible)
         .accessibilityHidden(true)
+    }
+
+    @ViewBuilder
+    private var artworkBackdrop: some View {
+        switch page {
+        case .scoreFast:
+            ZStack {
+                BauhausTargetArtwork(accent: ClubhouseTheme.red)
+                    .frame(width: 230, height: 230)
+                    .offset(x: 92, y: -34)
+                BauhausHalftone(color: ClubhouseTheme.blue)
+                    .frame(width: 108, height: 118)
+                    .offset(x: -130, y: 92)
+                BauhausStarburst(color: ClubhouseTheme.blue, size: 38)
+                    .offset(x: -138, y: -110)
+            }
+        case .setupFast:
+            ZStack {
+                BauhausBlocksArtwork()
+                    .frame(height: 250)
+                    .offset(y: 40)
+                BauhausStarburst(color: ClubhouseTheme.red, size: 40)
+                    .offset(x: 132, y: -116)
+            }
+        case .toolsAndHistory:
+            ZStack {
+                Circle()
+                    .fill(ClubhouseTheme.red)
+                    .frame(width: 180, height: 180)
+                    .offset(x: 104, y: -58)
+                Circle()
+                    .fill(ClubhouseTheme.blue)
+                    .frame(width: 126, height: 126)
+                    .offset(x: -136, y: 88)
+                BauhausHalftone(color: ClubhouseTheme.ink)
+                    .frame(width: 90, height: 130)
+                    .offset(x: 142, y: 84)
+            }
+        }
     }
 
     @ViewBuilder

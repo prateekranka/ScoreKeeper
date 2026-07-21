@@ -7,6 +7,8 @@ struct PaywallView: View {
     var onUnlocked: (() -> Void)?
 
     @State private var isCompleting = false
+    @State private var heroVisible = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: 0) {
@@ -14,8 +16,9 @@ struct PaywallView: View {
 
             ScrollView {
                 VStack(spacing: AppTheme.spacingMedium) {
-                    unlockSummary
+                    paywallHero
                     benefitsPanel
+                    unlockSummary
                 }
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.bottom, AppTheme.spacingLarge)
@@ -27,6 +30,9 @@ struct PaywallView: View {
         .sensoryFeedback(.success, trigger: storeManager.isUnlocked)
         .onAppear {
             storeManager.paywallPresentedThisSession = true
+            withAnimation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped) {
+                heroVisible = true
+            }
             Task { await storeManager.loadProduct() }
         }
         .onChange(of: storeManager.isUnlocked) { _, isUnlocked in
@@ -37,54 +43,91 @@ struct PaywallView: View {
     }
 
     private var sheetHeader: some View {
-        ReleaseSheetHeader(
-            title: "PipCount Pro",
-            subtitle: "One unlock. Every game night.",
-            systemImage: "trophy.fill",
-            titleIdentifier: "paywall_title"
-        ) {
+        HStack(spacing: 6) {
+            Text("PipCount")
+                .font(AppFonts.title)
+                .foregroundStyle(ClubhouseTheme.ink)
+            Text("Pro")
+                .font(AppFonts.headline)
+                .foregroundStyle(ClubhouseTheme.red)
+                .accessibilityIdentifier("paywall_title")
+
+            Spacer()
             closeButton
         }
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.vertical, AppTheme.spacingSmall)
     }
 
-    private var unlockSummary: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            HStack(alignment: .firstTextBaseline, spacing: AppTheme.spacingSmall) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text("LIFETIME UNLOCK")
-                        .columnHeaderStyle()
+    private var paywallHero: some View {
+        HStack(alignment: .bottom, spacing: AppTheme.spacingSmall) {
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                Text("Unlock\nunlimited\ngame night.")
+                    .font(.system(size: 46, weight: .black, design: .default).width(.condensed))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
 
-                    Text(storeManager.displayPrice)
-                        .font(AppFonts.scoreDisplay)
-                        .monospacedDigit()
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .accessibilityLabel("\(storeManager.displayPrice), one-time purchase")
-                }
+                Rectangle()
+                    .fill(ClubhouseTheme.blue)
+                    .frame(width: 76, height: 4)
 
-                Spacer()
-
-                Label("ONE-TIME", systemImage: "checkmark.circle.fill")
-                    .font(AppFonts.columnHeader)
-                    .foregroundStyle(ClubhouseTheme.feltDeep)
-                    .padding(.horizontal, 10)
-                    .frame(minHeight: 32)
-                    .background(ClubhouseTheme.felt.opacity(0.10), in: Capsule())
-                    .overlay {
-                        Capsule()
-                            .strokeBorder(ClubhouseTheme.felt.opacity(0.24), lineWidth: 1)
-                    }
+                Text("More games. More moments.\nYours forever.")
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
-            Rectangle()
-                .fill(ClubhouseTheme.rule)
-                .frame(height: 1)
+            Spacer(minLength: 0)
 
-            Text("Your first 25 games are free. Pro removes the game limit permanently.")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .fixedSize(horizontal: false, vertical: true)
+            ZStack(alignment: .bottomTrailing) {
+                BauhausTargetArtwork(accent: ClubhouseTheme.ink)
+                    .frame(width: 170, height: 170)
+                    .offset(y: -32)
+                BauhausBlocksArtwork(compact: true)
+                    .frame(width: 154, height: 138)
+                BauhausStarburst(color: ClubhouseTheme.red, size: 34)
+                    .offset(x: -104, y: -150)
+            }
+            .frame(width: 176, height: 232)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .scaleEffect(heroVisible || reduceMotion ? 1 : 0.97)
+        .opacity(heroVisible ? 1 : 0)
+    }
+
+    private var unlockSummary: some View {
+        HStack(spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("One-time purchase")
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Text(storeManager.displayPrice)
+                    .font(AppFonts.scoreDisplay)
+                    .monospacedDigit()
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .accessibilityLabel("\(storeManager.displayPrice), one-time purchase")
+            }
+
+            Spacer()
+
+            Rectangle()
+                .fill(ClubhouseTheme.ruleStrong)
+                .frame(width: 1, height: 72)
+
+            ZStack {
+                Circle()
+                    .trim(from: 0.25, to: 0.75)
+                    .fill(ClubhouseTheme.blue)
+                    .frame(width: 70, height: 70)
+                    .rotationEffect(.degrees(90))
+                Circle()
+                    .fill(ClubhouseTheme.yellow)
+                    .frame(width: 38, height: 38)
+                    .offset(x: 32, y: 20)
+                BauhausPlayerShape(colorIndex: 3, size: 22)
+                    .offset(x: 38, y: -24)
+            }
+            .frame(width: 104, height: 80)
         }
         .padding(AppTheme.spacingMedium)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
@@ -100,21 +143,27 @@ struct PaywallView: View {
 
             VStack(spacing: 0) {
                 benefitRow(
-                    systemImage: "infinity",
-                    title: "Unlimited scorecards",
-                    detail: "Start as many games as your table can handle"
+                    colorIndex: 0,
+                    title: "25 games free",
+                    detail: "Try before you upgrade"
                 )
                 divider
                 benefitRow(
-                    systemImage: "creditcard.fill",
-                    title: "Pay once",
-                    detail: "No subscription, renewal, or recurring charge"
+                    colorIndex: 1,
+                    title: "Then \(storeManager.displayPrice) once",
+                    detail: "Pay once. That's it"
                 )
                 divider
                 benefitRow(
-                    systemImage: "dice.fill",
-                    title: "Every game mode",
-                    detail: "Scoreboard, Ten Phases, and What's for Dinner"
+                    colorIndex: 2,
+                    title: "Unlimited games forever",
+                    detail: "All current and future games"
+                )
+                divider
+                benefitRow(
+                    colorIndex: 3,
+                    title: "No subscription",
+                    detail: "No monthly fees. Ever"
                 )
             }
         }
@@ -158,6 +207,10 @@ struct PaywallView: View {
                 .frame(minHeight: 44)
                 .accessibilityIdentifier("paywall_restore_button")
                 .disabled(isRestoreButtonDisabled)
+
+                Label("Secure one-time purchase. Your progress is saved.", systemImage: "lock")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
             .padding(AppTheme.spacingSmall)
             .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
@@ -239,7 +292,7 @@ struct PaywallView: View {
                 if storeManager.product == nil {
                     Label("Unlock unavailable", systemImage: "exclamationmark.triangle")
                 } else {
-                    Label("Unlock Pro — \(storeManager.displayPrice)", systemImage: "checkmark.seal.fill")
+                    Label("Unlock forever — \(storeManager.displayPrice)", systemImage: "arrow.right.circle.fill")
                 }
             }
         }
@@ -260,13 +313,9 @@ struct PaywallView: View {
         }
     }
 
-    private func benefitRow(systemImage: String, title: String, detail: String) -> some View {
+    private func benefitRow(colorIndex: Int, title: String, detail: String) -> some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: systemImage)
-                .font(.body.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.felt)
-                .frame(width: 36, height: 36)
-                .background(ClubhouseTheme.felt.opacity(0.10), in: Circle())
+            BauhausPlayerShape(colorIndex: colorIndex, size: 38)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {

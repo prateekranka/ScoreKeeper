@@ -5,8 +5,7 @@ struct GamePickerView: View {
     @State private var sectionsVisible = false
 
     private let columns = [
-        GridItem(.flexible(), spacing: AppTheme.spacingMedium),
-        GridItem(.flexible(), spacing: AppTheme.spacingMedium)
+        GridItem(.flexible(), spacing: AppTheme.spacingSmall)
     ]
 
     var body: some View {
@@ -23,33 +22,62 @@ struct GamePickerView: View {
                         .staggeredEntrance(visible: sectionsVisible, index: index + 1)
                     }
                 }
-
-                SmartSetupPreview()
-                    .staggeredEntrance(visible: sectionsVisible, index: GameType.allCases.count + 1)
             }
             .padding(AppTheme.spacingMedium)
+            .padding(.bottom, 76)
         }
         .appBackground()
-        .navigationTitle("Games")
+        .navigationTitle("")
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            PipCountDock(selected: .games, onSelect: selectTab)
+        }
         .onAppear {
             sectionsVisible = true
+        }
+    }
+
+    private func selectTab(_ tab: PipCountTab) {
+        switch tab {
+        case .home:
+            router.goHome()
+        case .games:
+            break
+        case .players:
+            router.goHome()
+            router.push(.players)
+        case .more:
+            router.push(.legalSupport)
         }
     }
 }
 
 private struct GamePickerHero: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            AppSectionHeader(
-                title: "Choose a Game",
-                subtitle: "Pick a rule set, then PipCount will shape the score sheet.",
-                systemImage: "dice"
-            )
+        HStack(alignment: .bottom, spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                Text("Choose\na Game")
+                    .font(.system(size: 52, weight: .black, design: .default).width(.condensed))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
 
-            SetupFeatureStrip()
+                Text("Pick your format for tonight.")
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+
+            Spacer(minLength: 0)
+
+            ZStack {
+                BauhausBlocksArtwork(compact: true)
+                    .frame(width: 160, height: 138)
+                BauhausStarburst(color: ClubhouseTheme.red, size: 34)
+                    .offset(x: 46, y: -48)
+            }
+            .frame(width: 160, height: 138)
         }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, AppTheme.spacingSmall)
     }
 }
 

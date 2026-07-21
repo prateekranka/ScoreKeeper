@@ -18,6 +18,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            ScoringGameHeader(session: session)
             ScoringToolsBar(session: session, selectedTool: $selectedTool)
             if showsScoreboardHeader {
                 ScoreboardHeader(session: session, engine: engine)
@@ -47,7 +48,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                                     .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
                                     .overlay {
                                         RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                                            .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 2)
+                                            .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
                                     }
                             }
                             .buttonStyle(PressableButtonStyle())
@@ -55,7 +56,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                             .sensoryFeedback(.warning, trigger: undoTrigger)
                             .accessibilityIdentifier("undo_last_round_button")
 
-                            AppActionButton(role: .primary(session.gameType.color), action: action) {
+                            AppActionButton(role: .primary(ClubhouseTheme.ink), action: action) {
                                 if let actionSystemImage {
                                     Label(actionTitle, systemImage: actionSystemImage)
                                 } else {
@@ -107,6 +108,56 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     }
 }
 
+private struct ScoringGameHeader: View {
+    let session: GameSession
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: AppTheme.spacingSmall) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("PipCount")
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Text(session.gameType.displayName)
+                    .font(.system(size: 40, weight: .black, design: .default).width(.condensed))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.75)
+
+                Text("Round \(session.currentRoundNumber)")
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .monospacedDigit()
+
+                HStack(spacing: 7) {
+                    ForEach(1...10, id: \.self) { number in
+                        Circle()
+                            .fill(number <= min(session.currentRoundNumber, 10) ? ClubhouseTheme.blue : ClubhouseTheme.paperCard)
+                            .frame(width: 11, height: 11)
+                            .overlay {
+                                Circle().stroke(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                            }
+                    }
+                }
+            }
+
+            Spacer(minLength: 0)
+
+            ZStack {
+                BauhausTargetArtwork(accent: ClubhouseTheme.red)
+                    .frame(width: 132, height: 132)
+                BauhausHalftone(color: ClubhouseTheme.ink)
+                    .frame(width: 54, height: 64)
+                    .offset(x: 54, y: 48)
+            }
+            .frame(width: 148, height: 142)
+        }
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .padding(.top, 4)
+        .accessibilityElement(children: .combine)
+    }
+}
+
 private enum ScoringTool: String, CaseIterable, Identifiable {
     case timer
     case dice
@@ -149,9 +200,16 @@ private struct ScoringToolsBar: View {
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Label("Round \(session.currentRoundNumber)", systemImage: session.gameType.icon)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
+            Text("Round \(session.currentRoundNumber)")
+                .columnHeaderStyle()
+                .foregroundStyle(ClubhouseTheme.blue)
+                .padding(.horizontal, 10)
+                .frame(minHeight: 34)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 4)
+                        .strokeBorder(ClubhouseTheme.blue, lineWidth: 1.5)
+                }
+                .rotationEffect(.degrees(-2))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
                 .accessibilityLabel("\(session.gameType.displayName), Round \(session.currentRoundNumber)")

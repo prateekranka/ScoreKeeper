@@ -48,45 +48,33 @@ struct HomeView: View {
                 )
                 .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                NewGameButton(action: { router.push(.gamePicker) })
-                    .staggeredEntrance(visible: sectionsVisible, index: 1)
-                    .padding(.top, AppTheme.spacingMedium)
-
-                if storeManager.shouldShowFreeGamesSignal {
-                    FreeGamesNote(
-                        remainingFreeGames: storeManager.remainingFreeGames,
-                        onUnlock: { showPaywall = true }
-                    )
-                    .staggeredEntrance(visible: sectionsVisible, index: 2)
-                } else if !storeManager.isUnlocked {
-                    PipCountUpgradeEntry(onUpgrade: { showPaywall = true })
-                        .staggeredEntrance(visible: sectionsVisible, index: 2)
-                }
-
-                HomeDashboardRow(
-                    gamesCount: completedGames.count,
-                    activeCount: inProgressGames.count,
-                    playersCount: uniquePlayerCount
-                )
-                .staggeredEntrance(visible: sectionsVisible, index: 3)
-
-                HomeQuickToolsRow(selectedTool: $selectedTool)
-                    .staggeredEntrance(visible: sectionsVisible, index: 4)
-
                 if !inProgressGames.isEmpty {
                     HomeActiveGamesSection(
                         sessions: inProgressGames,
                         onGameTap: { router.push(.scoring($0.persistentModelID)) },
                         onDelete: requestDelete
                     )
-                        .staggeredEntrance(visible: sectionsVisible, index: 5)
+                    .staggeredEntrance(visible: sectionsVisible, index: 1)
+
+                    NewGameButton(action: { router.push(.gamePicker) })
+                    .staggeredEntrance(visible: sectionsVisible, index: 2)
                 } else if completedGames.isEmpty {
-                    EmptyStateView(
-                        title: "No games yet",
-                        systemImage: "sparkles",
-                        message: "Start with a scoreboard, Ten Phases, or What's for Dinner."
+                    HomeEmptyHero(action: { router.push(.gamePicker) })
+                        .staggeredEntrance(visible: sectionsVisible, index: 1)
+                } else {
+                    NewGameButton(action: { router.push(.gamePicker) })
+                        .staggeredEntrance(visible: sectionsVisible, index: 2)
+                }
+
+                if storeManager.shouldShowFreeGamesSignal {
+                    FreeGamesNote(
+                        remainingFreeGames: storeManager.remainingFreeGames,
+                        onUnlock: { showPaywall = true }
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 5)
+                    .staggeredEntrance(visible: sectionsVisible, index: 3)
+                } else if !storeManager.isUnlocked {
+                    PipCountUpgradeEntry(onUpgrade: { showPaywall = true })
+                        .staggeredEntrance(visible: sectionsVisible, index: 3)
                 }
 
                 if !completedGames.isEmpty {
@@ -95,17 +83,31 @@ struct HomeView: View {
                         onGameTap: { router.push(.gameDetail($0)) },
                         onSeeAll: { router.push(.gameHistory) }
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 6)
+                    .staggeredEntrance(visible: sectionsVisible, index: 4)
 
                     HomeStatsSection(sessions: completedGames)
-                        .staggeredEntrance(visible: sectionsVisible, index: 7)
+                        .staggeredEntrance(visible: sectionsVisible, index: 5)
                 }
+
+                HomeDashboardRow(
+                    gamesCount: completedGames.count,
+                    activeCount: inProgressGames.count,
+                    playersCount: uniquePlayerCount
+                )
+                .staggeredEntrance(visible: sectionsVisible, index: 6)
+
+                HomeQuickToolsRow(selectedTool: $selectedTool)
+                    .staggeredEntrance(visible: sectionsVisible, index: 7)
             }
             .padding(AppTheme.spacingMedium)
+            .padding(.bottom, 76)
         }
         .appBackground()
         .navigationTitle("")
         .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            PipCountDock(selected: .home, onSelect: selectTab)
+        }
         .sheet(item: $selectedTool) { tool in
             HomeToolSheet(tool: tool, activeGame: inProgressGames.first)
                 .presentationDetents([.medium])
@@ -148,6 +150,19 @@ struct HomeView: View {
 
     private func revealSections() {
         sectionsVisible = true
+    }
+
+    private func selectTab(_ tab: PipCountTab) {
+        switch tab {
+        case .home:
+            break
+        case .games:
+            router.push(.gamePicker)
+        case .players:
+            router.push(.players)
+        case .more:
+            router.push(.legalSupport)
+        }
     }
 
     private func requestDelete(_ session: GameSession) {
@@ -194,25 +209,21 @@ private struct HomeHeader: View {
     @State private var themeTrigger = 0
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingSmall) {
+        VStack(spacing: 0) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("PipCount")
-                        .font(AppFonts.largeTitle)
+                        .font(.system(size: 48, weight: .black, design: .default).width(.condensed))
                         .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text(subtitle)
+                    Text("Game night, organized.")
                         .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                        .foregroundStyle(ClubhouseTheme.ink)
 
-                    Rectangle()
-                        .fill(ClubhouseTheme.rule)
-                        .frame(width: 132, height: 1)
-                        .overlay(alignment: .trailing) {
-                            Rectangle()
-                                .fill(ClubhouseTheme.brass)
-                                .frame(width: 34, height: 2)
-                        }
+                    Text(subtitle.uppercased())
+                        .columnHeaderStyle()
+                        .foregroundStyle(ClubhouseTheme.blue)
+                        .padding(.top, 4)
                 }
 
                 Spacer()
@@ -233,8 +244,59 @@ private struct HomeHeader: View {
                 .sensoryFeedback(.selection, trigger: themeTrigger)
             }
             .frame(maxWidth: .infinity)
+
+            ZStack(alignment: .topTrailing) {
+                BauhausHalftone(color: ClubhouseTheme.ink)
+                    .frame(width: 120, height: 92)
+                    .offset(x: -32, y: 32)
+
+                BauhausBlocksArtwork()
+                    .frame(height: 184)
+
+                BauhausStarburst(color: ClubhouseTheme.blue, size: 34)
+                    .offset(x: -156, y: 8)
+            }
+            .frame(height: 184)
         }
-        .padding(.top, 40)
+        .padding(.top, AppTheme.spacingSmall)
+    }
+}
+
+private struct HomeEmptyHero: View {
+    let action: () -> Void
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                Text("No active game")
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Text("Start something new or bring your regular crew back to the table.")
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                NewGameButton(action: action)
+                    .padding(.top, 4)
+            }
+
+            ZStack {
+                Circle()
+                    .fill(ClubhouseTheme.yellow)
+                    .frame(width: 64, height: 64)
+                    .offset(x: 18, y: -32)
+                BauhausPlayerShape(colorIndex: 0, size: 82)
+                BauhausPlayerShape(colorIndex: 1, size: 44)
+                    .offset(x: 42, y: 30)
+                BauhausPlayerShape(colorIndex: 3, size: 34)
+                    .offset(x: -8, y: 48)
+            }
+            .frame(width: 112, height: 132)
+            .accessibilityHidden(true)
+        }
+        .padding(AppTheme.spacingMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
     }
 }
 
@@ -855,6 +917,134 @@ private struct ToolSheetContent: View {
         case .undo:
             Label("During scoring, tap Undo Last before submitting the next round.", systemImage: "arrow.uturn.backward")
                 .font(AppFonts.body)
+        }
+    }
+}
+
+// MARK: - Player Library
+
+struct SavedPlayersView: View {
+    @Environment(NavigationRouter.self) private var router
+    @Query(sort: \SavedPlayer.lastUsed, order: .reverse) private var savedPlayers: [SavedPlayer]
+    @State private var contentVisible = false
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
+                HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Players")
+                            .font(.system(size: 52, weight: .black, design: .default).width(.condensed))
+                            .foregroundStyle(ClubhouseTheme.ink)
+
+                        Text("Your game-night roster.")
+                            .font(AppFonts.body)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                    }
+
+                    Spacer()
+
+                    ZStack {
+                        Circle()
+                            .stroke(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                            .frame(width: 96, height: 96)
+                        BauhausPlayerShape(colorIndex: 2, size: 46)
+                            .offset(x: -22, y: 14)
+                        BauhausPlayerShape(colorIndex: 0, size: 56)
+                            .offset(x: 18, y: 12)
+                        BauhausStarburst(color: ClubhouseTheme.red, size: 30)
+                            .offset(x: 31, y: -34)
+                    }
+                    .frame(width: 112, height: 112)
+                }
+                .staggeredEntrance(visible: contentVisible, index: 0)
+
+                Text("Saved players")
+                    .columnHeaderStyle()
+                    .foregroundStyle(ClubhouseTheme.blue)
+
+                if savedPlayers.isEmpty {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                        Text("No players saved yet")
+                            .font(AppFonts.title)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                        Text("Players are saved automatically after you start your first game.")
+                            .font(AppFonts.body)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                    }
+                    .padding(AppTheme.spacingLarge)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+                    .staggeredEntrance(visible: contentVisible, index: 1)
+                } else {
+                    VStack(spacing: 0) {
+                        ForEach(Array(savedPlayers.enumerated()), id: \.element.persistentModelID) { index, player in
+                            HStack(spacing: AppTheme.spacingMedium) {
+                                BauhausPlayerShape(colorIndex: player.colorIndex, size: 40)
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(player.name)
+                                        .font(AppFonts.headline)
+                                        .foregroundStyle(ClubhouseTheme.ink)
+                                    Text(player.gamesPlayed.quantityText("game"))
+                                        .font(AppFonts.caption)
+                                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                                }
+
+                                Spacer()
+
+                                Image(systemName: "circle.grid.3x3.fill")
+                                    .foregroundStyle(ClubhouseTheme.ink.opacity(0.34))
+                                    .accessibilityHidden(true)
+                            }
+                            .padding(.horizontal, AppTheme.spacingMedium)
+                            .frame(minHeight: 68)
+                            .overlay(alignment: .bottom) {
+                                if index < savedPlayers.count - 1 {
+                                    Rectangle()
+                                        .fill(ClubhouseTheme.rule)
+                                        .frame(height: 1)
+                                }
+                            }
+                        }
+                    }
+                    .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+                    .staggeredEntrance(visible: contentVisible, index: 1)
+                }
+
+                AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+                    router.goHome()
+                    router.push(.gamePicker)
+                } label: {
+                    Label("Start a new game", systemImage: "arrow.right")
+                }
+                .staggeredEntrance(visible: contentVisible, index: 2)
+            }
+            .padding(AppTheme.spacingMedium)
+            .padding(.bottom, 76)
+        }
+        .appBackground()
+        .navigationTitle("")
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            PipCountDock(selected: .players, onSelect: selectTab)
+        }
+        .onAppear {
+            contentVisible = true
+        }
+    }
+
+    private func selectTab(_ tab: PipCountTab) {
+        switch tab {
+        case .home:
+            router.goHome()
+        case .games:
+            router.goHome()
+            router.push(.gamePicker)
+        case .players:
+            break
+        case .more:
+            router.push(.legalSupport)
         }
     }
 }

@@ -121,7 +121,13 @@ struct GameConfigView: View {
             TextField("Manual end only", text: $targetScoreText)
                 .font(AppFonts.body)
                 .keyboardType(.numberPad)
-                .textFieldStyle(.roundedBorder)
+                .textFieldStyle(.plain)
+                .padding(.vertical, AppTheme.spacingSmall)
+                .overlay(alignment: .bottom) {
+                    Rectangle()
+                        .fill(ClubhouseTheme.ruleStrong)
+                        .frame(height: 1)
+                }
                 .accessibilityLabel("Target score, optional")
                 .accessibilityHint("Leave blank to end the game manually")
                 .accessibilityIdentifier("target_score_field")
@@ -147,8 +153,8 @@ struct GameConfigView: View {
     }
 
     private var startButton: some View {
-        AppActionButton(role: .primary(gameType.color), action: startConfiguredGame) {
-            Label("Start Game", systemImage: "play.fill")
+        AppActionButton(role: .primary(ClubhouseTheme.blue), action: startConfiguredGame) {
+            Label("Start Game", systemImage: "arrow.right.circle.fill")
         }
         .accessibilityIdentifier("start_game_button")
         .disabled(!canStart)

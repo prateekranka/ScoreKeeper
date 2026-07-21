@@ -17,8 +17,8 @@ struct GenericScoringView: View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "Submit",
-            actionSystemImage: "checkmark.circle.fill",
+            actionTitle: "Submit Round",
+            actionSystemImage: "arrow.right.circle.fill",
             showsScoreboardHeader: false,
             action: submitRound
         ) {
@@ -228,22 +228,16 @@ private struct FocusScoreRow: View {
             }
         }
         .padding(.vertical, AppTheme.spacingMedium)
+        .padding(.horizontal, AppTheme.spacingSmall)
+        .background(value == 0 ? Color.clear : PlayerColors.lightColor(for: player.colorIndex))
+        .animation(AppMotion.state, value: value == 0)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("\(player.name), total score \(totalScore), round score \(value)")
     }
 
     private var playerIdentity: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            ZStack {
-                Circle()
-                    .fill(PlayerColors.color(for: player.colorIndex))
-                    .frame(width: 38, height: 38)
-                    .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
-
-                Text(String(player.name.prefix(1)).uppercased())
-                    .font(.subheadline.bold())
-                    .foregroundStyle(ClubhouseTheme.onFelt)
-            }
+            BauhausPlayerShape(colorIndex: player.colorIndex, size: 38)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
@@ -297,8 +291,8 @@ private struct FocusScoreRow: View {
         .foregroundStyle(ClubhouseTheme.ink)
         .padding(.horizontal, 9)
         .frame(minHeight: 30)
-        .background(ClubhouseTheme.paperSunken, in: Capsule())
-        .overlay { Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1) }
+        .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: 5))
+        .overlay { RoundedRectangle(cornerRadius: 5).strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1) }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(identifierPrefix + "quick_\(amount)")
         .accessibilityLabel("Add \(amount) points")
@@ -356,12 +350,12 @@ private struct CompactScoreStepper: View {
         } label: {
             Image(systemName: systemImage)
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.ink)
+                .foregroundStyle(systemImage == "plus" ? ClubhouseTheme.blue : ClubhouseTheme.red)
                 .frame(width: 44, height: 44)
                 .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                        .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
                 }
         }
         .buttonStyle(ClubhousePressableButtonStyle())

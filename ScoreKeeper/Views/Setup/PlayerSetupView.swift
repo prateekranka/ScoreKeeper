@@ -84,8 +84,8 @@ struct PlayerSetupView: View {
         .appBackground()
         .navigationTitle("Players")
         .safeAreaInset(edge: .bottom) {
-            AppActionButton(role: canStart ? .primary(gameType.color) : .secondary, action: startGame) {
-                Text("Start Game")
+            AppActionButton(role: canStart ? .primary(ClubhouseTheme.blue) : .secondary, action: startGame) {
+                Label("Continue", systemImage: "arrow.right")
             }
             .accessibilityIdentifier("start_game_button")
             .disabled(!canStart)
@@ -196,32 +196,35 @@ private struct SetupPlayerHeader: View {
     let gameType: GameType
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingMedium) {
-            VStack(spacing: AppTheme.spacingSmall) {
-                Image(systemName: gameType.icon)
-                    .font(.title2)
-                    .foregroundStyle(gameType.color)
-                Text(gameType.displayName)
-                    .font(AppFonts.title)
+        HStack(alignment: .bottom, spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                Text("Add\nPlayers")
+                    .font(.system(size: 52, weight: .black, design: .default).width(.condensed))
                     .foregroundStyle(ClubhouseTheme.ink)
-                Text("\(gameType.minPlayers)-\(gameType.maxPlayers) players")
-                    .font(AppFonts.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text("Build tonight's lineup.")
+                    .font(AppFonts.body)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
+
+                Label(gameType.displayName, systemImage: gameType.icon)
+                    .font(AppFonts.caption.weight(.bold))
+                    .foregroundStyle(gameType.color)
+                    .padding(.top, 4)
             }
 
-            HStack(spacing: AppTheme.spacingSmall) {
-                Label(gameType.defaultWinCondition == .highestScore ? "Highest wins" : "Lowest wins", systemImage: "trophy.fill")
-                Label("Saved roster", systemImage: "person.2.fill")
-                Label("Fast start", systemImage: "bolt.fill")
+            Spacer(minLength: 0)
+
+            ZStack {
+                BauhausBlocksArtwork(compact: true)
+                    .frame(width: 166, height: 134)
+                BauhausHalftone(color: ClubhouseTheme.ink)
+                    .frame(width: 72, height: 72)
+                    .offset(x: -54, y: 28)
             }
-            .font(AppFonts.caption)
-            .foregroundStyle(gameType.color)
-            .lineLimit(1)
-            .minimumScaleFactor(0.75)
-            .frame(maxWidth: .infinity)
+            .frame(width: 166, height: 134)
         }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -275,6 +278,8 @@ private struct PlayerNameFields: View {
                 )
             }
         }
+        .padding(.horizontal, AppTheme.spacingSmall)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private func removePlayer(at index: Int) {
@@ -315,9 +320,10 @@ private struct PlayerNameRow: View {
                 .accessibilityIdentifier("player_name_field_\(index)")
 
             if canRemove {
-                Button("Remove Player", systemImage: "xmark.circle.fill", action: onRemove)
+                Button("Remove Player", systemImage: "minus.circle", action: onRemove)
                     .labelStyle(.iconOnly)
-                    .foregroundStyle(.secondary)
+                    .font(.title3)
+                    .foregroundStyle(ClubhouseTheme.ink)
                     .frame(minWidth: 44, minHeight: 44)
                     .contentShape(Rectangle())
                     .buttonStyle(PressableButtonStyle())
@@ -334,24 +340,48 @@ private struct AddPlayerControls: View {
     let onRoster: () -> Void
 
     var body: some View {
-        Group {
+        VStack(spacing: AppTheme.spacingSmall) {
             if playerCount < gameType.maxPlayers {
                 Button(action: onAdd) {
                     HStack {
-                        Image(systemName: "plus.circle.fill")
+                        Image(systemName: "plus")
+                            .font(.headline)
+                            .foregroundStyle(ClubhouseTheme.onPrimary)
+                            .frame(width: 36, height: 36)
+                            .background(ClubhouseTheme.blue, in: Circle())
                         Text("Add Player")
+                        Spacer()
+                        Image(systemName: "chevron.right")
                     }
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.felt)
+                    .font(AppFonts.body.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .padding(.horizontal, AppTheme.spacingMedium)
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: 54)
+                    .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
                 }
+                .buttonStyle(PressableButtonStyle())
                 .accessibilityIdentifier("add_player_button")
             }
 
             Button(action: onRoster) {
-                Label("From Roster", systemImage: "person.2.fill")
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.felt)
+                HStack {
+                    Image(systemName: "person.2.fill")
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .frame(width: 36, height: 36)
+                        .background(ClubhouseTheme.yellow, in: Circle())
+                    Text("From Roster")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                }
+                .font(AppFonts.body.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .padding(.horizontal, AppTheme.spacingMedium)
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: 54)
+                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
             }
+            .buttonStyle(PressableButtonStyle())
             .accessibilityIdentifier("roster_button")
         }
         .frame(maxWidth: .infinity)

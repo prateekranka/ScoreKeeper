@@ -27,7 +27,6 @@ struct GameOverView: View {
                             .staggeredEntrance(visible: sectionsVisible, index: 0)
 
                         VStack(spacing: AppTheme.spacingLarge) {
-                            GameRecapPanel(session: session, engine: engine)
                             StandingsList(title: "Final Scores", standings: session.standings(using: engine))
                         }
                         .staggeredEntrance(visible: sectionsVisible, index: 1)
@@ -128,34 +127,85 @@ private struct WinnerHeroSection: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingSmall) {
-            if winners.isEmpty {
-                Image(systemName: "flag.checkered")
-                    .font(AppFonts.scoreDisplay)
-                    .foregroundStyle(session.gameType.color)
-                    .accessibilityHidden(true)
-                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
-                    .opacity(sectionsVisible ? 1 : 0)
-                    .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.06), value: sectionsVisible)
-            } else {
-                CupMascotView()
-                    .frame(width: 72, height: 60)
-                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
-                    .opacity(sectionsVisible ? 1 : 0)
-                    .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.06), value: sectionsVisible)
+        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            HStack(alignment: .top, spacing: AppTheme.spacingSmall) {
+                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                    Text("Game\nOver")
+                        .font(.system(size: 58, weight: .black, design: .default).width(.condensed))
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Rectangle()
+                        .fill(ClubhouseTheme.blue)
+                        .frame(width: 86, height: 5)
+
+                    Text("Thanks for playing!")
+                        .font(AppFonts.body)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
+
+                Spacer(minLength: 0)
+
+                ZStack {
+                    BauhausTargetArtwork(accent: ClubhouseTheme.red)
+                        .frame(width: 142, height: 142)
+                    Rectangle()
+                        .fill(ClubhouseTheme.ink)
+                        .frame(width: 48, height: 82)
+                        .offset(x: 46, y: 42)
+                    BauhausStarburst(color: ClubhouseTheme.yellow, size: 30)
+                        .offset(x: -62, y: 56)
+                }
+                .frame(width: 168, height: 166)
             }
 
-            winnerText
+            if winners.count == 1, let winner = winners.first {
+                HStack(spacing: AppTheme.spacingMedium) {
+                    ZStack {
+                        Circle()
+                            .fill(ClubhouseTheme.blue)
+                            .frame(width: 86, height: 86)
+                        BauhausStarburst(color: ClubhouseTheme.paperCard, size: 48)
+                    }
+                    .accessibilityHidden(true)
 
-            Text(session.gameType.displayName)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Winner")
+                            .columnHeaderStyle()
+                            .foregroundStyle(ClubhouseTheme.blue)
+                        Text(winner.name)
+                            .font(AppFonts.title)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(1)
+                        Text("Great game!")
+                            .font(AppFonts.body)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                    }
 
-            if !winners.isEmpty {
-                StampBadge(text: "Winner")
+                    Spacer(minLength: 0)
+
+                    Rectangle()
+                        .fill(ClubhouseTheme.ruleStrong)
+                        .frame(width: 1, height: 76)
+
+                    Text("\(winner.totalScore(in: session))")
+                        .font(AppFonts.scoreDisplay)
+                        .monospacedDigit()
+                        .foregroundStyle(ClubhouseTheme.blue)
+                        .contentTransition(.numericText(value: Double(winner.totalScore(in: session))))
+                }
+                .padding(AppTheme.spacingMedium)
+                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+            } else {
+                winnerText
+                    .frame(maxWidth: .infinity)
+                    .padding(AppTheme.spacingLarge)
+                    .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
             }
         }
-        .padding(.top, AppTheme.spacingXLarge)
+        .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.97)
+        .opacity(sectionsVisible ? 1 : 0)
+        .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped, value: sectionsVisible)
         .accessibilityElement(children: .combine)
     }
 
@@ -188,13 +238,13 @@ private struct EndGameButtons: View {
 
     var body: some View {
         VStack(spacing: AppTheme.spacingSmall) {
-            AppActionButton(role: .primary(session.gameType.color), action: onPlayAgain) {
-                Label("Play Again", systemImage: "arrow.counterclockwise")
+            AppActionButton(role: .primary(ClubhouseTheme.blue), action: onPlayAgain) {
+                Label("Play Again", systemImage: "arrow.right.circle.fill")
             }
             .accessibilityIdentifier("play_again_button")
 
             AppActionButton(role: .secondary, action: onHome) {
-                Text("Home")
+                Label("Back Home", systemImage: "house")
             }
             .accessibilityIdentifier("home_button")
         }
