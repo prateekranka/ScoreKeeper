@@ -1,0 +1,77 @@
+{
+  "status": "phase1-complete",
+  "targetFileId": "2434585",
+  "approvedSource": {
+    "path": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v5-vector-master/canonical-dimensional-pixel.svg",
+    "sha256": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75"
+  },
+  "sourceArtboard": {
+    "id": "0-32354",
+    "name": "ScoreKeeper Cup Hybrid A - Production Rig v3"
+  },
+  "tempArtboard": {
+    "id": "0-49117",
+    "name": "__PROOF__ ScoreKeeper Mascot 20260716T085439Z"
+  },
+  "protectedHash": "3a1fe3d6d93aefdb70eda048f37b25c2e823e63c00e692709801181aabc19521",
+  "protectedObjectCounts": [
+    {
+      "id": "0-12189",
+      "name": "__BACKUP__ Articulated Rig v1 before Production Rig v2 20260715T1447IST",
+      "objectCount": 4092
+    },
+    {
+      "id": "0-16469",
+      "name": "ScoreKeeper Cup Hybrid A - Production Rig v2",
+      "objectCount": 12786
+    },
+    {
+      "id": "0-17790",
+      "name": "ScoreKeeper Cup Hair Component v2",
+      "objectCount": 484
+    },
+    {
+      "id": "0-2",
+      "name": "__SVG_PROOF__ ScoreKeeper Cup Hybrid A 20260714T233900Z",
+      "objectCount": 3946
+    },
+    {
+      "id": "0-32354",
+      "name": "ScoreKeeper Cup Hybrid A - Production Rig v3",
+      "objectCount": 12817
+    },
+    {
+      "id": "0-3956",
+      "name": "ScoreKeeper Cup Hybrid A - Articulated Rig v1",
+      "objectCount": 4092
+    },
+    {
+      "id": "0-8243",
+      "name": "__BACKUP__ SVG Proof before Production Rig v2 20260715T1447IST",
+      "objectCount": 3946
+    }
+  ],
+  "duplicateObjectCount": 12817,
+  "animations": {
+    "idle": {
+      "id": "0-62454",
+      "fps": 60,
+      "durationFrames": 72,
+      "loop": true
+    },
+    "celebrate": {
+      "id": "0-62293",
+      "fps": 60,
+      "durationFrames": 96,
+      "loop": false
+    }
+  },
+  "stateMachineCount": 0,
+  "deletedTempOnlyObjectIds": [
+    "0-61934",
+    "0-62096",
+    "0-62231",
+    "0-62524"
+  ],
+  "focusFailures": 0
+}

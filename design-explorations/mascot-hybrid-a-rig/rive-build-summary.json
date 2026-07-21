@@ -1,0 +1,1305 @@
+{
+  "status": "created-and-verified",
+  "generatedAt": "2026-07-14T18:40:49.418Z",
+  "artboard": {
+    "id": "0-3956",
+    "name": "ScoreKeeper Cup Hybrid A - Articulated Rig v1",
+    "width": 512,
+    "height": 416,
+    "x": 832,
+    "y": 0,
+    "isComponent": true,
+    "solidColorId": "0-3958"
+  },
+  "palette": {
+    "artboardPaper": "#fff4f2ec",
+    "artwork": "source-locked canonical SVG palette"
+  },
+  "fps": 60,
+  "rig": {
+    "nodeCount": 185,
+    "pivotCount": 3,
+    "partCount": 182,
+    "pivots": [
+      {
+        "name": "rig_root",
+        "id": "0-3968",
+        "parent": null
+      },
+      {
+        "name": "rig_body",
+        "id": "0-3975",
+        "parent": "rig_root"
+      },
+      {
+        "name": "rig_hair",
+        "id": "0-3982",
+        "parent": "rig_root"
+      }
+    ],
+    "parts": [
+      {
+        "name": "rig_body__svg_trace_001",
+        "id": "0-3989",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_002",
+        "id": "0-4149",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_003",
+        "id": "0-4522",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_004",
+        "id": "0-4633",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_006",
+        "id": "0-4693",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_007",
+        "id": "0-4717",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_008",
+        "id": "0-4757",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_009",
+        "id": "0-4771",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_010",
+        "id": "0-4847",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_011",
+        "id": "0-4899",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_012",
+        "id": "0-4995",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_013",
+        "id": "0-5037",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_014",
+        "id": "0-5057",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_015",
+        "id": "0-5085",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_016",
+        "id": "0-5109",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_017",
+        "id": "0-5199",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_018",
+        "id": "0-5211",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_019",
+        "id": "0-5221",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_020",
+        "id": "0-5291",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_021",
+        "id": "0-5301",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_022",
+        "id": "0-5333",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_023",
+        "id": "0-5341",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_024",
+        "id": "0-5349",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_025",
+        "id": "0-5365",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_026",
+        "id": "0-5391",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_027",
+        "id": "0-5407",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_029",
+        "id": "0-5441",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_030",
+        "id": "0-5487",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_031",
+        "id": "0-5497",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_032",
+        "id": "0-5505",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_033",
+        "id": "0-5529",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_034",
+        "id": "0-5537",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_035",
+        "id": "0-5549",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_036",
+        "id": "0-5559",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_037",
+        "id": "0-5567",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_038",
+        "id": "0-5595",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_039",
+        "id": "0-5603",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_040",
+        "id": "0-5611",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_041",
+        "id": "0-5619",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_042",
+        "id": "0-5627",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_043",
+        "id": "0-5649",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_044",
+        "id": "0-5673",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_045",
+        "id": "0-5683",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_046",
+        "id": "0-5691",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_047",
+        "id": "0-5711",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_048",
+        "id": "0-5751",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_049",
+        "id": "0-5763",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_051",
+        "id": "0-5777",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_052",
+        "id": "0-5787",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_053",
+        "id": "0-5817",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_054",
+        "id": "0-5835",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_055",
+        "id": "0-5843",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_056",
+        "id": "0-5859",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_057",
+        "id": "0-5891",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_058",
+        "id": "0-5919",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_059",
+        "id": "0-5927",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_060",
+        "id": "0-5937",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_061",
+        "id": "0-5949",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_062",
+        "id": "0-5975",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_063",
+        "id": "0-5983",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_064",
+        "id": "0-5995",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_065",
+        "id": "0-6005",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_066",
+        "id": "0-6013",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_067",
+        "id": "0-6021",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_068",
+        "id": "0-6043",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_069",
+        "id": "0-6051",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_070",
+        "id": "0-6075",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_071",
+        "id": "0-6083",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_072",
+        "id": "0-6133",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_073",
+        "id": "0-6151",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_074",
+        "id": "0-6163",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_075",
+        "id": "0-6175",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_076",
+        "id": "0-6211",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_077",
+        "id": "0-6219",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_078",
+        "id": "0-6231",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_079",
+        "id": "0-6239",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_080",
+        "id": "0-6247",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_081",
+        "id": "0-6265",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_082",
+        "id": "0-6273",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_083",
+        "id": "0-6281",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_084",
+        "id": "0-6289",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_085",
+        "id": "0-6297",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_086",
+        "id": "0-6305",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_087",
+        "id": "0-6333",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_088",
+        "id": "0-6349",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_089",
+        "id": "0-6357",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_090",
+        "id": "0-6371",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_091",
+        "id": "0-6383",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_092",
+        "id": "0-6393",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_093",
+        "id": "0-6401",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_094",
+        "id": "0-6425",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_095",
+        "id": "0-6433",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_096",
+        "id": "0-6441",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_097",
+        "id": "0-6449",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_098",
+        "id": "0-6489",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_099",
+        "id": "0-6521",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_100",
+        "id": "0-6535",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_101",
+        "id": "0-6547",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_102",
+        "id": "0-6555",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_103",
+        "id": "0-6591",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_104",
+        "id": "0-6639",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_105",
+        "id": "0-6647",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_106",
+        "id": "0-6663",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_107",
+        "id": "0-6701",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_108",
+        "id": "0-6709",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_109",
+        "id": "0-6723",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_110",
+        "id": "0-6731",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_111",
+        "id": "0-6741",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_112",
+        "id": "0-6749",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_113",
+        "id": "0-6761",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_114",
+        "id": "0-6769",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_115",
+        "id": "0-6791",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_116",
+        "id": "0-6805",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_117",
+        "id": "0-6817",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_118",
+        "id": "0-6833",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_119",
+        "id": "0-6841",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_120",
+        "id": "0-6849",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_121",
+        "id": "0-6857",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_122",
+        "id": "0-6865",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_123",
+        "id": "0-6875",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_124",
+        "id": "0-6883",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_125",
+        "id": "0-6915",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_126",
+        "id": "0-6923",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_127",
+        "id": "0-6931",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_128",
+        "id": "0-6939",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_129",
+        "id": "0-6955",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_130",
+        "id": "0-6973",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_131",
+        "id": "0-6997",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_132",
+        "id": "0-7035",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_133",
+        "id": "0-7053",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_134",
+        "id": "0-7061",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_135",
+        "id": "0-7069",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_136",
+        "id": "0-7095",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_138",
+        "id": "0-7115",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_139",
+        "id": "0-7127",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_140",
+        "id": "0-7159",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_141",
+        "id": "0-7169",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_142",
+        "id": "0-7191",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_143",
+        "id": "0-7205",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_144",
+        "id": "0-7225",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_145",
+        "id": "0-7251",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_146",
+        "id": "0-7291",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_147",
+        "id": "0-7301",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_148",
+        "id": "0-7319",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_149",
+        "id": "0-7327",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_150",
+        "id": "0-7361",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_151",
+        "id": "0-7371",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_152",
+        "id": "0-7379",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_153",
+        "id": "0-7387",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_154",
+        "id": "0-7395",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_155",
+        "id": "0-7405",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_156",
+        "id": "0-7415",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_157",
+        "id": "0-7427",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_158",
+        "id": "0-7435",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_159",
+        "id": "0-7443",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_160",
+        "id": "0-7473",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_161",
+        "id": "0-7481",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_162",
+        "id": "0-7489",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_163",
+        "id": "0-7497",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_165",
+        "id": "0-7529",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_166",
+        "id": "0-7541",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_167",
+        "id": "0-7549",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_168",
+        "id": "0-7559",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_169",
+        "id": "0-7581",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_170",
+        "id": "0-7591",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_171",
+        "id": "0-7615",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_172",
+        "id": "0-7633",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_173",
+        "id": "0-7643",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_174",
+        "id": "0-7651",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_176",
+        "id": "0-7669",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_177",
+        "id": "0-7703",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_178",
+        "id": "0-7729",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_179",
+        "id": "0-7753",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_180",
+        "id": "0-7765",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__svg_trace_181",
+        "id": "0-7773",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_body__hair_underlap",
+        "id": "0-7791",
+        "parent": "rig_body"
+      },
+      {
+        "name": "rig_hair__svg_trace_005",
+        "id": "0-7916",
+        "parent": "rig_hair"
+      },
+      {
+        "name": "rig_hair__svg_trace_028",
+        "id": "0-7972",
+        "parent": "rig_hair"
+      },
+      {
+        "name": "rig_hair__svg_trace_050",
+        "id": "0-8016",
+        "parent": "rig_hair"
+      },
+      {
+        "name": "rig_hair__svg_trace_137",
+        "id": "0-8024",
+        "parent": "rig_hair"
+      },
+      {
+        "name": "rig_hair__svg_trace_164",
+        "id": "0-8032",
+        "parent": "rig_hair"
+      },
+      {
+        "name": "rig_hair__svg_trace_175",
+        "id": "0-8044",
+        "parent": "rig_hair"
+      }
+    ],
+    "hairComponent": {
+      "controlName": "rig_hair",
+      "controlId": "0-3982",
+      "nativeVectorChildNames": [
+        "rig_hair__svg_trace_005",
+        "rig_hair__svg_trace_028",
+        "rig_hair__svg_trace_050",
+        "rig_hair__svg_trace_137",
+        "rig_hair__svg_trace_164",
+        "rig_hair__svg_trace_175"
+      ],
+      "nativeVectorChildIds": [
+        "0-7916",
+        "0-7972",
+        "0-8016",
+        "0-8024",
+        "0-8032",
+        "0-8044"
+      ],
+      "nativeVectorChildCount": 6,
+      "seamUnderlapName": "rig_body__hair_underlap",
+      "seamUnderlapId": "0-7791"
+    }
+  },
+  "bindPose": [
+    {
+      "name": "rig_root",
+      "id": "0-3968",
+      "transform": {
+        "x": 256,
+        "y": 401,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1
+      }
+    },
+    {
+      "name": "rig_body",
+      "id": "0-3975",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1
+      }
+    },
+    {
+      "name": "rig_hair",
+      "id": "0-3982",
+      "transform": {
+        "x": -2,
+        "y": -312,
+        "rotation": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1
+      }
+    }
+  ],
+  "animations": [
+    {
+      "slug": "idle",
+      "name": "idle",
+      "displayName": "Idle",
+      "animationId": "0-8056",
+      "durationSeconds": 2.4,
+      "terminalFrame": 144,
+      "loop": true,
+      "nativeSettings": {
+        "slug": "idle",
+        "animationId": "0-8056",
+        "fps": 60,
+        "durationFrames": 144,
+        "loopValue": 1
+      },
+      "trackCount": 5,
+      "expectedKeyframeCount": 25,
+      "queriedKeyframeCount": 25,
+      "endpointsVerified": true,
+      "loopEndpointsMatch": true
+    },
+    {
+      "slug": "celebrate",
+      "name": "celebrate",
+      "displayName": "Celebrate",
+      "animationId": "0-8057",
+      "durationSeconds": 1.2,
+      "terminalFrame": 72,
+      "loop": false,
+      "nativeSettings": {
+        "slug": "celebrate",
+        "animationId": "0-8057",
+        "fps": 60,
+        "durationFrames": 72,
+        "loopValue": 0
+      },
+      "trackCount": 7,
+      "expectedKeyframeCount": 35,
+      "queriedKeyframeCount": 35,
+      "endpointsVerified": true,
+      "loopEndpointsMatch": null
+    },
+    {
+      "slug": "hair_sway",
+      "name": "hair_sway",
+      "displayName": "Hair Sway",
+      "animationId": "0-8058",
+      "durationSeconds": 1.6,
+      "terminalFrame": 96,
+      "loop": true,
+      "nativeSettings": {
+        "slug": "hair_sway",
+        "animationId": "0-8058",
+        "fps": 60,
+        "durationFrames": 96,
+        "loopValue": 1
+      },
+      "trackCount": 3,
+      "expectedKeyframeCount": 14,
+      "queriedKeyframeCount": 14,
+      "endpointsVerified": true,
+      "loopEndpointsMatch": true
+    }
+  ],
+  "stateMachine": {
+    "stateMachine": {
+      "id": "0-8230",
+      "name": "ScoreKeeper Cup Hybrid A Behaviors v1"
+    },
+    "detail": {
+      "success": true,
+      "stateMachineId": "0-8230",
+      "stateMachineName": "ScoreKeeper Cup Hybrid A Behaviors v1",
+      "inputs": [],
+      "listeners": [],
+      "layers": [
+        {
+          "layerId": "0-8231",
+          "layerName": "Layer 1",
+          "isDisabled": false,
+          "snappingEnabled": false,
+          "entryStateId": "0-8234",
+          "anyStateId": "0-8232",
+          "exitStateId": "0-8233",
+          "states": [
+            {
+              "id": "0-8232",
+              "type": "any",
+              "name": "",
+              "stateName": "",
+              "stateCaption": "",
+              "x": 400,
+              "y": 0,
+              "flags": 0,
+              "events": [],
+              "listenerActions": []
+            },
+            {
+              "id": "0-8233",
+              "type": "exit",
+              "name": "",
+              "stateName": "",
+              "stateCaption": "",
+              "x": 480,
+              "y": 0,
+              "flags": 0,
+              "events": [],
+              "listenerActions": []
+            },
+            {
+              "id": "0-8234",
+              "type": "entry",
+              "name": "",
+              "stateName": "",
+              "stateCaption": "",
+              "x": 0,
+              "y": 0,
+              "flags": 0,
+              "events": [],
+              "listenerActions": []
+            }
+          ],
+          "transitions": []
+        },
+        {
+          "layerId": "0-8235",
+          "layerName": "Behavior",
+          "isDisabled": false,
+          "snappingEnabled": false,
+          "entryStateId": "0-8238",
+          "anyStateId": "0-8236",
+          "exitStateId": "0-8237",
+          "states": [
+            {
+              "id": "0-8236",
+              "type": "any",
+              "name": "",
+              "stateName": "",
+              "stateCaption": "",
+              "x": 400,
+              "y": 0,
+              "flags": 0,
+              "events": [],
+              "listenerActions": []
+            },
+            {
+              "id": "0-8237",
+              "type": "exit",
+              "name": "",
+              "stateName": "",
+              "stateCaption": "",
+              "x": 480,
+              "y": 0,
+              "flags": 0,
+              "events": [],
+              "listenerActions": []
+            },
+            {
+              "id": "0-8238",
+              "type": "entry",
+              "name": "",
+              "stateName": "",
+              "stateCaption": "",
+              "x": 0,
+              "y": 0,
+              "flags": 0,
+              "events": [],
+              "listenerActions": []
+            },
+            {
+              "id": "0-8239",
+              "type": "animation",
+              "name": "Idle",
+              "stateName": "Idle",
+              "stateCaption": "",
+              "x": 140,
+              "y": 120,
+              "flags": 0,
+              "events": [],
+              "listenerActions": [],
+              "animationId": "0-8056"
+            },
+            {
+              "id": "0-8240",
+              "type": "animation",
+              "name": "Celebrate",
+              "stateName": "Celebrate",
+              "stateCaption": "",
+              "x": 390,
+              "y": 120,
+              "flags": 0,
+              "events": [],
+              "listenerActions": [],
+              "animationId": "0-8057"
+            },
+            {
+              "id": "0-8241",
+              "type": "animation",
+              "name": "Hair Sway",
+              "stateName": "Hair Sway",
+              "stateCaption": "",
+              "x": 640,
+              "y": 120,
+              "flags": 0,
+              "events": [],
+              "listenerActions": [],
+              "animationId": "0-8058"
+            }
+          ],
+          "transitions": [
+            {
+              "id": "0-8242",
+              "fromStateId": "0-8238",
+              "toStateId": "0-8239",
+              "duration": 0,
+              "durationIsPercentage": false,
+              "exitTime": 0,
+              "exitTimeIsPercentage": false,
+              "isDisabled": false,
+              "pauseOnExit": false,
+              "enableExitTime": false,
+              "enableEarlyExit": false,
+              "randomWeight": 1,
+              "interpolation": "linear",
+              "conditions": [],
+              "events": [],
+              "listenerActions": []
+            }
+          ]
+        }
+      ]
+    },
+    "states": [
+      {
+        "id": "0-8239",
+        "name": "Idle",
+        "animationId": "0-8056",
+        "animationName": "idle"
+      },
+      {
+        "id": "0-8240",
+        "name": "Celebrate",
+        "animationId": "0-8057",
+        "animationName": "celebrate"
+      },
+      {
+        "id": "0-8241",
+        "name": "Hair Sway",
+        "animationId": "0-8058",
+        "animationName": "hair_sway"
+      }
+    ],
+    "transition": {
+      "id": "0-8242",
+      "fromStateId": "0-8238",
+      "toStateId": "0-8239",
+      "toStateName": "Idle"
+    },
+    "mappingsVerified": true,
+    "entryToIdleOnly": true,
+    "automatedBehaviorInputs": false,
+    "invocation": "Play Celebrate or Hair Sway by exact linear-animation name; this mapping-only state machine intentionally creates no runtime inputs."
+  },
+  "verification": {
+    "sourceSpecsValidated": true,
+    "hierarchyNamesUnique": true,
+    "hierarchyParentsCorrect": true,
+    "baseTransformsMatch": true,
+    "forbiddenRasterOrNestedObjectCount": 0,
+    "artboardFillColor": "#fff4f2ec",
+    "requiredAnimationCount": 3,
+    "allKeyframeTuplesMatch": true,
+    "allTracksHaveEndpoints": true,
+    "allLoopEndpointsMatch": true,
+    "allNativeAnimationSettingsMatch": true,
+    "stateMappingsMatch": true,
+    "entryToIdleOnly": true,
+    "removedAutoGeneratedDefaults": [
+      {
+        "id": "0-3960",
+        "name": "Timeline 1"
+      },
+      {
+        "id": "0-3961",
+        "name": "State Machine 1"
+      }
+    ],
+    "finalNamePublishedOnlyAfterValidation": true,
+    "finalFocusLocked": true
+  }
+}

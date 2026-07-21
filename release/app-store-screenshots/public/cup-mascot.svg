@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" id="cup-mascot-light" viewBox="0 0 96 80" width="384" height="320">
   <!--
-    Cup — ScoreKeeper mascot (light / beige-console skin: slate ink with red stripe).
+    Cup — PipCount mascot (light / beige-console skin: slate ink with red stripe).
     Identical geometry and group names to cup-mascot-dark.svg, so one Rive rig
     drives both — import either file, then swap fills per theme.
 

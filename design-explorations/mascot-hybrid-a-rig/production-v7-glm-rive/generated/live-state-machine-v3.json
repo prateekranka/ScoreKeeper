@@ -1,0 +1,141 @@
+{
+  "success": true,
+  "stateMachineId": "0-48286",
+  "stateMachineName": "ScoreKeeper Cup Hybrid A - Behaviors v3",
+  "inputs": [],
+  "listeners": [],
+  "layers": [
+    {
+      "layerId": "0-48291",
+      "layerName": "Performances",
+      "isDisabled": false,
+      "snappingEnabled": false,
+      "entryStateId": "0-48294",
+      "anyStateId": "0-48292",
+      "exitStateId": "0-48293",
+      "states": [
+        {
+          "id": "0-48295",
+          "type": "animation",
+          "name": "Idle",
+          "stateName": "Idle",
+          "stateCaption": "",
+          "x": 160,
+          "y": 140,
+          "flags": 0,
+          "events": [],
+          "listenerActions": [],
+          "animationId": "0-45292"
+        },
+        {
+          "id": "0-48292",
+          "type": "any",
+          "name": "",
+          "stateName": "",
+          "stateCaption": "",
+          "x": 400,
+          "y": 0,
+          "flags": 0,
+          "events": [],
+          "listenerActions": []
+        },
+        {
+          "id": "0-48298",
+          "type": "animation",
+          "name": "Curious Tilt",
+          "stateName": "Curious Tilt",
+          "stateCaption": "",
+          "x": 790,
+          "y": 140,
+          "flags": 0,
+          "events": [],
+          "listenerActions": [],
+          "animationId": "0-45726"
+        },
+        {
+          "id": "0-48299",
+          "type": "animation",
+          "name": "Celebrate Shimmy",
+          "stateName": "Celebrate Shimmy",
+          "stateCaption": "",
+          "x": 1000,
+          "y": 140,
+          "flags": 0,
+          "events": [],
+          "listenerActions": [],
+          "animationId": "0-45405"
+        },
+        {
+          "id": "0-48296",
+          "type": "animation",
+          "name": "Hair Bounce",
+          "stateName": "Hair Bounce",
+          "stateCaption": "",
+          "x": 370,
+          "y": 140,
+          "flags": 0,
+          "events": [],
+          "listenerActions": [],
+          "animationId": "0-45614"
+        },
+        {
+          "id": "0-48293",
+          "type": "exit",
+          "name": "",
+          "stateName": "",
+          "stateCaption": "",
+          "x": 480,
+          "y": 0,
+          "flags": 0,
+          "events": [],
+          "listenerActions": []
+        },
+        {
+          "id": "0-48294",
+          "type": "entry",
+          "name": "",
+          "stateName": "",
+          "stateCaption": "",
+          "x": 0,
+          "y": 0,
+          "flags": 0,
+          "events": [],
+          "listenerActions": []
+        },
+        {
+          "id": "0-48297",
+          "type": "animation",
+          "name": "Victory Pop",
+          "stateName": "Victory Pop",
+          "stateCaption": "",
+          "x": 580,
+          "y": 140,
+          "flags": 0,
+          "events": [],
+          "listenerActions": [],
+          "animationId": "0-45148"
+        }
+      ],
+      "transitions": [
+        {
+          "id": "0-48300",
+          "fromStateId": "0-48294",
+          "toStateId": "0-48295",
+          "duration": 0,
+          "durationIsPercentage": false,
+          "exitTime": 0,
+          "exitTimeIsPercentage": false,
+          "isDisabled": false,
+          "pauseOnExit": false,
+          "enableExitTime": false,
+          "enableEarlyExit": false,
+          "randomWeight": 1,
+          "interpolation": "linear",
+          "conditions": [],
+          "events": [],
+          "listenerActions": []
+        }
+      ]
+    }
+  ]
+}

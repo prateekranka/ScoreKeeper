@@ -1,0 +1,25 @@
+{
+  "status": "owned_bridges_removed_for_color_matched_replacement",
+  "artboardId": "0-32354",
+  "removed": [
+    {
+      "id": "0-48909",
+      "name": "__V3_BRIDGE__cup_edgeDark_y128"
+    },
+    {
+      "id": "0-48917",
+      "name": "__V3_BRIDGE__cup_goldBody_y128"
+    },
+    {
+      "id": "0-48925",
+      "name": "__V3_BRIDGE__cup_edgeDark_y170"
+    },
+    {
+      "id": "0-48933",
+      "name": "__V3_BRIDGE__cup_goldBody_y170"
+    }
+  ],
+  "objectCountBefore": 12817,
+  "objectCountAfter": 12785,
+  "removedAt": "2026-07-15T15:38:43.868Z"
+}

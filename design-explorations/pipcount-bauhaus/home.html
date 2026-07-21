@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PipCount — Bauhaus · Home</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:," />
+</head>
+<body class="gallery">
+  <main class="shell">
+    <a class="back" href="index.html">← PipCount · Bauhaus exploration</a>
+
+    <header class="hero">
+      <div>
+        <h1>Home</h1>
+        <p>
+          A fresh Bauhaus iteration of the PipCount home screen — pure primaries on white,
+          circle·square·triangle geometry, opaque ledger cards, geometric icons replacing SF Symbols.
+          Liquid Glass is confined to iOS chrome (status bar + theme button); every content surface stays flat
+          and high-contrast for fast scorekeeping.
+        </p>
+      </div>
+    </header>
+
+    <!-- ============ DEVICE ============ -->
+    <div class="device" role="img" aria-label="PipCount home screen, Bauhaus iteration">
+      <div class="status" aria-hidden="true">
+        <span>9:41</span>
+        <span>● ▮▮▮</span>
+      </div>
+
+      <div class="screen">
+        <!-- Header: wordmark + theme toggle -->
+        <div class="app-header">
+          <div class="titles">
+            <div class="wordmark">
+              <span class="brand-mark" aria-hidden="true">
+                <span class="b-c"></span>
+                <span class="b-sq"></span>
+                <span class="b-tri"></span>
+              </span>
+              <span class="txt">PipCount</span>
+            </div>
+            <div class="header-sub">Round 03 is waiting.</div>
+          </div>
+          <button class="chrome-btn" aria-label="Change appearance">
+            <span class="appearance-glyph" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <!-- New Game CTA -->
+        <button class="cta" aria-label="New game">
+          <span class="plus" aria-hidden="true"></span>
+          <span class="label">New Game</span>
+        </button>
+
+        <!-- Metric strip (de Stijl grid) -->
+        <div class="metrics" role="group" aria-label="Stats summary">
+          <div class="metric">
+            <div class="num">24</div>
+            <div class="lbl"><span class="swatch-c" aria-hidden="true"></span> Games</div>
+          </div>
+          <div class="metric">
+            <div class="num">1</div>
+            <div class="lbl"><span class="swatch-sq" aria-hidden="true"></span> Active</div>
+          </div>
+          <div class="metric">
+            <div class="num">8</div>
+            <div class="lbl"><span class="swatch-tri" aria-hidden="true"></span> Players</div>
+          </div>
+        </div>
+
+        <!-- Quick tools -->
+        <section>
+          <div class="col-head"><span>Game Night Tools</span><span class="rule" aria-hidden="true"></span></div>
+          <div class="tools">
+            <a class="tool" href="#" aria-label="Timer">
+              <span class="ic ic-timer" aria-hidden="true"><span class="tick"></span></span>
+              <span class="lbl">Timer</span>
+            </a>
+            <a class="tool" href="#" aria-label="Dice">
+              <span class="ic ic-dice" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+              <span class="lbl">Dice</span>
+            </a>
+            <a class="tool" href="#" aria-label="Starter">
+              <span class="ic ic-starter" aria-hidden="true">
+                <span class="arrow r"></span><span class="ah-r"></span>
+                <span class="arrow l"></span><span class="ah-l"></span>
+              </span>
+              <span class="lbl">Starter</span>
+            </a>
+            <a class="tool" href="#" aria-label="Undo">
+              <span class="ic ic-undo" aria-hidden="true"><span class="arc"></span><span class="head"></span></span>
+              <span class="lbl">Undo</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- Active game (hero scorecard) -->
+        <section>
+          <div class="col-head">
+            <span>Active Games</span>
+            <span class="count">1</span>
+            <span class="rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="scorecard">
+            <div class="sc-head">
+              <div class="sc-game">
+                <span class="gicon gm-phases" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                <span class="gname">Ten Phases</span>
+              </div>
+              <a class="sc-resume" href="#" aria-label="Resume game">
+                <span class="play" aria-hidden="true"></span> Resume
+              </a>
+            </div>
+
+            <!-- Round + peg strip -->
+            <div class="sc-round">
+              <span class="round-stamp">ROUND 03 / 10</span>
+              <span class="peg-strip" aria-hidden="true">
+                <span class="peg done"></span>
+                <span class="peg done"></span>
+                <span class="peg now"></span>
+                <span class="peg"></span>
+                <span class="peg"></span>
+                <span class="peg"></span>
+                <span class="peg"></span>
+                <span class="peg"></span>
+                <span class="peg"></span>
+                <span class="peg"></span>
+              </span>
+            </div>
+
+            <!-- Ledger -->
+            <div class="ledger">
+              <div class="lrow lead">
+                <span class="pip c" style="background:var(--p1)" aria-hidden="true"></span>
+                <span class="lname">Maya</span>
+                <span class="crown" aria-hidden="true" title="Leader"><span class="peak l"></span><span class="peak m"></span><span class="peak r"></span><span class="band"></span></span>
+                <span class="lscore">42</span>
+              </div>
+              <div class="lrow">
+                <span class="pip sq" style="background:var(--p2)" aria-hidden="true"></span>
+                <span class="lname">Jules</span>
+                <span class="lscore">38</span>
+              </div>
+              <div class="lrow">
+                <span class="pip tri" style="border-color: transparent transparent var(--p3) transparent" aria-hidden="true"></span>
+                <span class="lname">Priya</span>
+                <span class="lscore">31</span>
+              </div>
+              <div class="lrow">
+                <span class="pip c" style="background:var(--p4)" aria-hidden="true"></span>
+                <span class="lname">Sam</span>
+                <span class="lscore">19</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent games -->
+        <section>
+          <div class="col-head">
+            <span>Recent Games</span>
+            <span class="rule" aria-hidden="true"></span>
+          </div>
+
+          <div class="recent">
+            <a class="slip" href="#" aria-label="Recent game: Scoreboard, Maya won">
+              <span class="gicon gm-scoreboard" aria-hidden="true"><i></i><i></i><i></i></span>
+              <div class="body">
+                <span class="gname">Scoreboard</span>
+                <span class="winner"><b>Maya</b> won</span>
+              </div>
+              <span class="date">Thu</span>
+              <span class="stamp" aria-hidden="true">Final</span>
+              <span class="chev" aria-hidden="true"></span>
+            </a>
+
+            <a class="slip" href="#" aria-label="Recent game: Ten Phases, Jules won">
+              <span class="gicon gm-phases" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              <div class="body">
+                <span class="gname">Ten Phases</span>
+                <span class="winner"><b>Jules</b> won</span>
+              </div>
+              <span class="date">Tue</span>
+              <span class="stamp" aria-hidden="true">Final</span>
+              <span class="chev" aria-hidden="true"></span>
+            </a>
+
+            <a class="slip" href="#" aria-label="Recent game: What's for Dinner, tied">
+              <span class="gicon gm-dinner" aria-hidden="true"><span class="plate"></span><span class="slice"></span><span class="topping"></span></span>
+              <div class="body">
+                <span class="gname">What's for Dinner</span>
+                <span class="winner">No winner</span>
+              </div>
+              <span class="date">Jul 12</span>
+              <span class="stamp" aria-hidden="true">Final</span>
+              <span class="chev" aria-hidden="true"></span>
+            </a>
+          </div>
+        </section>
+
+        <!-- Stats -->
+        <section>
+          <div class="col-head">
+            <span>Stats</span>
+            <span class="rule" aria-hidden="true"></span>
+          </div>
+
+          <a class="stat-link" href="#" aria-label="Head to head">
+            <span class="ic ic-h2h" aria-hidden="true"><i></i><i></i></span>
+            <span>Head to Head</span>
+            <span class="chev" aria-hidden="true"></span>
+          </a>
+
+          <div class="player-chips">
+            <a class="pchip" href="#"><span class="pip c" style="background:var(--p1);width:10px;height:10px" aria-hidden="true"></span> Maya</a>
+            <a class="pchip" href="#"><span class="pip sq" style="background:var(--p2);width:10px;height:10px" aria-hidden="true"></span> Jules</a>
+            <a class="pchip" href="#"><span class="pip tri" style="border-width:0 0 9px 9px;border-color:transparent transparent var(--p3) transparent" aria-hidden="true"></span> Priya</a>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

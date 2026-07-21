@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "generatedAt": "2026-07-14T19:03:43Z",
+  "sourceRig": "ScoreKeeper Cup Hybrid A - Articulated Rig v1",
+  "rigBackend": "pivot-fk",
+  "previewCanvas": {
+    "width": 640,
+    "height": 544,
+    "background": "#F4F2EC",
+    "presentationPaddingPx": 64
+  },
+  "animations": [
+    {
+      "name": "Idle",
+      "slug": "idle",
+      "gif": "../gifs/idle.gif",
+      "frameCount": 37,
+      "loop": true,
+      "minimumPresentationMarginsPx": [71, 77, 70, 76],
+      "closedEndpoints": true
+    },
+    {
+      "name": "Celebrate",
+      "slug": "celebrate",
+      "gif": "../gifs/celebrate.gif",
+      "frameCount": 19,
+      "loop": false,
+      "minimumPresentationMarginsPx": [47, 43, 54, 65],
+      "closedEndpoints": true
+    },
+    {
+      "name": "Hair Sway",
+      "slug": "hair_sway",
+      "gif": "../gifs/hair-sway.gif",
+      "frameCount": 25,
+      "loop": true,
+      "minimumPresentationMarginsPx": [73, 78, 72, 77],
+      "closedEndpoints": true
+    },
+    {
+      "name": "Curious Tilt",
+      "slug": "curious_tilt",
+      "gif": "../gifs/curious-tilt.gif",
+      "frameCount": 31,
+      "loop": true,
+      "minimumPresentationMarginsPx": [57, 69, 56, 70],
+      "closedEndpoints": true
+    },
+    {
+      "name": "Victory Shimmy",
+      "slug": "victory_shimmy",
+      "gif": "../gifs/victory-shimmy.gif",
+      "frameCount": 23,
+      "loop": true,
+      "minimumPresentationMarginsPx": [58, 77, 61, 72],
+      "closedEndpoints": true
+    }
+  ],
+  "checks": {
+    "performanceContractValid": true,
+    "bindPoseParityPassed": true,
+    "bindPoseMaskIoU": 1.0,
+    "bindPoseContourP95Px": 0.0,
+    "bindPoseCentroidDeltaPx": 0.0,
+    "allFramesWithinPreviewCanvas": true,
+    "allLoopEndpointsClosed": true,
+    "hairRemainsAttached": true,
+    "visibleBindPoseArtworkChanged": false
+  },
+  "liveRiveScope": {
+    "existingNativeAnimations": ["idle", "celebrate", "hair_sway"],
+    "gifOnlyConcepts": ["curious_tilt", "victory_shimmy"],
+    "liveRiveFileModified": false
+  }
+}

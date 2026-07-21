@@ -1,0 +1,16 @@
+{
+  "status": "scaffolded",
+  "projectDir": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig",
+  "sourceManifest": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/source-manifest.json",
+  "sourceSha256": "5430ee31e6f830653fcf1fbce6fc5eb1a4f3cdb16c213f51ab868f9be612de54",
+  "artStyleImmutable": true,
+  "readyForLiveBuild": false,
+  "referencePipelineIsExecutableWithoutAdaptation": false,
+  "nextSteps": [
+    "Create and approve a canonical vector master without changing visible art.",
+    "Replace the rig-spec sentinel with segmented geometry from that master.",
+    "Pass bind-pose parity and articulation stress QA.",
+    "Author character-appropriate performance and state-machine specs.",
+    "Adapt the .reference.mjs pipeline files to project.config.json before execution."
+  ]
+}

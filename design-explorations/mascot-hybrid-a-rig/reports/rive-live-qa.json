@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "auditedAt": "2026-07-14T18:44:33.959Z",
+  "artboard": {
+    "id": "0-3956",
+    "name": "ScoreKeeper Cup Hybrid A - Articulated Rig v1",
+    "selected": true
+  },
+  "inventory": {
+    "nodeCount": 185,
+    "pivotCount": 3,
+    "partCount": 182
+  },
+  "hairComponent": {
+    "control": {
+      "id": "0-3982",
+      "name": "rig_hair"
+    },
+    "nativeVectorChildren": [
+      {
+        "id": "0-7916",
+        "name": "rig_hair__svg_trace_005"
+      },
+      {
+        "id": "0-7972",
+        "name": "rig_hair__svg_trace_028"
+      },
+      {
+        "id": "0-8016",
+        "name": "rig_hair__svg_trace_050"
+      },
+      {
+        "id": "0-8024",
+        "name": "rig_hair__svg_trace_137"
+      },
+      {
+        "id": "0-8032",
+        "name": "rig_hair__svg_trace_164"
+      },
+      {
+        "id": "0-8044",
+        "name": "rig_hair__svg_trace_175"
+      }
+    ],
+    "nativeVectorChildCount": 6,
+    "bodyOwnedSeamUnderlap": "0-7791",
+    "valid": true
+  },
+  "animations": [
+    {
+      "slug": "idle",
+      "id": "0-8056",
+      "fps": 60,
+      "terminalFrame": 144,
+      "loop": true,
+      "keyframeCount": 25
+    },
+    {
+      "slug": "celebrate",
+      "id": "0-8057",
+      "fps": 60,
+      "terminalFrame": 72,
+      "loop": false,
+      "keyframeCount": 35
+    },
+    {
+      "slug": "hair_sway",
+      "id": "0-8058",
+      "fps": 60,
+      "terminalFrame": 96,
+      "loop": true,
+      "keyframeCount": 14
+    }
+  ],
+  "stateMachine": {
+    "id": "0-8230",
+    "name": "ScoreKeeper Cup Hybrid A Behaviors v1",
+    "inputCount": 0,
+    "mappedStateCount": 3
+  },
+  "checks": {
+    "hierarchyParentsCorrect": true,
+    "baseTransformsCorrect": true,
+    "forbiddenRasterOrNestedObjectCount": 0,
+    "animationSettingsAndKeyframeCountsCorrect": true,
+    "stateMappingsCorrect": true,
+    "publishedArtboardFocusLocked": true
+  }
+}

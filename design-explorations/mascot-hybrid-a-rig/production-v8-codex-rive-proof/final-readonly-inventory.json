@@ -1,0 +1,62 @@
+{
+  "status": "blocked-at-rive-reliability-gate",
+  "targetFileId": "2434585",
+  "canonicalArtboard": {
+    "id": "0-32354",
+    "name": "ScoreKeeper Cup Hybrid A - Production Rig v3"
+  },
+  "tempArtboard": {
+    "id": "0-49117",
+    "name": "__PROOF__ ScoreKeeper Mascot 20260716T085439Z",
+    "width": 512,
+    "height": 416,
+    "objectCount": 12817
+  },
+  "approvedSource": {
+    "path": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v5-vector-master/canonical-dimensional-pixel.svg",
+    "sha256": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75"
+  },
+  "backup": {
+    "path": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/rive-backups/20260716/scorekeeper-mascot-pre-proof-20260716T084544Z.rev",
+    "sizeBytes": 1749556,
+    "sha256": "755de518b49f6749bedf5160e92011b835f069938d74a17f601b3f68797bcb07"
+  },
+  "animations": [
+    {
+      "id": "0-62454",
+      "name": "idle",
+      "fps": 60,
+      "durationFrames": 72,
+      "durationSeconds": 1.2,
+      "loop": true
+    },
+    {
+      "id": "0-62293",
+      "name": "celebrate",
+      "fps": 60,
+      "durationFrames": 96,
+      "durationSeconds": 1.6,
+      "loop": false
+    }
+  ],
+  "triggerDraft": {
+    "name": "celebrate",
+    "type": "trigger",
+    "viewModelId": "0-62939",
+    "viewModelInstanceId": "0-62943",
+    "viewModelPropertyId": "0-62941"
+  },
+  "stateMachines": [],
+  "protectedArtboards": {
+    "count": 7,
+    "beforeHash": "3a1fe3d6d93aefdb70eda048f37b25c2e823e63c00e692709801181aabc19521",
+    "afterHash": "3a1fe3d6d93aefdb70eda048f37b25c2e823e63c00e692709801181aabc19521",
+    "unchanged": true
+  },
+  "reliabilityBlocker": {
+    "transitionWrites": "animation_editor createTransitions reported success but created no paths for both state-name and state-ID destinations",
+    "inlineRecovery": "createStateMachine with inline transitions did not create a replacement machine",
+    "selectionDivergence": "list_artboards reported selectionArtboardId 0-8243 while getSelectedArtboard reported 0-49117, and the native stage visibly showed 0-8243",
+    "danglingTempState": "temp artboard defaultStateMachineId reports 0-62959 while listStateMachines is empty"
+  }
+}

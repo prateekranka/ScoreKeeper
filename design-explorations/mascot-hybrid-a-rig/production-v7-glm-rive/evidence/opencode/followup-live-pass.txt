@@ -1,0 +1,22 @@
+FOLLOW-UP PASS, materially narrower.
+
+Continue from the already-read v6 pipeline summary in this session. Do not call
+`task`, spawn any agent, reread full v6 files, explore the repo, or write outside
+`generated/` plus the status file. First update the status backchannel.
+
+Implement only this sequence:
+
+1. Author `generated/motion-spec-v3.mjs` with the approved five-animation table
+   and validations.
+2. Author `generated/build-live-rive-v3.mjs` using the known MCP HTTP pattern.
+3. Locally validate, freeze, and hash the complete spec.
+4. Re-query exact six-artboard/protected state.
+5. Duplicate only artboard `0-16469` into the fresh env-provided temp name;
+   verify exactly seven artboards, disjoint descendants, and bind parity; then
+   rewrite the five timelines/settings/keys and one mapping-only state machine.
+6. Export `transaction.json`, `live-build-summary.json`,
+   `live-keyframes-v3.json`, hierarchy JSON, and state-machine JSON.
+
+Do not generate visual proofs in this pass and do not publish. If the scripts are
+not fully validated before duplication, stop before live write. Preserve evidence
+and report an exact blocker instead of guessing.

@@ -1,0 +1,7 @@
+{
+  "status": "opencode_failed",
+  "opencodeExitCode": 130,
+  "scopeViolationCount": 43,
+  "finishedAt": "2026-07-15T13:25:32Z",
+  "evidenceDir": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T130736Z-24805"
+}

@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://scorekeeper.local/schemas/rive-live-keyframes-v1.json",
+  "title": "ScoreKeeper normalized live Rive keyframes",
+  "type": "object",
+  "required": ["schema", "source", "canvas", "fps", "artboard", "nodes", "animations"],
+  "properties": {
+    "schema": { "const": "scorekeeper.rive-live-keyframes/v1" },
+    "source": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "const": "../production-v5-vector-master/canonical-dimensional-pixel.svg" },
+        "sha256": { "const": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75" }
+      },
+      "additionalProperties": false
+    },
+    "canvas": {
+      "type": "object",
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "const": 512 },
+        "height": { "const": 416 }
+      },
+      "additionalProperties": false
+    },
+    "fps": { "type": "integer", "minimum": 1 },
+    "artboard": { "type": "string", "minLength": 1 },
+    "nodes": {
+      "type": "array",
+      "minItems": 2,
+      "description": "A connected hierarchy with the eleven canonical-svg semantic asset nodes and one or more pivot nodes. Runtime validation enforces exact once-only coverage of all 48 visible source elements.",
+      "items": {
+        "type": "object",
+        "required": ["name", "kind", "transform"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "parent": { "type": ["string", "null"] },
+          "kind": { "enum": ["pivot", "nestedArtboard", "asset"] },
+          "source": { "const": "canonical-svg" },
+          "semanticPart": { "enum": ["tab", "cup", "handle_l", "handle_r", "hair", "badge", "eye_l", "eye_r", "mouth", "stem", "base"] },
+          "sourceElementIndices": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "integer", "minimum": 0, "maximum": 47 } },
+          "transform": {
+            "type": "object",
+            "properties": {
+              "x": { "type": "number" },
+              "y": { "type": "number" },
+              "translationX": { "type": "number" },
+              "translationY": { "type": "number" },
+              "rotationDeg": { "type": "number" },
+              "rotation": { "type": "number" },
+              "scaleX": { "type": "number", "not": { "const": 0 } },
+              "scaleY": { "type": "number", "not": { "const": 0 } },
+              "opacity": { "type": "number", "minimum": 0, "maximum": 1 },
+              "pivot": {
+                "type": "object",
+                "required": ["x", "y"],
+                "properties": { "x": { "type": "number" }, "y": { "type": "number" } },
+                "additionalProperties": false
+              },
+              "pivotX": { "type": "number" },
+              "pivotY": { "type": "number" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "animations": {
+      "type": "object",
+      "required": ["idle_breathe_blink", "hair_bounce", "victory_pop", "curious_tilt", "celebrate_shimmy"],
+      "additionalProperties": {
+        "type": "object",
+        "required": ["durationFrames", "tracks"],
+        "properties": {
+          "label": { "type": "string" },
+          "durationFrames": { "type": "integer", "minimum": 1 },
+          "loop": { "type": "boolean" },
+          "contactFrames": { "type": "array", "items": { "type": "integer", "minimum": 0 } },
+          "tracks": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "patternProperties": {
+                "^(x|y|dx|dy|rotationDeg|scaleX|scaleY|opacity)$": {
+                "type": "array",
+                "items": {
+                  "oneOf": [
+                    { "type": "array", "prefixItems": [{ "type": "integer", "minimum": 0 }, { "type": "number" }], "minItems": 2, "maxItems": 2 },
+                    {
+                      "type": "object",
+                      "required": ["frame", "value"],
+                      "properties": {
+                        "frame": { "type": "integer", "minimum": 0 },
+                        "time": { "type": "integer", "minimum": 0 },
+                        "value": { "type": "number" },
+                        "interpolation": { "enum": ["linear", "hold", "cubic"] },
+                        "easing": { "enum": ["linear", "hold", "cubic"] },
+                        "curve": {
+                          "oneOf": [
+                            { "type": "array", "prefixItems": [{ "type": "number", "minimum": 0, "maximum": 1 }, { "type": "number" }, { "type": "number", "minimum": 0, "maximum": 1 }, { "type": "number" }], "minItems": 4, "maxItems": 4 },
+                            { "type": "object", "required": ["x1", "y1", "x2", "y2"], "properties": { "x1": { "type": "number", "minimum": 0, "maximum": 1 }, "y1": { "type": "number" }, "x2": { "type": "number", "minimum": 0, "maximum": 1 }, "y2": { "type": "number" } }, "additionalProperties": false }
+                          ]
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,84 @@
+{
+  "status": "live_motion_gated_bridges_added",
+  "targetFileId": "2434585",
+  "artboardId": "0-32354",
+  "artboardName": "__V3_TEMP__ ScoreKeeper Cup Hybrid A 20260715T1415Z-root-recovery",
+  "underlapCount": 4,
+  "bridgeCount": 4,
+  "motionGated": true,
+  "opacityKeyframeCount": 48,
+  "objectCountBefore": 12785,
+  "objectCountAfter": 12817,
+  "objects": [
+    {
+      "id": "0-49013",
+      "name": "__V3_BRIDGE__cup_edgeDark_y128",
+      "parentId": "0-36672",
+      "parentName": "rig_cup__edgeDark__l02__y072",
+      "semantic": "cup",
+      "sourceIndex": 21,
+      "layer": "l02",
+      "rect": {
+        "x": 72.5,
+        "y": 125,
+        "width": 368,
+        "height": 6
+      },
+      "color": "#855D19",
+      "baseOpacity": 0
+    },
+    {
+      "id": "0-49021",
+      "name": "__V3_BRIDGE__cup_goldBody_y128",
+      "parentId": "0-35296",
+      "parentName": "rig_cup__goldBody__l03__y092",
+      "semantic": "cup",
+      "sourceIndex": 24,
+      "layer": "l03",
+      "rect": {
+        "x": 91.5,
+        "y": 125,
+        "width": 328,
+        "height": 6
+      },
+      "color": "#F1BD46",
+      "baseOpacity": 0
+    },
+    {
+      "id": "0-49029",
+      "name": "__V3_BRIDGE__cup_edgeDark_y170",
+      "parentId": "0-36672",
+      "parentName": "rig_cup__edgeDark__l02__y072",
+      "semantic": "cup",
+      "sourceIndex": 22,
+      "layer": "l02",
+      "rect": {
+        "x": 72.5,
+        "y": 167,
+        "width": 368,
+        "height": 6
+      },
+      "color": "#805917",
+      "baseOpacity": 0
+    },
+    {
+      "id": "0-49037",
+      "name": "__V3_BRIDGE__cup_goldBody_y170",
+      "parentId": "0-35296",
+      "parentName": "rig_cup__goldBody__l03__y092",
+      "semantic": "cup",
+      "sourceIndex": 25,
+      "layer": "l03",
+      "rect": {
+        "x": 91.5,
+        "y": 167,
+        "width": 328,
+        "height": 6
+      },
+      "color": "#E7AE3B",
+      "baseOpacity": 0
+    }
+  ],
+  "protectedArtboardsUnchanged": true,
+  "publishPerformed": false
+}

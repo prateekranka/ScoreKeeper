@@ -1,0 +1,126 @@
+{
+  "status": "proof_pack_from_fresh_live_query_semantic_reconstruction",
+  "caveat": "The proof renderer uses the canonical SVG plus transforms independently queried from live Rive; it is not an offline substitute for the live structural export and is not a native Rive runtime capture.",
+  "targetFileId": "2434585",
+  "artboardId": "0-32354",
+  "stateMachineId": "0-48286",
+  "liveExportSha256": "736d7491f6f855e228f38c15fedae84fe841fd1660f86746dbf84a2b8b50b421",
+  "sourceSha256": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75",
+  "transparentContactSheet": "proofs/five-animation-transparent-contact-sheet.png",
+  "lightContactSheet": "proof-pack-v3/backgrounds/five-animation-light-contact-sheet.png",
+  "darkContactSheet": "proof-pack-v3/backgrounds/five-animation-dark-contact-sheet.png",
+  "actualSizeSheets": {
+    "transparent": "proof-pack-v3/actual-size/five-animation-transparent-72x60-contact-sheet.png",
+    "light": "proof-pack-v3/actual-size/five-animation-light-72x60-contact-sheet.png",
+    "dark": "proof-pack-v3/actual-size/five-animation-dark-72x60-contact-sheet.png"
+  },
+  "stressFrames": [
+    "proof-pack-v3/stress/idle_breathe_blink-f0042-100pct.png",
+    "proof-pack-v3/stress/idle_breathe_blink-f0042-200pct.png",
+    "proof-pack-v3/stress/idle_breathe_blink-f0042-400pct.png",
+    "proof-pack-v3/stress/hair_bounce-f0015-100pct.png",
+    "proof-pack-v3/stress/hair_bounce-f0015-200pct.png",
+    "proof-pack-v3/stress/hair_bounce-f0015-400pct.png",
+    "proof-pack-v3/stress/victory_pop-f0024-100pct.png",
+    "proof-pack-v3/stress/victory_pop-f0024-200pct.png",
+    "proof-pack-v3/stress/victory_pop-f0024-400pct.png",
+    "proof-pack-v3/stress/curious_tilt-f0028-100pct.png",
+    "proof-pack-v3/stress/curious_tilt-f0028-200pct.png",
+    "proof-pack-v3/stress/curious_tilt-f0028-400pct.png",
+    "proof-pack-v3/stress/celebrate_shimmy-f0025-100pct.png",
+    "proof-pack-v3/stress/celebrate_shimmy-f0025-200pct.png",
+    "proof-pack-v3/stress/celebrate_shimmy-f0025-400pct.png"
+  ],
+  "loopSeams": [
+    "proof-pack-v3/loop-seams/idle_breathe_blink-terminal-to-zero.png",
+    "proof-pack-v3/loop-seams/celebrate_shimmy-terminal-to-zero.png"
+  ],
+  "beforeAfter": "proof-pack-v3/before-after/five-animation-v2-before-v3-after.png",
+  "mobile": [
+    {
+      "slug": "idle_breathe_blink",
+      "path": "proof-pack-v3/mobile-mp4/idle_breathe_blink-72x60-light-dark.mp4",
+      "expectedFrames": 72,
+      "width": 144,
+      "height": 60,
+      "fps": "60/1",
+      "frameCount": 72,
+      "duration": 1.2,
+      "passed": true
+    },
+    {
+      "slug": "hair_bounce",
+      "path": "proof-pack-v3/mobile-mp4/hair_bounce-72x60-light-dark.mp4",
+      "expectedFrames": 49,
+      "width": 144,
+      "height": 60,
+      "fps": "60/1",
+      "frameCount": 49,
+      "duration": 0.816667,
+      "passed": true
+    },
+    {
+      "slug": "victory_pop",
+      "path": "proof-pack-v3/mobile-mp4/victory_pop-72x60-light-dark.mp4",
+      "expectedFrames": 73,
+      "width": 144,
+      "height": 60,
+      "fps": "60/1",
+      "frameCount": 73,
+      "duration": 1.216667,
+      "passed": true
+    },
+    {
+      "slug": "curious_tilt",
+      "path": "proof-pack-v3/mobile-mp4/curious_tilt-72x60-light-dark.mp4",
+      "expectedFrames": 85,
+      "width": 144,
+      "height": 60,
+      "fps": "60/1",
+      "frameCount": 85,
+      "duration": 1.416667,
+      "passed": true
+    },
+    {
+      "slug": "celebrate_shimmy",
+      "path": "proof-pack-v3/mobile-mp4/celebrate_shimmy-72x60-light-dark.mp4",
+      "expectedFrames": 96,
+      "width": 144,
+      "height": 60,
+      "fps": "60/1",
+      "frameCount": 96,
+      "duration": 1.6,
+      "passed": true
+    }
+  ],
+  "neutralParity": {
+    "method": "canonical SVG raster versus fresh-live-query semantic neutral frame after owned metadata cleanup",
+    "source": "proof-pack-v3/neutral-parity/canonical-source.png",
+    "candidate": "proofs/idle_breathe_blink/rgba-frames/frame-0000.png",
+    "alphaMaskIoU": 1,
+    "centroidDriftPx": 0,
+    "contourP95Px": 0,
+    "differingPixels": 0,
+    "maxChannelDelta": 0,
+    "thresholds": {
+      "alphaMaskIoUMin": 0.985,
+      "centroidDriftPxMax": 0.5,
+      "contourP95PxMax": 1
+    },
+    "passed": true
+  },
+  "alphaQa": {
+    "framesChecked": 377,
+    "maxTransparentRgb": 0,
+    "allHandleHolesTransparent": true,
+    "allPassed": true
+  },
+  "gates": {
+    "liveQuery": true,
+    "sourceHash": true,
+    "mobile": true,
+    "neutralParity": true,
+    "alpha": true
+  },
+  "passed": true
+}

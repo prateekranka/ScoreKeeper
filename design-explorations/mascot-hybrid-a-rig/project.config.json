@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "projectSlug": "scorekeeper-cup-hybrid-a-rig-v1",
+  "characterName": "ScoreKeeper Cup Hybrid A",
+  "version": 1,
+  "rigMode": "pivot-fk",
+  "stateMachineIntegration": "mapping-only",
+  "canvas": {
+    "width": 512,
+    "height": 416
+  },
+  "fps": 60,
+  "palette": ["source-locked-svg-palette"],
+  "artboard": {
+    "finalName": "ScoreKeeper Cup Hybrid A - Articulated Rig v1",
+    "temporaryPrefix": "__BUILDING__",
+    "x": 0,
+    "y": 0
+  },
+  "stateMachineName": "ScoreKeeper Cup Hybrid A Behaviors v1",
+  "hierarchyDepth": 8,
+  "keyframeChunkSize": 100,
+  "propertyChunkSize": 40,
+  "parity": {
+    "minimumMaskIoU": 0.985,
+    "maximumContourP95Px": 1.0,
+    "maximumCentroidDeltaPx": 0.5
+  },
+  "artworkLock": {
+    "styleChangesAllowed": false,
+    "canonicalMasterApproved": true,
+    "bindPoseParityPassed": true,
+    "readyForLiveBuild": true
+  }
+}

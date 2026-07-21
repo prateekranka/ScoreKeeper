@@ -1,0 +1,1 @@
+/Users/prateekranka/.opencode/bin/opencode run <bounded message> --model opencode-go/glm-5.2 --variant max --format json --dir /Users/prateekranka/Cowork/ScoreKeeper  --file /Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/implementation-brief-spec-only.md

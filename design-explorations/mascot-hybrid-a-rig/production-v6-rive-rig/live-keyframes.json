@@ -1,0 +1,7163 @@
+{
+  "schema": "scorekeeper.rive-live-keyframes/v1",
+  "source": {
+    "path": "../production-v5-vector-master/canonical-dimensional-pixel.svg",
+    "sha256": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75"
+  },
+  "canvas": {
+    "width": 512,
+    "height": 416
+  },
+  "fps": 60,
+  "artboard": "ScoreKeeper Cup Hybrid A - Production Rig v2",
+  "nodes": [
+    {
+      "name": "rig_root",
+      "parent": null,
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 256,
+          "y": 401
+        }
+      }
+    },
+    {
+      "name": "rig_base",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 256,
+          "y": 401
+        }
+      }
+    },
+    {
+      "name": "rig_stem",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 255,
+          "y": 325
+        }
+      }
+    },
+    {
+      "name": "rig_handle_l",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 88,
+          "y": 150
+        }
+      }
+    },
+    {
+      "name": "rig_handle_r",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 422,
+          "y": 150
+        }
+      }
+    },
+    {
+      "name": "rig_tab",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 463,
+          "y": 72
+        }
+      }
+    },
+    {
+      "name": "rig_cup",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 255,
+          "y": 245
+        }
+      }
+    },
+    {
+      "name": "rig_hair",
+      "parent": "rig_root",
+      "kind": "nestedArtboard",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 254,
+          "y": 89
+        }
+      }
+    },
+    {
+      "name": "rig_badge",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 118,
+          "y": 81
+        }
+      }
+    },
+    {
+      "name": "rig_eye_l",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 196,
+          "y": 147
+        }
+      }
+    },
+    {
+      "name": "rig_eye_r",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 312,
+          "y": 147
+        }
+      }
+    },
+    {
+      "name": "rig_mouth",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 255,
+          "y": 205
+        }
+      }
+    },
+    {
+      "name": "asset_tab",
+      "parent": "rig_tab",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "tab",
+      "sourceElementIndices": [
+        0,
+        1
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_cup",
+      "parent": "rig_cup",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "cup",
+      "sourceElementIndices": [
+        2,
+        3,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        29,
+        30,
+        31,
+        32
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_handle_l",
+      "parent": "rig_handle_l",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "handle_l",
+      "sourceElementIndices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_handle_r",
+      "parent": "rig_handle_r",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "handle_r",
+      "sourceElementIndices": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_hair",
+      "parent": "rig_hair",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "hair",
+      "sourceElementIndices": [
+        26
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_badge",
+      "parent": "rig_badge",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "badge",
+      "sourceElementIndices": [
+        27,
+        28
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_eye_l",
+      "parent": "rig_eye_l",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "eye_l",
+      "sourceElementIndices": [
+        33
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_eye_r",
+      "parent": "rig_eye_r",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "eye_r",
+      "sourceElementIndices": [
+        34
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_mouth",
+      "parent": "rig_mouth",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "mouth",
+      "sourceElementIndices": [
+        35,
+        36,
+        37
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_stem",
+      "parent": "rig_stem",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "stem",
+      "sourceElementIndices": [
+        38,
+        39,
+        40,
+        41
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_base",
+      "parent": "rig_base",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "base",
+      "sourceElementIndices": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "animations": {
+    "idle_breathe_blink": {
+      "label": "Idle breathe + blink",
+      "durationFrames": 72,
+      "loop": true,
+      "contactFrames": [
+        0,
+        18,
+        38,
+        55,
+        72
+      ],
+      "tracks": {
+        "rig_cup": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": 0.996,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": 0.998,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 0.998,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": 1.008,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": 0.998,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_r": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 54,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 55,
+              "value": 0.08,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 0.08,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 57,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_base": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": 0.998,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 0.998,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": 1.004,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": 0.998,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": -0.8,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": -0.8,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 18,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 30,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 38,
+              "value": 0.8,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_l": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 54,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 55,
+              "value": 0.08,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 0.08,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 57,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "hair_bounce": {
+      "label": "Hair bounce",
+      "durationFrames": 60,
+      "loop": true,
+      "contactFrames": [
+        0,
+        14,
+        24,
+        32,
+        44,
+        60
+      ],
+      "tracks": {
+        "rig_cup": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": 0.996,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 0.994,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1.003,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 0.998,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 1.015,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": -1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_r": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 22,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 0.65,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 27,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_base": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 0.992,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1.005,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": 0.98,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 0.96,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": 1.03,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 1.05,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 0.98,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": -5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 6,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 6,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 14,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_l": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 22,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 0.65,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 27,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "victory_pop": {
+      "label": "Victory pop",
+      "durationFrames": 72,
+      "loop": false,
+      "contactFrames": [
+        0,
+        16,
+        24,
+        34,
+        44,
+        56,
+        72
+      ],
+      "tracks": {
+        "rig_mouth": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 1.08,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": 1.18,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1.1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 1.05,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 66,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_cup": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1.03,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 1.04,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1.005,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 0.97,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 0.96,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": -1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_base": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1.005,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1.03,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 1.04,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 0.98,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": 0.95,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 0.97,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 0.95,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 1.03,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": 1.08,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": -4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": -8,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": 5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_root": {
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": -4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": -8,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": -4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 66,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 16,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 24,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 34,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 56,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "curious_tilt": {
+      "label": "Curious tilt",
+      "durationFrames": 84,
+      "loop": false,
+      "contactFrames": [
+        0,
+        8,
+        20,
+        32,
+        46,
+        60,
+        84
+      ],
+      "tracks": {
+        "rig_mouth": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 1.04,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1.06,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_cup": {
+          "dx": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 6,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 8,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 0.98,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 0.97,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1.03,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": 0.98,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dx": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 8,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 10,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": -4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 6,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_r": {
+          "dx": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": -6,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_l": {
+          "dx": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 46,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 60,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "celebrate_shimmy": {
+      "label": "Celebrate shimmy",
+      "durationFrames": 96,
+      "loop": true,
+      "contactFrames": [
+        0,
+        20,
+        32,
+        44,
+        64,
+        76,
+        96
+      ],
+      "tracks": {
+        "rig_mouth": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1.05,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 1.1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1.1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1.05,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1.05,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 1.1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": 1.1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": 1.05,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_cup": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1.005,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1.005,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dx": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "dx": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_r": {
+          "dx": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_base": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 1.005,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 1.005,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": 0.995,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 0.98,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": 0.98,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 0.98,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 0.98,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dx": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -4,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -7,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 7,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 7,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -7,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_l": {
+          "dx": [
+            {
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 20,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 32,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 64,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 76,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 88,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            },
+            {
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.42,
+                0,
+                0.58,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

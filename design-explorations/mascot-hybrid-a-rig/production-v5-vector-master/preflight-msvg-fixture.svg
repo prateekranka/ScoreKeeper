@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Minimal internal-MSVG fixture: gradient pixels plus a transparent center. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+  <defs>
+    <linearGradient id="fixtureGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFCC55"/>
+      <stop offset="1" stop-color="#8C5410"/>
+    </linearGradient>
+  </defs>
+  <!-- Four strips leave a real transparent 2×2 center; no clearing overlay. -->
+  <rect x="0" y="0" width="12" height="5" fill="url(#fixtureGradient)"/>
+  <rect x="0" y="7" width="12" height="5" fill="url(#fixtureGradient)"/>
+  <rect x="0" y="5" width="5" height="2" fill="url(#fixtureGradient)"/>
+  <rect x="7" y="5" width="5" height="2" fill="url(#fixtureGradient)"/>
+</svg>

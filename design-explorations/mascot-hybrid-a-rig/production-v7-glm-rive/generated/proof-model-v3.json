@@ -1,0 +1,6429 @@
+{
+  "schema": "scorekeeper.rive-live-keyframes/v1",
+  "source": {
+    "path": "../production-v5-vector-master/canonical-dimensional-pixel.svg",
+    "sha256": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75"
+  },
+  "canvas": {
+    "width": 512,
+    "height": 416
+  },
+  "fps": 60,
+  "artboard": "__V3_TEMP__ ScoreKeeper Cup Hybrid A 20260715T1415Z-root-recovery",
+  "nodes": [
+    {
+      "name": "rig_root",
+      "parent": null,
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 256,
+          "y": 401
+        }
+      }
+    },
+    {
+      "name": "rig_base",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 256,
+          "y": 401
+        }
+      }
+    },
+    {
+      "name": "rig_stem",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 255,
+          "y": 325
+        }
+      }
+    },
+    {
+      "name": "rig_handle_l",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 88,
+          "y": 150
+        }
+      }
+    },
+    {
+      "name": "rig_handle_r",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 422,
+          "y": 150
+        }
+      }
+    },
+    {
+      "name": "rig_tab",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 463,
+          "y": 72
+        }
+      }
+    },
+    {
+      "name": "rig_cup",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 255,
+          "y": 245
+        }
+      }
+    },
+    {
+      "name": "rig_hair",
+      "parent": "rig_root",
+      "kind": "nestedArtboard",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 254,
+          "y": 89
+        }
+      }
+    },
+    {
+      "name": "rig_badge",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 118,
+          "y": 81
+        }
+      }
+    },
+    {
+      "name": "rig_eye_l",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 196,
+          "y": 147
+        }
+      }
+    },
+    {
+      "name": "rig_eye_r",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 312,
+          "y": 147
+        }
+      }
+    },
+    {
+      "name": "rig_mouth",
+      "parent": "rig_root",
+      "kind": "pivot",
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 255,
+          "y": 205
+        }
+      }
+    },
+    {
+      "name": "asset_tab",
+      "parent": "rig_tab",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "tab",
+      "sourceElementIndices": [
+        0,
+        1
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_cup",
+      "parent": "rig_cup",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "cup",
+      "sourceElementIndices": [
+        2,
+        3,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        29,
+        30,
+        31,
+        32
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_handle_l",
+      "parent": "rig_handle_l",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "handle_l",
+      "sourceElementIndices": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_handle_r",
+      "parent": "rig_handle_r",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "handle_r",
+      "sourceElementIndices": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_hair",
+      "parent": "rig_hair",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "hair",
+      "sourceElementIndices": [
+        26
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_badge",
+      "parent": "rig_badge",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "badge",
+      "sourceElementIndices": [
+        27,
+        28
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_eye_l",
+      "parent": "rig_eye_l",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "eye_l",
+      "sourceElementIndices": [
+        33
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_eye_r",
+      "parent": "rig_eye_r",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "eye_r",
+      "sourceElementIndices": [
+        34
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_mouth",
+      "parent": "rig_mouth",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "mouth",
+      "sourceElementIndices": [
+        35,
+        36,
+        37
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_stem",
+      "parent": "rig_stem",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "stem",
+      "sourceElementIndices": [
+        38,
+        39,
+        40,
+        41
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "asset_base",
+      "parent": "rig_base",
+      "kind": "asset",
+      "source": "canonical-svg",
+      "semanticPart": "base",
+      "sourceElementIndices": [
+        42,
+        43,
+        44,
+        45,
+        46,
+        47
+      ],
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "rotationDeg": 0,
+        "scaleX": 1,
+        "scaleY": 1,
+        "opacity": 1,
+        "pivot": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "animations": {
+    "idle_breathe_blink": {
+      "id": "0-45292",
+      "label": "Idle",
+      "durationFrames": 72,
+      "loop": true,
+      "contactFrames": [
+        0,
+        18,
+        42,
+        52,
+        55,
+        72
+      ],
+      "tracks": {
+        "rig_eye_r": {
+          "scaleY": [
+            {
+              "keyframeId": "0-47473",
+              "interpolatorId": "0-47474",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47475",
+              "interpolatorId": "0-47476",
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47477",
+              "interpolatorId": "0-47478",
+              "frame": 53,
+              "value": 0.12,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47479",
+              "interpolatorId": "0-47480",
+              "frame": 54,
+              "value": 0.12,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47481",
+              "interpolatorId": "0-47482",
+              "frame": 55,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47483",
+              "interpolatorId": "0-47484",
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_base": {
+          "scaleY": [
+            {
+              "keyframeId": "0-47410",
+              "interpolatorId": "0-47411",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47412",
+              "interpolatorId": "0-47413",
+              "frame": 20,
+              "value": 0.996,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47414",
+              "interpolatorId": "0-47415",
+              "frame": 44,
+              "value": 1.003,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47416",
+              "interpolatorId": "0-47417",
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_l": {
+          "scaleY": [
+            {
+              "keyframeId": "0-47459",
+              "interpolatorId": "0-47460",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47461",
+              "interpolatorId": "0-47462",
+              "frame": 49,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47463",
+              "interpolatorId": "0-47464",
+              "frame": 50,
+              "value": 0.12,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47465",
+              "interpolatorId": "0-47466",
+              "frame": 51,
+              "value": 0.12,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47467",
+              "interpolatorId": "0-47468",
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47469",
+              "interpolatorId": "0-47470",
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_cup": {
+          "scaleX": [
+            {
+              "keyframeId": "0-47381",
+              "interpolatorId": "0-47382",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47383",
+              "interpolatorId": "0-47384",
+              "frame": 18,
+              "value": 0.996,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47385",
+              "interpolatorId": "0-47386",
+              "frame": 42,
+              "value": 1.003,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47387",
+              "interpolatorId": "0-47388",
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "keyframeId": "0-47390",
+              "interpolatorId": "0-47391",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47392",
+              "interpolatorId": "0-47393",
+              "frame": 18,
+              "value": 1.009,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47394",
+              "interpolatorId": "0-47395",
+              "frame": 42,
+              "value": 0.996,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47396",
+              "interpolatorId": "0-47397",
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "keyframeId": "0-47372",
+              "interpolatorId": "0-47373",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47374",
+              "interpolatorId": "0-47375",
+              "frame": 18,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47376",
+              "interpolatorId": "0-47377",
+              "frame": 42,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47378",
+              "interpolatorId": "0-47379",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47439",
+              "interpolatorId": "0-47440",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47441",
+              "interpolatorId": "0-47442",
+              "frame": 21,
+              "value": 0.9000000000000001,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47443",
+              "interpolatorId": "0-47444",
+              "frame": 45,
+              "value": -0.6,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47445",
+              "interpolatorId": "0-47446",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47449",
+              "interpolatorId": "0-47450",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47451",
+              "interpolatorId": "0-47452",
+              "frame": 24,
+              "value": -0.75,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47453",
+              "interpolatorId": "0-47454",
+              "frame": 48,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47455",
+              "interpolatorId": "0-47456",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "dy": [
+            {
+              "keyframeId": "0-47400",
+              "interpolatorId": "0-47401",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47402",
+              "interpolatorId": "0-47403",
+              "frame": 20,
+              "value": -1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47404",
+              "interpolatorId": "0-47405",
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47406",
+              "interpolatorId": "0-47407",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "dy": [
+            {
+              "keyframeId": "0-47420",
+              "interpolatorId": "0-47421",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47422",
+              "interpolatorId": "0-47423",
+              "frame": 22,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47424",
+              "interpolatorId": "0-47425",
+              "frame": 46,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47426",
+              "interpolatorId": "0-47427",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47429",
+              "interpolatorId": "0-47430",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47431",
+              "interpolatorId": "0-47432",
+              "frame": 22,
+              "value": 1.4,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47433",
+              "interpolatorId": "0-47434",
+              "frame": 46,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47435",
+              "interpolatorId": "0-47436",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "bridgeOpacityTracks": {}
+    },
+    "hair_bounce": {
+      "id": "0-45614",
+      "label": "Hair Bounce",
+      "durationFrames": 48,
+      "loop": false,
+      "contactFrames": [
+        0,
+        7,
+        15,
+        26,
+        37,
+        48
+      ],
+      "tracks": {
+        "rig_base": {
+          "scaleY": [
+            {
+              "keyframeId": "0-47526",
+              "interpolatorId": "0-47527",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47528",
+              "interpolatorId": "0-47529",
+              "frame": 7,
+              "value": 1.006,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47530",
+              "interpolatorId": "0-47531",
+              "frame": 16,
+              "value": 0.996,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47532",
+              "interpolatorId": "0-47533",
+              "frame": 27,
+              "value": 1.003,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47534",
+              "interpolatorId": "0-47535",
+              "frame": 48,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47579",
+              "interpolatorId": "0-47580",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47581",
+              "interpolatorId": "0-47582",
+              "frame": 10,
+              "value": 0.8,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47583",
+              "interpolatorId": "0-47584",
+              "frame": 19,
+              "value": -1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47585",
+              "interpolatorId": "0-47586",
+              "frame": 29,
+              "value": 0.65,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47587",
+              "interpolatorId": "0-47588",
+              "frame": 40,
+              "value": -0.2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47589",
+              "interpolatorId": "0-47590",
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47565",
+              "interpolatorId": "0-47566",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47567",
+              "interpolatorId": "0-47568",
+              "frame": 8,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47569",
+              "interpolatorId": "0-47570",
+              "frame": 17,
+              "value": 1.8000000000000003,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47571",
+              "interpolatorId": "0-47572",
+              "frame": 27,
+              "value": -0.8,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47573",
+              "interpolatorId": "0-47574",
+              "frame": 39,
+              "value": 0.25,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47575",
+              "interpolatorId": "0-47576",
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "dy": [
+            {
+              "keyframeId": "0-47538",
+              "interpolatorId": "0-47539",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47540",
+              "interpolatorId": "0-47541",
+              "frame": 7,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47542",
+              "interpolatorId": "0-47543",
+              "frame": 15,
+              "value": -11,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47544",
+              "interpolatorId": "0-47545",
+              "frame": 26,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47546",
+              "interpolatorId": "0-47547",
+              "frame": 37,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47548",
+              "interpolatorId": "0-47549",
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47551",
+              "interpolatorId": "0-47552",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47553",
+              "interpolatorId": "0-47554",
+              "frame": 7,
+              "value": -1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47555",
+              "interpolatorId": "0-47556",
+              "frame": 15,
+              "value": 3.6000000000000005,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47557",
+              "interpolatorId": "0-47558",
+              "frame": 26,
+              "value": -2.2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47559",
+              "interpolatorId": "0-47560",
+              "frame": 37,
+              "value": 0.8,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47561",
+              "interpolatorId": "0-47562",
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "dy": [
+            {
+              "keyframeId": "0-47514",
+              "interpolatorId": "0-47515",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.55,
+                0,
+                0.8,
+                0.2
+              ]
+            },
+            {
+              "keyframeId": "0-47516",
+              "interpolatorId": "0-47517",
+              "frame": 7,
+              "value": 1.2000000000000028,
+              "interpolation": "cubic",
+              "curve": [
+                0.55,
+                0,
+                0.8,
+                0.2
+              ]
+            },
+            {
+              "keyframeId": "0-47518",
+              "interpolatorId": "0-47519",
+              "frame": 16,
+              "value": -1.2000000000000028,
+              "interpolation": "cubic",
+              "curve": [
+                0.55,
+                0,
+                0.8,
+                0.2
+              ]
+            },
+            {
+              "keyframeId": "0-47520",
+              "interpolatorId": "0-47521",
+              "frame": 27,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.55,
+                0,
+                0.8,
+                0.2
+              ]
+            },
+            {
+              "keyframeId": "0-47522",
+              "interpolatorId": "0-47523",
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_cup": {
+          "scaleY": [
+            {
+              "keyframeId": "0-47500",
+              "interpolatorId": "0-47501",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47502",
+              "interpolatorId": "0-47503",
+              "frame": 7,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47504",
+              "interpolatorId": "0-47505",
+              "frame": 15,
+              "value": 1.008,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47506",
+              "interpolatorId": "0-47507",
+              "frame": 26,
+              "value": 0.996,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47508",
+              "interpolatorId": "0-47509",
+              "frame": 37,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47510",
+              "interpolatorId": "0-47511",
+              "frame": 48,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "keyframeId": "0-47487",
+              "interpolatorId": "0-47488",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.55,
+                0,
+                0.8,
+                0.2
+              ]
+            },
+            {
+              "keyframeId": "0-47489",
+              "interpolatorId": "0-47490",
+              "frame": 7,
+              "value": 2.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.55,
+                0,
+                0.8,
+                0.2
+              ]
+            },
+            {
+              "keyframeId": "0-47491",
+              "interpolatorId": "0-47492",
+              "frame": 15,
+              "value": -2.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.55,
+                0,
+                0.8,
+                0.2
+              ]
+            },
+            {
+              "keyframeId": "0-47493",
+              "interpolatorId": "0-47494",
+              "frame": 26,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.55,
+                0,
+                0.8,
+                0.2
+              ]
+            },
+            {
+              "keyframeId": "0-47495",
+              "interpolatorId": "0-47496",
+              "frame": 37,
+              "value": -0.4000000000000057,
+              "interpolation": "cubic",
+              "curve": [
+                0.55,
+                0,
+                0.8,
+                0.2
+              ]
+            },
+            {
+              "keyframeId": "0-47497",
+              "interpolatorId": "0-47498",
+              "frame": 48,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "bridgeOpacityTracks": {}
+    },
+    "victory_pop": {
+      "id": "0-45148",
+      "label": "Victory Pop",
+      "durationFrames": 72,
+      "loop": false,
+      "contactFrames": [
+        0,
+        14,
+        24,
+        29,
+        44,
+        49,
+        64,
+        72
+      ],
+      "tracks": {
+        "rig_mouth": {
+          "scaleY": [
+            {
+              "keyframeId": "0-47775",
+              "interpolatorId": "0-47776",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47777",
+              "interpolatorId": "0-47778",
+              "frame": 14,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47779",
+              "interpolatorId": "0-47780",
+              "frame": 25,
+              "value": 1.16,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47781",
+              "interpolatorId": "0-47782",
+              "frame": 44,
+              "value": 1.1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47783",
+              "interpolatorId": "0-47784",
+              "frame": 52,
+              "value": 1.03,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47785",
+              "interpolatorId": "0-47786",
+              "frame": 64,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47787",
+              "interpolatorId": "0-47788",
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_base": {
+          "scaleY": [
+            {
+              "keyframeId": "0-47694",
+              "interpolatorId": "0-47695",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47696",
+              "interpolatorId": "0-47697",
+              "frame": 14,
+              "value": 1.014,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47698",
+              "interpolatorId": "0-47699",
+              "frame": 25,
+              "value": 0.992,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47700",
+              "interpolatorId": "0-47701",
+              "frame": 45,
+              "value": 1.008,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47702",
+              "interpolatorId": "0-47703",
+              "frame": 50,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47704",
+              "interpolatorId": "0-47705",
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47743",
+              "interpolatorId": "0-47744",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47745",
+              "interpolatorId": "0-47746",
+              "frame": 13,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47747",
+              "interpolatorId": "0-47748",
+              "frame": 26,
+              "value": 3.4,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47749",
+              "interpolatorId": "0-47750",
+              "frame": 46,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47751",
+              "interpolatorId": "0-47752",
+              "frame": 51,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47753",
+              "interpolatorId": "0-47754",
+              "frame": 62,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47755",
+              "interpolatorId": "0-47756",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_cup": {
+          "scaleX": [
+            {
+              "keyframeId": "0-47645",
+              "interpolatorId": "0-47646",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47647",
+              "interpolatorId": "0-47648",
+              "frame": 14,
+              "value": 1.024,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47649",
+              "interpolatorId": "0-47650",
+              "frame": 24,
+              "value": 0.99,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47651",
+              "interpolatorId": "0-47652",
+              "frame": 29,
+              "value": 0.994,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47653",
+              "interpolatorId": "0-47654",
+              "frame": 44,
+              "value": 1.012,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47655",
+              "interpolatorId": "0-47656",
+              "frame": 49,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47657",
+              "interpolatorId": "0-47658",
+              "frame": 64,
+              "value": 0.998,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47659",
+              "interpolatorId": "0-47660",
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "scaleY": [
+            {
+              "keyframeId": "0-47662",
+              "interpolatorId": "0-47663",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47664",
+              "interpolatorId": "0-47665",
+              "frame": 14,
+              "value": 0.976,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47666",
+              "interpolatorId": "0-47667",
+              "frame": 24,
+              "value": 1.018,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47668",
+              "interpolatorId": "0-47669",
+              "frame": 29,
+              "value": 1.012,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47670",
+              "interpolatorId": "0-47671",
+              "frame": 44,
+              "value": 0.988,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47672",
+              "interpolatorId": "0-47673",
+              "frame": 49,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47674",
+              "interpolatorId": "0-47675",
+              "frame": 64,
+              "value": 1.002,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47676",
+              "interpolatorId": "0-47677",
+              "frame": 72,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "keyframeId": "0-47628",
+              "interpolatorId": "0-47629",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47630",
+              "interpolatorId": "0-47631",
+              "frame": 14,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47632",
+              "interpolatorId": "0-47633",
+              "frame": 24,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47634",
+              "interpolatorId": "0-47635",
+              "frame": 29,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47636",
+              "interpolatorId": "0-47637",
+              "frame": 44,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47638",
+              "interpolatorId": "0-47639",
+              "frame": 49,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47640",
+              "interpolatorId": "0-47641",
+              "frame": 64,
+              "value": -0.4000000000000057,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47642",
+              "interpolatorId": "0-47643",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "dy": [
+            {
+              "keyframeId": "0-47708",
+              "interpolatorId": "0-47709",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47710",
+              "interpolatorId": "0-47711",
+              "frame": 14,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47712",
+              "interpolatorId": "0-47713",
+              "frame": 27,
+              "value": -9,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47714",
+              "interpolatorId": "0-47715",
+              "frame": 32,
+              "value": -6,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47716",
+              "interpolatorId": "0-47717",
+              "frame": 47,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47718",
+              "interpolatorId": "0-47719",
+              "frame": 52,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47720",
+              "interpolatorId": "0-47721",
+              "frame": 63,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47722",
+              "interpolatorId": "0-47723",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47725",
+              "interpolatorId": "0-47726",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47727",
+              "interpolatorId": "0-47728",
+              "frame": 14,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47729",
+              "interpolatorId": "0-47730",
+              "frame": 27,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47731",
+              "interpolatorId": "0-47732",
+              "frame": 32,
+              "value": 2.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47733",
+              "interpolatorId": "0-47734",
+              "frame": 47,
+              "value": -2.3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47735",
+              "interpolatorId": "0-47736",
+              "frame": 52,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47737",
+              "interpolatorId": "0-47738",
+              "frame": 63,
+              "value": 0.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47739",
+              "interpolatorId": "0-47740",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47759",
+              "interpolatorId": "0-47760",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47761",
+              "interpolatorId": "0-47762",
+              "frame": 15,
+              "value": 1.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47763",
+              "interpolatorId": "0-47764",
+              "frame": 29,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47765",
+              "interpolatorId": "0-47766",
+              "frame": 48,
+              "value": 1.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47767",
+              "interpolatorId": "0-47768",
+              "frame": 53,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47769",
+              "interpolatorId": "0-47770",
+              "frame": 65,
+              "value": -0.4,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47771",
+              "interpolatorId": "0-47772",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "dy": [
+            {
+              "keyframeId": "0-47680",
+              "interpolatorId": "0-47681",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47682",
+              "interpolatorId": "0-47683",
+              "frame": 14,
+              "value": 1.7999999999999972,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47684",
+              "interpolatorId": "0-47685",
+              "frame": 25,
+              "value": -1.4000000000000057,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47686",
+              "interpolatorId": "0-47687",
+              "frame": 45,
+              "value": 0.9000000000000057,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47688",
+              "interpolatorId": "0-47689",
+              "frame": 50,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47690",
+              "interpolatorId": "0-47691",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_root": {
+          "dy": [
+            {
+              "keyframeId": "0-47593",
+              "interpolatorId": "0-47594",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47595",
+              "interpolatorId": "0-47596",
+              "frame": 10,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47597",
+              "interpolatorId": "0-47598",
+              "frame": 14,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47599",
+              "interpolatorId": "0-47600",
+              "frame": 24,
+              "value": -22,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47601",
+              "interpolatorId": "0-47602",
+              "frame": 29,
+              "value": -21,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47603",
+              "interpolatorId": "0-47604",
+              "frame": 44,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47605",
+              "interpolatorId": "0-47606",
+              "frame": 49,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47607",
+              "interpolatorId": "0-47608",
+              "frame": 60,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47609",
+              "interpolatorId": "0-47610",
+              "frame": 64,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47611",
+              "interpolatorId": "0-47612",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47614",
+              "interpolatorId": "0-47615",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47616",
+              "interpolatorId": "0-47617",
+              "frame": 14,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47618",
+              "interpolatorId": "0-47619",
+              "frame": 25,
+              "value": 1.2,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47620",
+              "interpolatorId": "0-47621",
+              "frame": 44,
+              "value": -0.8,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47622",
+              "interpolatorId": "0-47623",
+              "frame": 60,
+              "value": 0.25,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47624",
+              "interpolatorId": "0-47625",
+              "frame": 72,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "bridgeOpacityTracks": {
+        "__V3_BRIDGE__cup_edgeDark_y128": [
+          {
+            "keyframeId": "0-49065",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49066",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49067",
+            "frame": 71,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49068",
+            "frame": 72,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ],
+        "__V3_BRIDGE__cup_edgeDark_y170": [
+          {
+            "keyframeId": "0-49059",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49060",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49061",
+            "frame": 71,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49062",
+            "frame": 72,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ],
+        "__V3_BRIDGE__cup_goldBody_y128": [
+          {
+            "keyframeId": "0-49053",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49054",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49055",
+            "frame": 71,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49056",
+            "frame": 72,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ],
+        "__V3_BRIDGE__cup_goldBody_y170": [
+          {
+            "keyframeId": "0-49047",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49048",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49049",
+            "frame": 71,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49050",
+            "frame": 72,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ]
+      }
+    },
+    "curious_tilt": {
+      "id": "0-45726",
+      "label": "Curious Tilt",
+      "durationFrames": 84,
+      "loop": false,
+      "contactFrames": [
+        0,
+        9,
+        24,
+        28,
+        36,
+        52,
+        76,
+        84
+      ],
+      "tracks": {
+        "rig_mouth": {
+          "scaleY": [
+            {
+              "keyframeId": "0-48025",
+              "interpolatorId": "0-48026",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48027",
+              "interpolatorId": "0-48028",
+              "frame": 24,
+              "value": 1.06,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48029",
+              "interpolatorId": "0-48030",
+              "frame": 28,
+              "value": 1.06,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48031",
+              "interpolatorId": "0-48032",
+              "frame": 36,
+              "value": 1.06,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48033",
+              "interpolatorId": "0-48034",
+              "frame": 52,
+              "value": 1.02,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48035",
+              "interpolatorId": "0-48036",
+              "frame": 68,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48037",
+              "interpolatorId": "0-48038",
+              "frame": 84,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_r": {
+          "dx": [
+            {
+              "keyframeId": "0-47826",
+              "interpolatorId": "0-47827",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47828",
+              "interpolatorId": "0-47829",
+              "frame": 7,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47830",
+              "interpolatorId": "0-47831",
+              "frame": 23,
+              "value": 1.8999999999999986,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47832",
+              "interpolatorId": "0-47833",
+              "frame": 28,
+              "value": 1.8999999999999986,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47834",
+              "interpolatorId": "0-47835",
+              "frame": 36,
+              "value": 1.8999999999999986,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47836",
+              "interpolatorId": "0-47837",
+              "frame": 49,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47838",
+              "interpolatorId": "0-47839",
+              "frame": 67,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47840",
+              "interpolatorId": "0-47841",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "keyframeId": "0-47843",
+              "interpolatorId": "0-47844",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47845",
+              "interpolatorId": "0-47846",
+              "frame": 7,
+              "value": -0.25,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47847",
+              "interpolatorId": "0-47848",
+              "frame": 23,
+              "value": -0.6999999999999886,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47849",
+              "interpolatorId": "0-47850",
+              "frame": 28,
+              "value": -0.6999999999999886,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47851",
+              "interpolatorId": "0-47852",
+              "frame": 36,
+              "value": -0.6999999999999886,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47853",
+              "interpolatorId": "0-47854",
+              "frame": 49,
+              "value": 0.19999999999998863,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47855",
+              "interpolatorId": "0-47856",
+              "frame": 67,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47857",
+              "interpolatorId": "0-47858",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_l": {
+          "dx": [
+            {
+              "keyframeId": "0-47791",
+              "interpolatorId": "0-47792",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47793",
+              "interpolatorId": "0-47794",
+              "frame": 8,
+              "value": 1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47795",
+              "interpolatorId": "0-47796",
+              "frame": 24,
+              "value": 2.6000000000000014,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47797",
+              "interpolatorId": "0-47798",
+              "frame": 28,
+              "value": 2.6000000000000014,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47799",
+              "interpolatorId": "0-47800",
+              "frame": 36,
+              "value": 2.6000000000000014,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47801",
+              "interpolatorId": "0-47802",
+              "frame": 50,
+              "value": -0.7999999999999972,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47803",
+              "interpolatorId": "0-47804",
+              "frame": 68,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47805",
+              "interpolatorId": "0-47806",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "keyframeId": "0-47808",
+              "interpolatorId": "0-47809",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47810",
+              "interpolatorId": "0-47811",
+              "frame": 8,
+              "value": -0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47812",
+              "interpolatorId": "0-47813",
+              "frame": 24,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47814",
+              "interpolatorId": "0-47815",
+              "frame": 28,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47816",
+              "interpolatorId": "0-47817",
+              "frame": 36,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47818",
+              "interpolatorId": "0-47819",
+              "frame": 50,
+              "value": 0.30000000000001137,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47820",
+              "interpolatorId": "0-47821",
+              "frame": 68,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47822",
+              "interpolatorId": "0-47823",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_cup": {
+          "dx": [
+            {
+              "keyframeId": "0-47861",
+              "interpolatorId": "0-47862",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47863",
+              "interpolatorId": "0-47864",
+              "frame": 9,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47865",
+              "interpolatorId": "0-47866",
+              "frame": 24,
+              "value": 7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47867",
+              "interpolatorId": "0-47868",
+              "frame": 28,
+              "value": 7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47869",
+              "interpolatorId": "0-47870",
+              "frame": 36,
+              "value": 7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47871",
+              "interpolatorId": "0-47872",
+              "frame": 52,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47873",
+              "interpolatorId": "0-47874",
+              "frame": 68,
+              "value": 0.6,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47875",
+              "interpolatorId": "0-47876",
+              "frame": 76,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47877",
+              "interpolatorId": "0-47878",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "keyframeId": "0-47880",
+              "interpolatorId": "0-47881",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47882",
+              "interpolatorId": "0-47883",
+              "frame": 9,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47884",
+              "interpolatorId": "0-47885",
+              "frame": 24,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47886",
+              "interpolatorId": "0-47887",
+              "frame": 28,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47888",
+              "interpolatorId": "0-47889",
+              "frame": 36,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47890",
+              "interpolatorId": "0-47891",
+              "frame": 52,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47892",
+              "interpolatorId": "0-47893",
+              "frame": 68,
+              "value": -0.30000000000001137,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47894",
+              "interpolatorId": "0-47895",
+              "frame": 76,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47896",
+              "interpolatorId": "0-47897",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47899",
+              "interpolatorId": "0-47900",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47901",
+              "interpolatorId": "0-47902",
+              "frame": 9,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47903",
+              "interpolatorId": "0-47904",
+              "frame": 24,
+              "value": 7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47905",
+              "interpolatorId": "0-47906",
+              "frame": 28,
+              "value": 7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47907",
+              "interpolatorId": "0-47908",
+              "frame": 36,
+              "value": 7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47909",
+              "interpolatorId": "0-47910",
+              "frame": 52,
+              "value": -2.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47911",
+              "interpolatorId": "0-47912",
+              "frame": 68,
+              "value": 0.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47913",
+              "interpolatorId": "0-47914",
+              "frame": 76,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47915",
+              "interpolatorId": "0-47916",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47989",
+              "interpolatorId": "0-47990",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47991",
+              "interpolatorId": "0-47992",
+              "frame": 10,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47993",
+              "interpolatorId": "0-47994",
+              "frame": 26,
+              "value": 3.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47995",
+              "interpolatorId": "0-47996",
+              "frame": 30,
+              "value": 3.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47997",
+              "interpolatorId": "0-47998",
+              "frame": 38,
+              "value": 3.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47999",
+              "interpolatorId": "0-48000",
+              "frame": 54,
+              "value": -1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48001",
+              "interpolatorId": "0-48002",
+              "frame": 70,
+              "value": 0.35,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48003",
+              "interpolatorId": "0-48004",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47919",
+              "interpolatorId": "0-47920",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47921",
+              "interpolatorId": "0-47922",
+              "frame": 10,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47923",
+              "interpolatorId": "0-47924",
+              "frame": 25,
+              "value": 2.6,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47925",
+              "interpolatorId": "0-47926",
+              "frame": 29,
+              "value": 2.6,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47927",
+              "interpolatorId": "0-47928",
+              "frame": 37,
+              "value": 2.6,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47929",
+              "interpolatorId": "0-47930",
+              "frame": 53,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47931",
+              "interpolatorId": "0-47932",
+              "frame": 70,
+              "value": 0.3,
+              "interpolation": "cubic",
+              "curve": [
+                0.22,
+                0.75,
+                0.35,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47933",
+              "interpolatorId": "0-47934",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "dx": [
+            {
+              "keyframeId": "0-47937",
+              "interpolatorId": "0-47938",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47939",
+              "interpolatorId": "0-47940",
+              "frame": 11,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47941",
+              "interpolatorId": "0-47942",
+              "frame": 27,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47943",
+              "interpolatorId": "0-47944",
+              "frame": 31,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47945",
+              "interpolatorId": "0-47946",
+              "frame": 39,
+              "value": 4,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47947",
+              "interpolatorId": "0-47948",
+              "frame": 55,
+              "value": -1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47949",
+              "interpolatorId": "0-47950",
+              "frame": 72,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47951",
+              "interpolatorId": "0-47952",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "keyframeId": "0-47954",
+              "interpolatorId": "0-47955",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47956",
+              "interpolatorId": "0-47957",
+              "frame": 11,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47958",
+              "interpolatorId": "0-47959",
+              "frame": 27,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47960",
+              "interpolatorId": "0-47961",
+              "frame": 31,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47962",
+              "interpolatorId": "0-47963",
+              "frame": 39,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47964",
+              "interpolatorId": "0-47965",
+              "frame": 55,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47966",
+              "interpolatorId": "0-47967",
+              "frame": 72,
+              "value": -0.30000000000001137,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47968",
+              "interpolatorId": "0-47969",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "keyframeId": "0-47971",
+              "interpolatorId": "0-47972",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47973",
+              "interpolatorId": "0-47974",
+              "frame": 11,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47975",
+              "interpolatorId": "0-47976",
+              "frame": 27,
+              "value": 5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47977",
+              "interpolatorId": "0-47978",
+              "frame": 31,
+              "value": 5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47979",
+              "interpolatorId": "0-47980",
+              "frame": 39,
+              "value": 5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47981",
+              "interpolatorId": "0-47982",
+              "frame": 55,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47983",
+              "interpolatorId": "0-47984",
+              "frame": 72,
+              "value": 0.6,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-47985",
+              "interpolatorId": "0-47986",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-48007",
+              "interpolatorId": "0-48008",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48009",
+              "interpolatorId": "0-48010",
+              "frame": 12,
+              "value": 0.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48011",
+              "interpolatorId": "0-48012",
+              "frame": 28,
+              "value": -2.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48013",
+              "interpolatorId": "0-48014",
+              "frame": 32,
+              "value": -2.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48015",
+              "interpolatorId": "0-48016",
+              "frame": 40,
+              "value": -2.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48017",
+              "interpolatorId": "0-48018",
+              "frame": 56,
+              "value": 1.1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48019",
+              "interpolatorId": "0-48020",
+              "frame": 72,
+              "value": -0.25,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48021",
+              "interpolatorId": "0-48022",
+              "frame": 84,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "bridgeOpacityTracks": {
+        "__V3_BRIDGE__cup_edgeDark_y128": [
+          {
+            "keyframeId": "0-49089",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49090",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49091",
+            "frame": 83,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49092",
+            "frame": 84,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ],
+        "__V3_BRIDGE__cup_edgeDark_y170": [
+          {
+            "keyframeId": "0-49083",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49084",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49085",
+            "frame": 83,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49086",
+            "frame": 84,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ],
+        "__V3_BRIDGE__cup_goldBody_y128": [
+          {
+            "keyframeId": "0-49077",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49078",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49079",
+            "frame": 83,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49080",
+            "frame": 84,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ],
+        "__V3_BRIDGE__cup_goldBody_y170": [
+          {
+            "keyframeId": "0-49071",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49072",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49073",
+            "frame": 83,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49074",
+            "frame": 84,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ]
+      }
+    },
+    "celebrate_shimmy": {
+      "id": "0-45405",
+      "label": "Celebrate Shimmy",
+      "durationFrames": 96,
+      "loop": true,
+      "contactFrames": [
+        0,
+        12,
+        25,
+        44,
+        56,
+        70,
+        88,
+        96
+      ],
+      "tracks": {
+        "rig_eye_r": {
+          "dx": [
+            {
+              "keyframeId": "0-48252",
+              "interpolatorId": "0-48253",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48254",
+              "interpolatorId": "0-48255",
+              "frame": 14,
+              "value": -1.3999999999999986,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48256",
+              "interpolatorId": "0-48257",
+              "frame": 28,
+              "value": 1.7000000000000028,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48258",
+              "interpolatorId": "0-48259",
+              "frame": 47,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48260",
+              "interpolatorId": "0-48261",
+              "frame": 59,
+              "value": 1.2000000000000028,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48262",
+              "interpolatorId": "0-48263",
+              "frame": 73,
+              "value": -1.3999999999999986,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48264",
+              "interpolatorId": "0-48265",
+              "frame": 91,
+              "value": 0.10000000000000142,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48266",
+              "interpolatorId": "0-48267",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_l": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-48198",
+              "interpolatorId": "0-48199",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48200",
+              "interpolatorId": "0-48201",
+              "frame": 10,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48202",
+              "interpolatorId": "0-48203",
+              "frame": 23,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48204",
+              "interpolatorId": "0-48205",
+              "frame": 42,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48206",
+              "interpolatorId": "0-48207",
+              "frame": 54,
+              "value": 2.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48208",
+              "interpolatorId": "0-48209",
+              "frame": 68,
+              "value": -2.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48210",
+              "interpolatorId": "0-48211",
+              "frame": 86,
+              "value": 0.4,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48212",
+              "interpolatorId": "0-48213",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_handle_r": {
+          "rotationDeg": [
+            {
+              "keyframeId": "0-48216",
+              "interpolatorId": "0-48217",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48218",
+              "interpolatorId": "0-48219",
+              "frame": 13,
+              "value": 2.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48220",
+              "interpolatorId": "0-48221",
+              "frame": 27,
+              "value": -2.8,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48222",
+              "interpolatorId": "0-48223",
+              "frame": 46,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48224",
+              "interpolatorId": "0-48225",
+              "frame": 58,
+              "value": -2.3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48226",
+              "interpolatorId": "0-48227",
+              "frame": 72,
+              "value": 2.4,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48228",
+              "interpolatorId": "0-48229",
+              "frame": 90,
+              "value": -0.3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48230",
+              "interpolatorId": "0-48231",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_base": {
+          "scaleY": [
+            {
+              "keyframeId": "0-48128",
+              "interpolatorId": "0-48129",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48130",
+              "interpolatorId": "0-48131",
+              "frame": 14,
+              "value": 1.006,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48132",
+              "interpolatorId": "0-48133",
+              "frame": 27,
+              "value": 0.994,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48134",
+              "interpolatorId": "0-48135",
+              "frame": 45,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48136",
+              "interpolatorId": "0-48137",
+              "frame": 58,
+              "value": 0.996,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48138",
+              "interpolatorId": "0-48139",
+              "frame": 72,
+              "value": 1.004,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48140",
+              "interpolatorId": "0-48141",
+              "frame": 90,
+              "value": 0.999,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48142",
+              "interpolatorId": "0-48143",
+              "frame": 96,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_mouth": {
+          "scaleY": [
+            {
+              "keyframeId": "0-48270",
+              "interpolatorId": "0-48271",
+              "frame": 0,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48272",
+              "interpolatorId": "0-48273",
+              "frame": 12,
+              "value": 1.1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48274",
+              "interpolatorId": "0-48275",
+              "frame": 25,
+              "value": 1.06,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48276",
+              "interpolatorId": "0-48277",
+              "frame": 44,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48278",
+              "interpolatorId": "0-48279",
+              "frame": 56,
+              "value": 1.08,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48280",
+              "interpolatorId": "0-48281",
+              "frame": 70,
+              "value": 1.04,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48282",
+              "interpolatorId": "0-48283",
+              "frame": 88,
+              "value": 1.01,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48284",
+              "interpolatorId": "0-48285",
+              "frame": 96,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_eye_l": {
+          "dx": [
+            {
+              "keyframeId": "0-48234",
+              "interpolatorId": "0-48235",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48236",
+              "interpolatorId": "0-48237",
+              "frame": 11,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48238",
+              "interpolatorId": "0-48239",
+              "frame": 24,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48240",
+              "interpolatorId": "0-48241",
+              "frame": 43,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48242",
+              "interpolatorId": "0-48243",
+              "frame": 55,
+              "value": 1.6000000000000014,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48244",
+              "interpolatorId": "0-48245",
+              "frame": 69,
+              "value": -1.7000000000000028,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48246",
+              "interpolatorId": "0-48247",
+              "frame": 87,
+              "value": 0.20000000000000284,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48248",
+              "interpolatorId": "0-48249",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_cup": {
+          "dx": [
+            {
+              "keyframeId": "0-48041",
+              "interpolatorId": "0-48042",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48043",
+              "interpolatorId": "0-48044",
+              "frame": 12,
+              "value": -7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48045",
+              "interpolatorId": "0-48046",
+              "frame": 25,
+              "value": 7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48047",
+              "interpolatorId": "0-48048",
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48049",
+              "interpolatorId": "0-48050",
+              "frame": 56,
+              "value": 6,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48051",
+              "interpolatorId": "0-48052",
+              "frame": 70,
+              "value": -6,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48053",
+              "interpolatorId": "0-48054",
+              "frame": 88,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48055",
+              "interpolatorId": "0-48056",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "keyframeId": "0-48058",
+              "interpolatorId": "0-48059",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48060",
+              "interpolatorId": "0-48061",
+              "frame": 12,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48062",
+              "interpolatorId": "0-48063",
+              "frame": 25,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48064",
+              "interpolatorId": "0-48065",
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48066",
+              "interpolatorId": "0-48067",
+              "frame": 56,
+              "value": -0.8000000000000114,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48068",
+              "interpolatorId": "0-48069",
+              "frame": 70,
+              "value": 0.8000000000000114,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48070",
+              "interpolatorId": "0-48071",
+              "frame": 88,
+              "value": -0.19999999999998863,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48072",
+              "interpolatorId": "0-48073",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "keyframeId": "0-48075",
+              "interpolatorId": "0-48076",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48077",
+              "interpolatorId": "0-48078",
+              "frame": 12,
+              "value": -3.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48079",
+              "interpolatorId": "0-48080",
+              "frame": 25,
+              "value": 3.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48081",
+              "interpolatorId": "0-48082",
+              "frame": 44,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48083",
+              "interpolatorId": "0-48084",
+              "frame": 56,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48085",
+              "interpolatorId": "0-48086",
+              "frame": 70,
+              "value": -3.2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48087",
+              "interpolatorId": "0-48088",
+              "frame": 88,
+              "value": 0.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48089",
+              "interpolatorId": "0-48090",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_hair": {
+          "dx": [
+            {
+              "keyframeId": "0-48146",
+              "interpolatorId": "0-48147",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48148",
+              "interpolatorId": "0-48149",
+              "frame": 15,
+              "value": -6,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48150",
+              "interpolatorId": "0-48151",
+              "frame": 28,
+              "value": 6,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48152",
+              "interpolatorId": "0-48153",
+              "frame": 47,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48154",
+              "interpolatorId": "0-48155",
+              "frame": 59,
+              "value": 5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48156",
+              "interpolatorId": "0-48157",
+              "frame": 73,
+              "value": -5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48158",
+              "interpolatorId": "0-48159",
+              "frame": 91,
+              "value": 0.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48160",
+              "interpolatorId": "0-48161",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "dy": [
+            {
+              "keyframeId": "0-48163",
+              "interpolatorId": "0-48164",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48165",
+              "interpolatorId": "0-48166",
+              "frame": 15,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48167",
+              "interpolatorId": "0-48168",
+              "frame": 28,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48169",
+              "interpolatorId": "0-48170",
+              "frame": 47,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48171",
+              "interpolatorId": "0-48172",
+              "frame": 59,
+              "value": 1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48173",
+              "interpolatorId": "0-48174",
+              "frame": 73,
+              "value": -1,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48175",
+              "interpolatorId": "0-48176",
+              "frame": 91,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48177",
+              "interpolatorId": "0-48178",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "keyframeId": "0-48180",
+              "interpolatorId": "0-48181",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48182",
+              "interpolatorId": "0-48183",
+              "frame": 15,
+              "value": -3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48184",
+              "interpolatorId": "0-48185",
+              "frame": 28,
+              "value": 3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48186",
+              "interpolatorId": "0-48187",
+              "frame": 47,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48188",
+              "interpolatorId": "0-48189",
+              "frame": 59,
+              "value": 2.6,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48190",
+              "interpolatorId": "0-48191",
+              "frame": 73,
+              "value": -2.8,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48192",
+              "interpolatorId": "0-48193",
+              "frame": 91,
+              "value": 0.4,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48194",
+              "interpolatorId": "0-48195",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        },
+        "rig_stem": {
+          "dx": [
+            {
+              "keyframeId": "0-48093",
+              "interpolatorId": "0-48094",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48095",
+              "interpolatorId": "0-48096",
+              "frame": 13,
+              "value": -2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48097",
+              "interpolatorId": "0-48098",
+              "frame": 26,
+              "value": 2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48099",
+              "interpolatorId": "0-48100",
+              "frame": 45,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48101",
+              "interpolatorId": "0-48102",
+              "frame": 57,
+              "value": 1.7,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48103",
+              "interpolatorId": "0-48104",
+              "frame": 71,
+              "value": -1.7000000000000002,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48105",
+              "interpolatorId": "0-48106",
+              "frame": 89,
+              "value": 0.30000000000000004,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48107",
+              "interpolatorId": "0-48108",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ],
+          "rotationDeg": [
+            {
+              "keyframeId": "0-48110",
+              "interpolatorId": "0-48111",
+              "frame": 0,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48112",
+              "interpolatorId": "0-48113",
+              "frame": 13,
+              "value": -1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48114",
+              "interpolatorId": "0-48115",
+              "frame": 26,
+              "value": 1.5,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48116",
+              "interpolatorId": "0-48117",
+              "frame": 45,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48118",
+              "interpolatorId": "0-48119",
+              "frame": 57,
+              "value": 1.2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48120",
+              "interpolatorId": "0-48121",
+              "frame": 71,
+              "value": -1.3,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48122",
+              "interpolatorId": "0-48123",
+              "frame": 89,
+              "value": 0.2,
+              "interpolation": "cubic",
+              "curve": [
+                0.2,
+                0.8,
+                0.25,
+                1
+              ]
+            },
+            {
+              "keyframeId": "0-48124",
+              "interpolatorId": "0-48125",
+              "frame": 96,
+              "value": 0,
+              "interpolation": "cubic",
+              "curve": [
+                0.37,
+                0,
+                0.63,
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "bridgeOpacityTracks": {
+        "__V3_BRIDGE__cup_goldBody_y128": [
+          {
+            "keyframeId": "0-49101",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49102",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49103",
+            "frame": 95,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49104",
+            "frame": 96,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ],
+        "__V3_BRIDGE__cup_goldBody_y170": [
+          {
+            "keyframeId": "0-49095",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49096",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49097",
+            "frame": 95,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49098",
+            "frame": 96,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ],
+        "__V3_BRIDGE__cup_edgeDark_y128": [
+          {
+            "keyframeId": "0-49113",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49114",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49115",
+            "frame": 95,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49116",
+            "frame": 96,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ],
+        "__V3_BRIDGE__cup_edgeDark_y170": [
+          {
+            "keyframeId": "0-49107",
+            "frame": 0,
+            "value": 0,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49108",
+            "frame": 1,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49109",
+            "frame": 95,
+            "value": 1,
+            "interpolation": "hold"
+          },
+          {
+            "keyframeId": "0-49110",
+            "frame": 96,
+            "value": 0,
+            "interpolation": "hold"
+          }
+        ]
+      }
+    }
+  },
+  "provenance": {
+    "liveArtboardId": "0-32354",
+    "liveExport": "live-keyframes-v3.json",
+    "liveUnderlaps": "live-underlaps-v3.json",
+    "canonicalAuthorityPath": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v5-vector-master/canonical-dimensional-pixel.svg",
+    "canonicalAuthoritySha256": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75",
+    "derivedProofSourceSha256": "a8008f897900e5f584cdef05cd2468ec812a2f95f35307b15c0ec27dacc68037",
+    "specHash": "b3fef6a65369176159fa78d34c8f834e8f8cfb4e9054b0511d6f69f414843446",
+    "rendererClass": "fresh-live-query-semantic-reconstruction-with-queried-live-underlaps-not-runtime-capture"
+  }
+}

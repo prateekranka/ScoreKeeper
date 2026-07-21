@@ -1,0 +1,53 @@
+{
+  "status": "published-after-visual-qa",
+  "mainArtboardId": "0-16469",
+  "mainArtboardName": "ScoreKeeper Cup Hybrid A - Production Rig v2",
+  "hairComponentArtboardId": "0-17790",
+  "hairComponentArtboardName": "ScoreKeeper Cup Hair Component v2",
+  "hairIsNestedArtboard": true,
+  "sourceSha256": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75",
+  "transparentBackground": true,
+  "mainObjectCount": 12786,
+  "pivots": {
+    "rig_root": "0-18282",
+    "rig_base": "0-18289",
+    "rig_stem": "0-18296",
+    "rig_handle_l": "0-18303",
+    "rig_handle_r": "0-18310",
+    "rig_tab": "0-18317",
+    "rig_cup": "0-18324",
+    "rig_hair": "0-18359",
+    "rig_badge": "0-18331",
+    "rig_eye_l": "0-18338",
+    "rig_eye_r": "0-18345",
+    "rig_mouth": "0-18352"
+  },
+  "animations": {
+    "idle_breathe_blink": {
+      "id": "0-31064",
+      "keyframes": 89
+    },
+    "hair_bounce": {
+      "id": "0-31065",
+      "keyframes": 89
+    },
+    "victory_pop": {
+      "id": "0-31066",
+      "keyframes": 119
+    },
+    "curious_tilt": {
+      "id": "0-31067",
+      "keyframes": 101
+    },
+    "celebrate_shimmy": {
+      "id": "0-31068",
+      "keyframes": 180
+    }
+  },
+  "stateMachineId": "0-32339",
+  "protectedCounts": {
+    "0-2": 3946,
+    "0-3956": 4092
+  },
+  "finalRenamePerformed": true
+}

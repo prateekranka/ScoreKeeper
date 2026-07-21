@@ -1,0 +1,19 @@
+{
+  "status": "published_v3",
+  "targetFileId": "2434585",
+  "artboardId": "0-32354",
+  "artboardName": "ScoreKeeper Cup Hybrid A - Production Rig v3",
+  "stateMachineId": "0-48286",
+  "stateMachineName": "ScoreKeeper Cup Hybrid A - Behaviors v3",
+  "animationIds": {
+    "idle_breathe_blink": "0-45292",
+    "hair_bounce": "0-45614",
+    "victory_pop": "0-45148",
+    "curious_tilt": "0-45726",
+    "celebrate_shimmy": "0-45405"
+  },
+  "artboardCount": 7,
+  "v2Preserved": true,
+  "review": "../evidence/reviews/sol-high-review-4.md",
+  "publishedAt": "2026-07-15T16:02:06.439Z"
+}

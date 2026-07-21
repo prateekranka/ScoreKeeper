@@ -1,0 +1,50 @@
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T130736Z-24805/command.txt
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T130736Z-24805/git-status-after.txt
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T130736Z-24805/manifest-after.tsv
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T130736Z-24805/manifest-before.tsv
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T130736Z-24805/metadata.json
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T130736Z-24805/stderr.log
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T130736Z-24805/stdout.jsonl
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/README.md
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/.DS_Store
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Arcade-Token.icon/Assets/reference-arcade-token.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Arcade-Token.icon/icon.json
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon/Assets/01-background.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon/Assets/02-trophy.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon/Assets/03-face.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon/Assets/04-accent.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon/Assets/reference-hero-cup.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon/icon.json
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/arcade-token-dark.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/arcade-token-light.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/compiled-iphone-preview.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/hero-cup-dark.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/hero-cup-light.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/light-dark-options.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/arcade-token-dark/01-background.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/arcade-token-dark/02-token.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/arcade-token-dark/03-relief.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/arcade-token-dark/04-face.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/arcade-token-preview.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/arcade-token/01 Background/01-background.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/arcade-token/02 Token/02-token.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/arcade-token/03 Relief/03-relief.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/arcade-token/04 Face/04-face.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/hero-cup-dark/01-background.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/hero-cup-dark/02-trophy.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/hero-cup-dark/03-face.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/hero-cup-dark/04-accent.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/hero-cup-preview.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/hero-cup/01 Background/01-background.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/hero-cup/02 Trophy/02-trophy.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/hero-cup/03 Face/03-face.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/hero-cup/04 Accent/04-accent.svg
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/reference/approved-left-icons.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/reference/arcade-token-reference-512.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/reference/arcade-token-reference-crop.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/reference/hero-cup-reference-512.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/reference/hero-cup-reference-crop.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/reference/hero-pixel-diff.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/reference/original-four-concepts.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/reference/pixel-match-proof.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/reference/token-pixel-diff.png

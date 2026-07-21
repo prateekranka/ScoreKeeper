@@ -255,6 +255,7 @@ private struct FocusScoreRow: View {
                     lineWidth: 2
                 )
         }
+        .animation(AppMotion.state, value: isActive)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("\(player.name), total score \(totalScore), round score \(value)")
     }

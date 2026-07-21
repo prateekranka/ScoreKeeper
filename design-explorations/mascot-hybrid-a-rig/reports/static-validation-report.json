@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "projectDir": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig",
+  "requireReady": true,
+  "checks": [
+    {
+      "name": "required project files",
+      "passed": true,
+      "detail": {
+        "missing": []
+      }
+    },
+    {
+      "name": "approved source exists",
+      "passed": true,
+      "detail": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/source/hybrid-a-light-transparent.png"
+    },
+    {
+      "name": "approved source checksum",
+      "passed": true,
+      "detail": {
+        "expected": "5430ee31e6f830653fcf1fbce6fc5eb1a4f3cdb16c213f51ab868f9be612de54",
+        "actual": "5430ee31e6f830653fcf1fbce6fc5eb1a4f3cdb16c213f51ab868f9be612de54"
+      }
+    },
+    {
+      "name": "art style immutable",
+      "passed": true,
+      "detail": true
+    },
+    {
+      "name": "style changes disabled",
+      "passed": true,
+      "detail": false
+    },
+    {
+      "name": "valid rig mode",
+      "passed": true,
+      "detail": "pivot-fk"
+    },
+    {
+      "name": "valid state-machine level",
+      "passed": true,
+      "detail": "mapping-only"
+    },
+    {
+      "name": "spec modules import",
+      "passed": true,
+      "detail": {
+        "artworkLocked": true,
+        "rigValidation": {
+          "valid": true,
+          "readyForLive": true,
+          "backend": "pivot-fk",
+          "nodeCount": 185,
+          "pivotCount": 3,
+          "partCount": 182,
+          "hairPartCount": 6,
+          "hiddenUnderlapCount": 1
+        },
+        "nodeCount": 185,
+        "pivotCount": 3,
+        "partCount": 182,
+        "performanceValidation": {
+          "valid": true,
+          "errors": [],
+          "performanceCount": 3,
+          "fps": 60
+        },
+        "stateMachineSpec": {
+          "integrationLevel": "mapping-only",
+          "name": "ScoreKeeper Cup Hybrid A Behaviors v1",
+          "layerName": "Behavior",
+          "defaultState": "Idle",
+          "states": [
+            {
+              "name": "Idle",
+              "animation": "idle",
+              "x": 140,
+              "y": 120
+            },
+            {
+              "name": "Celebrate",
+              "animation": "celebrate",
+              "x": 390,
+              "y": 120
+            },
+            {
+              "name": "Hair Sway",
+              "animation": "hair_sway",
+              "x": 640,
+              "y": 120
+            }
+          ],
+          "inputs": [],
+          "transitions": [
+            {
+              "from": "{Entry State}",
+              "to": "Idle"
+            }
+          ],
+          "automatedBehaviorInputs": false
+        }
+      }
+    },
+    {
+      "name": "approved geometry lock",
+      "passed": true,
+      "detail": true
+    },
+    {
+      "name": "performance contract",
+      "passed": true,
+      "detail": {
+        "valid": true,
+        "errors": [],
+        "performanceCount": 3,
+        "fps": 60
+      }
+    },
+    {
+      "name": "live-build approval gates",
+      "passed": true,
+      "detail": {
+        "canonicalMasterApproved": true,
+        "bindPoseParityPassed": true,
+        "readyForLiveBuild": true
+      }
+    }
+  ],
+  "passed": true
+}

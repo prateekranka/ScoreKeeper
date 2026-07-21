@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-15T09:36:48Z",
+  "command": "metadata plan",
+  "reviewDir": ".asc/metadata/review",
+  "planPath": ".asc/metadata/review/plan.json",
+  "approvalPath": ".asc/metadata/review/approved.json",
+  "planHash": "5b6b1acfbf02e577f5025c785bf5c4c88e2ac31a061a7e9433f6ce5ef8a245bf",
+  "options": {
+    "appId": "6765921606",
+    "appInfoId": "bd40d7fb-d2dd-4828-aac9-5e01193fafd6",
+    "version": "1.0",
+    "dir": ".asc/metadata",
+    "includes": [
+      "localizations"
+    ],
+    "allowDeletes": false
+  },
+  "plan": {
+    "appId": "6765921606",
+    "appInfoId": "bd40d7fb-d2dd-4828-aac9-5e01193fafd6",
+    "version": "1.0",
+    "versionId": "2e182cfc-141b-45e8-b19d-8e3306a5663c",
+    "dir": ".asc/metadata",
+    "dryRun": true,
+    "includes": [
+      "localizations"
+    ],
+    "adds": [],
+    "updates": [
+      {
+        "key": "version:1.0:en-US:description",
+        "scope": "version",
+        "locale": "en-US",
+        "version": "1.0",
+        "field": "description",
+        "reason": "field value differs",
+        "from": "PipCount keeps casual game nights moving.\n\nChoose a game, add your players, and record each round with clear totals and generous controls. PipCount supports a flexible scoreboard, Phase 10, and What’s for Dinner, with the right scoring flow for each game.\n\nDuring play, built-in tools keep the table organized:\n\n• Live standings and round history\n• Fast score controls and safe undo\n• Timer, dice, and random starter tools\n• Saved rosters for quicker rematches\n\nWhen the game ends, PipCount saves the result on your device so you can revisit final standings, compare players, view head-to-head results, and start a rematch.\n\nYour first 25 games are free. After that, a one-time in-app purchase unlocks unlimited new games and rematches. There is no subscription.\n\nPipCount requires no account and includes no advertising or tracking.",
+        "to": "PipCount keeps game night moving. Set up a table in seconds, add your crew, and score every round without passing around a notes app or doing score math by hand.\n\nChoose from a classic scoreboard, ten-stage card-game scoring, or a dinner-themed scoring mode. Reuse saved players, undo the last round, and use built-in timer, dice, and starter tools when the table needs them.\n\nWhen the game is over, PipCount saves the final scores, game history, player stats, and head-to-head results so every game night becomes part of your record.\n\nYour first 25 games are free. A one-time purchase unlocks unlimited games with no subscription."
+      },
+      {
+        "key": "version:1.0:en-US:keywords",
+        "scope": "version",
+        "locale": "en-US",
+        "version": "1.0",
+        "field": "keywords",
+        "reason": "field value differs",
+        "from": "scorekeeper,scoreboard,game night,phase 10,card games,party games,scores,stats,rounds",
+        "to": "pipcount,score,scoring,game night,board games,card games,ten stages,scoreboard,points,table games"
+      },
+      {
+        "key": "version:1.0:en-US:promotionalText",
+        "scope": "version",
+        "locale": "en-US",
+        "version": "1.0",
+        "field": "promotionalText",
+        "reason": "field value differs",
+        "from": "Set up the table, score every round, settle the winner, and keep game-night history without passing paper around.",
+        "to": "Set up faster, score every round, and keep the table moving."
+      }
+    ],
+    "deletes": [],
+    "apiCalls": [
+      {
+        "operation": "update_localization",
+        "scope": "version",
+        "count": 1
+      }
+    ]
+  }
+}

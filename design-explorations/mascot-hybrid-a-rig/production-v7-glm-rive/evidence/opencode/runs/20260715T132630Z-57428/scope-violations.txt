@@ -1,0 +1,9 @@
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/simulator-preview-assets/Hero.xcassets/AppIcon.appiconset/AppIcon.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/simulator-preview-assets/Hero.xcassets/AppIcon.appiconset/Contents.json
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/simulator-preview-assets/Token.xcassets/AppIcon.appiconset/AppIcon.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/simulator-preview-assets/Token.xcassets/AppIcon.appiconset/Contents.json
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/simulator-previews/app-list-dark.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/simulator-previews/app-list-light.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/simulator-previews/home-dark.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/simulator-previews/home-light.png
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/simulator-previews/iphone-home-and-app-list-light-dark.png

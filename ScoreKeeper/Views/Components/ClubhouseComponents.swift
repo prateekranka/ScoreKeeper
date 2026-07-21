@@ -10,12 +10,12 @@ struct ScorecardSurface<Content: View>: View {
             .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.ink.opacity(0.85), lineWidth: 1)
+                    .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
             }
             .shadow(
-                color: isInteractive ? ClubhouseTheme.paperShadow : .clear,
-                radius: isInteractive ? 8 : 0,
-                y: isInteractive ? 3 : 0
+                color: ClubhouseTheme.paperShadow,
+                radius: isInteractive ? 12 : 6,
+                y: isInteractive ? 4 : 2
             )
     }
 }
@@ -177,7 +177,7 @@ struct PipStepper: View {
             .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.ink, lineWidth: 1)
+                    .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
             }
             .accessibilityLabel("Round score \(value)")
 

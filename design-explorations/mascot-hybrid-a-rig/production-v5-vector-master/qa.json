@@ -1,0 +1,417 @@
+{
+  "status": "measured_with_native_sips_gradients",
+  "authority": {
+    "png": "d93a520b5176a9e726e649edaa3b86ad8442d3469a2db807630925f7694bfefb",
+    "svg": "013647cfbe1669e880c24814ce6f42cb70a6fc4ca3284466d1ead02d793fe724"
+  },
+  "renderer": {
+    "primary": "/usr/bin/sips",
+    "sipsVersion": "sips-316",
+    "systemIdentity": {
+      "uname": "Darwin Prateeks-MacBook-Air.local 25.5.0 Darwin Kernel Version 25.5.0: Tue Jun  9 22:26:22 PDT 2026; root:xnu-12377.121.10~1/RELEASE_ARM64_T8132 arm64",
+      "macOS": "26.5.2"
+    },
+    "msvgHistory": {
+      "pinned": true,
+      "version": "Version: ImageMagick 7.1.2-24 Q16-HDRI aarch64 3c45ab0bf:20260525 https://imagemagick.org"
+    }
+  },
+  "fixture": {
+    "source": "preflight-msvg-fixture.svg",
+    "msvg": {
+      "input": "msvg:preflight-msvg-fixture.svg",
+      "identify": "12 12 srgba 4.0",
+      "gradientTop": {
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 255
+      },
+      "gradientBottom": {
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 255
+      },
+      "transparentCenter": {
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0
+      },
+      "directGradientPass": false
+    },
+    "sips": {
+      "input": "preflight-msvg-fixture.svg",
+      "identify": "12 12 srgba 4.0",
+      "gradientTop": {
+        "r": 220,
+        "g": 168,
+        "b": 65,
+        "a": 255
+      },
+      "gradientMid": {
+        "r": 171,
+        "g": 117,
+        "b": 36,
+        "a": 255
+      },
+      "gradientBottom": {
+        "r": 180,
+        "g": 126,
+        "b": 42,
+        "a": 255
+      },
+      "transparentCenter": {
+        "r": 0,
+        "g": 0,
+        "b": 0,
+        "a": 0
+      },
+      "directGradientPass": true
+    }
+  },
+  "outputs": {
+    "transparent": "512 416 srgba 4.0",
+    "light": "512 416 srgb  3.0",
+    "dark": "512 416 srgb  3.0",
+    "comparison": "1024 416 srgba 4.0",
+    "proofFit": "72 59 srgba 4.0",
+    "proof": "72 60 srgba 4.0",
+    "board": "512 832 srgb  3.0"
+  },
+  "geometry": {
+    "canvas": [
+      512,
+      416
+    ],
+    "sourceBbox": {
+      "minX": 9,
+      "minY": 14,
+      "maxX": 502,
+      "maxY": 402,
+      "width": 494,
+      "height": 389
+    },
+    "redrawBbox": {
+      "minX": 9,
+      "minY": 14,
+      "maxX": 502,
+      "maxY": 402,
+      "width": 494,
+      "height": 389
+    },
+    "sourceAlphaCount": 133124,
+    "candidateAlphaCount": 133175
+  },
+  "checks": {
+    "dimensions": true,
+    "alphaZeroCorners": true,
+    "alphaZeroHandleCenters": true,
+    "transparentHoleGeometry": {
+      "intended": {
+        "left": {
+          "x": 49,
+          "y": 129,
+          "width": 23,
+          "height": 40
+        },
+        "right": {
+          "x": 441,
+          "y": 129,
+          "width": 24,
+          "height": 40
+        }
+      },
+      "measured": {
+        "left": {
+          "x": 49,
+          "y": 129,
+          "width": 23,
+          "height": 40,
+          "coveredPixels": 0,
+          "pass": true
+        },
+        "right": {
+          "x": 441,
+          "y": 129,
+          "width": 24,
+          "height": 40,
+          "coveredPixels": 0,
+          "pass": true
+        }
+      },
+      "pass": true
+    },
+    "noWhiteMatteOrFringe": true,
+    "compactElements": {
+      "rectCount": 47,
+      "pathCount": 1,
+      "paintedElements": 48,
+      "pass": true
+    },
+    "gradients": {
+      "gradientDefinitions": 6,
+      "appliedGradientFills": 46,
+      "directSipsGradientPass": true,
+      "samples": [
+        {
+          "r": 243,
+          "g": 199,
+          "b": 78,
+          "a": 255
+        },
+        {
+          "r": 228,
+          "g": 170,
+          "b": 57,
+          "a": 255
+        },
+        {
+          "r": 216,
+          "g": 154,
+          "b": 46,
+          "a": 255
+        }
+      ],
+      "orderedLuma": [
+        199.61819999999997,
+        174.17219999999998,
+        159.3836
+      ],
+      "pass": true
+    },
+    "cupGradientContinuity": {
+      "samples": [
+        {
+          "name": "upperCup",
+          "x": 100,
+          "yA": 127,
+          "yB": 128,
+          "a": {
+            "r": 240,
+            "g": 189,
+            "b": 70,
+            "a": 255
+          },
+          "b": {
+            "r": 240,
+            "g": 189,
+            "b": 70,
+            "a": 255
+          },
+          "maxChannelDelta": 0,
+          "pass": true
+        },
+        {
+          "name": "middleCup",
+          "x": 100,
+          "yA": 169,
+          "yB": 170,
+          "a": {
+            "r": 231,
+            "g": 173,
+            "b": 59,
+            "a": 255
+          },
+          "b": {
+            "r": 231,
+            "g": 174,
+            "b": 59,
+            "a": 255
+          },
+          "maxChannelDelta": 1,
+          "pass": true
+        },
+        {
+          "name": "lowerCup",
+          "x": 100,
+          "yA": 219,
+          "yB": 220,
+          "a": {
+            "r": 217,
+            "g": 155,
+            "b": 47,
+            "a": 255
+          },
+          "b": {
+            "r": 216,
+            "g": 154,
+            "b": 46,
+            "a": 255
+          },
+          "maxChannelDelta": 1,
+          "pass": true
+        },
+        {
+          "name": "leftHandle",
+          "x": 30,
+          "yA": 168,
+          "yB": 169,
+          "a": {
+            "r": 232,
+            "g": 174,
+            "b": 60,
+            "a": 255
+          },
+          "b": {
+            "r": 231,
+            "g": 174,
+            "b": 60,
+            "a": 255
+          },
+          "maxChannelDelta": 1,
+          "pass": true
+        },
+        {
+          "name": "rightHandle",
+          "x": 470,
+          "yA": 168,
+          "yB": 169,
+          "a": {
+            "r": 232,
+            "g": 175,
+            "b": 60,
+            "a": 255
+          },
+          "b": {
+            "r": 231,
+            "g": 173,
+            "b": 59,
+            "a": 255
+          },
+          "maxChannelDelta": 2,
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    "silhouetteDominantStepAgreementOutsideOnePxBand": {
+      "comparedRows": 389,
+      "matchingRows": 380,
+      "ratio": 0.9768637532133676,
+      "pass": true,
+      "iou": 0.9920184316629639
+    },
+    "seamScanOnErodedActualAlphaCoverage": {
+      "seams": [
+        {
+          "y": 224,
+          "start": 69,
+          "end": 441,
+          "longestTransparentRunAfterErode": 1
+        },
+        {
+          "y": 243,
+          "start": 88,
+          "end": 420,
+          "longestTransparentRunAfterErode": 1
+        },
+        {
+          "y": 262,
+          "start": 88,
+          "end": 420,
+          "longestTransparentRunAfterErode": 1
+        },
+        {
+          "y": 283,
+          "start": 215,
+          "end": 292,
+          "longestTransparentRunAfterErode": 1
+        },
+        {
+          "y": 303,
+          "start": 196,
+          "end": 311,
+          "longestTransparentRunAfterErode": 1
+        },
+        {
+          "y": 323,
+          "start": 158,
+          "end": 349,
+          "longestTransparentRunAfterErode": 1
+        },
+        {
+          "y": 362,
+          "start": 138,
+          "end": 370,
+          "longestTransparentRunAfterErode": 1
+        },
+        {
+          "y": 400,
+          "start": 118,
+          "end": 390,
+          "longestTransparentRunAfterErode": 1
+        }
+      ],
+      "pass": true
+    },
+    "landmarkPresence": {
+      "points": {
+        "accent": [
+          256,
+          40
+        ],
+        "leftEye": [
+          195,
+          148
+        ],
+        "rightEye": [
+          311,
+          148
+        ],
+        "mouth": [
+          255,
+          214
+        ],
+        "stem": [
+          255,
+          275
+        ],
+        "pedestal": [
+          255,
+          294
+        ],
+        "base": [
+          255,
+          344
+        ],
+        "lowerBase": [
+          255,
+          382
+        ],
+        "leftHandle": [
+          20,
+          100
+        ],
+        "rightHandle": [
+          492,
+          100
+        ]
+      },
+      "pass": true,
+      "values": {
+        "accent": true,
+        "leftEye": true,
+        "rightEye": true,
+        "mouth": true,
+        "stem": true,
+        "pedestal": true,
+        "base": true,
+        "lowerBase": true,
+        "leftHandle": true,
+        "rightHandle": true
+      }
+    },
+    "deterministicRepeatRawRgba": {
+      "rawHash": "48a544f7206e092d3bc3cf66a0525007384c0440d1ac18f881384fc7cad7937f",
+      "repeatRawHash": "48a544f7206e092d3bc3cf66a0525007384c0440d1ac18f881384fc7cad7937f",
+      "pass": true
+    }
+  },
+  "notes": [
+    "Pinned ImageMagick MSVG remains recorded as history; its explicit gradient fixture fails, while native macOS sips passes the same gradient-plus-gap capability gate.",
+    "Silhouette agreement is measured against the locked cleaned-canonical-bind alpha mask; the vector is intentionally simplified to compact orthogonal pieces.",
+    "Source and redraw are compared as alpha silhouettes; all segmented cup surfaces share one canvas-space gradient and explicit horizontal highlight bands are removed."
+  ]
+}

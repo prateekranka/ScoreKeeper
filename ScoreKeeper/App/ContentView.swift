@@ -44,17 +44,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $router.path) {
             HomeView()
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    NavigationLink(value: AppDestination.legalSupport) {
-                        Text("Legal & Support")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                    }
-                    .accessibilityLabel("PipCount legal and support")
-                    .accessibilityHint("Open PipCount privacy policy and support links")
-                    .accessibilityIdentifier("legal_support_button")
-                }
                 .navigationDestination(for: AppDestination.self) { destination in
                     switch destination {
                     case .gamePicker:

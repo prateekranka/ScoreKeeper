@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "approved": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/source/hybrid-a-light-transparent.png",
+  "candidate": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/previews/canonical-svg.png",
+  "canvas": {
+    "width": 512,
+    "height": 416
+  },
+  "backgroundSamples": {
+    "approved": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "candidate": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "foregroundPixels": {
+    "approved": 134288,
+    "candidate": 135125
+  },
+  "checks": {
+    "maskIoU": {
+      "value": 0.9891392625625729,
+      "minimum": 0.985,
+      "passed": true
+    },
+    "contourP95Px": {
+      "value": 1.4142135381698608,
+      "maximum": 1.0,
+      "passed": false
+    },
+    "centroidDeltaPx": {
+      "value": 0.9790984424157125,
+      "maximum": 0.5,
+      "passed": false
+    }
+  },
+  "passed": false,
+  "artifacts": {
+    "rgbDifference": "rgb-difference.png",
+    "maskOverlay": "mask-overlay.png"
+  }
+}

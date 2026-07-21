@@ -1,0 +1,53 @@
+Window: "Rive", App: Rive.
+0 standard window Rive, Secondary Actions: Raise
+	1 container Rive
+		2 container (settable, string) Untitled
+Untitled
+BETA 0.8.5165
+Invite
+Hierarchy
+Data
+Assets
+Animations
+Agent
+			3 text (settable, string) Publish
+			4 text (settable, string) Design
+			5 text (settable, string) Animate
+			6 container (settable, string)
+				7 text (settable, string) pasted
+				8 text (settable, string) __BACKUP__ Articulated Rig v1 before Production Rig v2 20260715T1447IST
+				9 text (settable, string) scorekeeper_v2
+				10 text (settable, string) __V3_TEMP__ ScoreKeeper Cup Hybrid A 20260715T1415Z-root-recovery
+			11 container (settable, string)
+				12 text (settable, string) Stage
+				13 text (settable, string) ProbeNode
+			14 container (settable, string)
+				15 text (settable, string) Console
+				16 text (settable, string) Problems
+1
+				17 text (settable, string) Changes
+				18 text (settable, string) Testing
+				19 text (settable, string) Audio
+				20 text (settable, string) Compiled in 0.1ms
+				21 text field (settable, string)
+			22 container (settable, string)
+				23 text (settable, string) File
+
+				24 text (settable, string) 1 warning
+				25 text (settable, string) No default state machine set: Set a default state machine on the main artboard
+			26 container (settable, string)
+				27 text (settable, string) Used
+0 times
+				28 text (settable, string) Export Options
+				29 text (settable, string) Behavior
+Automatic
+	30 close button
+	31 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window
+	32 minimize button
+33 menu bar
+	34 Rive
+	35 Edit
+	36 View
+	37 Window
+
+The focused UI element is 1 container Rive

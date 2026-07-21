@@ -1,0 +1,73 @@
+{
+  "status": "passed_candidate_qa",
+  "candidate": {
+    "fileId": "2434585",
+    "artboardId": "0-32354",
+    "artboardName": "ScoreKeeper Cup Hybrid A - Production Rig v3",
+    "stateMachineId": "0-48286"
+  },
+  "evidenceClass": {
+    "structural": "fresh read-only live Rive MCP query",
+    "visual": "canonical SVG plus transforms freshly queried from live Rive",
+    "nativeEditor": "Rive desktop candidate asset preview with exact candidate name",
+    "runtimeCaptureCaveat": "The frame pack is not a native Rive runtime capture; live existence, ownership, settings, curves, and state mapping are independently queried."
+  },
+  "gates": {
+    "exactFileAndCandidate": true,
+    "sourceHash": true,
+    "postCleanupNeutralParity": true,
+    "fiveAnimations": true,
+    "settingsAndEndpoints": true,
+    "fourAuthoredCurveFamilies": true,
+    "multiControlArticulation": true,
+    "stateMachineMapping": true,
+    "protectedZeroDelta": true,
+    "transparentAlphaAndHandleHoles": true,
+    "lightDark72x60Readability": true,
+    "stressViews": true,
+    "loopSeams": true,
+    "mobileMp4FrameCounts": true,
+    "v2BeforeV3After": true,
+    "nativeEditorCandidatePreview": true,
+    "motionGatedSeamBridgeQuery": true,
+    "exactBindPixelParity": true,
+    "proofAdapterRawBridgeTrackValidation": true,
+    "freshSolHighApproval": true
+  },
+  "knownDefects": {
+    "svgMaskBlanking": "absent",
+    "pedestalMappedToEye": "absent; independent ownership query",
+    "cupBaseSeamOpening": "absent in extreme contact and 100/200/400 percent stress inspection",
+    "excessiveHairTravel": "absent; hair apex limited to approved 10-12 source pixels",
+    "rotatedFrameClipping": "absent in extreme and stress inspection",
+    "transparentOrderingOrMatte": "absent; every rendered frame passed transparent RGB and semantic handle-hole QA",
+    "rootOnlyMotion": "absent; timelines move cup, stem/base, hair, handles, eyes, and mouth with staggered tracks",
+    "hairFaceCollision": "absent in all contact and full-frame visual inspection",
+    "subpixelRestingShimmer": "absent; endpoints bind exactly and loop seam strips close cleanly",
+    "filledHandleHoles": "absent in every rendered frame",
+    "rotatedScanlineSeams": "absent after four source-color-matched internal bridges; bridges are opacity zero at bind/idle and motion-gated only for victory, curious, and shimmy"
+  },
+  "metrics": {
+    "sourceSha256": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75",
+    "keyframesQueried": 457,
+    "interpolatorsQueried": 409,
+    "authoredMotionKeyframes": 409,
+    "bridgeOpacityKeyframes": 48,
+    "bridgeObjects": 4,
+    "neutralAlphaIoU": 1,
+    "neutralCentroidDriftPx": 0,
+    "neutralContourP95Px": 0,
+    "neutralDifferingPixels": 0,
+    "transparentFramesChecked": 377,
+    "maxTransparentRgb": 0
+  },
+  "artifacts": {
+    "liveQuery": "independent-live-query.json",
+    "liveKeyframes": "live-keyframes-v3.json",
+    "liveHierarchy": "live-hierarchy-v3.json",
+    "liveStateMachine": "live-state-machine-v3.json",
+    "proofReport": "proof-pack-v3/proof-report-v3.json",
+    "nativeEditorScreenshot": "../evidence/live-editor/native-rive-v3-candidate-preview.png"
+  },
+  "passed": true
+}

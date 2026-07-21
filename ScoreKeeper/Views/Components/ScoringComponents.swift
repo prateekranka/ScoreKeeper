@@ -64,7 +64,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                                 .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
                                 .overlay {
                                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                                        .strokeBorder(ClubhouseTheme.ink, lineWidth: 1.5)
+                                        .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
                                 }
                         }
                         .buttonStyle(PressableButtonStyle())

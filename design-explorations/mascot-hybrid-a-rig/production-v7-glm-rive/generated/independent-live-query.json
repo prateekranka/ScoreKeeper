@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "errors": [],
+  "queriedAt": "2026-07-15T16:02:15.842Z",
+  "targetFileId": "2434585",
+  "artboardId": "0-32354",
+  "artboardName": "ScoreKeeper Cup Hybrid A - Production Rig v3",
+  "animationIds": {
+    "idle_breathe_blink": "0-45292",
+    "hair_bounce": "0-45614",
+    "victory_pop": "0-45148",
+    "curious_tilt": "0-45726",
+    "celebrate_shimmy": "0-45405"
+  },
+  "stateMachineId": "0-48286",
+  "objectCount": 12817,
+  "specHash": "b3fef6a65369176159fa78d34c8f834e8f8cfb4e9054b0511d6f69f414843446",
+  "keyframeCount": 457,
+  "interpolatorCount": 409,
+  "curveSignatureCounts": {
+    "0.20,0.80,0.25,1.00": 261,
+    "0.37,0.00,0.63,1.00": 113,
+    "0.22,0.75,0.35,1.00": 26,
+    "0.55,0.00,0.80,0.20": 9
+  },
+  "liveExportSha256": "736d7491f6f855e228f38c15fedae84fe841fd1660f86746dbf84a2b8b50b421",
+  "hierarchySha256": "ba27c902d776e71bc720a778c05d39b2ba941275a7b4e142d8249b5ad7c260df",
+  "stateMachineSha256": "db1fbc835ca18c41d900b0ff5d60a62e30fadc72d198327ed4311fda4d8757fa"
+}

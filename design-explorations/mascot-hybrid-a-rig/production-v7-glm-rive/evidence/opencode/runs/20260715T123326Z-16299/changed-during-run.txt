@@ -1,0 +1,10 @@
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/opencode-status.md
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T123326Z-16299/command.txt
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T123326Z-16299/git-status-after.txt
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T123326Z-16299/manifest-after.tsv
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T123326Z-16299/manifest-before.tsv
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T123326Z-16299/metadata.json
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T123326Z-16299/stderr.log
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T123326Z-16299/stdout.jsonl
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/.DS_Store
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon/icon.json

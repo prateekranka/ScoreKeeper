@@ -1,0 +1,1 @@
+/Users/prateekranka/.opencode/bin/opencode run <bounded message> --model opencode-go/glm-5.2 --variant max --format json --dir /Users/prateekranka/Cowork/ScoreKeeper --session ses_09a3ae698ffeJGN6barfyWA5xg ses_09a3ae698ffeJGN6barfyWA5xg

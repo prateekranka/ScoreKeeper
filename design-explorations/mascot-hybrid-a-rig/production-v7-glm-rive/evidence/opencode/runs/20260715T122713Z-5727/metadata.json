@@ -1,0 +1,18 @@
+{
+  "task": "scorekeeper-production-v7-glm-rive",
+  "startedAt": "2026-07-15T12:27:35Z",
+  "model": "opencode-go/glm-5.2",
+  "variant": "max",
+  "format": "json",
+  "opencodeVersion": "1.17.11",
+  "timeoutSeconds": 1800,
+  "allowedPaths": [
+    "design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/generated/",
+    "design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/opencode-status.md",
+    "design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/"
+  ],
+  "runId": "20260715T122713Z-5727",
+  "tempArtboardName": "__V3_TEMP__ ScoreKeeper Cup Hybrid A 20260715T122713Z-5727",
+  "tempMachineName": "__V3_TEMP__ ScoreKeeper Cup Behaviors 20260715T122713Z-5727",
+  "liveScope": "new uniquely named v3 temporary artboard in Rive file 2434585 only"
+}

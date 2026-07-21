@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="416" viewBox="0 0 512 416">
+  <title>celebrate_shimmy frame 4</title>
+  <metadata>Live Rive keyframe proof; no offline motion spec.</metadata>
+  <defs>
+    <!-- Shared canvas-space gradients keep segmented pixel shapes visually continuous. -->
+    <linearGradient id="goldBody" gradientUnits="userSpaceOnUse" x1="0" y1="49" x2="0" y2="244">
+      <stop offset="0" stop-color="#F8D65A"/>
+      <stop offset="0.48" stop-color="#EFB842"/>
+      <stop offset="1" stop-color="#D19128"/>
+    </linearGradient>
+    <linearGradient id="goldLight" gradientUnits="userSpaceOnUse" x1="0" y1="264" x2="0" y2="403">
+      <stop offset="0" stop-color="#FFE477"/>
+      <stop offset="1" stop-color="#E2A832"/>
+    </linearGradient>
+    <linearGradient id="goldShadow" gradientUnits="userSpaceOnUse" x1="0" y1="264" x2="0" y2="403">
+      <stop offset="0" stop-color="#BC8120"/>
+      <stop offset="1" stop-color="#805511"/>
+    </linearGradient>
+    <linearGradient id="edgeDark" gradientUnits="userSpaceOnUse" x1="0" y1="14" x2="0" y2="403">
+      <stop offset="0" stop-color="#94691E"/>
+      <stop offset="1" stop-color="#60400D"/>
+    </linearGradient>
+    <linearGradient id="ink" gradientUnits="userSpaceOnUse" x1="0" y1="128" x2="0" y2="223">
+      <stop offset="0" stop-color="#171612"/>
+      <stop offset="1" stop-color="#080807"/>
+    </linearGradient>
+    <linearGradient id="accent" gradientUnits="userSpaceOnUse" x1="0" y1="31" x2="0" y2="91">
+      <stop offset="0" stop-color="#B83E2E"/>
+      <stop offset="1" stop-color="#8F251B"/>
+    </linearGradient>
+  </defs>
+  <g id="asset_tab__source_000" transform="matrix(1 0 0 1 0 0)" opacity="1"><rect x="442" y="14" width="42" height="58" fill="url(#edgeDark)"/></g>
+  <g id="asset_tab__source_001" transform="matrix(1 0 0 1 0 0)" opacity="1"><rect x="451" y="31" width="17" height="41" fill="url(#goldBody)"/></g>
+  <g id="asset_cup__source_002" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="70" y="30" width="414" height="43" fill="url(#edgeDark)"/></g>
+  <g id="asset_cup__source_003" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="88" y="49" width="336" height="23" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_l__source_004" transform="matrix(0.998913 -0.046606 0.046606 0.998913 -6.895207 4.264281)" opacity="1"><rect x="9" y="73" width="84" height="56" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_l__source_005" transform="matrix(0.998913 -0.046606 0.046606 0.998913 -6.895207 4.264281)" opacity="1"><rect x="9" y="169" width="84" height="55" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_l__source_006" transform="matrix(0.998913 -0.046606 0.046606 0.998913 -6.895207 4.264281)" opacity="1"><rect x="9" y="129" width="40" height="40" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_l__source_007" transform="matrix(0.998913 -0.046606 0.046606 0.998913 -6.895207 4.264281)" opacity="1"><rect x="72" y="129" width="21" height="40" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_l__source_008" transform="matrix(0.998913 -0.046606 0.046606 0.998913 -6.895207 4.264281)" opacity="1"><rect x="29" y="92" width="63" height="20" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_l__source_009" transform="matrix(0.998913 -0.046606 0.046606 0.998913 -6.895207 4.264281)" opacity="1"><rect x="29" y="169" width="63" height="37" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_l__source_010" transform="matrix(0.998913 -0.046606 0.046606 0.998913 -6.895207 4.264281)" opacity="1"><rect x="29" y="112" width="20" height="57" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_l__source_011" transform="matrix(0.998913 -0.046606 0.046606 0.998913 -6.895207 4.264281)" opacity="1"><rect x="72" y="112" width="20" height="57" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_r__source_012" transform="matrix(0.999367 0.035566 -0.035566 0.999367 5.601879 -14.913933)" opacity="1"><rect x="420" y="73" width="83" height="56" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_r__source_013" transform="matrix(0.999367 0.035566 -0.035566 0.999367 5.601879 -14.913933)" opacity="1"><rect x="420" y="169" width="83" height="55" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_r__source_014" transform="matrix(0.999367 0.035566 -0.035566 0.999367 5.601879 -14.913933)" opacity="1"><rect x="420" y="129" width="21" height="40" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_r__source_015" transform="matrix(0.999367 0.035566 -0.035566 0.999367 5.601879 -14.913933)" opacity="1"><rect x="465" y="129" width="38" height="40" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_r__source_016" transform="matrix(0.999367 0.035566 -0.035566 0.999367 5.601879 -14.913933)" opacity="1"><rect x="421" y="92" width="61" height="20" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_r__source_017" transform="matrix(0.999367 0.035566 -0.035566 0.999367 5.601879 -14.913933)" opacity="1"><rect x="421" y="169" width="61" height="37" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_r__source_018" transform="matrix(0.999367 0.035566 -0.035566 0.999367 5.601879 -14.913933)" opacity="1"><rect x="421" y="112" width="20" height="57" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_r__source_019" transform="matrix(0.999367 0.035566 -0.035566 0.999367 5.601879 -14.913933)" opacity="1"><rect x="465" y="112" width="20" height="57" fill="url(#goldBody)"/></g>
+  <g id="asset_cup__source_020" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="69" y="72" width="372" height="56" fill="url(#edgeDark)"/></g>
+  <g id="__V3_BRIDGE__cup_edgeDark_y128" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="72.5" y="125" width="368" height="6" fill="#855D19"/></g>
+  <g id="asset_cup__source_021" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="72" y="128" width="369" height="42" fill="url(#edgeDark)"/></g>
+  <g id="__V3_BRIDGE__cup_edgeDark_y170" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="72.5" y="167" width="368" height="6" fill="#805917"/></g>
+  <g id="asset_cup__source_022" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="69" y="170" width="372" height="74" fill="url(#edgeDark)"/></g>
+  <g id="asset_cup__source_023" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="88" y="92" width="335" height="36" fill="url(#goldBody)"/></g>
+  <g id="__V3_BRIDGE__cup_goldBody_y128" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="91.5" y="125" width="328" height="6" fill="#F1BD46"/></g>
+  <g id="asset_cup__source_024" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="91" y="128" width="329" height="42" fill="url(#goldBody)"/></g>
+  <g id="__V3_BRIDGE__cup_goldBody_y170" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="91.5" y="167" width="328" height="6" fill="#E7AE3B"/></g>
+  <g id="asset_cup__source_025" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="88" y="170" width="335" height="54" fill="url(#goldBody)"/></g>
+  <g id="asset_hair__source_026" transform="matrix(0.999195 -0.040115 0.040115 0.999195 -7.963862 9.494509)" opacity="1"><path d="M215 31 H354 V49 H326 V72 H286 V91 H236 V72 H215 Z" fill="url(#accent)"/></g>
+  <g id="asset_badge__source_027" transform="matrix(1 0 0 1 0 0)" opacity="1"><rect x="109" y="71" width="19" height="20" fill="#F4F2EC"/></g>
+  <g id="asset_badge__source_028" transform="matrix(1 0 0 1 0 0)" opacity="1"><rect x="113" y="75" width="13" height="12" fill="#F8D655"/></g>
+  <g id="asset_cup__source_029" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="69" y="224" width="372" height="20" fill="url(#edgeDark)"/></g>
+  <g id="asset_cup__source_030" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="88" y="225" width="332" height="19" fill="url(#goldBody)"/></g>
+  <g id="asset_cup__source_031" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="88" y="244" width="334" height="20" fill="url(#edgeDark)"/></g>
+  <g id="asset_cup__source_032" transform="matrix(0.998683 -0.051308 0.051308 0.998683 -18.116558 13.654237)" opacity="1"><rect x="109" y="244" width="290" height="19" fill="url(#goldShadow)"/></g>
+  <g id="asset_eye_l__source_033" transform="matrix(1 0 0 1 -1.730835 0)" opacity="1"><rect x="177" y="128" width="38" height="38" fill="url(#ink)"/></g>
+  <g id="asset_eye_r__source_034" transform="matrix(1 0 0 1 -1.106825 0)" opacity="1"><rect x="293" y="128" width="38" height="38" fill="url(#ink)"/></g>
+  <g id="asset_mouth__source_035" transform="matrix(1 0 0 1.024807 0 -5.085336)" opacity="1"><rect x="180" y="187" width="19" height="18" fill="url(#ink)"/></g>
+  <g id="asset_mouth__source_036" transform="matrix(1 0 0 1.024807 0 -5.085336)" opacity="1"><rect x="199" y="205" width="111" height="18" fill="url(#ink)"/></g>
+  <g id="asset_mouth__source_037" transform="matrix(1 0 0 1.024807 0 -5.085336)" opacity="1"><rect x="311" y="188" width="18" height="17" fill="url(#ink)"/></g>
+  <g id="asset_stem__source_038" transform="matrix(0.999772 -0.021342 0.021342 0.999772 -8.508782 5.516353)" opacity="1"><rect x="215" y="264" width="79" height="20" fill="url(#edgeDark)"/></g>
+  <g id="asset_stem__source_039" transform="matrix(0.999772 -0.021342 0.021342 0.999772 -8.508782 5.516353)" opacity="1"><rect x="235" y="265" width="39" height="19" fill="url(#goldLight)"/></g>
+  <g id="asset_stem__source_040" transform="matrix(0.999772 -0.021342 0.021342 0.999772 -8.508782 5.516353)" opacity="1"><rect x="196" y="284" width="117" height="20" fill="url(#edgeDark)"/></g>
+  <g id="asset_stem__source_041" transform="matrix(0.999772 -0.021342 0.021342 0.999772 -8.508782 5.516353)" opacity="1"><rect x="215" y="284" width="77" height="19" fill="url(#goldLight)"/></g>
+  <g id="asset_base__source_042" transform="matrix(1 0 0 1.001118 0 -0.448276)" opacity="1"><rect x="158" y="304" width="193" height="20" fill="url(#edgeDark)"/></g>
+  <g id="asset_base__source_043" transform="matrix(1 0 0 1.001118 0 -0.448276)" opacity="1"><rect x="177" y="304" width="153" height="19" fill="url(#goldLight)"/></g>
+  <g id="asset_base__source_044" transform="matrix(1 0 0 1.001118 0 -0.448276)" opacity="1"><rect x="138" y="324" width="234" height="39" fill="url(#edgeDark)"/></g>
+  <g id="asset_base__source_045" transform="matrix(1 0 0 1.001118 0 -0.448276)" opacity="1"><rect x="158" y="344" width="194" height="19" fill="url(#goldLight)"/></g>
+  <g id="asset_base__source_046" transform="matrix(1 0 0 1.001118 0 -0.448276)" opacity="1"><rect x="118" y="363" width="274" height="40" fill="url(#goldShadow)"/></g>
+  <g id="asset_base__source_047" transform="matrix(1 0 0 1.001118 0 -0.448276)" opacity="1"><rect x="138" y="363" width="232" height="20" fill="url(#goldLight)"/></g>
+</svg>

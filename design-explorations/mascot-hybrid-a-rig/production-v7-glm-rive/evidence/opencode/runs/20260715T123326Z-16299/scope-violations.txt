@@ -1,0 +1,2 @@
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/.DS_Store
+/Users/prateekranka/Cowork/ScoreKeeper/design/icon-concepts/apple-icon-composer/PipCount-Hero-Cup.icon/icon.json

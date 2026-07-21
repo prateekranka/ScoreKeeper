@@ -100,7 +100,7 @@ struct HomeView: View {
                     .staggeredEntrance(visible: sectionsVisible, index: toolsEntranceIndex)
             }
             .padding(AppTheme.spacingMedium)
-            .padding(.bottom, AppTheme.spacingLarge)
+            .padding(.bottom, 96)
         }
         .appBackground()
         .navigationTitle("")
@@ -262,10 +262,10 @@ private struct BauhausHomeHeader: View {
                         .font(.body.weight(.semibold))
                         .foregroundStyle(ClubhouseTheme.ink)
                         .frame(width: 40, height: 40)
-                        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
                         .overlay {
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
                         }
                 }
                 .accessibilityLabel("Change appearance")

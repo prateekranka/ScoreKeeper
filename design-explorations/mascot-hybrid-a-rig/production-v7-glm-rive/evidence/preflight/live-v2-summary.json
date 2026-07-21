@@ -1,0 +1,193 @@
+{
+  "capturedFrom": "live-v2-audit.json",
+  "live": [
+    {
+      "animationId": "0-31067",
+      "slug": "curious_tilt",
+      "fps": 60,
+      "terminalFrame": 84,
+      "loop": false,
+      "keyframeCount": 101,
+      "trackCount": 14,
+      "movingControls": [
+        "rig_cup",
+        "rig_eye_l",
+        "rig_eye_r",
+        "rig_hair",
+        "rig_handle_l",
+        "rig_handle_r",
+        "rig_mouth",
+        "rig_stem"
+      ],
+      "interpolationTypes": [
+        "cubic"
+      ],
+      "missingEndpointTracks": [],
+      "nonClosingTrackCount": 0
+    },
+    {
+      "animationId": "0-31065",
+      "slug": "hair_bounce",
+      "fps": 60,
+      "terminalFrame": 60,
+      "loop": true,
+      "keyframeCount": 89,
+      "trackCount": 13,
+      "movingControls": [
+        "rig_base",
+        "rig_cup",
+        "rig_eye_l",
+        "rig_eye_r",
+        "rig_hair",
+        "rig_handle_l",
+        "rig_handle_r",
+        "rig_stem"
+      ],
+      "interpolationTypes": [
+        "cubic"
+      ],
+      "missingEndpointTracks": [],
+      "nonClosingTrackCount": 0
+    },
+    {
+      "animationId": "0-31068",
+      "slug": "celebrate_shimmy",
+      "fps": 60,
+      "terminalFrame": 96,
+      "loop": true,
+      "keyframeCount": 180,
+      "trackCount": 18,
+      "movingControls": [
+        "rig_base",
+        "rig_cup",
+        "rig_eye_l",
+        "rig_eye_r",
+        "rig_hair",
+        "rig_handle_l",
+        "rig_handle_r",
+        "rig_mouth",
+        "rig_stem"
+      ],
+      "interpolationTypes": [
+        "cubic"
+      ],
+      "missingEndpointTracks": [],
+      "nonClosingTrackCount": 0
+    },
+    {
+      "animationId": "0-31064",
+      "slug": "idle_breathe_blink",
+      "fps": 60,
+      "terminalFrame": 72,
+      "loop": true,
+      "keyframeCount": 89,
+      "trackCount": 13,
+      "movingControls": [
+        "rig_base",
+        "rig_cup",
+        "rig_eye_l",
+        "rig_eye_r",
+        "rig_hair",
+        "rig_handle_l",
+        "rig_handle_r",
+        "rig_stem"
+      ],
+      "interpolationTypes": [
+        "cubic"
+      ],
+      "missingEndpointTracks": [],
+      "nonClosingTrackCount": 0
+    },
+    {
+      "animationId": "0-31066",
+      "slug": "victory_pop",
+      "fps": 60,
+      "terminalFrame": 72,
+      "loop": false,
+      "keyframeCount": 119,
+      "trackCount": 15,
+      "movingControls": [
+        "rig_base",
+        "rig_cup",
+        "rig_hair",
+        "rig_handle_l",
+        "rig_handle_r",
+        "rig_mouth",
+        "rig_root",
+        "rig_stem"
+      ],
+      "interpolationTypes": [
+        "cubic"
+      ],
+      "missingEndpointTracks": [],
+      "nonClosingTrackCount": 0
+    },
+    {
+      "animationId": "0-16473",
+      "slug": "Timeline 1",
+      "fps": 60,
+      "terminalFrame": 60,
+      "loop": false,
+      "keyframeCount": 0,
+      "trackCount": 0,
+      "movingControls": [],
+      "interpolationTypes": [],
+      "missingEndpointTracks": [],
+      "nonClosingTrackCount": 0
+    }
+  ],
+  "exported": [
+    {
+      "slug": "idle_breathe_blink",
+      "durationFrames": 72,
+      "loop": true,
+      "trackCount": 13,
+      "curveSignatures": [
+        "cubic:0.42,0,0.58,1"
+      ]
+    },
+    {
+      "slug": "hair_bounce",
+      "durationFrames": 60,
+      "loop": true,
+      "trackCount": 13,
+      "curveSignatures": [
+        "cubic:0.42,0,0.58,1"
+      ]
+    },
+    {
+      "slug": "victory_pop",
+      "durationFrames": 72,
+      "loop": false,
+      "trackCount": 15,
+      "curveSignatures": [
+        "cubic:0.42,0,0.58,1"
+      ]
+    },
+    {
+      "slug": "curious_tilt",
+      "durationFrames": 84,
+      "loop": false,
+      "trackCount": 14,
+      "curveSignatures": [
+        "cubic:0.42,0,0.58,1"
+      ]
+    },
+    {
+      "slug": "celebrate_shimmy",
+      "durationFrames": 96,
+      "loop": true,
+      "trackCount": 18,
+      "curveSignatures": [
+        "cubic:0.42,0,0.58,1"
+      ]
+    }
+  ],
+  "structuralFindings": {
+    "extraDefaultTimeline": true,
+    "extraDefaultStateMachine": true,
+    "v2MachineHasEmptyDefaultLayer": true,
+    "backend": "pivot-fk",
+    "capabilityReason": "No live tool schema exposes bones, weights, deformers, or constraints."
+  }
+}

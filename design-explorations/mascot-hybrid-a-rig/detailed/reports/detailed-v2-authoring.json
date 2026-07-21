@@ -1,0 +1,184 @@
+{
+  "status": "detailed-v2-authored",
+  "rigVersion": "detailed-v2-preview",
+  "canvas": {
+    "width": 512,
+    "height": 416
+  },
+  "previewCanvas": {
+    "width": 640,
+    "height": 544,
+    "padding": 64
+  },
+  "fps": 30,
+  "artworkLocked": true,
+  "canonicalSourcePathCount": 181,
+  "canonicalContourCount": 187,
+  "semanticControlCounts": {
+    "rig_root": 0,
+    "rig_base": 34,
+    "rig_stem": 24,
+    "rig_cup": 34,
+    "rig_handle_l": 24,
+    "rig_handle_r": 33,
+    "rig_eye_l": 7,
+    "rig_eye_r": 4,
+    "rig_mouth": 17,
+    "rig_shine": 4,
+    "rig_hair": 4,
+    "rig_hair_fringe": 2
+  },
+  "performanceValidation": {
+    "valid": true,
+    "animationCount": 5,
+    "errors": []
+  },
+  "animations": [
+    {
+      "slug": "idle_alive",
+      "displayName": "Idle Alive",
+      "durationSeconds": 4,
+      "fps": 30,
+      "terminalFrame": 120,
+      "renderedFrameCount": 121,
+      "movingControls": [
+        "rig_root",
+        "rig_eye_l",
+        "rig_eye_r",
+        "rig_mouth",
+        "rig_shine",
+        "rig_hair",
+        "rig_body__hair_underlap",
+        "rig_hair_fringe"
+      ],
+      "movingSemanticControlCount": 7,
+      "semanticPreviewFrames": [
+        0,
+        30,
+        44,
+        68,
+        94,
+        120
+      ],
+      "endpointPolicy": "return-to-bind"
+    },
+    {
+      "slug": "big_celebrate",
+      "displayName": "Big Celebrate",
+      "durationSeconds": 3,
+      "fps": 30,
+      "terminalFrame": 90,
+      "renderedFrameCount": 91,
+      "movingControls": [
+        "rig_root",
+        "rig_eye_l",
+        "rig_eye_r",
+        "rig_mouth",
+        "rig_shine",
+        "rig_hair",
+        "rig_body__hair_underlap",
+        "rig_hair_fringe"
+      ],
+      "movingSemanticControlCount": 7,
+      "semanticPreviewFrames": [
+        0,
+        12,
+        24,
+        44,
+        58,
+        72,
+        90
+      ],
+      "endpointPolicy": "return-to-bind"
+    },
+    {
+      "slug": "hair_flourish",
+      "displayName": "Hair Flourish",
+      "durationSeconds": 3.2,
+      "fps": 30,
+      "terminalFrame": 96,
+      "renderedFrameCount": 97,
+      "movingControls": [
+        "rig_root",
+        "rig_eye_l",
+        "rig_eye_r",
+        "rig_mouth",
+        "rig_shine",
+        "rig_hair",
+        "rig_body__hair_underlap",
+        "rig_hair_fringe"
+      ],
+      "movingSemanticControlCount": 7,
+      "semanticPreviewFrames": [
+        0,
+        14,
+        30,
+        48,
+        68,
+        82,
+        96
+      ],
+      "endpointPolicy": "return-to-bind"
+    },
+    {
+      "slug": "curious_inspect",
+      "displayName": "Curious Inspect",
+      "durationSeconds": 3.4,
+      "fps": 30,
+      "terminalFrame": 102,
+      "renderedFrameCount": 103,
+      "movingControls": [
+        "rig_root",
+        "rig_eye_l",
+        "rig_eye_r",
+        "rig_mouth",
+        "rig_shine",
+        "rig_hair",
+        "rig_body__hair_underlap",
+        "rig_hair_fringe"
+      ],
+      "movingSemanticControlCount": 7,
+      "semanticPreviewFrames": [
+        0,
+        18,
+        38,
+        56,
+        72,
+        88,
+        102
+      ],
+      "endpointPolicy": "return-to-bind"
+    },
+    {
+      "slug": "victory_dance",
+      "displayName": "Victory Dance",
+      "durationSeconds": 3.6,
+      "fps": 30,
+      "terminalFrame": 108,
+      "renderedFrameCount": 109,
+      "movingControls": [
+        "rig_root",
+        "rig_eye_l",
+        "rig_eye_r",
+        "rig_mouth",
+        "rig_shine",
+        "rig_hair",
+        "rig_body__hair_underlap",
+        "rig_hair_fringe"
+      ],
+      "movingSemanticControlCount": 7,
+      "semanticPreviewFrames": [
+        0,
+        12,
+        28,
+        46,
+        64,
+        82,
+        96,
+        108
+      ],
+      "endpointPolicy": "return-to-bind"
+    }
+  ],
+  "liveRiveModified": false
+}

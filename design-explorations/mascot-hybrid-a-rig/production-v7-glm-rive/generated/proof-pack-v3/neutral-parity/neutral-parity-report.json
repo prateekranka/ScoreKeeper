@@ -1,0 +1,16 @@
+{
+  "method": "canonical SVG raster versus fresh-live-query semantic neutral frame after owned metadata cleanup",
+  "source": "proof-pack-v3/neutral-parity/canonical-source.png",
+  "candidate": "proofs/idle_breathe_blink/rgba-frames/frame-0000.png",
+  "alphaMaskIoU": 1,
+  "centroidDriftPx": 0,
+  "contourP95Px": 0,
+  "differingPixels": 0,
+  "maxChannelDelta": 0,
+  "thresholds": {
+    "alphaMaskIoUMin": 0.985,
+    "centroidDriftPxMax": 0.5,
+    "contourP95PxMax": 1
+  },
+  "passed": true
+}

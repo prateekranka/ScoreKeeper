@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "generatedAt": "2026-07-15",
+  "video": {
+    "codec": "h264",
+    "profile": "High",
+    "width": 640,
+    "height": 544,
+    "pixelFormat": "yuv420p",
+    "frameRate": 30,
+    "audio": false,
+    "fastStart": true,
+    "repetitions": 2
+  },
+  "files": [
+    { "name": "Celebrate", "path": "celebrate.mp4", "durationSeconds": 2.666667, "sizeBytes": 144891 },
+    { "name": "Curious Tilt", "path": "curious-tilt.mp4", "durationSeconds": 4.333333, "sizeBytes": 177784 },
+    { "name": "Hair Sway", "path": "hair-sway.mp4", "durationSeconds": 3.5, "sizeBytes": 24965 },
+    { "name": "Idle", "path": "idle.mp4", "durationSeconds": 5.166667, "sizeBytes": 116599 },
+    { "name": "Victory Shimmy", "path": "victory-shimmy.mp4", "durationSeconds": 3.233333, "sizeBytes": 140860 }
+  ],
+  "checks": {
+    "allFilesDecode": true,
+    "allFilesH264": true,
+    "allFilesYuv420p": true,
+    "allFiles30Fps": true,
+    "allFilesFastStart": true,
+    "representativeFramesReviewed": true
+  }
+}

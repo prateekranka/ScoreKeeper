@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "sourcePath": "/Users/prateekranka/.codex/generated_images/019f619f-f268-72d0-85f9-5526d0558f8d/exec-b402018c-69ef-41a7-9562-062e8d646bc6.png",
+  "copiedSourcePath": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/source/hybrid-a-light-transparent.png",
+  "sha256": "5430ee31e6f830653fcf1fbce6fc5eb1a4f3cdb16c213f51ab868f9be612de54",
+  "sourceBoardSha256": "b536e6f0c8cbb0ae3db5e362849ed99138b838ec9f326f8797073af10ad7f639",
+  "sourceType": "raster",
+  "authoritativeBindPose": true,
+  "artStyleIsImmutable": true,
+  "canvas": {
+    "width": 512,
+    "height": 416,
+    "sourceCrop": {
+      "x": 130,
+      "y": 146,
+      "width": 512,
+      "height": 416
+    },
+    "characterBounds": {
+      "left": 10,
+      "top": 14,
+      "right": 501,
+      "bottom": 401
+    }
+  },
+  "intendedDisplaySize": {
+    "width": 72,
+    "height": 60
+  },
+  "sampledPalette": [
+    "#EFB944",
+    "#8B651F",
+    "#A23323",
+    "#141310",
+    "#F2EDE7"
+  ],
+  "canonicalMasterPath": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/svg/scorekeeper-cup-hybrid-a-canonical.svg",
+  "canonicalMasterApproved": true,
+  "notes": [
+    "Authoritative pose is the enlarged light-appearance mascot from Hybrid A; the small and dark versions are validation references only.",
+    "Background-connected paper pixels were removed without changing the 512x416 crop or visible character pixels.",
+    "Native vector trace uses hard pixel contours, no curve fitting, no mirroring, no geometric cleanup, and no redesign.",
+    "The raster source contains 12,890 opaque RGB samples from generated shading and antialiasing; SVG/Rive parity is judged geometrically and visually because literal per-pixel RGB identity is not available after native vector rasterization.",
+    "The user approved the canonical Rive artboard and requested rigging with the red top accent treated as independently animated hair.",
+    "Hair is a separate semantic component: rig_hair control with six source-locked native vector children."
+  ]
+}

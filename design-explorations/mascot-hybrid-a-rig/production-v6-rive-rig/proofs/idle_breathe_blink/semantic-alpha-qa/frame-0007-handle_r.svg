@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="416" viewBox="0 0 512 416">
+  <title>idle_breathe_blink frame 7 handle_r alpha proof</title>
+  <metadata>Semantic-layer alpha QA generated from live Rive keyframes.</metadata>
+  <defs>
+    <!-- Shared canvas-space gradients keep segmented pixel shapes visually continuous. -->
+    <linearGradient id="goldBody" gradientUnits="userSpaceOnUse" x1="0" y1="49" x2="0" y2="244">
+      <stop offset="0" stop-color="#F8D65A"/>
+      <stop offset="0.48" stop-color="#EFB842"/>
+      <stop offset="1" stop-color="#D19128"/>
+    </linearGradient>
+    <linearGradient id="goldLight" gradientUnits="userSpaceOnUse" x1="0" y1="264" x2="0" y2="403">
+      <stop offset="0" stop-color="#FFE477"/>
+      <stop offset="1" stop-color="#E2A832"/>
+    </linearGradient>
+    <linearGradient id="goldShadow" gradientUnits="userSpaceOnUse" x1="0" y1="264" x2="0" y2="403">
+      <stop offset="0" stop-color="#BC8120"/>
+      <stop offset="1" stop-color="#805511"/>
+    </linearGradient>
+    <linearGradient id="edgeDark" gradientUnits="userSpaceOnUse" x1="0" y1="14" x2="0" y2="403">
+      <stop offset="0" stop-color="#94691E"/>
+      <stop offset="1" stop-color="#60400D"/>
+    </linearGradient>
+    <linearGradient id="ink" gradientUnits="userSpaceOnUse" x1="0" y1="128" x2="0" y2="223">
+      <stop offset="0" stop-color="#171612"/>
+      <stop offset="1" stop-color="#080807"/>
+    </linearGradient>
+    <linearGradient id="accent" gradientUnits="userSpaceOnUse" x1="0" y1="31" x2="0" y2="91">
+      <stop offset="0" stop-color="#B83E2E"/>
+      <stop offset="1" stop-color="#8F251B"/>
+    </linearGradient>
+  </defs>
+  <g id="asset_handle_r__source_012" transform="matrix(0.999965 0.00837 -0.00837 0.999965 1.27034 -3.527044)" opacity="1"><rect x="420" y="73" width="83" height="56" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_r__source_013" transform="matrix(0.999965 0.00837 -0.00837 0.999965 1.27034 -3.527044)" opacity="1"><rect x="420" y="169" width="83" height="55" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_r__source_014" transform="matrix(0.999965 0.00837 -0.00837 0.999965 1.27034 -3.527044)" opacity="1"><rect x="420" y="129" width="21" height="40" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_r__source_015" transform="matrix(0.999965 0.00837 -0.00837 0.999965 1.27034 -3.527044)" opacity="1"><rect x="465" y="129" width="38" height="40" fill="url(#edgeDark)"/></g>
+  <g id="asset_handle_r__source_016" transform="matrix(0.999965 0.00837 -0.00837 0.999965 1.27034 -3.527044)" opacity="1"><rect x="421" y="92" width="61" height="20" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_r__source_017" transform="matrix(0.999965 0.00837 -0.00837 0.999965 1.27034 -3.527044)" opacity="1"><rect x="421" y="169" width="61" height="37" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_r__source_018" transform="matrix(0.999965 0.00837 -0.00837 0.999965 1.27034 -3.527044)" opacity="1"><rect x="421" y="112" width="20" height="57" fill="url(#goldBody)"/></g>
+  <g id="asset_handle_r__source_019" transform="matrix(0.999965 0.00837 -0.00837 0.999965 1.27034 -3.527044)" opacity="1"><rect x="465" y="112" width="20" height="57" fill="url(#goldBody)"/></g>
+</svg>

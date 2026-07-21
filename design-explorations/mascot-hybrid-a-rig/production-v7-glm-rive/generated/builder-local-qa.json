@@ -1,0 +1,75 @@
+{
+  "passed": true,
+  "errors": [],
+  "bindParity": {
+    "passed": true,
+    "v2ObjectCount": 12786,
+    "v3ObjectCount": 12786,
+    "treeHash": "f1031a9cb2ce770e6976af51ce1e0bb4c2b05f45752c2c932e53dba039fdde7e",
+    "bindErrors": [],
+    "resumeBindErrors": [],
+    "resumedAfterOwnedMetadataCleanup": true
+  },
+  "protectedBeforeHash": "debf14ffe6b47ff7015d974520c589c186e811751395a46c3009b381bd4a6112",
+  "protectedAfterHash": "debf14ffe6b47ff7015d974520c589c186e811751395a46c3009b381bd4a6112",
+  "specValidation": {
+    "passed": true,
+    "errors": [],
+    "fps": 60,
+    "specHash": "b3fef6a65369176159fa78d34c8f834e8f8cfb4e9054b0511d6f69f414843446",
+    "curveFamilies": [
+      "action",
+      "anticipation",
+      "gentle",
+      "recovery"
+    ],
+    "animations": [
+      {
+        "slug": "idle_breathe_blink",
+        "durationFrames": 72,
+        "loop": true,
+        "trackCount": 11,
+        "keyCount": 48
+      },
+      {
+        "slug": "hair_bounce",
+        "durationFrames": 48,
+        "loop": false,
+        "trackCount": 8,
+        "keyCount": 46
+      },
+      {
+        "slug": "victory_pop",
+        "durationFrames": 72,
+        "loop": false,
+        "trackCount": 12,
+        "keyCount": 89
+      },
+      {
+        "slug": "curious_tilt",
+        "durationFrames": 84,
+        "loop": false,
+        "trackCount": 14,
+        "keyCount": 114
+      },
+      {
+        "slug": "celebrate_shimmy",
+        "durationFrames": 96,
+        "loop": true,
+        "trackCount": 14,
+        "keyCount": 112
+      }
+    ]
+  },
+  "artboardCount": 7,
+  "timelineCount": 5,
+  "machine": {
+    "id": "0-48286",
+    "name": "__V3_TEMP__ ScoreKeeper Cup Behaviors 20260715T1415Z-root-recovery",
+    "layerCount": 1,
+    "stateCount": 5,
+    "transitionCount": 1,
+    "inputCount": 0,
+    "listenerCount": 0
+  }
+}

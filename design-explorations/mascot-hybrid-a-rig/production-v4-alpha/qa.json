@@ -1,0 +1,2803 @@
+{
+  "status": "pass",
+  "animation": {
+    "displayName": "ScoreKeeper Hero — Victory Lift",
+    "durationSeconds": 3,
+    "fps": 60,
+    "canvas": {
+      "width": 512,
+      "height": 416
+    },
+    "frameCount": 180,
+    "terminalFrame": 179,
+    "source": "../svg/scorekeeper-cup-hybrid-a-canonical.svg",
+    "liveRiveModified": false,
+    "beats": [
+      "anticipation",
+      "launch/turn",
+      "expressive apex",
+      "landing/overshoot",
+      "settle"
+    ]
+  },
+  "controls": {
+    "rig_root": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            16,
+            1.2,
+            "easeInOut"
+          ],
+          [
+            38,
+            -1.5,
+            "easeOut"
+          ],
+          [
+            64,
+            -3,
+            "easeInOut"
+          ],
+          [
+            93,
+            -1,
+            "easeOut"
+          ],
+          [
+            111,
+            1,
+            "easeIn"
+          ],
+          [
+            145,
+            0.35,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            12,
+            4,
+            "easeIn"
+          ],
+          [
+            25,
+            0,
+            "easeOut"
+          ],
+          [
+            48,
+            -19,
+            "easeOut"
+          ],
+          [
+            72,
+            -30,
+            "easeInOut"
+          ],
+          [
+            92,
+            -12,
+            "easeIn"
+          ],
+          [
+            101,
+            6,
+            "easeOut"
+          ],
+          [
+            113,
+            -2,
+            "easeOut"
+          ],
+          [
+            135,
+            2,
+            "easeIn"
+          ],
+          [
+            158,
+            0.7,
+            "easeIn"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "rotationDeg": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            18,
+            -1.1,
+            "easeIn"
+          ],
+          [
+            42,
+            2.4,
+            "easeOut"
+          ],
+          [
+            67,
+            2.9,
+            "easeInOut"
+          ],
+          [
+            90,
+            -2.2,
+            "easeOut"
+          ],
+          [
+            104,
+            1.5,
+            "easeOut"
+          ],
+          [
+            125,
+            -0.5,
+            "easeIn"
+          ],
+          [
+            152,
+            0.2,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleX": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            12,
+            1.018,
+            "easeIn"
+          ],
+          [
+            25,
+            0.972,
+            "easeOut"
+          ],
+          [
+            48,
+            1.03,
+            "easeOut"
+          ],
+          [
+            72,
+            1.012,
+            "easeInOut"
+          ],
+          [
+            101,
+            1.055,
+            "easeOut"
+          ],
+          [
+            113,
+            0.983,
+            "easeOut"
+          ],
+          [
+            135,
+            1.012,
+            "easeIn"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "scaleY": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            12,
+            0.968,
+            "easeIn"
+          ],
+          [
+            25,
+            1.035,
+            "easeOut"
+          ],
+          [
+            48,
+            0.968,
+            "easeOut"
+          ],
+          [
+            72,
+            0.988,
+            "easeInOut"
+          ],
+          [
+            101,
+            0.94,
+            "easeOut"
+          ],
+          [
+            113,
+            1.02,
+            "easeOut"
+          ],
+          [
+            135,
+            0.994,
+            "easeIn"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ]
+      },
+      "hasNontrivialMotion": true
+    },
+    "cup": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            28,
+            0,
+            "smooth"
+          ],
+          [
+            53,
+            1.8,
+            "easeOut"
+          ],
+          [
+            83,
+            -1.5,
+            "easeIn"
+          ],
+          [
+            105,
+            0.6,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            32,
+            0.5,
+            "smooth"
+          ],
+          [
+            58,
+            -2.4,
+            "easeOut"
+          ],
+          [
+            88,
+            1.5,
+            "easeIn"
+          ],
+          [
+            108,
+            -0.5,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "rotationDeg": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            34,
+            -1,
+            "easeOut"
+          ],
+          [
+            62,
+            2.6,
+            "easeOut"
+          ],
+          [
+            89,
+            -1.8,
+            "easeIn"
+          ],
+          [
+            111,
+            0.8,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleX": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            25,
+            1,
+            "smooth"
+          ],
+          [
+            55,
+            1.014,
+            "easeOut"
+          ],
+          [
+            86,
+            0.992,
+            "easeIn"
+          ],
+          [
+            105,
+            1.006,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "scaleY": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            25,
+            1,
+            "smooth"
+          ],
+          [
+            55,
+            0.986,
+            "easeOut"
+          ],
+          [
+            86,
+            1.01,
+            "easeIn"
+          ],
+          [
+            105,
+            0.997,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ]
+      },
+      "hasNontrivialMotion": true
+    },
+    "pedestal": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            42,
+            0,
+            "smooth"
+          ],
+          [
+            58,
+            1.65,
+            "easeOut"
+          ],
+          [
+            88,
+            -1.35,
+            "easeIn"
+          ],
+          [
+            108,
+            0.5,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            32,
+            0.35,
+            "easeIn"
+          ],
+          [
+            58,
+            -2.15,
+            "easeOut"
+          ],
+          [
+            88,
+            1.3,
+            "easeIn"
+          ],
+          [
+            108,
+            -0.45,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "rotationDeg": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            42,
+            -0.2,
+            "easeOut"
+          ],
+          [
+            62,
+            2.35,
+            "easeOut"
+          ],
+          [
+            89,
+            -1.65,
+            "easeIn"
+          ],
+          [
+            111,
+            0.7,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleX": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            25,
+            1.001,
+            "easeIn"
+          ],
+          [
+            55,
+            1.012,
+            "easeOut"
+          ],
+          [
+            86,
+            0.994,
+            "easeIn"
+          ],
+          [
+            105,
+            1.005,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "scaleY": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            25,
+            0.999,
+            "easeIn"
+          ],
+          [
+            55,
+            0.988,
+            "easeOut"
+          ],
+          [
+            86,
+            1.008,
+            "easeIn"
+          ],
+          [
+            105,
+            0.998,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ]
+      },
+      "hasNontrivialMotion": true
+    },
+    "handleL": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            28,
+            -0.45,
+            "easeOut"
+          ],
+          [
+            55,
+            0.7,
+            "easeOut"
+          ],
+          [
+            82,
+            -0.35,
+            "easeIn"
+          ],
+          [
+            108,
+            0.2,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            34,
+            -0.4,
+            "easeOut"
+          ],
+          [
+            62,
+            0.6,
+            "easeIn"
+          ],
+          [
+            93,
+            -0.3,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "rotationDeg": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            22,
+            -1.4,
+            "easeIn"
+          ],
+          [
+            48,
+            2.4,
+            "easeOut"
+          ],
+          [
+            72,
+            -1.8,
+            "easeIn"
+          ],
+          [
+            96,
+            1.2,
+            "easeOut"
+          ],
+          [
+            122,
+            -0.55,
+            "easeIn"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleX": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            48,
+            1.025,
+            "easeOut"
+          ],
+          [
+            72,
+            0.985,
+            "easeIn"
+          ],
+          [
+            122,
+            1.008,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "scaleY": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            48,
+            0.985,
+            "easeOut"
+          ],
+          [
+            72,
+            1.018,
+            "easeIn"
+          ],
+          [
+            122,
+            0.997,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ]
+      },
+      "hasNontrivialMotion": true
+    },
+    "handleR": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            34,
+            0.4,
+            "easeOut"
+          ],
+          [
+            60,
+            -0.7,
+            "easeOut"
+          ],
+          [
+            86,
+            0.35,
+            "easeIn"
+          ],
+          [
+            114,
+            -0.2,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            38,
+            -0.3,
+            "easeOut"
+          ],
+          [
+            68,
+            0.7,
+            "easeIn"
+          ],
+          [
+            97,
+            -0.25,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "rotationDeg": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            28,
+            1.5,
+            "easeIn"
+          ],
+          [
+            54,
+            -2.5,
+            "easeOut"
+          ],
+          [
+            78,
+            1.7,
+            "easeIn"
+          ],
+          [
+            103,
+            -1.1,
+            "easeOut"
+          ],
+          [
+            130,
+            0.6,
+            "easeIn"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleX": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            54,
+            1.02,
+            "easeOut"
+          ],
+          [
+            78,
+            0.986,
+            "easeIn"
+          ],
+          [
+            130,
+            1.007,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "scaleY": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            54,
+            0.986,
+            "easeOut"
+          ],
+          [
+            78,
+            1.02,
+            "easeIn"
+          ],
+          [
+            130,
+            0.998,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ]
+      },
+      "hasNontrivialMotion": true
+    },
+    "hair_cap": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            42,
+            -2,
+            "easeOut"
+          ],
+          [
+            69,
+            3.5,
+            "easeOut"
+          ],
+          [
+            96,
+            -2.5,
+            "easeIn"
+          ],
+          [
+            125,
+            1.2,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            45,
+            1,
+            "easeOut"
+          ],
+          [
+            73,
+            -2.5,
+            "easeIn"
+          ],
+          [
+            102,
+            1.4,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "rotationDeg": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            34,
+            -2.5,
+            "easeOut"
+          ],
+          [
+            62,
+            3.5,
+            "easeOut"
+          ],
+          [
+            91,
+            -3.1,
+            "easeIn"
+          ],
+          [
+            122,
+            1.8,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleX": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            65,
+            1.035,
+            "easeOut"
+          ],
+          [
+            94,
+            0.98,
+            "easeIn"
+          ],
+          [
+            130,
+            1.01,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "scaleY": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            65,
+            0.968,
+            "easeOut"
+          ],
+          [
+            94,
+            1.025,
+            "easeIn"
+          ],
+          [
+            130,
+            0.994,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ]
+      },
+      "hasNontrivialMotion": true
+    },
+    "hair_fringe": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            48,
+            -3,
+            "easeOut"
+          ],
+          [
+            77,
+            4.5,
+            "easeOut"
+          ],
+          [
+            108,
+            -2.7,
+            "easeIn"
+          ],
+          [
+            139,
+            1.2,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            51,
+            1.4,
+            "easeOut"
+          ],
+          [
+            81,
+            -3,
+            "easeIn"
+          ],
+          [
+            113,
+            1.7,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "rotationDeg": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            40,
+            -3.8,
+            "easeOut"
+          ],
+          [
+            70,
+            5,
+            "easeOut"
+          ],
+          [
+            101,
+            -4.5,
+            "easeIn"
+          ],
+          [
+            134,
+            2.6,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleX": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            72,
+            1.05,
+            "easeOut"
+          ],
+          [
+            105,
+            0.975,
+            "easeIn"
+          ],
+          [
+            141,
+            1.01,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "scaleY": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            72,
+            0.96,
+            "easeOut"
+          ],
+          [
+            105,
+            1.03,
+            "easeIn"
+          ],
+          [
+            141,
+            0.995,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ]
+      },
+      "hasNontrivialMotion": true
+    },
+    "eyeL": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            54,
+            1,
+            "easeOut"
+          ],
+          [
+            90,
+            -1.5,
+            "easeIn"
+          ],
+          [
+            132,
+            0.8,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            54,
+            -1,
+            "easeOut"
+          ],
+          [
+            90,
+            1.2,
+            "easeIn"
+          ],
+          [
+            132,
+            -0.5,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleY": {
+          "keys": [
+            [
+              0,
+              1,
+              "smooth"
+            ],
+            [
+              64,
+              1,
+              "smooth"
+            ],
+            [
+              67,
+              0.1,
+              "smooth"
+            ],
+            [
+              72,
+              0.1,
+              "smooth"
+            ],
+            [
+              75,
+              1,
+              "smooth"
+            ],
+            [
+              126,
+              1,
+              "smooth"
+            ],
+            [
+              129,
+              0.1,
+              "smooth"
+            ],
+            [
+              134,
+              0.1,
+              "smooth"
+            ],
+            [
+              137,
+              1,
+              "smooth"
+            ],
+            [
+              179,
+              1,
+              "smooth"
+            ]
+          ],
+          "interpolation": "step"
+        }
+      },
+      "hasNontrivialMotion": true
+    },
+    "eyeR": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            54,
+            1,
+            "easeOut"
+          ],
+          [
+            90,
+            -1.5,
+            "easeIn"
+          ],
+          [
+            132,
+            0.8,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            54,
+            -1,
+            "easeOut"
+          ],
+          [
+            90,
+            1.2,
+            "easeIn"
+          ],
+          [
+            132,
+            -0.5,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleY": {
+          "keys": [
+            [
+              0,
+              1,
+              "smooth"
+            ],
+            [
+              69,
+              1,
+              "smooth"
+            ],
+            [
+              72,
+              0.1,
+              "smooth"
+            ],
+            [
+              77,
+              0.1,
+              "smooth"
+            ],
+            [
+              80,
+              1,
+              "smooth"
+            ],
+            [
+              131,
+              1,
+              "smooth"
+            ],
+            [
+              134,
+              0.1,
+              "smooth"
+            ],
+            [
+              139,
+              0.1,
+              "smooth"
+            ],
+            [
+              142,
+              1,
+              "smooth"
+            ],
+            [
+              179,
+              1,
+              "smooth"
+            ]
+          ],
+          "interpolation": "step"
+        }
+      },
+      "hasNontrivialMotion": true
+    },
+    "mouth": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            55,
+            1.2,
+            "easeOut"
+          ],
+          [
+            91,
+            -1.2,
+            "easeIn"
+          ],
+          [
+            132,
+            0.5,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            58,
+            -1.5,
+            "easeOut"
+          ],
+          [
+            92,
+            1.1,
+            "easeIn"
+          ],
+          [
+            132,
+            -0.5,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleX": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            55,
+            1.12,
+            "easeOut"
+          ],
+          [
+            91,
+            0.92,
+            "easeIn"
+          ],
+          [
+            132,
+            1.05,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "scaleY": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            55,
+            1.18,
+            "easeOut"
+          ],
+          [
+            91,
+            0.9,
+            "easeIn"
+          ],
+          [
+            132,
+            1.08,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ]
+      },
+      "hasNontrivialMotion": true
+    },
+    "shine": {
+      "track": {
+        "dx": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            58,
+            2,
+            "easeOut"
+          ],
+          [
+            80,
+            -1.5,
+            "easeIn"
+          ],
+          [
+            108,
+            1,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "dy": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            58,
+            -2,
+            "easeOut"
+          ],
+          [
+            80,
+            1,
+            "easeIn"
+          ],
+          [
+            108,
+            -0.5,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "rotationDeg": [
+          [
+            0,
+            0,
+            "smooth"
+          ],
+          [
+            62,
+            6,
+            "easeOut"
+          ],
+          [
+            83,
+            -5,
+            "easeIn"
+          ],
+          [
+            110,
+            2,
+            "easeOut"
+          ],
+          [
+            179,
+            0,
+            "easeIn"
+          ]
+        ],
+        "scaleX": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            62,
+            1.12,
+            "easeOut"
+          ],
+          [
+            83,
+            0.92,
+            "easeIn"
+          ],
+          [
+            110,
+            1.05,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "scaleY": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            62,
+            1.12,
+            "easeOut"
+          ],
+          [
+            83,
+            0.92,
+            "easeIn"
+          ],
+          [
+            110,
+            1.05,
+            "easeOut"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ],
+        "opacity": [
+          [
+            0,
+            1,
+            "smooth"
+          ],
+          [
+            60,
+            1,
+            "easeOut"
+          ],
+          [
+            68,
+            0.7,
+            "easeIn"
+          ],
+          [
+            83,
+            1,
+            "easeOut"
+          ],
+          [
+            110,
+            0.86,
+            "easeIn"
+          ],
+          [
+            179,
+            1,
+            "easeIn"
+          ]
+        ]
+      },
+      "hasNontrivialMotion": true
+    }
+  },
+  "architecture": {
+    "transparentBackground": true,
+    "independentHandles": true,
+    "handleHoleMasks": {
+      "left": [
+        18,
+        152,
+        156
+      ],
+      "right": [
+        17,
+        89,
+        151
+      ],
+      "postTransform": true,
+      "leftMetric": {
+        "x": 49,
+        "y": 129,
+        "width": 23,
+        "height": 40,
+        "expectedFinalColorPixels": 920
+      },
+      "rightMetric": {
+        "x": 441,
+        "y": 129,
+        "width": 24,
+        "height": 40,
+        "expectedFinalColorPixels": 949
+      },
+      "movingAllFrameProbe": {
+        "framesChecked": 180,
+        "fullMaskPixels": 244468,
+        "fullMaskLeaks": 0,
+        "pass": true
+      }
+    },
+    "hairComponents": [
+      "hair_cap",
+      "hair_fringe"
+    ],
+    "source002Limitation": "source_002 contour1 contains the combined cup+outer-handle silhouette; semantic handle controls animate exact v2 handle contours, while this outer shell contour remains cup-owned.",
+    "syntheticUnderlaps": [
+      {
+        "id": "hair-cup-local-underlap",
+        "fill": "#EFB944",
+        "sourceIndices": [
+          5,
+          28,
+          50,
+          137,
+          164,
+          175
+        ],
+        "transform": "cup",
+        "purpose": "keeps the moving hair cap/fringe attached to the cup silhouette"
+      },
+      {
+        "id": "pedestal-seam-underlap",
+        "fill": "#8C651F",
+        "bounds": {
+          "x": 205,
+          "y": 258,
+          "width": 100,
+          "height": 18
+        },
+        "transform": "rig_root",
+        "purpose": "bounded seam bridge behind the cup/stem attachment"
+      }
+    ]
+  },
+  "cleanup": {
+    "leftHole": [
+      18,
+      152,
+      156
+    ],
+    "rightHole": [
+      17,
+      89,
+      151
+    ],
+    "fringeRemoval": [
+      41,
+      70,
+      99,
+      126,
+      142,
+      157
+    ],
+    "shineLocked": [
+      29,
+      98,
+      139
+    ],
+    "retainedStructuralShading": [
+      52,
+      58,
+      147,
+      158
+    ],
+    "leftHoleMetric": {
+      "x": 49,
+      "y": 129,
+      "width": 23,
+      "height": 40,
+      "expectedFinalColorPixels": 920
+    },
+    "rightHoleMetric": {
+      "x": 441,
+      "y": 129,
+      "width": 24,
+      "height": 40,
+      "expectedFinalColorPixels": 949
+    },
+    "maxBindDiffPixels": 3011,
+    "removedSourceIndices": [
+      18,
+      152,
+      156,
+      17,
+      89,
+      151,
+      41,
+      70,
+      99,
+      126,
+      142,
+      157
+    ],
+    "cleanedCanonical": "cleaned-canonical.svg",
+    "cleanedCanonicalSha256": "013647cfbe1669e880c24814ce6f42cb70a6fc4ca3284466d1ead02d793fe724",
+    "bindDiffOldVsCleaned": {
+      "anyChannelPixelAE": 3011,
+      "rgbPixelAE": 3011,
+      "alphaPixelAE": 2261,
+      "maxChannelDelta": 255,
+      "totalRgbAbs": 1752659,
+      "totalAlphaAbs": 576555
+    },
+    "finalMaskedDiffOldVsCleaned": {
+      "anyChannelPixelAE": 3022,
+      "rgbPixelAE": 3022,
+      "alphaPixelAE": 2507,
+      "maxChannelDelta": 255,
+      "totalRgbAbs": 1834960,
+      "totalAlphaAbs": 639285
+    },
+    "maskOnlyDiff": {
+      "anyChannelPixelAE": 246,
+      "rgbPixelAE": 246,
+      "alphaPixelAE": 246,
+      "maxChannelDelta": 255,
+      "totalRgbAbs": 82301,
+      "totalAlphaAbs": 62730
+    },
+    "aaTolerancePixels": 11,
+    "pass": true
+  },
+  "ownership": {
+    "sourceEntryCount": 181,
+    "sourceEntriesAccountedExactlyOnce": true,
+    "missing": [],
+    "duplicates": [],
+    "sourceEntryOwners": {
+      "1": [
+        "cup",
+        "shine",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ],
+      "2": [
+        "cup",
+        "handleL"
+      ],
+      "3": [
+        "cup",
+        "pedestal"
+      ],
+      "4": [
+        "pedestal"
+      ],
+      "5": [
+        "hair_cap"
+      ],
+      "6": [
+        "pedestal"
+      ],
+      "7": [
+        "pedestal"
+      ],
+      "8": [
+        "handleL"
+      ],
+      "9": [
+        "handleR"
+      ],
+      "10": [
+        "handleL"
+      ],
+      "11": [
+        "handleR"
+      ],
+      "12": [
+        "mouth"
+      ],
+      "13": [
+        "eyeR"
+      ],
+      "14": [
+        "eyeL"
+      ],
+      "15": [
+        "handleR"
+      ],
+      "16": [
+        "pedestal"
+      ],
+      "17": [
+        "authorized-transparent-mask"
+      ],
+      "18": [
+        "authorized-transparent-mask"
+      ],
+      "19": [
+        "pedestal"
+      ],
+      "20": [
+        "handleR"
+      ],
+      "21": [
+        "pedestal"
+      ],
+      "22": [
+        "mouth"
+      ],
+      "23": [
+        "handleL"
+      ],
+      "24": [
+        "mouth"
+      ],
+      "25": [
+        "handleL"
+      ],
+      "26": [
+        "handleR"
+      ],
+      "27": [
+        "pedestal"
+      ],
+      "28": [
+        "hair_cap"
+      ],
+      "29": [
+        "shine"
+      ],
+      "30": [
+        "handleR"
+      ],
+      "31": [
+        "pedestal"
+      ],
+      "32": [
+        "mouth"
+      ],
+      "33": [
+        "pedestal"
+      ],
+      "34": [
+        "handleR"
+      ],
+      "35": [
+        "pedestal"
+      ],
+      "36": [
+        "pedestal"
+      ],
+      "37": [
+        "mouth"
+      ],
+      "38": [
+        "pedestal"
+      ],
+      "39": [
+        "pedestal"
+      ],
+      "40": [
+        "pedestal"
+      ],
+      "41": [
+        "authorized-fringe-removal"
+      ],
+      "42": [
+        "cup"
+      ],
+      "43": [
+        "cup"
+      ],
+      "44": [
+        "cup"
+      ],
+      "45": [
+        "cup"
+      ],
+      "46": [
+        "pedestal"
+      ],
+      "47": [
+        "handleL"
+      ],
+      "48": [
+        "mouth"
+      ],
+      "49": [
+        "handleL"
+      ],
+      "50": [
+        "hair_cap"
+      ],
+      "51": [
+        "pedestal"
+      ],
+      "52": [
+        "handleR"
+      ],
+      "53": [
+        "handleR"
+      ],
+      "54": [
+        "pedestal"
+      ],
+      "55": [
+        "handleR"
+      ],
+      "56": [
+        "handleR"
+      ],
+      "57": [
+        "handleR"
+      ],
+      "58": [
+        "pedestal"
+      ],
+      "59": [
+        "cup"
+      ],
+      "60": [
+        "pedestal"
+      ],
+      "61": [
+        "pedestal"
+      ],
+      "62": [
+        "pedestal"
+      ],
+      "63": [
+        "handleR"
+      ],
+      "64": [
+        "mouth"
+      ],
+      "65": [
+        "cup"
+      ],
+      "66": [
+        "cup"
+      ],
+      "67": [
+        "handleL"
+      ],
+      "68": [
+        "pedestal"
+      ],
+      "69": [
+        "handleL"
+      ],
+      "70": [
+        "authorized-fringe-removal"
+      ],
+      "71": [
+        "pedestal"
+      ],
+      "72": [
+        "pedestal"
+      ],
+      "73": [
+        "cup"
+      ],
+      "74": [
+        "handleR"
+      ],
+      "75": [
+        "handleL"
+      ],
+      "76": [
+        "cup"
+      ],
+      "77": [
+        "pedestal"
+      ],
+      "78": [
+        "handleL"
+      ],
+      "79": [
+        "pedestal"
+      ],
+      "80": [
+        "eyeR"
+      ],
+      "81": [
+        "handleL"
+      ],
+      "82": [
+        "pedestal"
+      ],
+      "83": [
+        "mouth"
+      ],
+      "84": [
+        "mouth"
+      ],
+      "85": [
+        "mouth"
+      ],
+      "86": [
+        "handleL"
+      ],
+      "87": [
+        "mouth"
+      ],
+      "88": [
+        "cup"
+      ],
+      "89": [
+        "authorized-transparent-mask"
+      ],
+      "90": [
+        "eyeR"
+      ],
+      "91": [
+        "cup"
+      ],
+      "92": [
+        "cup"
+      ],
+      "93": [
+        "pedestal"
+      ],
+      "94": [
+        "handleR"
+      ],
+      "95": [
+        "pedestal"
+      ],
+      "96": [
+        "pedestal"
+      ],
+      "97": [
+        "handleL"
+      ],
+      "98": [
+        "shine"
+      ],
+      "99": [
+        "authorized-fringe-removal"
+      ],
+      "100": [
+        "cup"
+      ],
+      "101": [
+        "cup"
+      ],
+      "102": [
+        "handleR"
+      ],
+      "103": [
+        "handleR"
+      ],
+      "104": [
+        "pedestal"
+      ],
+      "105": [
+        "pedestal"
+      ],
+      "106": [
+        "pedestal"
+      ],
+      "107": [
+        "cup"
+      ],
+      "108": [
+        "handleR"
+      ],
+      "109": [
+        "pedestal"
+      ],
+      "110": [
+        "handleR"
+      ],
+      "111": [
+        "mouth"
+      ],
+      "112": [
+        "handleR"
+      ],
+      "113": [
+        "pedestal"
+      ],
+      "114": [
+        "eyeL"
+      ],
+      "115": [
+        "cup"
+      ],
+      "116": [
+        "cup"
+      ],
+      "117": [
+        "cup"
+      ],
+      "118": [
+        "cup"
+      ],
+      "119": [
+        "pedestal"
+      ],
+      "120": [
+        "pedestal"
+      ],
+      "121": [
+        "mouth"
+      ],
+      "122": [
+        "cup"
+      ],
+      "123": [
+        "pedestal"
+      ],
+      "124": [
+        "pedestal"
+      ],
+      "125": [
+        "pedestal"
+      ],
+      "126": [
+        "authorized-fringe-removal"
+      ],
+      "127": [
+        "pedestal"
+      ],
+      "128": [
+        "pedestal"
+      ],
+      "129": [
+        "handleR"
+      ],
+      "130": [
+        "handleL"
+      ],
+      "131": [
+        "pedestal"
+      ],
+      "132": [
+        "handleR"
+      ],
+      "133": [
+        "cup"
+      ],
+      "134": [
+        "handleL"
+      ],
+      "135": [
+        "handleL"
+      ],
+      "136": [
+        "handleR"
+      ],
+      "137": [
+        "hair_cap"
+      ],
+      "138": [
+        "pedestal"
+      ],
+      "139": [
+        "shine"
+      ],
+      "140": [
+        "cup"
+      ],
+      "141": [
+        "pedestal"
+      ],
+      "142": [
+        "authorized-fringe-removal"
+      ],
+      "143": [
+        "mouth"
+      ],
+      "144": [
+        "handleR"
+      ],
+      "145": [
+        "handleR"
+      ],
+      "146": [
+        "pedestal"
+      ],
+      "147": [
+        "cup"
+      ],
+      "148": [
+        "pedestal"
+      ],
+      "149": [
+        "cup"
+      ],
+      "150": [
+        "pedestal"
+      ],
+      "151": [
+        "authorized-transparent-mask"
+      ],
+      "152": [
+        "authorized-transparent-mask"
+      ],
+      "153": [
+        "cup"
+      ],
+      "154": [
+        "eyeL"
+      ],
+      "155": [
+        "eyeL"
+      ],
+      "156": [
+        "authorized-transparent-mask"
+      ],
+      "157": [
+        "authorized-fringe-removal"
+      ],
+      "158": [
+        "pedestal"
+      ],
+      "159": [
+        "pedestal"
+      ],
+      "160": [
+        "handleR"
+      ],
+      "161": [
+        "handleR"
+      ],
+      "162": [
+        "handleR"
+      ],
+      "163": [
+        "cup"
+      ],
+      "164": [
+        "hair_fringe"
+      ],
+      "165": [
+        "pedestal"
+      ],
+      "166": [
+        "cup"
+      ],
+      "167": [
+        "eyeL"
+      ],
+      "168": [
+        "pedestal"
+      ],
+      "169": [
+        "eyeL"
+      ],
+      "170": [
+        "mouth"
+      ],
+      "171": [
+        "handleR"
+      ],
+      "172": [
+        "handleL"
+      ],
+      "173": [
+        "pedestal"
+      ],
+      "174": [
+        "pedestal"
+      ],
+      "175": [
+        "hair_fringe"
+      ],
+      "176": [
+        "pedestal"
+      ],
+      "177": [
+        "pedestal"
+      ],
+      "178": [
+        "handleL"
+      ],
+      "179": [
+        "cup"
+      ],
+      "180": [
+        "pedestal"
+      ],
+      "181": [
+        "mouth"
+      ]
+    },
+    "contourOwnerCounts": {
+      "cup": 31,
+      "shine": 4,
+      "eyeL": 7,
+      "eyeR": 4,
+      "mouth": 17,
+      "handleL": 19,
+      "pedestal": 58,
+      "hair_cap": 4,
+      "handleR": 29,
+      "authorized-transparent-mask": 6,
+      "authorized-fringe-removal": 6,
+      "hair_fringe": 2
+    },
+    "authorizedTransparentMaskEntries": [
+      18,
+      152,
+      156,
+      17,
+      89,
+      151
+    ],
+    "authorizedFringeRemovalEntries": [
+      41,
+      70,
+      99,
+      126,
+      142,
+      157
+    ],
+    "syntheticUnderlaps": [
+      {
+        "id": "hair-cup-local-underlap",
+        "fill": "#EFB944",
+        "sourceIndices": [
+          5,
+          28,
+          50,
+          137,
+          164,
+          175
+        ],
+        "transform": "cup",
+        "purpose": "keeps the moving hair cap/fringe attached to the cup silhouette"
+      },
+      {
+        "id": "pedestal-seam-underlap",
+        "fill": "#8C651F",
+        "bounds": {
+          "x": 205,
+          "y": 258,
+          "width": 100,
+          "height": 18
+        },
+        "transform": "rig_root",
+        "purpose": "bounded seam bridge behind the cup/stem attachment"
+      }
+    ]
+  },
+  "endpointRasterDiff": {
+    "cleanedCanonicalRaster": "cleaned-canonical-bind.png",
+    "frame0": {
+      "anyChannelPixelAE": 0,
+      "rgbPixelAE": 0,
+      "alphaPixelAE": 0,
+      "maxChannelDelta": 0,
+      "totalRgbAbs": 0,
+      "totalAlphaAbs": 0
+    },
+    "terminal": {
+      "anyChannelPixelAE": 0,
+      "rgbPixelAE": 0,
+      "alphaPixelAE": 0,
+      "maxChannelDelta": 0,
+      "totalRgbAbs": 0,
+      "totalAlphaAbs": 0
+    },
+    "pass": true
+  },
+  "frameSet": {
+    "expectedCount": 180,
+    "actualCount": 180,
+    "missing": [],
+    "unexpected": [],
+    "pass": true
+  },
+  "alpha": {
+    "frameAlphaIssues": [],
+    "allFrameAlphaZeroRgbPass": true,
+    "cornersAlphaZero": true,
+    "cornerAlphaSamples": [
+      [
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "proresAlphaDecode": {
+    "output": "v4-alpha-hero-alpha-prores4444.mov",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "prores",
+          "profile": "4444",
+          "width": 512,
+          "height": 416,
+          "pix_fmt": "yuva444p12le",
+          "r_frame_rate": "60/1",
+          "avg_frame_rate": "60/1",
+          "nb_frames": "180"
+        }
+      ],
+      "format": {
+        "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+        "duration": "3.000000"
+      }
+    },
+    "framesDecoded": 180,
+    "expectedFrames": 180,
+    "maxAlphaDelta": 1,
+    "alphaPixelsOverOne": 0,
+    "pass": true
+  },
+  "opaquePreview": {
+    "output": "v4-alpha-hero-opaque-blue-preview.mp4",
+    "background": "#0057FF",
+    "explicitlyOpaque": true,
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "index": 0,
+          "codec_name": "h264",
+          "profile": "High",
+          "width": 512,
+          "height": 416,
+          "pix_fmt": "yuv420p",
+          "r_frame_rate": "60/1",
+          "avg_frame_rate": "60/1",
+          "nb_frames": "180"
+        }
+      ],
+      "format": {
+        "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+        "duration": "3.000000"
+      }
+    }
+  },
+  "seamHaloProbe": {
+    "backgrounds": [
+      "#000000",
+      "#0057FF",
+      "#FF00AA",
+      "#F4F2EC"
+    ],
+    "frames": [
+      0,
+      29,
+      61,
+      91,
+      101,
+      128,
+      160,
+      179
+    ],
+    "allFramesChecked": false,
+    "results": {
+      "#000000": {
+        "0": {
+          "nearWhiteEdgePixels": 269
+        },
+        "29": {
+          "nearWhiteEdgePixels": 231
+        },
+        "61": {
+          "nearWhiteEdgePixels": 36
+        },
+        "91": {
+          "nearWhiteEdgePixels": 62
+        },
+        "101": {
+          "nearWhiteEdgePixels": 41
+        },
+        "128": {
+          "nearWhiteEdgePixels": 54
+        },
+        "160": {
+          "nearWhiteEdgePixels": 114
+        },
+        "179": {
+          "nearWhiteEdgePixels": 269
+        }
+      },
+      "#0057FF": {
+        "0": {
+          "nearWhiteEdgePixels": 269
+        },
+        "29": {
+          "nearWhiteEdgePixels": 231
+        },
+        "61": {
+          "nearWhiteEdgePixels": 36
+        },
+        "91": {
+          "nearWhiteEdgePixels": 62
+        },
+        "101": {
+          "nearWhiteEdgePixels": 41
+        },
+        "128": {
+          "nearWhiteEdgePixels": 54
+        },
+        "160": {
+          "nearWhiteEdgePixels": 114
+        },
+        "179": {
+          "nearWhiteEdgePixels": 269
+        }
+      },
+      "#FF00AA": {
+        "0": {
+          "nearWhiteEdgePixels": 269
+        },
+        "29": {
+          "nearWhiteEdgePixels": 231
+        },
+        "61": {
+          "nearWhiteEdgePixels": 36
+        },
+        "91": {
+          "nearWhiteEdgePixels": 62
+        },
+        "101": {
+          "nearWhiteEdgePixels": 41
+        },
+        "128": {
+          "nearWhiteEdgePixels": 54
+        },
+        "160": {
+          "nearWhiteEdgePixels": 114
+        },
+        "179": {
+          "nearWhiteEdgePixels": 269
+        }
+      },
+      "#F4F2EC": {
+        "0": {
+          "nearWhiteEdgePixels": 269
+        },
+        "29": {
+          "nearWhiteEdgePixels": 231
+        },
+        "61": {
+          "nearWhiteEdgePixels": 36
+        },
+        "91": {
+          "nearWhiteEdgePixels": 62
+        },
+        "101": {
+          "nearWhiteEdgePixels": 41
+        },
+        "128": {
+          "nearWhiteEdgePixels": 54
+        },
+        "160": {
+          "nearWhiteEdgePixels": 114
+        },
+        "179": {
+          "nearWhiteEdgePixels": 269
+        }
+      }
+    },
+    "note": "Sampled composites provide visual evidence over black, blue, magenta, and warm checker; all 180 frames receive alpha-zero RGB and viewport edge validation."
+  },
+  "viewportBounds": {
+    "inspectedFrames": 180,
+    "minMargins": {
+      "top": 14,
+      "left": 9,
+      "right": 9,
+      "bottom": 13
+    },
+    "edgeTouchFrames": [],
+    "requiredMargin": 2,
+    "pass": true
+  },
+  "inspection": {
+    "contactSheet": "v4-alpha-hero-contact-sheet.png",
+    "files": [
+      "inspection/hero-f029-1x.png",
+      "inspection/hero-f029-2x.png",
+      "inspection/hero-f029-4x.png",
+      "inspection/hero-f061-1x.png",
+      "inspection/hero-f061-2x.png",
+      "inspection/hero-f061-4x.png",
+      "inspection/hero-f091-1x.png",
+      "inspection/hero-f091-2x.png",
+      "inspection/hero-f091-4x.png",
+      "inspection/hero-f101-1x.png",
+      "inspection/hero-f101-2x.png",
+      "inspection/hero-f101-4x.png",
+      "inspection/hero-f128-1x.png",
+      "inspection/hero-f128-2x.png",
+      "inspection/hero-f128-4x.png"
+    ],
+    "scales": [
+      1,
+      2,
+      4
+    ]
+  },
+  "frameHashes": {
+    "frame0": "2908211c29532f0ec1a7261e446fa92b905eca72e458439c62ec598d073ec2a0",
+    "frame29": "1cd607d8c6cbb2a8bce7c74e0b5f72cf75a85a758d9eaef2d9aedda9e2a001d2",
+    "frame61": "fd87f1fd2c431b8b438d04f22864dca27c206056945082525810d847bf95f014",
+    "frame91": "5d46730bc77cfc46ff3be4f43357e249a36f16e0997c6345d8990466bee4cfcc",
+    "frame101": "54ce1b27739ec3d88151bb673efa9893737b8e421863d0f341160a490044c20e",
+    "frame128": "0dda139c7dcd61b54ceb81df35248b7eefdfa8e92e929beb8b2c1c749ce9159c",
+    "terminal": "2908211c29532f0ec1a7261e446fa92b905eca72e458439c62ec598d073ec2a0"
+  },
+  "outputs": {
+    "framesDirectory": "frames/",
+    "cleanedCanonical": "cleaned-canonical.svg",
+    "bindPng": "cleaned-canonical-bind.png",
+    "alphaMaster": "v4-alpha-hero-alpha-prores4444.mov",
+    "opaquePreview": "v4-alpha-hero-opaque-blue-preview.mp4",
+    "contactSheet": "v4-alpha-hero-contact-sheet.png",
+    "qa": "qa.json"
+  },
+  "reproducibility": {
+    "command": "node render-v4-alpha.mjs",
+    "stagingDirectory": true,
+    "atomicPublication": true,
+    "lockHeartbeat": true,
+    "renderer": "ImageMagick SVG rasterizer + ffmpeg prores_ks/libx264",
+    "versions": {
+      "node": "v25.8.2",
+      "imagemagick": "Version: ImageMagick 7.1.2-24 Q16-HDRI aarch64 3c45ab0bf:20260525 https://imagemagick.org",
+      "ffmpeg": "ffmpeg version 8.1 Copyright (c) 2000-2026 the FFmpeg developers",
+      "ffprobe": "ffprobe version 8.1 Copyright (c) 2007-2026 the FFmpeg developers"
+    },
+    "frameHashBasis": "normalized 8-bit RGBA",
+    "deterministicRepeat": {
+      "verified": true,
+      "method": "two consecutive full renders; normalized frame hashes and cleaned-canonical SHA compared",
+      "stable": true
+    }
+  }
+}

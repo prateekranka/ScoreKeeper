@@ -1,0 +1,7 @@
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T122505Z-1658/command.txt
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T122505Z-1658/git-status-after.txt
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T122505Z-1658/manifest-after.tsv
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T122505Z-1658/manifest-before.tsv
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T122505Z-1658/metadata.json
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T122505Z-1658/stderr.log
+/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v7-glm-rive/evidence/opencode/runs/20260715T122505Z-1658/stdout.jsonl

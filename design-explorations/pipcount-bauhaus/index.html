@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PipCount — Bauhaus exploration</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:," />
+</head>
+<body class="gallery">
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <h1>PipCount · Bauhaus</h1>
+        <p>
+          A fresh design iteration of PipCount (iOS 26+) built on the owner's <em>Bauhaus</em>
+          reference board. Pure primaries on white — red, blue, yellow, black — composed from
+          circle, square, and triangle. This is the first screen of a system; once the language is
+          locked the rest (scoring, game picker, onboarding, paywall) follow mechanically.
+          Light and dark are both designed as first-class modes.
+        </p>
+      </div>
+    </header>
+
+    <dl class="system-card">
+      <dt>Design direction</dt>
+      <dd>Bauhaus / De Stijl — geometric primaries, hard edges, opaque cards, structural black rules.</dd>
+      <dt>Palette — light</dt>
+      <dd>
+        <span class="swatch-row" aria-hidden="true">
+          <span class="swatch"><i style="background:#FFFFFF"></i><small>Paper FFFFFF</small></span>
+          <span class="swatch"><i style="background:#0A0A0A"></i><small>Ink 0A0A0A</small></span>
+          <span class="swatch"><i style="background:#E63946"></i><small>Red E63946</small></span>
+          <span class="swatch"><i style="background:#1E5BC6"></i><small>Blue 1E5BC6</small></span>
+          <span class="swatch"><i style="background:#F5D020"></i><small>Yellow F5D020</small></span>
+        </span>
+      </dd>
+      <dt>Palette — dark</dt>
+      <dd>
+        <span class="swatch-row" aria-hidden="true">
+          <span class="swatch"><i style="background:#0E0E10"></i><small>Paper 0E0E10</small></span>
+          <span class="swatch"><i style="background:#F2F0EA"></i><small>Ink F2F0EA</small></span>
+          <span class="swatch"><i style="background:#FF5466"></i><small>Red FF5466</small></span>
+          <span class="swatch"><i style="background:#4D8FFF"></i><small>Blue 4D8FFF</small></span>
+          <span class="swatch"><i style="background:#FFD93D"></i><small>Yellow FFD93D</small></span>
+        </span>
+      </dd>
+      <dt>Voice</dt>
+      <dd>Geometric sans (Avenir Next → Futura family). Monospaced digits for every score.</dd>
+      <dt>Dark rule</dt>
+      <dd>Inverted structure (off-white rules, never black-on-black); primaries brighten for luminance; black-on-yellow is invariant.</dd>
+      <dt>iOS 26 posture</dt>
+      <dd>Liquid Glass only on status bar + theme button. All content surfaces opaque for Bauhaus fidelity.</dd>
+    </dl>
+
+    <section class="screen-title">
+      <h2>Home — light &amp; dark</h2>
+      <p>The full system in one screen, in both modes. Light keeps primaries on stark white; dark grounds them on warm near-black with brightened, glowing primaries.</p>
+    </section>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s-5); max-width:1080px; align-items:start;">
+      <figure style="margin:0;">
+        <a href="home.html" style="text-decoration:none;">
+          <img alt="PipCount Bauhaus home — light mode, at-rest" src="screenshots/home.png"
+               style="width:100%; display:block; border:1px solid #0a0a0a; border-radius:30px; box-shadow:0 18px 40px -22px rgba(0,0,0,0.4);" />
+        </a>
+        <figcaption style="margin-top:10px; font-size:0.8rem; color:#555;">
+          Light · at-rest viewport. <a href="home.html">Open →</a>
+        </figcaption>
+      </figure>
+      <figure style="margin:0; background:#141416; padding:10px; border-radius:34px;">
+        <a href="home-dark.html" style="text-decoration:none;">
+          <img alt="PipCount Bauhaus home — dark mode, at-rest" src="screenshots/home-dark.png"
+               style="width:100%; display:block; border:1px solid #2a2a2c; border-radius:30px; box-shadow:0 18px 40px -22px rgba(0,0,0,0.65);" />
+        </a>
+        <figcaption style="margin-top:10px; font-size:0.8rem; color:#8E8C86;">
+          Dark · at-rest viewport. <a href="home-dark.html" style="color:#4D8FFF;">Open →</a>
+        </figcaption>
+      </figure>
+    </div>
+
+    <p style="margin-top: var(--s-5); color:#555; font-size:0.85rem;">
+      Full scrollable content (both modes): <a href="screenshots/home-full.png" style="color:#1E5BC6;">light</a> ·
+      <a href="screenshots/home-dark-full.png" style="color:#4D8FFF;">dark</a>.
+    </p>
+  </main>
+</body>
+</html>

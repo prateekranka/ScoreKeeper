@@ -1,0 +1,52 @@
+{
+  "runId": "20260715T1415Z-root-recovery",
+  "phase": "built-temp-awaiting-independent-qa",
+  "targetFileId": "2434585",
+  "sourceSha256": "52328d0b4178dd64095744ee415184ac7cff190f161fca502cd45fed297d1d75",
+  "specHash": "b3fef6a65369176159fa78d34c8f834e8f8cfb4e9054b0511d6f69f414843446",
+  "protected": {
+    "v2ArtboardId": "0-16469",
+    "hairComponentId": "0-17790",
+    "stateMachineId": "0-32339",
+    "beforeHash": "debf14ffe6b47ff7015d974520c589c186e811751395a46c3009b381bd4a6112"
+  },
+  "intendedTempName": "__V3_TEMP__ ScoreKeeper Cup Hybrid A 20260715T1415Z-root-recovery",
+  "intendedMachineName": "__V3_TEMP__ ScoreKeeper Cup Behaviors 20260715T1415Z-root-recovery",
+  "artboardsBefore": [
+    {
+      "id": "0-3956",
+      "name": "ScoreKeeper Cup Hybrid A - Articulated Rig v1"
+    },
+    {
+      "id": "0-8243",
+      "name": "__BACKUP__ SVG Proof before Production Rig v2 20260715T1447IST"
+    },
+    {
+      "id": "0-17790",
+      "name": "ScoreKeeper Cup Hair Component v2"
+    },
+    {
+      "id": "0-16469",
+      "name": "ScoreKeeper Cup Hybrid A - Production Rig v2"
+    },
+    {
+      "id": "0-12189",
+      "name": "__BACKUP__ Articulated Rig v1 before Production Rig v2 20260715T1447IST"
+    },
+    {
+      "id": "0-2",
+      "name": "__SVG_PROOF__ ScoreKeeper Cup Hybrid A 20260714T233900Z"
+    }
+  ],
+  "publishPerformed": false,
+  "tempArtboardId": "0-32354",
+  "tempMachineId": "0-48286",
+  "animationIds": {
+    "idle_breathe_blink": "0-45292",
+    "hair_bounce": "0-45614",
+    "victory_pop": "0-45148",
+    "curious_tilt": "0-45726",
+    "celebrate_shimmy": "0-45405"
+  },
+  "protectedAfterHash": "debf14ffe6b47ff7015d974520c589c186e811751395a46c3009b381bd4a6112"
+}

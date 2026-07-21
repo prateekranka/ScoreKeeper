@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "approved": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/bind-diff/rig-neutral-on-artboard/approved.png",
+  "candidate": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/bind-diff/rig-neutral-on-artboard/candidate.png",
+  "canvas": {
+    "width": 512,
+    "height": 416
+  },
+  "backgroundSamples": {
+    "approved": [
+      244.0,
+      242.0,
+      236.0
+    ],
+    "candidate": [
+      244.0,
+      242.0,
+      236.0
+    ]
+  },
+  "foregroundPixels": {
+    "approved": 132781,
+    "candidate": 133807
+  },
+  "checks": {
+    "maskIoU": {
+      "value": 0.9888096445943123,
+      "minimum": 0.985,
+      "passed": true
+    },
+    "contourP95Px": {
+      "value": 1.4142135381698608,
+      "maximum": 1.0,
+      "passed": false
+    },
+    "centroidDeltaPx": {
+      "value": 0.8920504694430609,
+      "maximum": 0.5,
+      "passed": false
+    }
+  },
+  "passed": false,
+  "artifacts": {
+    "rgbDifference": "rgb-difference.png",
+    "maskOverlay": "mask-overlay.png"
+  }
+}

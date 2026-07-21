@@ -1,0 +1,733 @@
+/*
+  PipCount — "Bauhaus" exploration
+  Pure primaries on white. Geometric shape language: circle · square · triangle.
+  Static HTML/CSS only — no build step. Open index.html in a browser.
+
+  iOS 26+ posture: iPhone 16 Pro logical viewport, 44pt min targets,
+  Liquid Glass limited to app chrome (status bar / floating bars),
+  content surfaces opaque for contrast and Bauhaus fidelity.
+*/
+
+:root {
+  color-scheme: light;
+  /* Geometric sans is the Bauhaus voice. Avenir Next / Futura are macOS-native
+     and read as geometric humanist; system fallback for non-Apple viewers. */
+  --font: "Avenir Next", Futura, "Century Gothic", "Trebuchet MS", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Space Mono", Menlo, Consolas, monospace;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.35;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
+  /* Device frame */
+  --phone-w: 402px;
+  --phone-h: 874px;
+
+  /* Geometry — Bauhaus is circle/square/triangle. Cards stay near-square;
+     circles live on buttons, marks, pips. Radius interplay IS the language. */
+  --r-0: 0px;      /* cards, tiles, score slips — hard-edged */
+  --r-1: 3px;      /* very subtle softening on dense tiles only */
+  --r-2: 999px;    /* pills, circular controls */
+
+  /* Spacing scale (8pt grid) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-7: 32px;
+
+  /* Motion — mirrors the app's AppMotion tokens */
+  --ease-snap: cubic-bezier(0.2, 0.9, 0.2, 1);
+
+  /* === PURE BAUHAUS PRIMARIES ON WHITE === */
+  --paper:    #FFFFFF;  /* app ground — stark white */
+  --paper-2:  #F4F4F2;  /* sunken wells, grouped rows — barely-off-white */
+  --ink:      #0A0A0A;  /* near-black — primary text + structure */
+  --ink-2:    #6B6B6B;  /* muted gray — secondary text (Bauhaus uses gray, not just B/W) */
+  --line:     #0A0A0A;  /* structural rules are solid black in Bauhaus */
+  --line-soft:#E6E6E2;  /* subtle hairline dividers */
+
+  --red:      #E63946;  /* vermillion — destructive / negative / FINAL stamp */
+  --blue:     #1E5BC6;  /* cobalt — primary action (New Game, Resume) */
+  --yellow:   #F5D020;  /* pure yellow — highlight / leader / active (always a fill, black ink on top) */
+
+  /* Semantic aliases (map 1:1 to SwiftUI tokens so a port is mechanical) */
+  --action:      var(--blue);   /* primary CTA fill */
+  --action-ink:  #FFFFFF;       /* text on primary CTA (stays white in both modes) */
+  --on-yellow:   #0A0A0A;       /* text/icons on yellow fills — ALWAYS black (Bauhaus rule) */
+  --danger:      var(--red);
+  --accent:      var(--red);
+
+  /* Player palette — primary-adjacent inks. Keep order semantics of current PlayerColors. */
+  --p1: #E63946;  /* red    */
+  --p2: #1E5BC6;  /* blue   */
+  --p3: #F5A623;  /* amber  */
+  --p4: #2A9D8F;  /* teal   */
+  --p5: #7B2CBF;  /* violet */
+  --p6: #E76F51;  /* coral  */
+}
+
+/* ============================================================
+   DARK MODE — "Bauhaus at night"
+   Scoped to .device[data-theme="dark"] so light + dark can sit
+   side-by-side on one page. Also mirrored via prefers-color-scheme
+   so the standalone phone honors the OS setting.
+   Rules: paper -> warm near-black, ink -> off-white, structural
+   lines go off-white (Bauhaus = high contrast, never black-on-black),
+   primaries BRIGHTEN for luminance on dark ground. --on-yellow stays
+   black (the black-on-yellow rule is invariant).
+   ============================================================ */
+.device[data-theme="dark"] {
+  --paper:    #0E0E10;  /* warm near-black ground */
+  --paper-2:  #161618;  /* sunken wells, grouped rows */
+  --ink:      #F2F0EA;  /* off-white primary text (not pure white — gentler) */
+  --ink-2:    #8E8C86;  /* muted secondary */
+  --line:     #F2F0EA;  /* structural rules invert to off-white */
+  --line-soft:#2A2A2C;  /* subtle hairline dividers on dark */
+
+  --red:      #FF5466;  /* brightened vermillion — more luminous on dark */
+  --blue:     #4D8FFF;  /* luminous cobalt — the primary CTA must glow */
+  --yellow:   #FFD93D;  /* vivid yellow (slightly warmed) */
+
+  --p1: #FF5466;  /* red, brightened */
+  --p2: #4D8FFF;  /* blue, brightened */
+  --p3: #FFB347;  /* amber */
+  --p4: #3FB8A6;  /* teal */
+  --p5: #9B5FE0;  /* violet */
+  --p6: #FF8A6D;  /* coral */
+}
+/* --on-yellow is pinned to #0A0A0A at root and must NOT inherit dark ink. */
+.device[data-theme="dark"] {
+  --on-yellow: #0A0A0A;
+}
+
+* { box-sizing: border-box; }
+
+html { min-width: 320px; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #ECEAE5;
+  color: var(--ink);
+}
+
+/* Page chrome around the phone (exploration gallery only — not part of the app) */
+body.gallery {
+  background:
+    radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0) 0 0 / 22px 22px,
+    #ECEAE5;
+}
+/* Dark gallery page: grounds the dark device on a night backdrop. */
+body.gallery.dark {
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0) 0 0 / 22px 22px,
+    #141416;
+  color: #F2F0EA;
+}
+body.gallery.dark .back { color: #8E8C86; }
+body.gallery.dark .hero p { color: #8E8C86; }
+
+a { color: inherit; }
+h1, h2, h3, p { margin: 0; }
+h1, h2, h3 { text-wrap: balance; letter-spacing: -0.01em; }
+p { text-wrap: pretty; }
+button { font: inherit; color: inherit; }
+
+/* ============================================================
+   EXPLORATION PAGE SHELL (gallery wrapper)
+   ============================================================ */
+.shell {
+  width: min(1320px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 30px 0 64px;
+}
+.back {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; text-decoration: none;
+  color: #555; font-size: 0.95rem;
+}
+.hero { display: grid; gap: var(--s-6); align-items: start; margin: var(--s-6) 0 42px; }
+.hero h1 { font-size: 2.6rem; line-height: 1.02; font-weight: 800; }
+.hero p { max-width: 70ch; color: #555; font-size: 1.02rem; }
+
+.system-card {
+  display: grid; gap: var(--s-3);
+  padding: var(--s-5); border: 1px solid #d9d6cf;
+  background: #fff; color: var(--ink); max-width: 720px;
+}
+.system-card dt { color: var(--ink-2); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.system-card dd { margin: 2px 0 0; font-weight: 700; }
+
+.swatch-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.swatch { display: grid; gap: 4px; }
+.swatch i { display: block; width: 44px; height: 44px; border: 1px solid rgba(0,0,0,0.12); }
+.swatch small { font-size: 0.66rem; color: var(--ink-2); letter-spacing: 0.02em; }
+
+.notes { display: grid; gap: var(--s-4); max-width: 720px; margin-top: var(--s-5); }
+.note { padding: var(--s-4); border: 1px solid #d9d6cf; background: #fff; }
+.note h2 { margin-bottom: var(--s-2); font-size: 1rem; }
+.note p, .note li { color: #555; }
+.note ul { display: grid; gap: var(--s-2); margin: 0; padding-left: 18px; }
+
+.screen-title { margin: 44px 0 var(--s-5); }
+.screen-title h2 { font-size: 1.6rem; }
+.screen-title p { color: #555; }
+
+/* ============================================================
+   DEVICE FRAME (iPhone 16 Pro, iOS 26)
+   ============================================================ */
+.device {
+  position: relative;
+  width: var(--phone-w);
+  height: var(--phone-h);
+  overflow: hidden;
+  border: 1px solid #0a0a0a;
+  border-radius: 30px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 24px 60px -28px rgba(0,0,0,0.4);
+}
+/* dark device: invert the bezel + home indicator for night chrome */
+.device[data-theme="dark"] {
+  border-color: #2a2a2c;
+  box-shadow: 0 24px 60px -24px rgba(0,0,0,0.65);
+}
+.device[data-theme="dark"]::after {
+  background: rgba(242,240,234,0.55);
+}
+/* home indicator */
+.device::after {
+  content: "";
+  position: absolute; left: 50%; bottom: 9px; z-index: 40;
+  width: 134px; height: 5px; border-radius: var(--r-2);
+  background: rgba(10,10,10,0.55);
+  transform: translateX(-50%);
+}
+
+/* Status bar — Liquid Glass chrome over content */
+.status {
+  position: relative; z-index: 30;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  height: 76px; padding: 42px 24px 0;
+  background: color-mix(in srgb, var(--paper) 70%, transparent);
+  backdrop-filter: blur(18px) saturate(1.3);
+  color: var(--ink);
+  font-size: 0.84rem; font-weight: 800; letter-spacing: 0.01em;
+}
+/* Dynamic Island */
+.status::before {
+  content: "";
+  position: absolute; top: 13px; left: 50%;
+  width: 124px; height: 36px; border-radius: var(--r-2);
+  background: #060606;
+  transform: translateX(-50%);
+}
+
+/* Scrollable app surface — fixed viewport height so content scrolls inside
+   the device frame, exactly like a real UIScrollView. */
+.screen {
+  position: relative;
+  display: flex; flex-direction: column;
+  height: calc(var(--phone-h) - 76px);
+  padding: var(--s-4) var(--s-4) 40px;
+  gap: var(--s-5);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+/* Hide scrollbars inside the mock device — they aren't part of the app UI */
+.screen::-webkit-scrollbar { width: 0; height: 0; }
+.screen { scrollbar-width: none; }
+
+/* ============================================================
+   GEOMETRIC MARKS — hand-built from circle/square/triangle.
+   These replace SF Symbols so the icon voice is Bauhaus, not iOS.
+   ============================================================ */
+.mk { position: relative; display: inline-block; flex: 0 0 auto; }
+.mk-c        { border-radius: 50%; }
+.mk-sq       { border-radius: 0; }
+.mk-tri      { width: 0; height: 0; border-style: solid; }
+.mk-half     { border-radius: 0; clip-path: inset(0 0 0 50%); }            /* right half of a square */
+.mk-semi     { border-radius: 0; }                                          /* use clip-path inline */
+.mk-quarter  { border-radius: 0; }
+
+/* Reusable sizes */
+.mk-8  { width: 8px;  height: 8px; }
+.mk-10 { width: 10px; height: 10px; }
+.mk-12 { width: 12px; height: 12px; }
+.mk-14 { width: 14px; height: 14px; }
+.mk-16 { width: 16px; height: 16px; }
+.mk-20 { width: 20px; height: 20px; }
+.mk-24 { width: 24px; height: 24px; }
+.mk-28 { width: 28px; height: 28px; }
+
+/* Wordmark cluster — the PipCount mark: red circle + blue square + yellow triangle
+   arranged as a clean, non-overlapping row of three primaries.
+   Think of it as a tiny Bauhaus composition (Kandinsky's "several circles" miniaturised):
+   each shape is fully visible and unambiguously itself. */
+.brand-mark {
+  position: relative; width: 44px; height: 20px; flex: 0 0 auto;
+  display: flex; align-items: center; gap: 3px;
+}
+.brand-mark .b-c  { width: 18px; height: 18px; border-radius: 50%; background: var(--red); }
+.brand-mark .b-sq { width: 15px; height: 15px; background: var(--blue); }
+.brand-mark .b-tri {
+  width: 0; height: 0; border-style: solid;
+  border-width: 0 8px 14px 8px;
+  border-color: transparent transparent var(--yellow) transparent;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.app-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--s-3); padding-top: 8px;
+}
+.app-header .titles { display: grid; gap: 2px; min-width: 0; }
+.wordmark {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 1.9rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em;
+}
+.wordmark .txt { color: var(--ink); }
+.header-sub { color: var(--ink-2); font-size: 0.92rem; font-weight: 500; }
+
+/* circular chrome button (theme / appearance) — Liquid Glass, primary shape inside */
+.chrome-btn {
+  width: 44px; height: 44px; flex: 0 0 auto;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--paper) 60%, transparent);
+  backdrop-filter: blur(14px) saturate(1.3);
+  border: 1.5px solid var(--ink);
+  cursor: pointer;
+}
+/* half-moon "appearance" glyph: half the circle filled black */
+.appearance-glyph {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(to right, var(--ink) 0 50%, var(--yellow) 50% 100%);
+  border: 1.5px solid var(--ink);
+}
+
+/* ============================================================
+   COLUMN HEADER — uppercase tracked label ("ACTIVE GAMES", "RECENT")
+   ============================================================ */
+.col-head {
+  display: flex; align-items: center; gap: var(--s-2);
+  font-size: 0.74rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--ink);
+}
+.col-head .count {
+  font-family: var(--font-mono); font-weight: 800;
+  background: var(--yellow); color: var(--on-yellow);
+  padding: 1px 7px; border: 1.5px solid var(--ink);
+}
+.col-head .rule { flex: 1; height: 2px; background: var(--ink); }
+
+/* ============================================================
+   PRIMARY CTA — bold color block, sharp corners, "+" from bars
+   ============================================================ */
+.cta {
+  position: relative;
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; min-height: 56px; padding: 0 18px;
+  border: 2px solid var(--ink); border-radius: var(--r-0);
+  background: var(--action); color: var(--action-ink);
+  font-size: 1.08rem; font-weight: 800; letter-spacing: 0.01em;
+  text-decoration: none; cursor: pointer;
+}
+/* Bauhaus corner accent — yellow square nested INSIDE the frame, top-left,
+   so it never collides with the border or label. */
+.cta::before {
+  content: ""; position: absolute; top: 6px; left: 6px;
+  width: 14px; height: 14px; background: var(--yellow);
+  border: 1.5px solid var(--ink);
+}
+/* label centered in the space right of the accent */
+.cta .label { flex: 1; text-align: center; padding-left: 24px; }
+.cta .plus { position: relative; width: 16px; height: 16px; flex: 0 0 auto; }
+.cta .plus::before, .cta .plus::after {
+  content: ""; position: absolute; background: var(--action-ink);
+}
+.cta .plus::before { left: 50%; top: 0; width: 3px; height: 100%; transform: translateX(-50%); }
+.cta .plus::after  { top: 50%; left: 0; height: 3px; width: 100%; transform: translateY(-50%); }
+
+/* ============================================================
+   METRIC STRIP — de Stijl grid: white cells, thick black rules,
+   each cell a primary shape + big geometric number
+   ============================================================ */
+.metrics {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border: 2px solid var(--ink); background: var(--paper);
+}
+.metric { padding: var(--s-3) var(--s-2); display: grid; gap: 6px; justify-items: start; }
+.metric + .metric { border-left: 2px solid var(--ink); }
+.metric .num {
+  font-family: var(--font-mono); font-weight: 800;
+  font-size: 1.7rem; line-height: 1; color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.metric .lbl {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ink);
+}
+/* primary shape swatch per metric */
+.swatch-c   { width: 12px; height: 12px; border-radius: 50%; background: var(--red); }
+.swatch-sq  { width: 12px; height: 12px; background: var(--blue); }
+.swatch-tri {
+  width: 0; height: 0; border-style: solid;
+  border-width: 0 0 11px 11px;
+  border-color: transparent transparent var(--yellow) transparent;
+}
+
+/* ============================================================
+   TOOLS GRID — 4 tiles, geometric icons
+   ============================================================ */
+.tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--s-2); }
+.tool {
+  display: grid; gap: 8px; justify-items: center; align-content: center;
+  min-height: 92px; padding: var(--s-2);
+  border: 2px solid var(--ink); background: var(--paper);
+  cursor: pointer; text-decoration: none;
+}
+.tool .ic { width: 34px; height: 34px; display: grid; place-items: center; }
+.tool .lbl {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--ink); text-align: center;
+}
+
+/* --- geometric tool icons (built from primaries) ---
+   Each icon is constructed so its silhouette reads unambiguously at glance,
+   not as an abstract shape pile. Primaries carry the Bauhaus voice without
+   sacrificing legibility. */
+
+/* TIMER — a clock: bold circular ring + two thick visible hands from center. */
+.ic-timer {
+  position: relative; width: 32px; height: 32px;
+  border: 3px solid var(--ink); border-radius: 50%;
+}
+/* minute hand — a thick red bar from center, pointing up-right */
+.ic-timer::before {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 13px; height: 4px; background: var(--red);
+  transform-origin: left center; transform: rotate(-35deg);
+}
+/* hour hand — a shorter blue bar from center, pointing down-right */
+.ic-timer::after {
+  content: ""; position: absolute; left: 50%; top: 50%;
+  width: 8px; height: 4px; background: var(--blue);
+  transform-origin: left center; transform: rotate(55deg);
+}
+/* 12-o'clock tick (yellow) so the dial orientation is unmistakable */
+.ic-timer .tick {
+  position: absolute; top: 1px; left: 50%;
+  width: 4px; height: 6px; background: var(--yellow);
+  transform: translateX(-50%);
+}
+
+/* DICE — a tilted square face with a classic 5-pip pattern.
+   A single color per pip keeps it Bauhaus-crisp and reads instantly as a die. */
+.ic-dice {
+  position: relative; width: 30px; height: 30px;
+  border: 3px solid var(--ink); transform: rotate(-8deg);
+}
+.ic-dice i { position: absolute; width: 5px; height: 5px; background: var(--blue); }
+/* four corners */
+.ic-dice i:nth-child(1) { top: 5px; left: 5px; }
+.ic-dice i:nth-child(2) { top: 5px; right: 5px; background: var(--red); }
+.ic-dice i:nth-child(3) { bottom: 5px; left: 5px; background: var(--yellow); }
+.ic-dice i:nth-child(4) { bottom: 5px; right: 5px; }
+/* center pip */
+.ic-dice i:nth-child(5) { top: 50%; left: 50%; transform: translate(-50%,-50%); background: var(--ink); }
+
+/* STARTER — a swap/shuffle: two parallel arrows pointing opposite ways.
+   Bauhaus as "movement": arrowheads are solid triangles, shafts are bars. */
+.ic-starter { position: relative; width: 30px; height: 30px; }
+.ic-starter .arrow {
+  position: absolute; height: 3px; background: var(--ink); width: 19px;
+}
+/* top arrow shaft — points right */
+.ic-starter .arrow.r { top: 10px; left: 3px; }
+/* its arrowhead — solid yellow triangle */
+.ic-starter .ah-r {
+  position: absolute; top: 7px; right: 2px;
+  width: 0; height: 0; border-style: solid;
+  border-width: 4.5px 0 4.5px 8px; border-color: transparent transparent transparent var(--yellow);
+}
+/* bottom arrow shaft — points left */
+.ic-starter .arrow.l { bottom: 10px; right: 3px; }
+/* its arrowhead — solid red triangle */
+.ic-starter .ah-l {
+  position: absolute; bottom: 7px; left: 2px;
+  width: 0; height: 0; border-style: solid;
+  border-width: 4.5px 8px 4.5px 0; border-color: transparent var(--red) transparent transparent;
+}
+
+/* UNDO — a curved arrow: ¾-circle arc with an arrowhead at the open end
+   that actually touches the arc. The head sits where the line ends. */
+.ic-undo { position: relative; width: 30px; height: 30px; }
+.ic-undo .arc {
+  position: absolute; inset: 2px;
+  border: 3.5px solid var(--ink);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+}
+/* arrowhead — a solid red triangle anchored at the top-right where the arc terminates,
+   pointing back down-left (the "undo" direction). */
+.ic-undo .head {
+  position: absolute; top: -2px; right: 1px;
+  width: 0; height: 0; border-style: solid;
+  border-width: 9px 9px 0 0;
+  border-color: var(--red) transparent transparent transparent;
+}
+
+/* ============================================================
+   LEDGER / SCORECARD — the hero. Opaque paper, hairline rules,
+   monospaced heavy totals. Leader row gets a yellow block.
+   ============================================================ */
+.scorecard {
+  border: 2px solid var(--ink); background: var(--paper);
+  overflow: hidden;
+}
+.sc-head {
+  display: flex; align-items: center; gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 2px solid var(--ink);
+}
+.sc-game { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.sc-game .gname { font-size: 1.12rem; font-weight: 800; color: var(--ink); }
+.sc-game .gicon { width: 26px; height: 26px; display: grid; place-items: center; }
+.sc-resume {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+  min-height: 36px; padding: 0 12px;
+  background: var(--blue); color: #fff;
+  font-size: 0.82rem; font-weight: 800; letter-spacing: 0.02em;
+  text-decoration: none;
+}
+.sc-resume .play {
+  width: 0; height: 0; border-style: solid;
+  border-width: 5px 0 5px 8px; border-color: transparent transparent transparent var(--action-ink);
+}
+
+/* Round/phase peg strip — "ROUND 03" + 10 phase dots */
+.sc-round {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-2) var(--s-4);
+  border-bottom: 2px solid var(--ink); background: var(--paper-2);
+}
+.round-stamp {
+  font-family: var(--font-mono); font-weight: 800; font-size: 0.82rem;
+  letter-spacing: 0.06em; color: var(--ink);
+}
+.peg-strip { display: flex; align-items: center; gap: 7px; }
+.peg { width: 11px; height: 11px; border: 1.5px solid var(--ink); background: var(--paper); }
+.peg.done { background: var(--blue); }
+.peg.now { background: var(--yellow); }
+
+/* Ledger rows */
+.ledger { display: grid; }
+.lrow {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: 11px var(--s-4);
+  border-bottom: 1px solid var(--line-soft);
+}
+.lrow:last-child { border-bottom: 0; }
+/* player pip = small primary shape per player */
+.pip { width: 12px; height: 12px; flex: 0 0 auto; }
+.pip.c { border-radius: 50%; }
+.pip.sq { border-radius: 0; }
+.pip.tri { width: 0; height: 0; border-style: solid; border-width: 0 0 11px 11px; }
+.lname { font-size: 0.98rem; font-weight: 600; color: var(--ink); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lscore {
+  margin-left: auto; font-family: var(--font-mono); font-weight: 800;
+  font-size: 1.18rem; color: var(--ink); font-variant-numeric: tabular-nums;
+}
+/* leader variant — yellow block runs full width behind the row */
+.lrow.lead { background: var(--yellow); }
+.lrow.lead .lscore { color: var(--ink); }
+/* CROWN — built from three primary peaks, reads as a crown not a single triangle.
+   A black bar (the band) with three triangular spikes (red/yellow/blue) on top. */
+.crown { position: relative; width: 18px; height: 13px; flex: 0 0 auto; }
+.crown .band {
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 4px; background: var(--ink);
+}
+.crown .peak {
+  position: absolute; bottom: 4px; width: 0; height: 0; border-style: solid;
+  border-width: 0 5px 9px 5px;
+}
+.crown .peak.l { left: 0;  border-color: transparent transparent var(--red) transparent; }
+.crown .peak.m { left: 50%; transform: translateX(-50%); border-bottom-width: 11px; border-color: transparent transparent var(--yellow) transparent; }
+.crown .peak.r { right: 0; border-color: transparent transparent var(--blue) transparent; }
+
+/* ============================================================
+   RECENT GAME SLIPS — aligned (Bauhaus = grid), FINAL stamp rotated
+   ============================================================ */
+.recent { display: grid; gap: var(--s-3); }
+.slip {
+  position: relative;
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 2px solid var(--ink); background: var(--paper);
+  text-decoration: none; color: var(--ink);
+}
+.slip .gicon { width: 26px; height: 26px; display: grid; place-items: center; flex: 0 0 auto; }
+.slip .body { display: grid; gap: 2px; min-width: 0; }
+.slip .gname { font-size: 1rem; font-weight: 800; }
+.slip .winner { font-size: 0.82rem; font-weight: 700; color: var(--ink); }
+.slip .winner b { color: var(--red); }
+.slip .date { margin-left: auto; font-size: 0.74rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-2); }
+.slip .chev { width: 9px; height: 9px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(-45deg); flex: 0 0 auto; }
+
+/* FINAL rubber stamp */
+.stamp {
+  position: absolute; top: 8px; right: 28px;
+  padding: 3px 7px; border: 2px solid var(--red);
+  color: var(--red); background: transparent;
+  font-family: var(--font-mono); font-weight: 800; font-size: 0.7rem;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  transform: rotate(-6deg); opacity: 0.85;
+}
+
+/* game-type marks (geometric) — each must read as its game at a glance. */
+
+/* SCOREBOARD — a mini bar chart: three ascending/descending bars in primaries,
+   sitting on a baseline inside a framed panel. */
+.gm-scoreboard {
+  position: relative; width: 26px; height: 26px;
+  border: 2px solid var(--ink);
+}
+.gm-scoreboard i { position: absolute; bottom: 2px; width: 4px; }
+.gm-scoreboard i:nth-child(1) { left: 3px;  height: 9px;  background: var(--yellow); }
+.gm-scoreboard i:nth-child(2) { left: 9px;  height: 17px; background: var(--red); }
+.gm-scoreboard i:nth-child(3) { left: 15px; height: 12px; background: var(--blue); }
+
+/* TEN PHASES — a 3×3 grid of phases, mixing primary shapes (the game IS ten
+   distinct phases): circle, square, triangle motifs across the grid. */
+.gm-phases { display: grid; grid-template-columns: repeat(3, 6px); gap: 3px; width: 24px; }
+.gm-phases i { width: 6px; height: 6px; background: var(--ink); }
+.gm-phases i:nth-child(1) { background: var(--red); border-radius: 50%; }   /* circle  */
+.gm-phases i:nth-child(2) { background: var(--blue); }                       /* square  */
+.gm-phases i:nth-child(3) { background: var(--yellow); }                     /* square  */
+.gm-phases i:nth-child(4) { background: var(--blue); }                       /* square  */
+.gm-phases i:nth-child(5) { background: var(--red); border-radius: 50%; }   /* circle  */
+.gm-phases i:nth-child(6) { background: var(--ink); }                        /* square  */
+.gm-phases i:nth-child(7) { background: var(--yellow); }                     /* square  */
+.gm-phases i:nth-child(8) { background: var(--ink); }                        /* square  */
+.gm-phases i:nth-child(9) { background: var(--blue); border-radius: 50%; }   /* circle  */
+
+/* WHAT'S FOR DINNER — a plate (ring) with a pizza/cheese slice.
+   The slice is a yellow triangle pointing to center; a red dot = topping. */
+.gm-dinner { position: relative; width: 26px; height: 26px; }
+.gm-dinner .plate {
+  position: absolute; inset: 0;
+  border: 2px solid var(--ink); border-radius: 50%;
+}
+.gm-dinner .slice {
+  /* a clear pie slice: triangle filling the right-bottom quadrant */
+  position: absolute; top: 50%; left: 50%;
+  width: 10px; height: 10px; background: var(--yellow);
+  transform: translate(-50%,-50%) rotate(45deg);
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+.gm-dinner .topping {
+  position: absolute; top: 60%; left: 62%;
+  width: 4px; height: 4px; border-radius: 50%; background: var(--red);
+  transform: translate(-50%,-50%);
+}
+
+/* ============================================================
+   STATS ROW
+   ============================================================ */
+.stat-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: var(--s-3) var(--s-4); min-height: 48px;
+  border: 2px solid var(--ink); background: var(--paper);
+  text-decoration: none; color: var(--ink);
+  font-weight: 700;
+}
+.stat-link .ic { width: 20px; height: 20px; display: grid; place-items: center; }
+/* head-to-head glyph: two overlapping squares */
+.ic-h2h { position: relative; width: 22px; height: 18px; }
+.ic-h2h i { position: absolute; width: 13px; height: 13px; border: 2px solid var(--ink); }
+.ic-h2h i:nth-child(1) { left: 0; top: 0; background: var(--red); }
+.ic-h2h i:nth-child(2) { right: 0; bottom: 0; background: var(--blue); }
+.stat-link .chev { margin-left: auto; width: 9px; height: 9px; border-right: 2px solid var(--ink); border-bottom: 2px solid var(--ink); transform: rotate(-45deg); }
+
+.player-chips { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+.pchip {
+  display: inline-flex; align-items: center; gap: 7px;
+  min-height: 40px; padding: 0 14px;
+  border: 2px solid var(--ink); background: var(--paper);
+  font-size: 0.9rem; font-weight: 700; color: var(--ink);
+  text-decoration: none;
+}
+
+/* ============================================================
+   MOTION — restrained, mirrors AppMotion. Entrance emphasis only.
+   ============================================================ */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.screen > * { animation: riseIn 0.32s var(--ease-snap) both; }
+.screen > *:nth-child(2) { animation-delay: 0.04s; }
+.screen > *:nth-child(3) { animation-delay: 0.08s; }
+.screen > *:nth-child(4) { animation-delay: 0.12s; }
+.screen > *:nth-child(5) { animation-delay: 0.16s; }
+.screen > *:nth-child(6) { animation-delay: 0.20s; }
+.screen > *:nth-child(7) { animation-delay: 0.24s; }
+
+/* ============================================================
+   RESPONSIVE / ACCESSIBILITY
+   ============================================================ */
+@media (max-width: 460px) {
+  .shell { width: min(100% - 20px, 1320px); }
+  .device { transform-origin: top center; transform: scale(calc((100vw - 24px) / 402)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .status, .chrome-btn { backdrop-filter: none; background: var(--paper); }
+}
+
+/* ============================================================
+   OS-LEVEL DARK MODE
+   A standalone device (no explicit data-theme) honors the system.
+   Applies the same token map as [data-theme="dark"] above so the
+   behaviour matches SwiftUI's Color(light:dark:) dynamic tokens.
+   Disabled on the gallery page so the light exploration chrome
+   never flips unexpectedly; only the in-app .device responds.
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  .device:not([data-theme]) {
+    --paper:    #0E0E10;
+    --paper-2:  #161618;
+    --ink:      #F2F0EA;
+    --ink-2:    #8E8C86;
+    --line:     #F2F0EA;
+    --line-soft:#2A2A2C;
+    --red:      #FF5466;
+    --blue:     #4D8FFF;
+    --yellow:   #FFD93D;
+    --p1: #FF5466; --p2: #4D8FFF; --p3: #FFB347;
+    --p4: #3FB8A6; --p5: #9B5FE0; --p6: #FF8A6D;
+    --on-yellow: #0A0A0A;
+    border-color: #2a2a2c;
+    box-shadow: 0 24px 60px -24px rgba(0,0,0,0.65);
+  }
+  .device:not([data-theme])::after { background: rgba(242,240,234,0.55); }
+}

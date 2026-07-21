@@ -1,0 +1,24 @@
+{
+  "status": "awaiting-rive-artboard-approval",
+  "source": "../source/hybrid-a-light-transparent.png",
+  "canonicalSvg": "../svg/scorekeeper-cup-hybrid-a-canonical.svg",
+  "rendererPreview": "../previews/canonical-svg-render.png",
+  "canvas": [512, 416],
+  "trace": {
+    "tool": "VTracer 0.6.5",
+    "mode": "pixel",
+    "colorMode": "color",
+    "colorPrecision": 8,
+    "gradientStep": 0,
+    "hierarchical": "cutout",
+    "filterSpeckle": 0,
+    "pathCount": 181,
+    "curveFitting": false
+  },
+  "comparison": {
+    "rmseNormalized": 0.0645161,
+    "interpretation": "Geometry and palette proof only; native SVG rasterization cannot reproduce the generated PNG's 12,890 opaque RGB samples literally."
+  },
+  "riggingStarted": false,
+  "canonicalMasterApproved": false
+}

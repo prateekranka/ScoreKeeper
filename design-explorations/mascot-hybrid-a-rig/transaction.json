@@ -1,0 +1,17 @@
+{
+  "status": "svg-proof-imported",
+  "runId": "20260714T233900Z",
+  "artboardId": "0-2",
+  "artboardName": "__SVG_PROOF__ ScoreKeeper Cup Hybrid A 20260714T233900Z",
+  "canvas": [
+    512,
+    416
+  ],
+  "canonicalSvg": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/svg/scorekeeper-cup-hybrid-a-canonical.svg",
+  "importedShapeCount": 181,
+  "autoDefaultTimelineRemoved": true,
+  "autoDefaultStateMachineRemoved": true,
+  "liveQaStatus": "pass",
+  "riggingStarted": false,
+  "canonicalMasterApproved": false
+}

@@ -186,8 +186,33 @@ struct EmptyStateView: View {
     let message: String
 
     var body: some View {
-        ContentUnavailableView(title, systemImage: systemImage, description: Text(message))
-            .frame(maxWidth: .infinity, minHeight: 220)
+        VStack(spacing: AppTheme.spacingMedium) {
+            ZStack {
+                Circle()
+                    .fill(ClubhouseTheme.bauhausBlue.opacity(0.10))
+                    .frame(width: 72, height: 72)
+                Image(systemName: systemImage)
+                    .font(.system(size: 28, weight: .semibold))
+                    .foregroundStyle(ClubhouseTheme.bauhausBlue)
+                    .accessibilityHidden(true)
+            }
+
+            VStack(spacing: 6) {
+                Text(title)
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .multilineTextAlignment(.center)
+
+                Text(message)
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(AppTheme.spacingLarge)
+        .frame(maxWidth: .infinity, minHeight: 220)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -237,10 +262,19 @@ struct AppGlassModifier: ViewModifier {
 struct StaggeredEntranceModifier: ViewModifier {
     let visible: Bool
     let index: Int
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
-        // Frequent navigation should arrive immediately. Rare celebration motion is
-        // owned by the destination itself rather than this global modifier.
+        let delay = Double(index) * AppMotion.staggerStep
         content
+            .opacity(visible ? 1 : 0)
+            .offset(y: visible || reduceMotion ? 0 : 8)
+            .animation(
+                reduceMotion
+                    ? AppMotion.fade.delay(delay * 0.35)
+                    : AppMotion.entrance.delay(delay),
+                value: visible
+            )
+            .allowsHitTesting(visible)
     }
 }

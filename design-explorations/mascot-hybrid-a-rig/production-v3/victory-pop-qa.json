@@ -1,0 +1,973 @@
+{
+  "status": "pass",
+  "animation": {
+    "displayName": "Victory Pop",
+    "durationSeconds": 2.6,
+    "fps": 60,
+    "canvas": {
+      "width": 512,
+      "height": 416
+    },
+    "terminalFrame": 156,
+    "renderedFrameCount": 157,
+    "source": "../svg/scorekeeper-cup-hybrid-a-canonical.svg",
+    "liveRiveModified": false
+  },
+  "architecture": {
+    "composites": [
+      "cup/head",
+      "pedestal/stem/base",
+      "hair (cap + fringe internal groups)",
+      "left-eye",
+      "right-eye",
+      "mouth",
+      "shine"
+    ],
+    "rigidCupAndPedestal": true,
+    "hairPivot": {
+      "x": 254,
+      "y": 89
+    },
+    "hairCapSourceIndices": [
+      5,
+      28,
+      50,
+      137
+    ],
+    "hairFringeSourceIndices": [
+      164,
+      175
+    ],
+    "path1ContourOwnership": {
+      "1": "cup",
+      "2": "shine",
+      "3": "eyeL",
+      "4": "eyeR",
+      "5": "mouth"
+    },
+    "underlap": {
+      "hairColor": "#EFB944",
+      "pedestalSeamColor": "#BE9433",
+      "opaque": true,
+      "clippedToCupVisible": true,
+      "translucentMasks": false
+    },
+    "viewportSafeInset": {
+      "nonEndpointScale": 0.96,
+      "endpointScale": 1,
+      "reason": "preserve >=2px top and clear all canvas edges after antialiased rotation while retaining authored root squash tracks"
+    },
+    "artworkLocked": true
+  },
+  "ownership": {
+    "sourceEntryCount": 181,
+    "expectedSourceEntryCount": 181,
+    "sourceEntriesCoveredExactlyOnce": true,
+    "missingSourceEntries": [],
+    "duplicateSourceEntries": [],
+    "path1SpecialContourCount": 5,
+    "hairSourceIndices": [
+      5,
+      28,
+      50,
+      137,
+      164,
+      175
+    ],
+    "canonicalPaletteCount": 174,
+    "sourceEntryOwners": {
+      "1": [
+        "cup",
+        "shine",
+        "eyeL",
+        "eyeR",
+        "mouth"
+      ],
+      "2": [
+        "cup"
+      ],
+      "3": [
+        "pedestal"
+      ],
+      "4": [
+        "pedestal"
+      ],
+      "5": [
+        "hair"
+      ],
+      "6": [
+        "pedestal"
+      ],
+      "7": [
+        "pedestal"
+      ],
+      "8": [
+        "cup"
+      ],
+      "9": [
+        "cup"
+      ],
+      "10": [
+        "cup"
+      ],
+      "11": [
+        "cup"
+      ],
+      "12": [
+        "mouth"
+      ],
+      "13": [
+        "eyeR"
+      ],
+      "14": [
+        "eyeL"
+      ],
+      "15": [
+        "cup"
+      ],
+      "16": [
+        "pedestal"
+      ],
+      "17": [
+        "cup"
+      ],
+      "18": [
+        "cup"
+      ],
+      "19": [
+        "pedestal"
+      ],
+      "20": [
+        "cup"
+      ],
+      "21": [
+        "pedestal"
+      ],
+      "22": [
+        "mouth"
+      ],
+      "23": [
+        "cup"
+      ],
+      "24": [
+        "mouth"
+      ],
+      "25": [
+        "cup"
+      ],
+      "26": [
+        "cup"
+      ],
+      "27": [
+        "pedestal"
+      ],
+      "28": [
+        "hair"
+      ],
+      "29": [
+        "shine"
+      ],
+      "30": [
+        "cup"
+      ],
+      "31": [
+        "pedestal"
+      ],
+      "32": [
+        "mouth"
+      ],
+      "33": [
+        "pedestal"
+      ],
+      "34": [
+        "cup"
+      ],
+      "35": [
+        "pedestal"
+      ],
+      "36": [
+        "pedestal"
+      ],
+      "37": [
+        "mouth"
+      ],
+      "38": [
+        "pedestal"
+      ],
+      "39": [
+        "pedestal"
+      ],
+      "40": [
+        "pedestal"
+      ],
+      "41": [
+        "cup"
+      ],
+      "42": [
+        "cup"
+      ],
+      "43": [
+        "cup"
+      ],
+      "44": [
+        "cup"
+      ],
+      "45": [
+        "cup"
+      ],
+      "46": [
+        "pedestal"
+      ],
+      "47": [
+        "cup"
+      ],
+      "48": [
+        "mouth"
+      ],
+      "49": [
+        "cup"
+      ],
+      "50": [
+        "hair"
+      ],
+      "51": [
+        "pedestal"
+      ],
+      "52": [
+        "cup"
+      ],
+      "53": [
+        "cup"
+      ],
+      "54": [
+        "pedestal"
+      ],
+      "55": [
+        "cup"
+      ],
+      "56": [
+        "cup"
+      ],
+      "57": [
+        "cup"
+      ],
+      "58": [
+        "cup"
+      ],
+      "59": [
+        "cup"
+      ],
+      "60": [
+        "pedestal"
+      ],
+      "61": [
+        "pedestal"
+      ],
+      "62": [
+        "cup"
+      ],
+      "63": [
+        "cup"
+      ],
+      "64": [
+        "mouth"
+      ],
+      "65": [
+        "cup"
+      ],
+      "66": [
+        "cup"
+      ],
+      "67": [
+        "cup"
+      ],
+      "68": [
+        "cup"
+      ],
+      "69": [
+        "cup"
+      ],
+      "70": [
+        "cup"
+      ],
+      "71": [
+        "pedestal"
+      ],
+      "72": [
+        "cup"
+      ],
+      "73": [
+        "cup"
+      ],
+      "74": [
+        "cup"
+      ],
+      "75": [
+        "cup"
+      ],
+      "76": [
+        "cup"
+      ],
+      "77": [
+        "pedestal"
+      ],
+      "78": [
+        "cup"
+      ],
+      "79": [
+        "pedestal"
+      ],
+      "80": [
+        "eyeR"
+      ],
+      "81": [
+        "cup"
+      ],
+      "82": [
+        "pedestal"
+      ],
+      "83": [
+        "mouth"
+      ],
+      "84": [
+        "mouth"
+      ],
+      "85": [
+        "mouth"
+      ],
+      "86": [
+        "cup"
+      ],
+      "87": [
+        "mouth"
+      ],
+      "88": [
+        "cup"
+      ],
+      "89": [
+        "cup"
+      ],
+      "90": [
+        "eyeR"
+      ],
+      "91": [
+        "cup"
+      ],
+      "92": [
+        "cup"
+      ],
+      "93": [
+        "pedestal"
+      ],
+      "94": [
+        "cup"
+      ],
+      "95": [
+        "pedestal"
+      ],
+      "96": [
+        "pedestal"
+      ],
+      "97": [
+        "cup"
+      ],
+      "98": [
+        "shine"
+      ],
+      "99": [
+        "cup"
+      ],
+      "100": [
+        "cup"
+      ],
+      "101": [
+        "cup"
+      ],
+      "102": [
+        "cup"
+      ],
+      "103": [
+        "cup"
+      ],
+      "104": [
+        "pedestal"
+      ],
+      "105": [
+        "pedestal"
+      ],
+      "106": [
+        "pedestal"
+      ],
+      "107": [
+        "cup"
+      ],
+      "108": [
+        "cup"
+      ],
+      "109": [
+        "pedestal"
+      ],
+      "110": [
+        "cup"
+      ],
+      "111": [
+        "mouth"
+      ],
+      "112": [
+        "cup"
+      ],
+      "113": [
+        "pedestal"
+      ],
+      "114": [
+        "eyeL"
+      ],
+      "115": [
+        "cup"
+      ],
+      "116": [
+        "cup"
+      ],
+      "117": [
+        "cup"
+      ],
+      "118": [
+        "cup"
+      ],
+      "119": [
+        "pedestal"
+      ],
+      "120": [
+        "pedestal"
+      ],
+      "121": [
+        "mouth"
+      ],
+      "122": [
+        "cup"
+      ],
+      "123": [
+        "pedestal"
+      ],
+      "124": [
+        "pedestal"
+      ],
+      "125": [
+        "pedestal"
+      ],
+      "126": [
+        "cup"
+      ],
+      "127": [
+        "pedestal"
+      ],
+      "128": [
+        "pedestal"
+      ],
+      "129": [
+        "cup"
+      ],
+      "130": [
+        "cup"
+      ],
+      "131": [
+        "pedestal"
+      ],
+      "132": [
+        "cup"
+      ],
+      "133": [
+        "cup"
+      ],
+      "134": [
+        "cup"
+      ],
+      "135": [
+        "cup"
+      ],
+      "136": [
+        "cup"
+      ],
+      "137": [
+        "hair"
+      ],
+      "138": [
+        "pedestal"
+      ],
+      "139": [
+        "shine"
+      ],
+      "140": [
+        "cup"
+      ],
+      "141": [
+        "pedestal"
+      ],
+      "142": [
+        "cup"
+      ],
+      "143": [
+        "mouth"
+      ],
+      "144": [
+        "cup"
+      ],
+      "145": [
+        "cup"
+      ],
+      "146": [
+        "pedestal"
+      ],
+      "147": [
+        "cup"
+      ],
+      "148": [
+        "pedestal"
+      ],
+      "149": [
+        "cup"
+      ],
+      "150": [
+        "pedestal"
+      ],
+      "151": [
+        "cup"
+      ],
+      "152": [
+        "cup"
+      ],
+      "153": [
+        "cup"
+      ],
+      "154": [
+        "eyeL"
+      ],
+      "155": [
+        "eyeL"
+      ],
+      "156": [
+        "cup"
+      ],
+      "157": [
+        "cup"
+      ],
+      "158": [
+        "cup"
+      ],
+      "159": [
+        "pedestal"
+      ],
+      "160": [
+        "cup"
+      ],
+      "161": [
+        "cup"
+      ],
+      "162": [
+        "cup"
+      ],
+      "163": [
+        "cup"
+      ],
+      "164": [
+        "hair"
+      ],
+      "165": [
+        "pedestal"
+      ],
+      "166": [
+        "cup"
+      ],
+      "167": [
+        "eyeL"
+      ],
+      "168": [
+        "pedestal"
+      ],
+      "169": [
+        "eyeL"
+      ],
+      "170": [
+        "mouth"
+      ],
+      "171": [
+        "cup"
+      ],
+      "172": [
+        "cup"
+      ],
+      "173": [
+        "pedestal"
+      ],
+      "174": [
+        "pedestal"
+      ],
+      "175": [
+        "hair"
+      ],
+      "176": [
+        "pedestal"
+      ],
+      "177": [
+        "pedestal"
+      ],
+      "178": [
+        "cup"
+      ],
+      "179": [
+        "cup"
+      ],
+      "180": [
+        "pedestal"
+      ],
+      "181": [
+        "mouth"
+      ]
+    },
+    "contourOwners": {
+      "cup": 95,
+      "shine": 4,
+      "eyeL": 7,
+      "eyeR": 4,
+      "mouth": 17,
+      "pedestal": 54,
+      "hair": 6
+    },
+    "contourCount": 187
+  },
+  "exactPalette": {
+    "canonicalPalette": [
+      "#EFB944",
+      "#8C651F",
+      "#8B641F",
+      "#6C4F1A",
+      "#A23323",
+      "#EDB843",
+      "#EEB842",
+      "#EDB845",
+      "#EEB944",
+      "#8C641E",
+      "#8D651E",
+      "#13120F",
+      "#151410",
+      "#ECB641",
+      "#89631D",
+      "#F2EDE7",
+      "#8C651D",
+      "#D6A436",
+      "#8A631F",
+      "#171510",
+      "#D6A435",
+      "#14130F",
+      "#D4A134",
+      "#D3A235",
+      "#88621F",
+      "#A9382A",
+      "#F9F2E1",
+      "#7A510C",
+      "#805B14",
+      "#E8B53C",
+      "#644410",
+      "#F8C951",
+      "#F5C349",
+      "#75551B",
+      "#161611",
+      "#7B5614",
+      "#956D22",
+      "#D5AA3E",
+      "#D6C5B0",
+      "#E8B53F",
+      "#916B23",
+      "#F7CA52",
+      "#E2B646",
+      "#926921",
+      "#926B27",
+      "#F8D655",
+      "#7F5D16",
+      "#9C2417",
+      "#837153",
+      "#B39B73",
+      "#916A22",
+      "#EDBD49",
+      "#EDB73E",
+      "#F3C248",
+      "#BFA984",
+      "#7B5410",
+      "#71531F",
+      "#EFBB44",
+      "#7C520E",
+      "#7C5917",
+      "#584E1E",
+      "#B48928",
+      "#845E18",
+      "#916922",
+      "#7E530F",
+      "#F3BF47",
+      "#C6A08A",
+      "#855F19",
+      "#916B24",
+      "#F5C048",
+      "#855F1C",
+      "#885E16",
+      "#7E5815",
+      "#F7C74D",
+      "#856018",
+      "#70531F",
+      "#181715",
+      "#774E15",
+      "#674B18",
+      "#EAB43D",
+      "#FBD759",
+      "#5B4817",
+      "#936A23",
+      "#171513",
+      "#916822",
+      "#F6F1DE",
+      "#060706",
+      "#F7C54E",
+      "#946C23",
+      "#624715",
+      "#916C1F",
+      "#DFB03A",
+      "#936A22",
+      "#FCFCFC",
+      "#CDC2AD",
+      "#D18B3D",
+      "#7D5816",
+      "#F3BE4B",
+      "#62420F",
+      "#8D6723",
+      "#805C1F",
+      "#F4BF46",
+      "#D3A53B",
+      "#9E814F",
+      "#0C0A0A",
+      "#805912",
+      "#845D18",
+      "#191814",
+      "#F5C750",
+      "#926826",
+      "#916A26",
+      "#82580F",
+      "#8C7759",
+      "#F0BC46",
+      "#0C0D0A",
+      "#78500D",
+      "#F8C549",
+      "#825C1A",
+      "#936922",
+      "#C9B99C",
+      "#E2B33E",
+      "#906923",
+      "#7F5D1B",
+      "#936B1B",
+      "#8D692C",
+      "#966D1F",
+      "#E6BA48",
+      "#F2C44E",
+      "#CD9B2F",
+      "#956E1E",
+      "#C57870",
+      "#F7C348",
+      "#FDFCF9",
+      "#F8C84F",
+      "#815C19",
+      "#CDC0A8",
+      "#332E19",
+      "#ECB540",
+      "#7F5715",
+      "#BE9433",
+      "#B9A483",
+      "#8B7554",
+      "#815D1A",
+      "#956C21",
+      "#E8E2D6",
+      "#E0DBCE",
+      "#F5C047",
+      "#F9D24D",
+      "#6B5C23",
+      "#FAF9F5",
+      "#C4B393",
+      "#BFA983",
+      "#967232",
+      "#EBB63D",
+      "#B69032",
+      "#F9CA4E",
+      "#87631F",
+      "#922615",
+      "#F5C34C",
+      "#7F5A16",
+      "#080807",
+      "#ECBA48",
+      "#070A07",
+      "#F3C74B",
+      "#CE9B2F",
+      "#F4C551",
+      "#73541B",
+      "#906B23",
+      "#AB3829",
+      "#8F681D",
+      "#835F1A",
+      "#EDB846",
+      "#926822",
+      "#181713"
+    ],
+    "fillCheck": {
+      "allowedFillCount": 174,
+      "violations": []
+    }
+  },
+  "endpointRasterDiff": {
+    "canonicalRaster": "/Users/prateekranka/Cowork/ScoreKeeper/design-explorations/mascot-hybrid-a-rig/production-v3/canonical-bind.png",
+    "frame0": {
+      "ae": 0,
+      "maxChannelDiff": 0,
+      "totalAbsDiff": 0
+    },
+    "frame156": {
+      "ae": 0,
+      "maxChannelDiff": 0,
+      "totalAbsDiff": 0
+    }
+  },
+  "seamHoleInspection": {
+    "frames": {
+      "0": {
+        "startY": 262,
+        "endY": 266,
+        "maxInteriorTransparentPixels": 0,
+        "rowsWithHoles": 0
+      },
+      "16": {
+        "startY": 268,
+        "endY": 272,
+        "maxInteriorTransparentPixels": 0,
+        "rowsWithHoles": 0
+      },
+      "34": {
+        "startY": 260,
+        "endY": 264,
+        "maxInteriorTransparentPixels": 0,
+        "rowsWithHoles": 0
+      },
+      "54": {
+        "startY": 257,
+        "endY": 261,
+        "maxInteriorTransparentPixels": 0,
+        "rowsWithHoles": 0
+      },
+      "74": {
+        "startY": 258,
+        "endY": 262,
+        "maxInteriorTransparentPixels": 0,
+        "rowsWithHoles": 0
+      },
+      "90": {
+        "startY": 266,
+        "endY": 270,
+        "maxInteriorTransparentPixels": 0,
+        "rowsWithHoles": 0
+      },
+      "106": {
+        "startY": 263,
+        "endY": 267,
+        "maxInteriorTransparentPixels": 0,
+        "rowsWithHoles": 0
+      },
+      "156": {
+        "startY": 262,
+        "endY": 266,
+        "maxInteriorTransparentPixels": 0,
+        "rowsWithHoles": 0
+      }
+    },
+    "maxInteriorTransparentPixels": 0,
+    "inspectedFrames": [
+      16,
+      34,
+      54,
+      74,
+      90,
+      106,
+      0,
+      156
+    ],
+    "note": "Rows are scanned through the cup-bottom/stem seam band after root ballistic translation; interior transparent runs are counted, while intentional exterior transparency is ignored."
+  },
+  "paintedBoundsCheck": {
+    "inspectedFrameCount": 157,
+    "minTopMargin": 11,
+    "minLeftMargin": 3,
+    "minRightMargin": 4,
+    "minBottomMargin": 13,
+    "requiredTopMargin": 2,
+    "edgeTouchFrames": [],
+    "pass": true,
+    "note": "Every rendered frame is decoded as RGBA; any alpha-painted pixel on a canvas edge fails. The top margin gate is >=2px."
+  },
+  "enlargedInspection": {
+    "files": [
+      "inspection/hero-key-frames-100.png",
+      "inspection/hair-extrema-100.png",
+      "inspection/hair-extrema-200.png",
+      "inspection/hair-extrema-400.png"
+    ],
+    "scales": [
+      1,
+      2,
+      4
+    ],
+    "hairFrames": [
+      34,
+      54,
+      90
+    ]
+  },
+  "ffprobe": {
+    "stream": {
+      "codec_name": "h264",
+      "width": 512,
+      "height": 416,
+      "pix_fmt": "yuv420p",
+      "r_frame_rate": "60/1",
+      "avg_frame_rate": "60/1",
+      "duration": "2.616667",
+      "nb_frames": "157"
+    },
+    "audioStreamCount": 0,
+    "faststartCompatible": true
+  },
+  "frameHashes": {
+    "frame0": "e51abbe1b66131c6fb615c0abbe830e4ee6a54159e3fa90de2cad4f396cd0115",
+    "frame16": "3284649710a0d6a6fcb54f8dd4232ff3230974e83870771d493e853619d02208",
+    "frame34": "9165fd114528d35751784793d9257532b3403eb6f4a5373296fff06352a7f7d2",
+    "frame54": "b8aa2527db0e269cf14d423c3c93b77c813c34e933b4501bfd69ee34577f0b1b",
+    "frame74": "6e0d401e10acdd2c8d3ad486e03b69327df534efc47d0b6d6d39818b146ac280",
+    "frame90": "ed809acb68caad11b432747ab0c88134c22ab188fb01930434171ee175a9caf6",
+    "frame106": "728f6e2712ee3619d5d392843843f98a00454e1605efde243616f1d915449a75",
+    "frame132": "7ed052a3ce4e39f240085cb445c28c8a8560a9dd139a2e1725cc453055aa6ce6",
+    "frame156": "e51abbe1b66131c6fb615c0abbe830e4ee6a54159e3fa90de2cad4f396cd0115"
+  },
+  "frameDimensions": {
+    "width": 512,
+    "height": 416
+  },
+  "outputs": {
+    "mp4": "victory-pop.mp4",
+    "contactSheet": "victory-pop-contact-sheet.png",
+    "framesDirectory": "frames/",
+    "qaReport": "victory-pop-qa.json"
+  },
+  "reproducibility": {
+    "command": "node render-victory-pop.mjs",
+    "renderedFromScratch": true,
+    "renderer": "ImageMagick SVG rasterizer + ffmpeg libx264",
+    "deterministicEndpoints": true,
+    "frameGeneration": {
+      "expectedCount": 157,
+      "actualCount": 157,
+      "missing": [],
+      "unexpected": []
+    }
+  }
+}
