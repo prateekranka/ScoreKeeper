@@ -21,7 +21,9 @@ struct ClubhouseTheme {
     static let felt = blue
     static let feltDeep = Color(light: 0x00388E, dark: 0x2F6FCC)
     static let lacquer = red
-    static let brass = yellow
+    // Darker than the illustration yellow so text and score labels remain
+    // readable on cream stock.
+    static let brass = Color(light: 0x805800, dark: 0xFFD149)
     static let onFelt = Color(light: 0xFFFFFF, dark: 0x07152B)
     static let primaryFill = blue
     static let onPrimary = Color(light: 0xFFFFFF, dark: 0x07152B)

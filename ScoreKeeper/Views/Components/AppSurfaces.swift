@@ -297,7 +297,8 @@ struct PipCountDock: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel(tab.title)
+                .accessibilityLabel(tab == .more ? "Legal & Support" : tab.title)
+                .accessibilityHint(tab == .more ? "Opens privacy, legal, and support links" : "")
                 .accessibilityIdentifier(tab == .more ? "legal_support_button" : "tab_\(tab.rawValue)")
                 .accessibilityAddTraits(selected == tab ? .isSelected : [])
             }

@@ -110,16 +110,21 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
 
 private struct ScoringGameHeader: View {
     let session: GameSession
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: AppTheme.spacingSmall) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
+            : AnyLayout(HStackLayout(alignment: .bottom, spacing: AppTheme.spacingSmall))
+
+        return layout {
             VStack(alignment: .leading, spacing: 6) {
                 Text("PipCount")
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
 
                 Text(session.gameType.displayName)
-                    .font(.system(size: 40, weight: .black, design: .default).width(.condensed))
+                    .font(AppFonts.hero)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .lineLimit(2)
                     .minimumScaleFactor(0.75)
@@ -130,27 +135,31 @@ private struct ScoringGameHeader: View {
                     .monospacedDigit()
 
                 HStack(spacing: 7) {
-                    ForEach(1...10, id: \.self) { number in
+                    ForEach(0..<min(session.currentRoundNumber, 6), id: \.self) { _ in
                         Circle()
-                            .fill(number <= min(session.currentRoundNumber, 10) ? ClubhouseTheme.blue : ClubhouseTheme.paperCard)
+                            .fill(ClubhouseTheme.blue)
                             .frame(width: 11, height: 11)
-                            .overlay {
-                                Circle().stroke(ClubhouseTheme.ruleStrong, lineWidth: 1)
-                            }
+                    }
+
+                    if session.currentRoundNumber > 6 {
+                        Text("+\(session.currentRoundNumber - 6)")
+                            .font(AppFonts.caption.weight(.bold))
+                            .foregroundStyle(ClubhouseTheme.blue)
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer(minLength: 0)
-
-            ZStack {
-                BauhausTargetArtwork(accent: ClubhouseTheme.red)
-                    .frame(width: 132, height: 132)
-                BauhausHalftone(color: ClubhouseTheme.ink)
-                    .frame(width: 54, height: 64)
-                    .offset(x: 54, y: 48)
+            if !dynamicTypeSize.isAccessibilitySize {
+                ZStack {
+                    BauhausTargetArtwork(accent: ClubhouseTheme.red)
+                        .frame(width: 132, height: 132)
+                    BauhausHalftone(color: ClubhouseTheme.ink)
+                        .frame(width: 54, height: 64)
+                        .offset(x: 54, y: 48)
+                }
+                .frame(width: 148, height: 142)
             }
-            .frame(width: 148, height: 142)
         }
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.top, 4)

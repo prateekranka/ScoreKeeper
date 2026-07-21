@@ -188,7 +188,7 @@ private struct OnboardingPageView: View {
             VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                     Text(page.title)
-                        .font(.system(size: 49, weight: .black, design: .default).width(.condensed))
+                        .font(AppFonts.hero)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .multilineTextAlignment(.leading)
                         .accessibilityIdentifier("onboarding_page_title")

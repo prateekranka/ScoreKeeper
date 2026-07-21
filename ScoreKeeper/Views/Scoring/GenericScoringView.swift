@@ -187,8 +187,6 @@ private struct GenericFocusScoreTable: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             Text("Total")
                 .frame(width: 64, alignment: .trailing)
-            Text("This round")
-                .frame(width: 140, alignment: .trailing)
         }
         .columnHeaderStyle()
         .padding(.vertical, AppTheme.spacingSmall)
@@ -215,16 +213,22 @@ private struct FocusScoreRow: View {
                 Spacer(minLength: AppTheme.spacingSmall)
 
                 totalColumn
-
-                scoreStepper
             }
 
-            HStack(spacing: 6) {
-                Spacer(minLength: 0)
-
-                ForEach(quickAmounts, id: \.self) { amount in
-                    quickButton(amount)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 6) {
+                    quickButtons
+                    Spacer(minLength: 4)
+                    scoreStepper
                 }
+
+                VStack(alignment: .trailing, spacing: AppTheme.spacingSmall) {
+                    HStack(spacing: 6) {
+                        quickButtons
+                    }
+                    scoreStepper
+                }
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
         .padding(.vertical, AppTheme.spacingMedium)
@@ -264,7 +268,7 @@ private struct FocusScoreRow: View {
             }
             .layoutPriority(1)
         }
-        .frame(minWidth: 108, maxWidth: .infinity, alignment: .leading)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .layoutPriority(2)
     }
 
@@ -279,7 +283,14 @@ private struct FocusScoreRow: View {
 
     private var scoreStepper: some View {
         CompactScoreStepper(value: $value, range: range, step: step, identifierPrefix: identifierPrefix)
-            .frame(width: 140, alignment: .trailing)
+            .frame(width: 160, alignment: .trailing)
+    }
+
+    @ViewBuilder
+    private var quickButtons: some View {
+        ForEach(quickAmounts, id: \.self) { amount in
+            quickButton(amount)
+        }
     }
 
     private func quickButton(_ amount: Int) -> some View {
@@ -332,10 +343,12 @@ private struct CompactScoreStepper: View {
                 Text(roundScoreText)
                     .font(AppFonts.scoreSmall)
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.55)
                     .contentTransition(.numericText(value: Double(value)))
                     .foregroundStyle(ClubhouseTheme.ink)
             }
-            .frame(width: 44)
+            .frame(width: 58)
             .accessibilityElement(children: .ignore)
             .accessibilityIdentifier(identifierPrefix + "score")
             .accessibilityLabel("Score \(value)")

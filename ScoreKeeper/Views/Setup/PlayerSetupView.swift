@@ -194,12 +194,17 @@ struct PlayerSetupView: View {
 
 private struct SetupPlayerHeader: View {
     let gameType: GameType
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: AppTheme.spacingMedium) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
+            : AnyLayout(HStackLayout(alignment: .bottom, spacing: AppTheme.spacingMedium))
+
+        layout {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 Text("Add\nPlayers")
-                    .font(.system(size: 52, weight: .black, design: .default).width(.condensed))
+                    .font(AppFonts.hero)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .fixedSize(horizontal: false, vertical: true)
 
@@ -212,17 +217,18 @@ private struct SetupPlayerHeader: View {
                     .foregroundStyle(gameType.color)
                     .padding(.top, 4)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer(minLength: 0)
-
-            ZStack {
-                BauhausBlocksArtwork(compact: true)
-                    .frame(width: 166, height: 134)
-                BauhausHalftone(color: ClubhouseTheme.ink)
-                    .frame(width: 72, height: 72)
-                    .offset(x: -54, y: 28)
+            if !dynamicTypeSize.isAccessibilitySize {
+                ZStack {
+                    BauhausBlocksArtwork(compact: true)
+                        .frame(width: 166, height: 134)
+                    BauhausHalftone(color: ClubhouseTheme.ink)
+                        .frame(width: 72, height: 72)
+                        .offset(x: -54, y: 28)
+                }
+                .frame(width: 166, height: 134)
             }
-            .frame(width: 166, height: 134)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

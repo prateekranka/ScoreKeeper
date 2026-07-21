@@ -9,6 +9,7 @@ struct PaywallView: View {
     @State private var isCompleting = false
     @State private var heroVisible = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         VStack(spacing: 0) {
@@ -60,10 +61,14 @@ struct PaywallView: View {
     }
 
     private var paywallHero: some View {
-        HStack(alignment: .bottom, spacing: AppTheme.spacingSmall) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
+            : AnyLayout(HStackLayout(alignment: .bottom, spacing: AppTheme.spacingSmall))
+
+        return layout {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 Text("Unlock\nunlimited\ngame night.")
-                    .font(.system(size: 46, weight: .black, design: .default).width(.condensed))
+                    .font(AppFonts.hero)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .fixedSize(horizontal: false, vertical: true)
 
@@ -75,19 +80,20 @@ struct PaywallView: View {
                     .font(AppFonts.body)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer(minLength: 0)
-
-            ZStack(alignment: .bottomTrailing) {
-                BauhausTargetArtwork(accent: ClubhouseTheme.ink)
-                    .frame(width: 170, height: 170)
-                    .offset(y: -32)
-                BauhausBlocksArtwork(compact: true)
-                    .frame(width: 154, height: 138)
-                BauhausStarburst(color: ClubhouseTheme.red, size: 34)
-                    .offset(x: -104, y: -150)
+            if !dynamicTypeSize.isAccessibilitySize {
+                ZStack(alignment: .bottomTrailing) {
+                    BauhausTargetArtwork(accent: ClubhouseTheme.ink)
+                        .frame(width: 170, height: 170)
+                        .offset(y: -32)
+                    BauhausBlocksArtwork(compact: true)
+                        .frame(width: 154, height: 138)
+                    BauhausStarburst(color: ClubhouseTheme.red, size: 34)
+                        .offset(x: -104, y: -150)
+                }
+                .frame(width: 176, height: 232)
             }
-            .frame(width: 176, height: 232)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .scaleEffect(heroVisible || reduceMotion ? 1 : 0.97)
@@ -95,7 +101,11 @@ struct PaywallView: View {
     }
 
     private var unlockSummary: some View {
-        HStack(spacing: AppTheme.spacingMedium) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
+            : AnyLayout(HStackLayout(spacing: AppTheme.spacingMedium))
+
+        return layout {
             VStack(alignment: .leading, spacing: 2) {
                 Text("One-time purchase")
                     .font(AppFonts.headline)
@@ -107,12 +117,15 @@ struct PaywallView: View {
                     .foregroundStyle(ClubhouseTheme.ink)
                     .accessibilityLabel("\(storeManager.displayPrice), one-time purchase")
             }
-
-            Spacer()
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Rectangle()
                 .fill(ClubhouseTheme.ruleStrong)
-                .frame(width: 1, height: 72)
+                .frame(
+                    maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : 1,
+                    minHeight: dynamicTypeSize.isAccessibilitySize ? 1 : 72,
+                    maxHeight: dynamicTypeSize.isAccessibilitySize ? 1 : 72
+                )
 
             ZStack {
                 Circle()
@@ -128,6 +141,7 @@ struct PaywallView: View {
                     .offset(x: 38, y: -24)
             }
             .frame(width: 104, height: 80)
+            .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil, alignment: .trailing)
         }
         .padding(AppTheme.spacingMedium)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)

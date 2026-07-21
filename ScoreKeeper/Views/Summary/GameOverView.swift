@@ -26,13 +26,14 @@ struct GameOverView: View {
                         WinnerHeroSection(session: session, winners: winners, sectionsVisible: sectionsVisible)
                             .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                        VStack(spacing: AppTheme.spacingLarge) {
-                            StandingsList(title: "Final Scores", standings: session.standings(using: engine))
-                        }
+                        StandingsList(title: "Final Scores", standings: session.standings(using: engine))
                         .staggeredEntrance(visible: sectionsVisible, index: 1)
 
                         EndGameButtons(session: session, onPlayAgain: { playAgain(session) }, onHome: { router.goHome() })
                             .staggeredEntrance(visible: sectionsVisible, index: 2)
+
+                        GameRecapPanel(session: session, engine: engine)
+                            .staggeredEntrance(visible: sectionsVisible, index: 3)
                     }
                     .padding(AppTheme.spacingMedium)
                 }
@@ -125,13 +126,18 @@ private struct WinnerHeroSection: View {
     let winners: [Player]
     let sectionsVisible: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            HStack(alignment: .top, spacing: AppTheme.spacingSmall) {
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
+                : AnyLayout(HStackLayout(alignment: .top, spacing: AppTheme.spacingSmall))
+
+            layout {
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                     Text("Game\nOver")
-                        .font(.system(size: 58, weight: .black, design: .default).width(.condensed))
+                        .font(AppFonts.hero)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
 
@@ -143,20 +149,21 @@ private struct WinnerHeroSection: View {
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-                Spacer(minLength: 0)
-
-                ZStack {
-                    BauhausTargetArtwork(accent: ClubhouseTheme.red)
-                        .frame(width: 142, height: 142)
-                    Rectangle()
-                        .fill(ClubhouseTheme.ink)
-                        .frame(width: 48, height: 82)
-                        .offset(x: 46, y: 42)
-                    BauhausStarburst(color: ClubhouseTheme.yellow, size: 30)
-                        .offset(x: -62, y: 56)
+                if !dynamicTypeSize.isAccessibilitySize {
+                    ZStack {
+                        BauhausTargetArtwork(accent: ClubhouseTheme.red)
+                            .frame(width: 142, height: 142)
+                        Rectangle()
+                            .fill(ClubhouseTheme.ink)
+                            .frame(width: 48, height: 82)
+                            .offset(x: 46, y: 42)
+                        BauhausStarburst(color: ClubhouseTheme.yellow, size: 30)
+                            .offset(x: -62, y: 56)
+                    }
+                    .frame(width: 168, height: 166)
                 }
-                .frame(width: 168, height: 166)
             }
 
             if winners.count == 1, let winner = winners.first {
@@ -177,6 +184,8 @@ private struct WinnerHeroSection: View {
                             .font(AppFonts.title)
                             .foregroundStyle(ClubhouseTheme.ink)
                             .lineLimit(1)
+                            .accessibilityIdentifier("winner_text")
+                            .accessibilityLabel("\(winner.name) wins!")
                         Text("Great game!")
                             .font(AppFonts.body)
                             .foregroundStyle(ClubhouseTheme.inkMuted)
@@ -206,7 +215,6 @@ private struct WinnerHeroSection: View {
         .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.97)
         .opacity(sectionsVisible ? 1 : 0)
         .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped, value: sectionsVisible)
-        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
@@ -283,7 +291,11 @@ private struct GameRecapPanel: View {
             if showsScoreTrend {
                 ScoreSparkline(session: session, standings: standings)
                     .frame(height: 86)
-                    .accessibilityLabel("Score trend")
+                    .accessibilityLabel(
+                        "Score trend. " + standings
+                            .map { "\($0.player.name), final score \($0.score)" }
+                            .joined(separator: ". ")
+                    )
             }
         }
         .padding(AppTheme.spacingMedium)

@@ -53,11 +53,17 @@ struct GamePickerView: View {
 }
 
 private struct GamePickerHero: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
-        HStack(alignment: .bottom, spacing: AppTheme.spacingMedium) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
+            : AnyLayout(HStackLayout(alignment: .bottom, spacing: AppTheme.spacingMedium))
+
+        layout {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 Text("Choose\na Game")
-                    .font(.system(size: 52, weight: .black, design: .default).width(.condensed))
+                    .font(AppFonts.hero)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .fixedSize(horizontal: false, vertical: true)
 
@@ -65,16 +71,17 @@ private struct GamePickerHero: View {
                     .font(AppFonts.body)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
-            Spacer(minLength: 0)
-
-            ZStack {
-                BauhausBlocksArtwork(compact: true)
-                    .frame(width: 160, height: 138)
-                BauhausStarburst(color: ClubhouseTheme.red, size: 34)
-                    .offset(x: 46, y: -48)
+            if !dynamicTypeSize.isAccessibilitySize {
+                ZStack {
+                    BauhausBlocksArtwork(compact: true)
+                        .frame(width: 160, height: 138)
+                    BauhausStarburst(color: ClubhouseTheme.red, size: 34)
+                        .offset(x: 46, y: -48)
+                }
+                .frame(width: 160, height: 138)
             }
-            .frame(width: 160, height: 138)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, AppTheme.spacingSmall)

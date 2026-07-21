@@ -213,7 +213,7 @@ private struct HomeHeader: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("PipCount")
-                        .font(.system(size: 48, weight: .black, design: .default).width(.condensed))
+                        .font(AppFonts.hero)
                         .foregroundStyle(ClubhouseTheme.ink)
 
                     Text("Game night, organized.")
@@ -934,7 +934,7 @@ struct SavedPlayersView: View {
                 HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Players")
-                            .font(.system(size: 52, weight: .black, design: .default).width(.condensed))
+                            .font(AppFonts.hero)
                             .foregroundStyle(ClubhouseTheme.ink)
 
                         Text("Your game-night roster.")
