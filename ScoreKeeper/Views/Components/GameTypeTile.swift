@@ -7,37 +7,55 @@ struct GameTypeTile: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: AppTheme.spacingSmall) {
+            HStack(spacing: AppTheme.spacingMedium) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(gameType.displayName)
+                        .font(AppFonts.tileTitle)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.75)
+
+                    Text(gameType.subtitle)
+                        .font(AppFonts.body)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                        .multilineTextAlignment(.leading)
+
+                    HStack(spacing: 6) {
+                        Circle()
+                            .stroke(gameType.color, lineWidth: 2)
+                            .frame(width: 24, height: 24)
+                            .overlay {
+                                Circle()
+                                    .fill(gameType.color)
+                                    .frame(width: 12, height: 12)
+                            }
+
+                        Text("Choose")
+                            .columnHeaderStyle()
+                            .foregroundStyle(gameType.color)
+                    }
+                    .padding(.top, 4)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
                 GameTypeArtwork(gameType: gameType)
-                    .frame(height: 58)
-
-                Text(gameType.displayName)
-                    .font(AppFonts.tileTitle)
-                    .foregroundStyle(ClubhouseTheme.ink)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.75)
-
-                Text(gameType.subtitle)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .multilineTextAlignment(.center)
+                    .frame(width: 150, height: 132)
             }
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 144)
-            .padding(.vertical, 12)
             .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.vertical, 14)
             .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
-                    .strokeBorder(gameType.color, lineWidth: 1)
+                    .strokeBorder(gameType.color, lineWidth: 2)
             }
             .overlay {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge - 4, style: .continuous)
                     .inset(by: 4)
-                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.5)
+                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.75)
             }
-            .shadow(color: ClubhouseTheme.paperShadow, radius: 5, y: 2)
+            .shadow(color: ClubhouseTheme.paperShadow, radius: 0, x: 3, y: 4)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(accessibilityID ?? "")
@@ -49,25 +67,79 @@ struct GameTypeArtwork: View {
     let gameType: GameType
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                .fill(ClubhouseTheme.paperSunken)
-                .overlay {
-                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-                }
+        GeometryReader { proxy in
+            let scale = min(proxy.size.width / 150, proxy.size.height / 132)
 
-            GeometryReader { proxy in
-                artwork
-                    .scaleEffect(min(1, proxy.size.height / 58))
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-            }
+            artwork
+                .frame(width: 150, height: 132)
+                .scaleEffect(scale)
+                .frame(width: proxy.size.width, height: proxy.size.height)
         }
         .accessibilityHidden(true)
     }
 
+    @ViewBuilder
     private var artwork: some View {
-        ScoreSheetArtwork(gameType: gameType)
+        switch gameType {
+        case .generic:
+            ZStack {
+                Circle()
+                    .fill(ClubhouseTheme.blue)
+                    .frame(width: 108, height: 108)
+                Circle()
+                    .fill(ClubhouseTheme.yellow)
+                    .frame(width: 76, height: 76)
+                    .offset(x: 24, y: 22)
+                Circle()
+                    .fill(ClubhouseTheme.paperCard)
+                    .frame(width: 46, height: 46)
+                Rectangle()
+                    .fill(ClubhouseTheme.ruleStrong)
+                    .frame(width: 1, height: 132)
+                Rectangle()
+                    .fill(ClubhouseTheme.ruleStrong)
+                    .frame(width: 132, height: 1)
+            }
+        case .phase10:
+            ZStack {
+                Circle()
+                    .trim(from: 0, to: 0.25)
+                    .stroke(ClubhouseTheme.yellow, lineWidth: 30)
+                Circle()
+                    .trim(from: 0.25, to: 0.5)
+                    .stroke(ClubhouseTheme.green, lineWidth: 30)
+                Circle()
+                    .trim(from: 0.5, to: 0.75)
+                    .stroke(ClubhouseTheme.blue, lineWidth: 30)
+                Circle()
+                    .trim(from: 0.75, to: 1)
+                    .stroke(ClubhouseTheme.red, lineWidth: 30)
+                Text("10")
+                    .font(AppFonts.scoreMedium)
+                    .foregroundStyle(ClubhouseTheme.ink)
+            }
+            .padding(22)
+        case .whatsForDinner:
+            ZStack {
+                Circle()
+                    .fill(ClubhouseTheme.blue)
+                    .frame(width: 82, height: 82)
+                    .offset(x: -18, y: -20)
+                Circle()
+                    .fill(ClubhouseTheme.yellow)
+                    .frame(width: 92, height: 92)
+                    .offset(x: -36, y: 38)
+                Rectangle()
+                    .fill(ClubhouseTheme.ink)
+                    .frame(width: 96, height: 48)
+                    .offset(x: 24, y: 37)
+                TriangleShape()
+                    .fill(ClubhouseTheme.green)
+                    .frame(width: 44, height: 62)
+                    .rotationEffect(.degrees(50))
+                    .offset(x: 48, y: -24)
+            }
+        }
     }
 }
 
@@ -138,7 +210,7 @@ private struct ScoreSheetArtwork: View {
                 .frame(height: 1)
 
             Text(score)
-                .font(Font.custom("VT323", size: 12))
+                .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.ink)
         }
     }

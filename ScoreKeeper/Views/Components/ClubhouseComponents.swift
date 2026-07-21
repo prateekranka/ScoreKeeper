@@ -10,12 +10,13 @@ struct ScorecardSurface<Content: View>: View {
             .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                    .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
             }
             .shadow(
                 color: isInteractive ? ClubhouseTheme.paperShadow : .clear,
-                radius: isInteractive ? 6 : 0,
-                y: isInteractive ? 3 : 0
+                radius: isInteractive ? 0 : 0,
+                x: isInteractive ? 3 : 0,
+                y: isInteractive ? 4 : 0
             )
     }
 }
@@ -107,17 +108,7 @@ struct PlayerColorPip: View {
     var size: CGFloat = 14
 
     var body: some View {
-        Circle()
-            .fill(PlayerColors.color(for: colorIndex))
-            .frame(width: size, height: size)
-            .overlay {
-                Circle()
-                    .stroke(ClubhouseTheme.paperCard, lineWidth: 2)
-            }
-            .overlay {
-                Circle()
-                    .stroke(ClubhouseTheme.rule, lineWidth: 1)
-            }
+        BauhausPlayerShape(colorIndex: colorIndex, size: size)
             .accessibilityHidden(true)
     }
 }
@@ -225,5 +216,184 @@ struct PipStepper: View {
 
     private var roundScoreText: String {
         value >= 0 ? "+\(value)" : "\(value)"
+    }
+}
+
+// MARK: - PipCount Geometry
+
+struct BauhausPlayerShape: View {
+    let colorIndex: Int
+    var size: CGFloat
+
+    var body: some View {
+        Group {
+            switch colorIndex % 4 {
+            case 0:
+                Circle()
+                    .fill(PlayerColors.color(for: colorIndex))
+                    .overlay { Circle().stroke(ClubhouseTheme.ruleStrong, lineWidth: 0.75) }
+            case 1:
+                Rectangle()
+                    .fill(PlayerColors.color(for: colorIndex))
+                    .overlay { Rectangle().stroke(ClubhouseTheme.ruleStrong, lineWidth: 0.75) }
+            case 2:
+                TriangleShape()
+                    .fill(PlayerColors.color(for: colorIndex))
+                    .overlay { TriangleShape().stroke(ClubhouseTheme.ruleStrong, lineWidth: 0.75) }
+            default:
+                Rectangle()
+                    .fill(PlayerColors.color(for: colorIndex))
+                    .overlay { Rectangle().stroke(ClubhouseTheme.ruleStrong, lineWidth: 0.75) }
+                    .rotationEffect(.degrees(45))
+                    .scaleEffect(0.72)
+            }
+        }
+        .frame(width: size, height: size)
+    }
+}
+
+struct TriangleShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+struct BauhausStarburst: View {
+    var color: Color = ClubhouseTheme.red
+    var size: CGFloat = 38
+
+    var body: some View {
+        ZStack {
+            ForEach(0..<4, id: \.self) { index in
+                Capsule()
+                    .fill(color)
+                    .frame(width: size, height: 1.25)
+                    .rotationEffect(.degrees(Double(index) * 45))
+            }
+
+            DiamondShape()
+                .fill(color)
+                .frame(width: size * 0.28, height: size * 0.28)
+        }
+        .frame(width: size, height: size)
+        .accessibilityHidden(true)
+    }
+}
+
+private struct DiamondShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.midY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+struct BauhausHalftone: View {
+    var color: Color = ClubhouseTheme.ink
+    var spacing: CGFloat = 8
+
+    var body: some View {
+        Canvas { context, size in
+            var x: CGFloat = 2
+            while x < size.width {
+                var y: CGFloat = 2
+                while y < size.height {
+                    let dot = Path(ellipseIn: CGRect(x: x, y: y, width: 1.5, height: 1.5))
+                    context.fill(dot, with: .color(color.opacity(0.55)))
+                    y += spacing
+                }
+                x += spacing
+            }
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+struct BauhausTargetArtwork: View {
+    var accent: Color = ClubhouseTheme.red
+
+    var body: some View {
+        GeometryReader { proxy in
+            let side = min(proxy.size.width, proxy.size.height)
+
+            ZStack {
+                Circle()
+                    .trim(from: 0.25, to: 0.75)
+                    .stroke(ClubhouseTheme.blue, lineWidth: side * 0.22)
+                    .rotationEffect(.degrees(90))
+
+                Circle()
+                    .stroke(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                    .padding(side * 0.20)
+                Circle()
+                    .stroke(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                    .padding(side * 0.32)
+
+                Circle()
+                    .fill(accent)
+                    .frame(width: side * 0.24, height: side * 0.24)
+
+                Rectangle()
+                    .fill(ClubhouseTheme.ruleStrong)
+                    .frame(width: 1, height: side)
+                Rectangle()
+                    .fill(ClubhouseTheme.ruleStrong)
+                    .frame(width: side, height: 1)
+            }
+            .frame(width: side, height: side)
+            .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+struct BauhausBlocksArtwork: View {
+    var compact = false
+
+    var body: some View {
+        GeometryReader { proxy in
+            let unit = min(proxy.size.width / 5, proxy.size.height / 4)
+
+            ZStack(alignment: .bottomTrailing) {
+                Circle()
+                    .fill(ClubhouseTheme.yellow)
+                    .frame(width: unit * 2.25, height: unit * 2.25)
+                    .offset(x: -unit * 2.15, y: -unit * 0.05)
+
+                HStack(alignment: .bottom, spacing: 0) {
+                    block(height: unit * 1.15, color: ClubhouseTheme.blue)
+                    block(height: unit * 1.85, color: ClubhouseTheme.red)
+                    block(height: unit * 2.55, color: ClubhouseTheme.ink)
+                    block(height: unit * 3.25, color: ClubhouseTheme.blue)
+                    block(height: unit * 2.05, color: ClubhouseTheme.ink)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+
+                BauhausStarburst(color: ClubhouseTheme.red, size: compact ? 30 : 44)
+                    .offset(x: -unit * 0.2, y: -unit * 2.85)
+            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    private func block(height: CGFloat, color: Color) -> some View {
+        Rectangle()
+            .fill(color)
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+            .overlay(alignment: .topLeading) {
+                Rectangle()
+                    .fill(ClubhouseTheme.paper)
+                    .frame(width: 8, height: 8)
+            }
     }
 }

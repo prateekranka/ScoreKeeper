@@ -127,8 +127,9 @@ struct AppActionButton<LabelContent: View>: View {
                 .background(backgroundStyle, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                        .strokeBorder(strokeStyle, lineWidth: role.isSecondary ? 1 : 0)
+                        .strokeBorder(strokeStyle, lineWidth: role.isSecondary ? 1.25 : 0)
                 }
+                .shadow(color: role.isSecondary ? .clear : ClubhouseTheme.ink.opacity(0.14), radius: 0, x: 2, y: 3)
         }
         .buttonStyle(PressableButtonStyle())
         .opacity(isEnabled ? 1 : 0.48)
@@ -237,10 +238,88 @@ struct AppGlassModifier: ViewModifier {
 struct StaggeredEntranceModifier: ViewModifier {
     let visible: Bool
     let index: Int
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
-        // Frequent navigation should arrive immediately. Rare celebration motion is
-        // owned by the destination itself rather than this global modifier.
         content
+            .opacity(visible ? 1 : 0)
+            .offset(y: visible || reduceMotion ? 0 : 10)
+            .animation(
+                reduceMotion
+                    ? AppMotion.fade
+                    : AppMotion.page.delay(min(Double(index) * 0.045, 0.24)),
+                value: visible
+            )
+    }
+}
+
+// MARK: - Primary Navigation
+
+enum PipCountTab: String, CaseIterable {
+    case home
+    case games
+    case players
+    case more
+
+    var title: String {
+        rawValue.capitalized
+    }
+
+    var systemImage: String {
+        switch self {
+        case .home: return "house"
+        case .games: return "square.grid.2x2"
+        case .players: return "person.2"
+        case .more: return "ellipsis"
+        }
+    }
+}
+
+struct PipCountDock: View {
+    let selected: PipCountTab
+    let onSelect: (PipCountTab) -> Void
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(PipCountTab.allCases, id: \.rawValue) { tab in
+                Button {
+                    onSelect(tab)
+                } label: {
+                    VStack(spacing: 3) {
+                        Image(systemName: selected == tab ? selectedImage(for: tab) : tab.systemImage)
+                            .font(.system(size: 17, weight: selected == tab ? .bold : .medium))
+                        Text(tab.title)
+                            .font(.caption2.weight(selected == tab ? .bold : .medium))
+                    }
+                    .foregroundStyle(selected == tab ? ClubhouseTheme.blue : ClubhouseTheme.inkMuted)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 52)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityLabel(tab.title)
+                .accessibilityIdentifier(tab == .more ? "legal_support_button" : "tab_\(tab.rawValue)")
+                .accessibilityAddTraits(selected == tab ? .isSelected : [])
+            }
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(ClubhouseTheme.paperCard.opacity(0.94), in: Capsule())
+        .overlay {
+            Capsule()
+                .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
+        }
+        .shadow(color: ClubhouseTheme.ink.opacity(0.14), radius: 14, y: 7)
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .padding(.bottom, 4)
+    }
+
+    private func selectedImage(for tab: PipCountTab) -> String {
+        switch tab {
+        case .home: return "house.fill"
+        case .games: return "square.grid.2x2.fill"
+        case .players: return "person.2.fill"
+        case .more: return "ellipsis"
+        }
     }
 }
