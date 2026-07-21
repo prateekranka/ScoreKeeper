@@ -13,6 +13,9 @@ struct GameOverView: View {
     @State private var showPaywall = false
     @State private var didEvaluateReviewAsk = false
     @State private var saveError: String?
+    #if DEBUG
+    @ObservedObject private var tuning = PipTuning.shared
+    #endif
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
@@ -23,16 +26,21 @@ struct GameOverView: View {
             ZStack {
                 ScrollView {
                     VStack(spacing: AppTheme.spacingLarge) {
-                        GameOverHeaderSection(
-                            winners: winners,
-                            sectionsVisible: sectionsVisible
+                        BauhausScreenHeader(
+                            title: "Game Over",
+                            subtitle: "Thanks for playing!",
+                            heroStyle: .gameOver,
+                            artOffset: gameOverArtOffset,
+                            artScale: gameOverArtScale
                         )
                         .staggeredEntrance(visible: sectionsVisible, index: 0)
 
                         GameResultsCard(
                             session: session,
                             engine: engine,
-                            winners: winners
+                            winners: winners,
+                            sectionsVisible: sectionsVisible,
+                            identityMarkSpacing: identityMarkSpacing
                         )
                         .staggeredEntrance(visible: sectionsVisible, index: 1)
 
@@ -44,6 +52,7 @@ struct GameOverView: View {
                         .staggeredEntrance(visible: sectionsVisible, index: 2)
                     }
                     .padding(AppTheme.spacingMedium)
+                    .padding(.bottom, 24)
                 }
 
                 if !reduceMotion, !ProcessInfo.processInfo.arguments.contains("-in-memory-store") {
@@ -125,102 +134,164 @@ struct GameOverView: View {
             paywallPresentedThisSession: storeManager.paywallPresentedThisSession
         )
     }
+
+    private var gameOverArtOffset: CGSize {
+        #if DEBUG
+        CGSize(width: tuning.gameOverArtOffsetX, height: tuning.gameOverArtOffsetY)
+        #else
+        .zero
+        #endif
+    }
+
+    private var gameOverArtScale: CGFloat {
+        #if DEBUG
+        CGFloat(tuning.gameOverArtScale)
+        #else
+        1
+        #endif
+    }
+
+    private var identityMarkSpacing: CGFloat {
+        #if DEBUG
+        CGFloat(tuning.identityMarkSpacing)
+        #else
+        24
+        #endif
+    }
 }
 
 // MARK: - Subviews
-
-private struct GameOverHeaderSection: View {
-    let winners: [Player]
-    let sectionsVisible: Bool
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    var body: some View {
-        VStack(spacing: AppTheme.spacingMedium) {
-            BauhausScreenHeader(
-                title: "Game Over",
-                subtitle: "Thanks for playing!",
-                heroStyle: .gameOver
-            )
-
-            winnerAvatar
-                .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
-                .opacity(sectionsVisible ? 1 : 0)
-                .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.06), value: sectionsVisible)
-        }
-        .padding(.top, AppTheme.spacingSmall)
-    }
-
-    @ViewBuilder
-    private var winnerAvatar: some View {
-        if winners.count == 1, let winner = winners.first {
-            PlayerShapeIcon(colorIndex: winner.colorIndex, size: 72)
-        } else if winners.count > 1 {
-            HStack(spacing: AppTheme.spacingSmall) {
-                ForEach(winners) { winner in
-                    PlayerShapeIcon(colorIndex: winner.colorIndex, size: 52)
-                }
-            }
-        } else {
-            Image(systemName: "flag.checkered")
-                .font(AppFonts.scoreDisplay)
-                .foregroundStyle(ClubhouseTheme.bauhausBlue)
-                .accessibilityHidden(true)
-        }
-    }
-}
 
 private struct GameResultsCard: View {
     let session: GameSession
     let engine: GameEngine
     let winners: [Player]
+    let sectionsVisible: Bool
+    var identityMarkSpacing: CGFloat = 24
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var standings: [PlayerStanding] {
         session.standings(using: engine)
     }
 
+    private var tiedRanks: Set<Int> {
+        Dictionary(grouping: standings, by: \.rank)
+            .filter { $0.value.count > 1 }
+            .reduce(into: Set<Int>()) { $0.insert($1.key) }
+    }
+
+    private var isTie: Bool {
+        winners.count > 1
+    }
+
     private var featuredWinner: Player? {
-        winners.first
+        winners.count == 1 ? winners.first : nil
+    }
+
+    private var winnerScore: Int? {
+        winners.first.map { $0.totalScore(in: session) }
     }
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingMedium) {
-            Text("WINNER")
-                .font(AppFonts.columnHeader.weight(.bold))
-                .foregroundStyle(ClubhouseTheme.bauhausBlue)
-                .tracking(1.2)
+        VStack(spacing: 0) {
+            winnerHighlight
+                .padding(AppTheme.spacingMedium)
 
-            winnerNameView
-
-            Text("Great game!")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-
-            if let winner = featuredWinner {
-                Text("\(winner.totalScore(in: session))")
-                    .font(AppFonts.scoreDisplay)
-                    .monospacedDigit()
-                    .contentTransition(.numericText(value: Double(winner.totalScore(in: session))))
-                    .foregroundStyle(PlayerColors.color(for: winner.colorIndex))
-            }
+            Rectangle()
+                .fill(ClubhouseTheme.rule)
+                .frame(height: 1)
 
             VStack(spacing: 0) {
-                ForEach(standings) { standing in
-                    LedgerRow(
-                        player: standing.player,
-                        score: standing.score,
-                        rank: standing.rank,
-                        isLeader: standing.isWinner,
-                        scoreColor: PlayerColors.color(for: standing.player.colorIndex)
+                ForEach(Array(standings.enumerated()), id: \.element.id) { index, standing in
+                    GameOverStandingRow(
+                        standing: standing,
+                        isTiedRank: tiedRanks.contains(standing.rank)
                     )
-                    .accessibilityElement(children: .combine)
-                    .accessibilityLabel("\(standing.player.name), rank \(standing.rank), score \(standing.score)\(standing.isWinner ? ", winner" : "")")
+                        .opacity(sectionsVisible ? 1 : 0)
+                        .offset(y: sectionsVisible || reduceMotion ? 0 : 6)
+                        .animation(
+                            reduceMotion
+                                ? AppMotion.fade.delay(Double(index) * 0.03)
+                                : AppMotion.entrance.delay(0.08 + Double(index) * 0.045),
+                            value: sectionsVisible
+                        )
                 }
             }
-            .padding(.top, AppTheme.spacingSmall)
+            .padding(.horizontal, AppTheme.spacingSmall)
+            .padding(.vertical, AppTheme.spacingSmall)
         }
-        .padding(AppTheme.spacingMedium)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
         .accessibilityElement(children: .contain)
+    }
+
+    private var winnerHighlight: some View {
+        HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
+            winnerMark
+                .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.94)
+                .opacity(sectionsVisible ? 1 : 0)
+                .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.04), value: sectionsVisible)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(winners.isEmpty ? "RESULT" : isTie ? "TIE" : "WINNER")
+                    .font(AppFonts.columnHeader.weight(.bold))
+                    .foregroundStyle(ClubhouseTheme.bauhausBlue)
+                    .tracking(1.2)
+
+                winnerNameView
+
+                Text(isTie ? "It’s a tie!" : session.gameType.displayName)
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+
+            Spacer(minLength: AppTheme.spacingSmall)
+
+            if let winnerScore {
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(winnerScore)")
+                        .font(AppFonts.scoreDisplay)
+                        .monospacedDigit()
+                        .contentTransition(.numericText(value: Double(winnerScore)))
+                        .foregroundStyle(isTie ? ClubhouseTheme.ink : PlayerColors.color(for: featuredWinner?.colorIndex ?? 0))
+                    Text("points")
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var winnerMark: some View {
+        if winners.count == 1, let winner = winners.first {
+            ZStack {
+                Circle()
+                    .fill(PlayerColors.color(for: winner.colorIndex))
+                    .frame(width: 64, height: 64)
+                BauhausStar(color: ClubhouseTheme.onPrimary)
+                    .frame(width: 26, height: 26)
+            }
+        } else if winners.count > 1 {
+            HStack(spacing: identityMarkSpacing) {
+                ForEach(winners.prefix(3)) { winner in
+                    PlayerShapeIcon(colorIndex: winner.colorIndex, size: 44)
+                        .overlay {
+                            Circle()
+                                .strokeBorder(ClubhouseTheme.paperCard, lineWidth: 2)
+                        }
+                }
+            }
+        } else {
+            ZStack {
+                Circle()
+                    .fill(ClubhouseTheme.bauhausBlue)
+                    .frame(width: 64, height: 64)
+                Image(systemName: "flag.checkered")
+                    .font(.title2.weight(.bold))
+                    .foregroundStyle(ClubhouseTheme.onPrimary)
+            }
+            .accessibilityHidden(true)
+        }
     }
 
     @ViewBuilder
@@ -229,21 +300,72 @@ private struct GameResultsCard: View {
             Text(winner.name)
                 .font(AppFonts.largeTitle)
                 .foregroundStyle(ClubhouseTheme.ink)
-                .multilineTextAlignment(.center)
                 .accessibilityIdentifier("winner_text")
         } else if winners.count > 1 {
             Text(winners.map(\.name).joined(separator: " & "))
-                .font(AppFonts.largeTitle)
+                .font(AppFonts.title)
                 .foregroundStyle(ClubhouseTheme.ink)
-                .multilineTextAlignment(.center)
                 .accessibilityIdentifier("winner_text")
         } else {
             Text("No winner")
                 .font(AppFonts.largeTitle)
                 .foregroundStyle(ClubhouseTheme.ink)
-                .multilineTextAlignment(.center)
                 .accessibilityIdentifier("winner_text")
         }
+    }
+}
+
+private struct GameOverStandingRow: View {
+    let standing: PlayerStanding
+    var isTiedRank = false
+
+    private var accent: Color {
+        PlayerColors.color(for: standing.player.colorIndex)
+    }
+
+    private var rankText: String {
+        isTiedRank ? "=\(standing.rank)" : "\(standing.rank)"
+    }
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            Text(rankText)
+                .font(AppFonts.headline)
+                .monospacedDigit()
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .frame(width: 32, alignment: .leading)
+
+            PlayerShapeIcon(colorIndex: standing.player.colorIndex, size: 24)
+
+            Text(standing.player.name)
+                .font(AppFonts.body.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .lineLimit(1)
+
+            Spacer(minLength: AppTheme.spacingSmall)
+
+            if standing.isWinner {
+                BrassCrown()
+            }
+
+            Text("\(standing.score)")
+                .font(AppFonts.scoreSmall)
+                .monospacedDigit()
+                .contentTransition(.numericText(value: Double(standing.score)))
+                .foregroundStyle(accent)
+                .frame(minWidth: 44, alignment: .trailing)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, AppTheme.spacingSmall)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(ClubhouseTheme.rule)
+                .frame(height: 1)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            "\(standing.player.name), \(isTiedRank ? "tied for rank" : "rank") \(standing.rank), score \(standing.score)\(standing.isWinner ? ", winner" : "")"
+        )
     }
 }
 
@@ -256,8 +378,8 @@ private struct EndGameButtons: View {
         VStack(spacing: AppTheme.spacingSmall) {
             BauhausPrimaryButton(
                 title: "Play Again",
-                systemImage: "arrow.counterclockwise",
-                fill: session.gameType.color,
+                systemImage: "arrow.right",
+                fill: ClubhouseTheme.bauhausBlue,
                 action: onPlayAgain
             )
             .accessibilityIdentifier("play_again_button")
@@ -276,6 +398,7 @@ private struct EndGameButtons: View {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
                         .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
                 }
+                .shadow(color: ClubhouseTheme.paperShadow, radius: 6, y: 2)
             }
             .buttonStyle(PressableButtonStyle())
             .accessibilityIdentifier("home_button")

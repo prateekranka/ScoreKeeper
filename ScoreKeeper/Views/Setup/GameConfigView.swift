@@ -31,20 +31,33 @@ struct GameConfigView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
-                headerSection
+                BauhausScreenHeader(
+                    title: gameType.displayName,
+                    subtitle: "\(playerNames.count.quantityText("player")) · tune tonight's rules.",
+                    heroStyle: .chooseGame
+                )
+
                 configSection
             }
             .padding(AppTheme.spacingMedium)
+            .padding(.bottom, 24)
         }
         .appBackground()
         .navigationTitle("Game Settings")
         .safeAreaInset(edge: .bottom) {
-            startButton
-                .padding(.vertical, AppTheme.spacingSmall)
-                .padding(.horizontal, AppTheme.spacingSmall)
-                .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
-                .padding(.horizontal, AppTheme.spacingMedium)
-                .padding(.bottom, AppTheme.spacingSmall)
+            BauhausPrimaryButton(
+                title: "Start Game",
+                systemImage: "play.fill",
+                fill: canStart ? gameType.color : ClubhouseTheme.inkMuted,
+                action: startConfiguredGame
+            )
+            .accessibilityIdentifier("start_game_button")
+            .disabled(!canStart)
+            .opacity(canStart ? 1 : 0.48)
+            .padding(.vertical, AppTheme.spacingSmall)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .background(ClubhouseTheme.paper.opacity(0.92))
+            .padding(.bottom, AppTheme.spacingSmall)
         }
         .onAppear {
             winCondition = gameType.defaultWinCondition
@@ -64,20 +77,6 @@ struct GameConfigView: View {
         } message: {
             Text(saveError ?? "Please try again.")
         }
-    }
-
-    private var headerSection: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: gameType.icon)
-                .font(.title2)
-                .foregroundStyle(gameType.color)
-            Text(gameType.displayName)
-                .font(AppFonts.title)
-                .foregroundStyle(ClubhouseTheme.ink)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private var configSection: some View {
@@ -100,7 +99,7 @@ struct GameConfigView: View {
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                     Toggle("No repeat rounds", isOn: $phase10SkipOnFail)
                         .font(AppFonts.body)
-                        .tint(ClubhouseTheme.felt)
+                        .tint(ClubhouseTheme.bauhausBlue)
 
                     Text("Players advance to the next stage every round, even when they do not complete the current stage.")
                         .font(AppFonts.caption)
@@ -121,7 +120,13 @@ struct GameConfigView: View {
             TextField("Manual end only", text: $targetScoreText)
                 .font(AppFonts.body)
                 .keyboardType(.numberPad)
-                .textFieldStyle(.roundedBorder)
+                .padding(.horizontal, 12)
+                .frame(minHeight: 48)
+                .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                        .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
+                }
                 .accessibilityLabel("Target score, optional")
                 .accessibilityHint("Leave blank to end the game manually")
                 .accessibilityIdentifier("target_score_field")
@@ -144,14 +149,6 @@ struct GameConfigView: View {
             }
         }
         .padding(.top, AppTheme.spacingSmall)
-    }
-
-    private var startButton: some View {
-        AppActionButton(role: .primary(gameType.color), action: startConfiguredGame) {
-            Label("Start Game", systemImage: "play.fill")
-        }
-        .accessibilityIdentifier("start_game_button")
-        .disabled(!canStart)
     }
 
     private func startConfiguredGame() {
@@ -200,7 +197,7 @@ struct GameConfigView: View {
                 existing.gamesPlayed += 1
                 existing.lastUsed = .now
             } else {
-                let saved = SavedPlayer(name: name, colorIndex: Int.random(in: 0..<PlayerColors.palette.count))
+                let saved = SavedPlayer(name: name, colorIndex: names.firstIndex(of: name) ?? 0)
                 saved.gamesPlayed = 1
                 modelContext.insert(saved)
             }

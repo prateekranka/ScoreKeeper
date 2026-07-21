@@ -15,6 +15,7 @@ struct ScoreKeeperApp: App {
                 .environment(storeManager)
                 .environment(reviewAskManager)
                 .preferredColorScheme(themeManager.effectiveColorScheme)
+                .tuningPanel()
         }
         .modelContainer(modelContainer)
     }

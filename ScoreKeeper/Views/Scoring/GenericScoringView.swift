@@ -195,16 +195,17 @@ private struct GenericFocusScoreTable: View {
     }
 
     private var tableHeader: some View {
-        HStack {
+        HStack(spacing: AppTheme.spacingSmall) {
             Text("Player")
                 .frame(maxWidth: .infinity, alignment: .leading)
             Text("Total")
                 .frame(width: 64, alignment: .trailing)
-            Text("This round")
+            Text("This Round")
                 .frame(width: 140, alignment: .trailing)
         }
         .columnHeaderStyle()
         .padding(.vertical, AppTheme.spacingSmall)
+        .padding(.horizontal, AppTheme.spacingSmall)
     }
 
     private var leadingPlayers: [UUID] {
@@ -223,11 +224,10 @@ private struct FocusScoreRow: View {
     var onActivate: () -> Void = {}
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingSmall) {
-            HStack(spacing: AppTheme.spacingSmall) {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            HStack(alignment: .center, spacing: AppTheme.spacingSmall) {
                 playerIdentity
-
-                Spacer(minLength: AppTheme.spacingSmall)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 totalColumn
 
@@ -244,19 +244,31 @@ private struct FocusScoreRow: View {
         }
         .padding(.vertical, AppTheme.spacingMedium)
         .padding(.horizontal, AppTheme.spacingSmall)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(alignment: .leading) {
+            if isActive {
+                Capsule()
+                    .fill(ClubhouseTheme.bauhausBlue)
+                    .frame(width: 4)
+                    .padding(.vertical, 10)
+            }
+        }
         .background(
-            isActive ? ClubhouseTheme.bauhausBlue.opacity(0.06) : Color.clear,
+            ClubhouseTheme.paperCard,
             in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
         )
         .overlay {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
                 .strokeBorder(
-                    isActive ? ClubhouseTheme.bauhausBlue : Color.clear,
-                    lineWidth: 2
+                    isActive ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
+                    lineWidth: isActive ? 2 : 1
                 )
         }
+        .animation(AppMotion.state, value: isActive)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("\(player.name), total score \(totalScore), round score \(value)")
+        .accessibilityLabel("\(player.name), total score \(totalScore), round score \(value)\(isActive ? ", active" : "")")
+        .accessibilityAddTraits(isActive ? .isSelected : [])
+        .onTapGesture(perform: onActivate)
     }
 
     private var playerIdentity: some View {
@@ -269,17 +281,8 @@ private struct FocusScoreRow: View {
                         .font(AppFonts.body.weight(.semibold))
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.8)
+                        .minimumScaleFactor(0.85)
                         .layoutPriority(1)
-
-                    if isActive {
-                        Text("ACTIVE")
-                            .font(AppFonts.columnHeader)
-                            .foregroundStyle(ClubhouseTheme.bauhausBlue)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(ClubhouseTheme.bauhausBlue.opacity(0.12), in: Capsule())
-                    }
 
                     if isLeading {
                         BrassCrown()
@@ -287,29 +290,24 @@ private struct FocusScoreRow: View {
                             .accessibilityLabel("Leading")
                     }
                 }
-                .layoutPriority(1)
 
-                Text("Round points")
+                Text("This round")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
         }
-        .frame(minWidth: 108, maxWidth: .infinity, alignment: .leading)
-        .layoutPriority(2)
     }
 
     private var totalColumn: some View {
         Text("\(totalScore)")
             .font(AppFonts.scoreSmall)
             .monospacedDigit()
-            .foregroundStyle(
-                isLeading
-                    ? ClubhouseTheme.bauhausYellow
-                    : PlayerColors.color(for: player.colorIndex)
-            )
+            .foregroundStyle(PlayerColors.color(for: player.colorIndex))
             .contentTransition(.numericText(value: Double(totalScore)))
-        .frame(width: 64, alignment: .trailing)
+            .frame(width: 64, alignment: .trailing)
+            .accessibilityLabel("Total \(totalScore)")
     }
 
     private var scoreStepper: some View {
@@ -369,21 +367,15 @@ private struct CompactScoreStepper: View {
         HStack(spacing: 6) {
             stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
 
-            VStack(spacing: 0) {
-                Text("RD")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-
-                Text(roundScoreText)
-                    .font(AppFonts.scoreSmall)
-                    .monospacedDigit()
-                    .contentTransition(.numericText(value: Double(value)))
-                    .foregroundStyle(accentColor)
-            }
-            .frame(width: 44)
-            .accessibilityElement(children: .ignore)
-            .accessibilityIdentifier(identifierPrefix + "score")
-            .accessibilityLabel("Score \(value)")
+            Text(roundScoreText)
+                .font(AppFonts.scoreSmall)
+                .monospacedDigit()
+                .contentTransition(.numericText(value: Double(value)))
+                .foregroundStyle(accentColor)
+                .frame(width: 52)
+                .accessibilityElement(children: .ignore)
+                .accessibilityIdentifier(identifierPrefix + "score")
+                .accessibilityLabel("Round score \(value)")
 
             stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
         }

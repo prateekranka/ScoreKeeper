@@ -35,10 +35,11 @@ struct HeadToHeadView: View {
                         recordCard(record)
                     }
                 } else if !playerA.isEmpty && !playerB.isEmpty && playerA != playerB {
-                    ContentUnavailableView(
-                        "No Games Together",
-                        systemImage: "person.2.slash",
-                        description: Text("\(playerA) and \(playerB) haven't played this matchup yet.")
+                    BauhausEmptyState(
+                        title: "No Games Together",
+                        message: "\(playerA) and \(playerB) haven't played this matchup yet.",
+                        systemImage: "person.2",
+                        heroStyle: .players
                     )
                 }
             }
@@ -53,6 +54,12 @@ struct HeadToHeadView: View {
 
     private var selectionPanel: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            BauhausScreenHeader(
+                title: "Head to Head",
+                subtitle: "Compare two players across every game night.",
+                heroStyle: .players
+            )
+
             Text("Select Players")
                 .columnHeaderStyle()
 
@@ -121,7 +128,7 @@ struct HeadToHeadView: View {
         } label: {
             VStack(spacing: 4) {
                 HStack(spacing: 4) {
-                    PlayerGlyph(colorIndex: colorIndex, font: AppFonts.caption)
+                    PlayerShapeIcon(colorIndex: colorIndex, size: 18)
 
                     Text(name)
                         .font(AppFonts.body)
@@ -138,7 +145,7 @@ struct HeadToHeadView: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(PressableButtonStyle())
         .accessibilityLabel(name)
         .accessibilityHint("Opens player stats")
         .accessibilityIdentifier("player_stats_\(name)")
@@ -153,12 +160,10 @@ struct HeadToHeadView: View {
                 Rectangle()
                     .fill(PlayerColors.palette[3])
                     .frame(width: max(geo.size.width * aFraction, totalWins == 0 ? geo.size.width / 2 : 4), height: 20)
-                    .clipShape(.rect(cornerRadius: 6))
 
                 Rectangle()
                     .fill(PlayerColors.palette[4])
                     .frame(width: max(geo.size.width * (1 - aFraction), totalWins == 0 ? geo.size.width / 2 : 4), height: 20)
-                    .clipShape(.rect(cornerRadius: 6))
             }
         }
         .frame(height: 28)
@@ -169,7 +174,7 @@ struct HeadToHeadView: View {
             toggleExpanded(player: name, record: record)
         } label: {
             HStack {
-                PlayerGlyph(colorIndex: name == record.playerA ? 3 : 4, font: AppFonts.caption)
+                PlayerShapeIcon(colorIndex: name == record.playerA ? 3 : 4, size: 18)
 
                 Text(name)
                     .font(AppFonts.body)

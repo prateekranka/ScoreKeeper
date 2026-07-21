@@ -14,6 +14,9 @@ struct HomeView: View {
     @State private var pendingDeletionID: PersistentIdentifier?
     @State private var showDeleteConfirmation = false
     @State private var saveError: String?
+    #if DEBUG
+    @ObservedObject private var tuning = PipTuning.shared
+    #endif
     @Query(filter: #Predicate<GameSession> { !$0.isComplete },
            sort: \GameSession.createdAt, order: .reverse)
     private var inProgressGames: [GameSession]
@@ -96,11 +99,36 @@ struct HomeView: View {
                         .staggeredEntrance(visible: sectionsVisible, index: statsEntranceIndex)
                 }
 
-                HomeQuickToolsRow(selectedTool: $selectedTool)
+                HomeQuickToolsRow(
+                    selectedTool: $selectedTool,
+                    hasActiveGame: !inProgressGames.isEmpty
+                )
                     .staggeredEntrance(visible: sectionsVisible, index: toolsEntranceIndex)
             }
             .padding(AppTheme.spacingMedium)
-            .padding(.bottom, AppTheme.spacingLarge)
+            #if DEBUG
+            .padding(.bottom, CGFloat(tuning.homeToolsBottomClearance))
+            #else
+            .padding(.bottom, 96)
+            #endif
+        }
+        .overlay(alignment: .top) {
+            LinearGradient(
+                colors: [
+                    ClubhouseTheme.paper,
+                    ClubhouseTheme.paper.opacity(0.92),
+                    ClubhouseTheme.paper.opacity(0)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            #if DEBUG
+            .frame(height: CGFloat(tuning.homeHeaderTopMask))
+            #else
+            .frame(height: 56)
+            #endif
+            .ignoresSafeArea(edges: .top)
+            .allowsHitTesting(false)
         }
         .appBackground()
         .navigationTitle("")
@@ -272,10 +300,9 @@ private struct BauhausHomeHeader: View {
                 .accessibilityIdentifier("theme_button")
                 .buttonStyle(PressableButtonStyle())
                 .sensoryFeedback(.selection, trigger: themeTrigger)
-                .offset(x: 4, y: -4)
             }
         }
-        .padding(.top, 8)
+        .padding(.top, 4)
     }
 }
 
@@ -457,8 +484,8 @@ private struct FreeGamesNote: View {
                 .accessibilityIdentifier("free_games_note")
 
             Button("Upgrade to PipCount Pro", action: onUnlock)
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.brass)
+                .font(AppFonts.caption.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.bauhausBlueDeep)
                 .accessibilityIdentifier("home_upgrade_button")
                 .accessibilityLabel("Upgrade to PipCount Pro")
         }
@@ -480,7 +507,7 @@ private struct PipCountUpgradeEntry: View {
 
             Button("Upgrade to PipCount Pro", action: onUpgrade)
                 .font(AppFonts.caption.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.brass)
+                .foregroundStyle(ClubhouseTheme.bauhausBlueDeep)
                 .frame(minHeight: 44)
                 .accessibilityLabel("Upgrade to PipCount Pro")
                 .accessibilityIdentifier("home_upgrade_button")
@@ -669,18 +696,19 @@ private struct BauhausStatsHistoryRow: View {
 
 private struct HomeQuickToolsRow: View {
     @Binding var selectedTool: HomeTool?
+    var hasActiveGame = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             Text("Game Night Tools")
                 .columnHeaderStyle()
 
-            glassGroup(spacing: AppTheme.spacingSmall) {
-                HStack(spacing: AppTheme.spacingSmall) {
-                    ForEach(HomeTool.allCases) { tool in
-                        HomeToolButton(tool: tool) {
-                            selectedTool = tool
-                        }
+            HStack(spacing: AppTheme.spacingSmall) {
+                ForEach(HomeTool.allCases) { tool in
+                    let isEnabled = tool != .undo || hasActiveGame
+                    HomeToolButton(tool: tool, isEnabled: isEnabled) {
+                        guard isEnabled else { return }
+                        selectedTool = tool
                     }
                 }
             }
@@ -690,31 +718,36 @@ private struct HomeQuickToolsRow: View {
 
 private struct HomeToolButton: View {
     let tool: HomeTool
+    var isEnabled = true
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 6) {
-                Image(systemName: tool.systemImage)
-                    .font(.title3)
-                    .frame(width: 36, height: 36)
-                    .background(ClubhouseTheme.paperCard.opacity(0.74), in: Circle())
-                    .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
-                    .foregroundStyle(tool.tint)
+            VStack(spacing: 8) {
+                ZStack {
+                    Circle()
+                        .fill(tool.tint.opacity(isEnabled ? 0.14 : 0.06))
+                        .frame(width: 40, height: 40)
+                    Image(systemName: tool.systemImage)
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundStyle(isEnabled ? tool.tint : ClubhouseTheme.inkMuted.opacity(0.45))
+                }
 
                 Text(tool.title)
                     .font(AppFonts.caption)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.8)
+                    .foregroundStyle(isEnabled ? ClubhouseTheme.ink : ClubhouseTheme.inkMuted.opacity(0.45))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 86)
-            .padding(.horizontal, 4)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
+            .frame(height: 88)
+            .opacity(isEnabled ? 1 : 0.72)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: isEnabled)
         }
         .buttonStyle(PressableButtonStyle())
+        .disabled(!isEnabled)
         .accessibilityLabel(tool.accessibilityLabel)
+        .accessibilityHint(isEnabled ? "" : "Available during an active game")
     }
 }
 
@@ -757,10 +790,10 @@ private enum HomeTool: String, CaseIterable, Identifiable {
 
     var tint: Color {
         switch self {
-        case .timer: return PlayerColors.palette[1]
-        case .dice: return PlayerColors.palette[4]
-        case .starter: return PlayerColors.palette[3]
-        case .undo: return PlayerColors.palette[0]
+        case .timer: return ClubhouseTheme.bauhausBlue
+        case .dice: return ClubhouseTheme.ink
+        case .starter: return ClubhouseTheme.bauhausGreen
+        case .undo: return ClubhouseTheme.bauhausBlue
         }
     }
 }
@@ -773,6 +806,9 @@ private struct HomeToolSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var dieRoll = 1
     @State private var selectedStarter: Player?
+    #if DEBUG
+    @ObservedObject private var tuning = PipTuning.shared
+    #endif
 
     var body: some View {
         NavigationStack {
@@ -783,6 +819,10 @@ private struct HomeToolSheet: View {
                     .frame(width: 96, height: 96)
                     .background(ClubhouseTheme.paperSunken, in: Circle())
                     .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
+                    #if DEBUG
+                    .padding(.top, CGFloat(tuning.timerHeroOffsetY))
+                    .scaleEffect(tuning.timerHeroScale)
+                    #endif
                     .accessibilityHidden(true)
 
                 VStack(spacing: AppTheme.spacingSmall) {
@@ -794,6 +834,9 @@ private struct HomeToolSheet: View {
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                #if DEBUG
+                .padding(.top, CGFloat(tuning.timerTitleGap) - AppTheme.spacingLarge)
+                #endif
 
                 ToolSheetContent(tool: tool, activeGame: activeGame, dieRoll: $dieRoll, selectedStarter: $selectedStarter)
 
@@ -822,7 +865,7 @@ private struct HomeToolSheet: View {
     private var toolMessage: String {
         switch tool {
         case .timer:
-            return "A visible timer reduces table drift without leaving the score sheet."
+            return "Set a countdown and keep turns moving from the table."
         case .dice:
             return "Use a fast roll when a game needs a tie-breaker or random choice."
         case .starter:
@@ -842,8 +885,7 @@ private struct ToolSheetContent: View {
     var body: some View {
         switch tool {
         case .timer:
-            Label("Use the live scoring toolbar timer during a game.", systemImage: "timer")
-                .font(AppFonts.body)
+            HomeTurnTimer()
         case .dice:
             VStack(spacing: AppTheme.spacingSmall) {
                 Text("\(dieRoll)")
@@ -878,5 +920,62 @@ private struct ToolSheetContent: View {
             Label("During scoring, tap Undo Last before submitting the next round.", systemImage: "arrow.uturn.backward")
                 .font(AppFonts.body)
         }
+    }
+}
+
+private struct HomeTurnTimer: View {
+    @State private var timerSeconds = 60
+    @State private var isTimerRunning = false
+
+    var body: some View {
+        VStack(spacing: AppTheme.spacingMedium) {
+            Text(formattedTimer)
+                .font(.system(size: 64, weight: .heavy, design: .default))
+                .monospacedDigit()
+                .foregroundStyle(ClubhouseTheme.ink)
+                .contentTransition(.numericText(value: Double(timerSeconds)))
+
+            HStack(spacing: AppTheme.spacingSmall) {
+                timerPreset("30s", seconds: 30)
+                timerPreset("1m", seconds: 60)
+                timerPreset("2m", seconds: 120)
+            }
+
+            BauhausPrimaryButton(
+                title: isTimerRunning ? "Pause" : "Start",
+                systemImage: isTimerRunning ? "pause.fill" : "play.fill",
+                fill: ClubhouseTheme.bauhausBlue
+            ) {
+                isTimerRunning.toggle()
+            }
+        }
+        .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+            guard isTimerRunning, timerSeconds > 0 else { return }
+            timerSeconds -= 1
+            if timerSeconds == 0 {
+                isTimerRunning = false
+            }
+        }
+    }
+
+    private var formattedTimer: String {
+        String(format: "%d:%02d", timerSeconds / 60, timerSeconds % 60)
+    }
+
+    private func timerPreset(_ title: String, seconds: Int) -> some View {
+        Button(title) {
+            isTimerRunning = false
+            timerSeconds = seconds
+        }
+        .font(AppFonts.body)
+        .frame(maxWidth: .infinity)
+        .frame(minHeight: 44)
+        .foregroundStyle(ClubhouseTheme.ink)
+        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+        }
+        .buttonStyle(PressableButtonStyle())
     }
 }

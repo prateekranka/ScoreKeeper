@@ -23,12 +23,6 @@ struct Phase10ScoringView: View {
             actionSystemImage: "checkmark.circle.fill",
             action: submitRound
         ) {
-            RoundBanner(
-                icon: GameType.phase10.icon,
-                color: GameType.phase10.color,
-                title: "Round \(session.currentRoundNumber)",
-                subtitle: "Ten-stage card-game scoring"
-            )
             phaseOverview
             roundEntrySection
         } footer: {
@@ -58,18 +52,17 @@ struct Phase10ScoringView: View {
 
     private var phaseOverview: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "Current Stages", systemImage: "flag.checkered")
+            Text("Current Stages")
+                .columnHeaderStyle()
 
             ForEach(session.players, id: \.id) { player in
                 let currentPhase = engine.currentPhase(for: player.id, in: session)
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: AppTheme.spacingSmall) {
-                        PlayerColorPip(colorIndex: player.colorIndex)
-
-                        PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
+                        PlayerShapeIcon(colorIndex: player.colorIndex, size: 22)
 
                         Text(player.name)
-                            .font(AppFonts.body)
+                            .font(AppFonts.body.weight(.semibold))
                             .foregroundStyle(ClubhouseTheme.ink)
 
                         Spacer()
@@ -78,15 +71,15 @@ struct Phase10ScoringView: View {
                             .font(AppFonts.scoreSmall)
                             .monospacedDigit()
                             .contentTransition(.numericText(value: Double(currentPhase)))
-                            .foregroundStyle(currentPhase >= 10 ? ClubhouseTheme.felt : ClubhouseTheme.ink)
+                            .foregroundStyle(currentPhase >= 10 ? ClubhouseTheme.bauhausGreen : ClubhouseTheme.ink)
 
                         if currentPhase >= 10 {
                             Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(ClubhouseTheme.felt)
+                                .foregroundStyle(ClubhouseTheme.bauhausGreen)
                         }
                     }
 
-                    PegBoardStrip(currentPhase: currentPhase)
+                    BauhausRoundDots(current: currentPhase, total: 10)
                 }
                 .padding(.vertical, AppTheme.spacingSmall)
                 .overlay(alignment: .bottom) {

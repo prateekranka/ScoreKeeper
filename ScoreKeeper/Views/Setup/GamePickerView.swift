@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GamePickerView: View {
     @Environment(NavigationRouter.self) private var router
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var sectionsVisible = false
     @State private var selectedGameType: GameType = .generic
 
@@ -21,8 +22,9 @@ struct GamePickerView: View {
                             gameType: gameType,
                             isSelected: selectedGameType == gameType,
                             action: {
-                                selectedGameType = gameType
-                                router.push(.playerSetup(gameType))
+                                withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
+                                    selectedGameType = gameType
+                                }
                             }
                         )
                         .accessibilityIdentifier("game_tile_\(gameType.rawValue)")
@@ -44,9 +46,8 @@ struct GamePickerView: View {
             )
             .accessibilityIdentifier("game_picker_continue_button")
             .padding(.vertical, AppTheme.spacingSmall)
-            .padding(.horizontal, AppTheme.spacingSmall)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
             .padding(.horizontal, AppTheme.spacingMedium)
+            .background(ClubhouseTheme.paper.opacity(0.92))
             .padding(.bottom, AppTheme.spacingSmall)
         }
         .onAppear {
@@ -88,10 +89,15 @@ private struct GamePickerOptionCard: View {
             .overlay {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
                     .strokeBorder(
-                        isSelected ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.rule,
+                        isSelected ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
                         lineWidth: isSelected ? 2 : 1
                     )
             }
+            .shadow(
+                color: isSelected ? ClubhouseTheme.bauhausBlue.opacity(0.14) : ClubhouseTheme.paperShadow,
+                radius: isSelected ? 12 : 6,
+                y: isSelected ? 4 : 2
+            )
             .contentShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
         }
         .buttonStyle(PressableButtonStyle())
@@ -107,16 +113,16 @@ private struct RadioIndicator: View {
         ZStack {
             Circle()
                 .strokeBorder(
-                    isSelected ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.rule,
+                    isSelected ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
                     lineWidth: 2
                 )
                 .frame(width: 22, height: 22)
 
-            if isSelected {
-                Circle()
-                    .fill(ClubhouseTheme.bauhausBlue)
-                    .frame(width: 12, height: 12)
-            }
+            Circle()
+                .fill(ClubhouseTheme.bauhausBlue)
+                .frame(width: 12, height: 12)
+                .scaleEffect(isSelected ? 1 : 0.4)
+                .opacity(isSelected ? 1 : 0)
         }
         .accessibilityHidden(true)
     }

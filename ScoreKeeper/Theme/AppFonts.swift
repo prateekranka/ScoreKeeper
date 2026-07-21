@@ -21,7 +21,7 @@ struct ColumnHeaderModifier: ViewModifier {
             .font(AppFonts.columnHeader)
             .textCase(.uppercase)
             .tracking(0.8)
-            .foregroundStyle(ClubhouseTheme.inkMuted)
+            .foregroundStyle(ClubhouseTheme.bauhausBlue)
     }
 }
 

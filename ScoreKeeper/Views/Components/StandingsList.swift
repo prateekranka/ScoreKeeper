@@ -12,6 +12,12 @@ struct StandingsList: View {
     let title: String
     let standings: [PlayerStanding]
 
+    private var tiedRanks: Set<Int> {
+        Dictionary(grouping: standings, by: \.rank)
+            .filter { $0.value.count > 1 }
+            .reduce(into: Set<Int>()) { $0.insert($1.key) }
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             HStack {
@@ -28,14 +34,22 @@ struct StandingsList: View {
                     score: standing.score,
                     rank: standing.rank,
                     isLeader: standing.isWinner,
-                    isHighlighted: standing.isWinner
+                    isHighlighted: false,
+                    trailingLabel: tiedRanks.contains(standing.rank) ? "TIE" : nil
                 )
                 .accessibilityElement(children: .combine)
-                .accessibilityLabel("\(standing.player.name), rank \(standing.rank), score \(standing.score)\(standing.isWinner ? ", winner" : "")")
+                .accessibilityLabel(accessibilityLabel(for: standing))
             }
         }
         .padding(AppTheme.spacingMedium)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+    }
+
+    private func accessibilityLabel(for standing: PlayerStanding) -> String {
+        let rankText = tiedRanks.contains(standing.rank)
+            ? "tied for rank \(standing.rank)"
+            : "rank \(standing.rank)"
+        return "\(standing.player.name), \(rankText), score \(standing.score)\(standing.isWinner ? ", winner" : "")"
     }
 }
 
@@ -48,14 +62,25 @@ extension GameSession {
             return winCondition == .lowestScore ? firstScore < secondScore : firstScore > secondScore
         }
 
-        return sortedPlayers.enumerated().map { index, player in
-            PlayerStanding(
-                id: player.id,
-                rank: index + 1,
-                player: player,
-                score: player.totalScore(in: self),
-                isWinner: winnerIDs.contains(player.id)
+        var result: [PlayerStanding] = []
+        for (index, player) in sortedPlayers.enumerated() {
+            let score = player.totalScore(in: self)
+            let rank: Int
+            if index > 0, score == result[index - 1].score {
+                rank = result[index - 1].rank
+            } else {
+                rank = index + 1
+            }
+            result.append(
+                PlayerStanding(
+                    id: player.id,
+                    rank: rank,
+                    player: player,
+                    score: score,
+                    isWinner: winnerIDs.contains(player.id)
+                )
             )
         }
+        return result
     }
 }

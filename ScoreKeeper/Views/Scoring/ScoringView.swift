@@ -54,11 +54,15 @@ struct ScoringView: View {
                 .foregroundStyle(ClubhouseTheme.lacquer)
             }
         }
-        .alert("End Game?", isPresented: $showEndGameAlert) {
-            Button("Cancel", role: .cancel) {}
+        .confirmationDialog(
+            "End Game?",
+            isPresented: $showEndGameAlert,
+            titleVisibility: .visible
+        ) {
             Button("End Game", role: .destructive) {
                 endGame(session, engine: engine)
             }
+            Button("Cancel", role: .cancel) {}
         } message: {
             Text("This will finish the current game and determine the winner.")
         }

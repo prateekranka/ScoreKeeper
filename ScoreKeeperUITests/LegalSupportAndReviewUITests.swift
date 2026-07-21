@@ -23,9 +23,9 @@ final class LegalSupportAndReviewUITests: XCTestCase {
     }
 
     func testLegalSupportLinksAreReachable() throws {
-        let legalSupportButton = app.buttons["legal_support_button"]
-        XCTAssertTrue(legalSupportButton.waitForExistence(timeout: 3))
-        legalSupportButton.tap()
+        let moreTab = app.buttons["tab_more"]
+        XCTAssertTrue(moreTab.waitForExistence(timeout: 3))
+        moreTab.tap()
 
         XCTAssertTrue(app.navigationBars["Legal & Support"].waitForExistence(timeout: 3))
 
@@ -55,7 +55,7 @@ final class LegalSupportAndReviewUITests: XCTestCase {
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
 
         app.buttons["new_game_button"].tap()
-        app.buttons["game_tile_generic"].tap()
+        chooseGame("game_tile_generic")
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
         XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 2))
@@ -70,6 +70,15 @@ final class LegalSupportAndReviewUITests: XCTestCase {
         XCTAssertFalse(app.buttons["review_ask_rate_button"].waitForExistence(timeout: 2))
         XCTAssertFalse(app.buttons["review_ask_later_button"].exists)
         XCTAssertFalse(app.staticTexts["How was game night?"].exists)
+    }
+
+
+    private func chooseGame(_ tileID: String) {
+        XCTAssertTrue(app.buttons[tileID].waitForExistence(timeout: 2))
+        app.buttons[tileID].tap()
+        let continueButton = app.buttons["game_picker_continue_button"]
+        XCTAssertTrue(continueButton.waitForExistence(timeout: 2))
+        continueButton.tap()
     }
 
     private func fillPlayerNames(_ names: [String]) {

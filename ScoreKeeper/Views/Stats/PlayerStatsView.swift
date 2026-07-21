@@ -16,6 +16,12 @@ struct PlayerStatsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                BauhausScreenHeader(
+                    title: playerName,
+                    subtitle: "Games, wins, and recent nights.",
+                    heroStyle: .players
+                )
+
                 Text("Overview")
                     .columnHeaderStyle()
 
@@ -79,21 +85,20 @@ struct PlayerStatsView: View {
         return HStack {
             Image(systemName: session.gameType.icon)
                 .foregroundStyle(session.gameType.color)
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(session.gameType.displayName)
-                    .font(AppFonts.body)
+                    .font(AppFonts.body.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.ink)
                 if let date = session.completedAt {
                     Text(date, style: .date)
-                        .columnHeaderStyle()
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
             }
             Spacer()
-            Text(isWinner ? "Win" : "Loss")
-                .font(AppFonts.caption)
-                .foregroundStyle(isWinner ? ClubhouseTheme.felt : ClubhouseTheme.inkMuted)
+            StatusPill(kind: .custom(isWinner ? "Win" : "Loss", isWinner ? ClubhouseTheme.bauhausGreen : ClubhouseTheme.inkMuted))
         }
         .padding(AppTheme.spacingSmall)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
     }
 }

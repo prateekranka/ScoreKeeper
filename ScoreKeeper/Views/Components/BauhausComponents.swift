@@ -91,14 +91,16 @@ struct StatusPill: View {
                 .frame(width: 7, height: 7)
             Text(kind.label)
                 .font(AppFonts.caption.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.ink)
+                .foregroundStyle(kind.color)
+                .lineLimit(1)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
-        .background(ClubhouseTheme.paperCard, in: Capsule())
+        .background(kind.color.opacity(0.10), in: Capsule())
         .overlay {
-            Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+            Capsule().strokeBorder(kind.color.opacity(0.22), lineWidth: 1)
         }
+        .fixedSize(horizontal: true, vertical: false)
         .accessibilityLabel(kind.label)
     }
 }
@@ -412,12 +414,13 @@ struct BauhausPrimaryButton: View {
                         .font(.body.weight(.bold))
                         .foregroundStyle(fill)
                         .frame(width: 28, height: 28)
-                        .background(.white, in: Circle())
+                        .background(ClubhouseTheme.onPrimary, in: Circle())
+                        .accessibilityHidden(true)
                 }
 
                 Text(title)
                     .font(AppFonts.headline)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(ClubhouseTheme.onPrimary)
 
                 Spacer(minLength: 0)
             }
@@ -426,7 +429,7 @@ struct BauhausPrimaryButton: View {
             .background {
                 ZStack(alignment: .trailing) {
                     fill
-                    HalftoneStrip(color: .white, intensity: 0.22)
+                    HalftoneStrip(color: ClubhouseTheme.onPrimary, intensity: 0.22)
                         .frame(width: 88)
                         .mask(
                             LinearGradient(
@@ -438,6 +441,7 @@ struct BauhausPrimaryButton: View {
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
+            .shadow(color: fill.opacity(0.28), radius: 10, y: 4)
         }
         .buttonStyle(PressableButtonStyle())
     }
@@ -484,6 +488,7 @@ struct BauhausNewGameButton: View {
             .padding(.trailing, 8)
             .frame(maxWidth: .infinity, minHeight: 76)
             .background(ClubhouseTheme.bauhausYellow, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
+            .shadow(color: ClubhouseTheme.bauhausYellow.opacity(0.35), radius: 10, y: 4)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier("new_game_button")
@@ -501,16 +506,71 @@ struct BauhausRoundDots: View {
     var body: some View {
         HStack(spacing: 6) {
             ForEach(1...max(total, 1), id: \.self) { index in
+                let isFilled = index <= current
                 Circle()
-                    .fill(index <= current ? activeColor : Color.clear)
+                    .fill(isFilled ? activeColor : Color.clear)
                     .overlay {
                         Circle()
-                            .strokeBorder(index <= current ? activeColor : ClubhouseTheme.rule, lineWidth: 1.5)
+                            .strokeBorder(isFilled ? activeColor : ClubhouseTheme.panelBorder, lineWidth: 1.5)
                     }
                     .frame(width: 10, height: 10)
+                    .scaleEffect(isFilled ? 1 : 0.92)
+                    .animation(AppMotion.state, value: current)
             }
         }
         .accessibilityLabel("Round \(current) of \(total)")
+    }
+}
+
+// MARK: - Empty state
+
+struct BauhausEmptyState: View {
+    let title: String
+    let message: String
+    var systemImage: String? = nil
+    var heroStyle: BauhausHeroStyle = .home
+    var actionTitle: String? = nil
+    var action: (() -> Void)? = nil
+
+    var body: some View {
+        VStack(spacing: AppTheme.spacingMedium) {
+            ZStack {
+                BauhausHeroArt(style: heroStyle, height: 88)
+                    .frame(height: 96)
+                    .opacity(0.9)
+
+                if let systemImage {
+                    Image(systemName: systemImage)
+                        .font(.system(size: 22, weight: .semibold))
+                        .foregroundStyle(ClubhouseTheme.bauhausBlue)
+                        .padding(12)
+                        .background(ClubhouseTheme.paperCard, in: Circle())
+                        .overlay { Circle().strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1) }
+                        .offset(y: 28)
+                }
+            }
+
+            VStack(spacing: 6) {
+                Text(title)
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .multilineTextAlignment(.center)
+
+                Text(message)
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if let actionTitle, let action {
+                BauhausPrimaryButton(title: actionTitle, systemImage: "arrow.right", action: action)
+                    .padding(.top, 4)
+            }
+        }
+        .padding(AppTheme.spacingLarge)
+        .frame(maxWidth: .infinity, minHeight: 240)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -537,7 +597,16 @@ enum PipCountTab: String, CaseIterable, Identifiable {
         switch self {
         case .home: return "house"
         case .games: return "square.grid.2x2"
-        case .players: return "person"
+        case .players: return "person.2"
+        case .more: return "ellipsis"
+        }
+    }
+
+    var selectedSystemImage: String {
+        switch self {
+        case .home: return "house.fill"
+        case .games: return "square.grid.2x2.fill"
+        case .players: return "person.2.fill"
         case .more: return "ellipsis"
         }
     }
@@ -546,27 +615,43 @@ enum PipCountTab: String, CaseIterable, Identifiable {
 struct PipCountTabBar: View {
     var selected: PipCountTab
     var onSelect: (PipCountTab) -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    #if DEBUG
+    @ObservedObject private var tuning = PipTuning.shared
+    #endif
+
+    private var horizontalInset: CGFloat {
+        #if DEBUG
+        CGFloat(tuning.tabBarInset)
+        #else
+        20
+        #endif
+    }
 
     var body: some View {
         HStack(spacing: 0) {
             ForEach(PipCountTab.allCases) { tab in
+                let isSelected = selected == tab
                 Button {
                     onSelect(tab)
                 } label: {
                     VStack(spacing: 4) {
-                        Image(systemName: tab.systemImage)
-                            .font(.system(size: 18, weight: selected == tab ? .semibold : .regular))
+                        Image(systemName: isSelected ? tab.selectedSystemImage : tab.systemImage)
+                            .font(.system(size: 18, weight: isSelected ? .semibold : .regular))
+                            .symbolEffect(.bounce, value: isSelected && !reduceMotion)
+                            .contentTransition(.symbolEffect(.replace))
                         Text(tab.title)
-                            .font(.system(size: 10, weight: selected == tab ? .semibold : .regular))
+                            .font(.system(size: 10, weight: isSelected ? .semibold : .regular))
                     }
-                    .foregroundStyle(selected == tab ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.inkMuted)
+                    .foregroundStyle(isSelected ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.inkMuted)
                     .frame(maxWidth: .infinity)
                     .frame(minHeight: 48)
                     .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(PressableButtonStyle())
                 .accessibilityLabel(tab.title)
-                .accessibilityAddTraits(selected == tab ? .isSelected : [])
+                .accessibilityIdentifier("tab_\(tab.rawValue)")
+                .accessibilityAddTraits(isSelected ? .isSelected : [])
             }
         }
         .padding(.horizontal, 10)
@@ -576,11 +661,11 @@ struct PipCountTabBar: View {
                 .fill(.ultraThinMaterial)
                 .overlay {
                     Capsule(style: .continuous)
-                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                        .strokeBorder(ClubhouseTheme.panelBorder.opacity(0.7), lineWidth: 1)
                 }
-                .shadow(color: ClubhouseTheme.ink.opacity(0.08), radius: 16, y: 6)
+                .shadow(color: ClubhouseTheme.ink.opacity(0.10), radius: 18, y: 8)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, horizontalInset)
         .padding(.bottom, 8)
     }
 }
@@ -592,6 +677,8 @@ struct BauhausScreenHeader: View {
     var subtitle: String?
     var heroStyle: BauhausHeroStyle = .home
     var trailing: AnyView? = nil
+    var artOffset: CGSize = .zero
+    var artScale: CGFloat = 1
 
     var body: some View {
         HStack(alignment: .top, spacing: AppTheme.spacingSmall) {
@@ -613,6 +700,8 @@ struct BauhausScreenHeader: View {
 
             ZStack(alignment: .topTrailing) {
                 BauhausHeroArt(style: heroStyle, height: 110)
+                    .offset(artOffset)
+                    .scaleEffect(artScale)
                 if let trailing {
                     trailing
                 }

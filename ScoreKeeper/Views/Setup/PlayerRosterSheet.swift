@@ -16,22 +16,42 @@ struct PlayerRosterSheet: View {
         NavigationStack {
             Group {
                 if savedPlayers.isEmpty {
-                    ContentUnavailableView(
-                        "No Saved Players",
-                        systemImage: "person.slash",
-                        description: Text("Play a game to save player names to your roster.")
+                    BauhausEmptyState(
+                        title: "No Saved Players",
+                        message: "Play a game to save player names to your roster.",
+                        systemImage: "person.2",
+                        heroStyle: .players
                     )
+                    .padding(AppTheme.spacingMedium)
                 } else {
-                    ScrollView {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 140))], spacing: AppTheme.spacingSmall) {
-                            ForEach(savedPlayers) { player in
-                                rosterRow(player)
-                            }
+                    List {
+                        ForEach(savedPlayers) { player in
+                            rosterRow(player)
+                                .listRowInsets(EdgeInsets(
+                                    top: AppTheme.spacingSmall,
+                                    leading: AppTheme.spacingMedium,
+                                    bottom: AppTheme.spacingSmall,
+                                    trailing: AppTheme.spacingMedium
+                                ))
+                                .listRowSeparator(.hidden)
+                                .listRowBackground(Color.clear)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        pendingDeleteName = player.name
+                                        showDeleteConfirmation = true
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                    .accessibilityIdentifier("delete_roster_player_\(player.name)")
+                                }
                         }
-                        .padding(AppTheme.spacingMedium)
                     }
+                    .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .appBackground()
             .navigationTitle("Select Players")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -44,6 +64,7 @@ struct PlayerRosterSheet: View {
                         dismiss()
                     }
                     .disabled(selectedNames.isEmpty)
+                    .foregroundStyle(selectedNames.isEmpty ? ClubhouseTheme.inkMuted : ClubhouseTheme.bauhausBlue)
                 }
             }
             .confirmationDialog(
@@ -73,48 +94,53 @@ struct PlayerRosterSheet: View {
     }
 
     private func rosterRow(_ player: SavedPlayer) -> some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Button {
-                if selectedNames.contains(player.name) {
-                    selectedNames.remove(player.name)
-                } else {
-                    selectedNames.insert(player.name)
-                }
-            } label: {
-                VStack(spacing: AppTheme.spacingSmall) {
-                    PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small)
-                    Text("\(player.gamesPlayed) games")
+        let isSelected = selectedNames.contains(player.name)
+
+        return Button {
+            if isSelected {
+                selectedNames.remove(player.name)
+            } else {
+                selectedNames.insert(player.name)
+            }
+        } label: {
+            HStack(spacing: AppTheme.spacingSmall) {
+                PlayerShapeIcon(colorIndex: player.colorIndex, size: 28)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(player.name)
+                        .font(AppFonts.body.weight(.semibold))
+                        .foregroundStyle(ClubhouseTheme.ink)
+                    Text(player.gamesPlayed.quantityText("game"))
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
-                .padding(AppTheme.spacingSmall)
-                .frame(maxWidth: .infinity)
-                .background(
-                    selectedNames.contains(player.name)
-                        ? PlayerColors.lightColor(for: player.colorIndex)
-                        : Color.clear,
-                    in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                )
-                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
-            }
-            .buttonStyle(PressableButtonStyle())
-            .accessibilityLabel("\(player.name), \(player.gamesPlayed) games played")
-            .accessibilityValue(selectedNames.contains(player.name) ? "Selected" : "Not selected")
-            .accessibilityIdentifier("roster_player_\(player.name)")
 
-            Button(role: .destructive) {
-                pendingDeleteName = player.name
-                showDeleteConfirmation = true
-            } label: {
-                Image(systemName: "trash")
-                    .font(.caption.weight(.semibold))
-                    .frame(width: 44, height: 44)
-                    .contentShape(Rectangle())
+                Spacer(minLength: AppTheme.spacingSmall)
+
+                if isSelected {
+                    StatusPill(kind: .custom("Selected", ClubhouseTheme.bauhausBlue))
+                } else {
+                    Circle()
+                        .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1.5)
+                        .frame(width: 22, height: 22)
+                }
             }
-            .buttonStyle(PressableButtonStyle())
-            .accessibilityLabel("Delete \(player.name) from saved roster")
-            .accessibilityIdentifier("delete_roster_player_\(player.name)")
+            .padding(AppTheme.spacingSmall)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                    .strokeBorder(
+                        isSelected ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
+                        lineWidth: isSelected ? 2 : 1
+                    )
+            }
+            .shadow(color: ClubhouseTheme.paperShadow, radius: isSelected ? 10 : 4, y: isSelected ? 3 : 1)
         }
+        .buttonStyle(PressableButtonStyle())
+        .accessibilityLabel("\(player.name), \(player.gamesPlayed.quantityText("game")) played")
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityIdentifier("roster_player_\(player.name)")
     }
 
     private func deletePendingPlayer() {

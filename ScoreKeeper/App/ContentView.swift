@@ -44,17 +44,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $router.path) {
             HomeView()
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    NavigationLink(value: AppDestination.legalSupport) {
-                        Text("Legal & Support")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                    }
-                    .accessibilityLabel("PipCount legal and support")
-                    .accessibilityHint("Open PipCount privacy policy and support links")
-                    .accessibilityIdentifier("legal_support_button")
-                }
                 .navigationDestination(for: AppDestination.self) { destination in
                     switch destination {
                     case .gamePicker:
@@ -341,8 +330,9 @@ private struct OnboardingHighlightRow: View {
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(ClubhouseTheme.bauhausBlue)
+            Circle()
+                .fill(tint)
+                .frame(width: 10, height: 10)
                 .accessibilityHidden(true)
             Text(highlight)
                 .font(AppFonts.body)
@@ -354,7 +344,7 @@ private struct OnboardingHighlightRow: View {
         .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
         }
     }
 }

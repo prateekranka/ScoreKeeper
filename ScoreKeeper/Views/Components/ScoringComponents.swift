@@ -14,7 +14,25 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
     @State private var saveError: String?
-    private let bottomBarContentInset: CGFloat = 132
+    #if DEBUG
+    @ObservedObject private var tuning = PipTuning.shared
+    #endif
+
+    private var bottomBarContentInset: CGFloat {
+        #if DEBUG
+        CGFloat(tuning.scoringBottomInset)
+        #else
+        180
+        #endif
+    }
+
+    private var submitBarBottomGap: CGFloat {
+        #if DEBUG
+        CGFloat(tuning.submitBarBottomGap)
+        #else
+        12
+        #endif
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -38,7 +56,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                             BauhausPrimaryButton(
                                 title: "Submit Round",
                                 systemImage: nil,
-                                fill: ClubhouseTheme.ink,
+                                fill: ClubhouseTheme.bauhausBlue,
                                 action: action
                             )
                             .accessibilityIdentifier("submit_round_button")
@@ -64,7 +82,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                                 .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
                                 .overlay {
                                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                                        .strokeBorder(ClubhouseTheme.ink, lineWidth: 1.5)
+                                        .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
                                 }
                         }
                         .buttonStyle(PressableButtonStyle())
@@ -77,7 +95,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                     .padding(.bottom, AppTheme.spacingSmall)
                     .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
                     .padding(.horizontal, AppTheme.spacingMedium)
-                    .padding(.bottom, AppTheme.spacingSmall)
+                    .padding(.bottom, submitBarBottomGap)
                 }
             }
         }
@@ -275,6 +293,7 @@ private struct ScoringToolSheet: View {
     @State private var dieRoll = 1
     @State private var selectedStarter: Player?
     @State private var timerSeconds = 60
+    @State private var isTimerRunning = false
 
     var body: some View {
         NavigationStack {
@@ -312,11 +331,27 @@ private struct ScoringToolSheet: View {
                     .font(.system(size: 64, weight: .heavy, design: .default))
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.ink)
+                    .contentTransition(.numericText(value: Double(timerSeconds)))
 
                 HStack(spacing: AppTheme.spacingSmall) {
                     timerButton("30s", seconds: 30)
                     timerButton("1m", seconds: 60)
                     timerButton("2m", seconds: 120)
+                }
+
+                BauhausPrimaryButton(
+                    title: isTimerRunning ? "Pause" : "Start",
+                    systemImage: isTimerRunning ? "pause.fill" : "play.fill",
+                    fill: ClubhouseTheme.bauhausBlue
+                ) {
+                    isTimerRunning.toggle()
+                }
+            }
+            .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+                guard isTimerRunning, timerSeconds > 0 else { return }
+                timerSeconds -= 1
+                if timerSeconds == 0 {
+                    isTimerRunning = false
                 }
             }
         case .dice:
@@ -326,12 +361,14 @@ private struct ScoringToolSheet: View {
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.ink)
                     .contentTransition(.numericText(value: Double(dieRoll)))
-                AppActionButton(role: .primary(tool.tint)) {
+                BauhausPrimaryButton(
+                    title: "Roll",
+                    systemImage: "dice",
+                    fill: tool.tint
+                ) {
                     withAnimation(AppMotion.state) {
                         dieRoll = Int.random(in: 1...6)
                     }
-                } label: {
-                    Label("Roll", systemImage: "dice")
                 }
             }
         case .starter:
@@ -341,18 +378,25 @@ private struct ScoringToolSheet: View {
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.opacity)
-                AppActionButton(role: .primary(tool.tint)) {
+                BauhausPrimaryButton(
+                    title: "Pick Starter",
+                    systemImage: "shuffle",
+                    fill: tool.tint
+                ) {
                     withAnimation(AppMotion.state) {
                         selectedStarter = session.players.randomElement()
                     }
-                } label: {
-                    Label("Pick Starter", systemImage: "shuffle")
                 }
             }
         case .log:
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 if session.sortedRounds.isEmpty {
-                    ContentUnavailableView("No rounds yet", systemImage: "list.bullet.rectangle")
+                    BauhausEmptyState(
+                        title: "No rounds yet",
+                        message: "Submitted rounds will show up here.",
+                        systemImage: "list.bullet.rectangle",
+                        heroStyle: .scoring
+                    )
                 } else {
                     ForEach(session.sortedRounds.reversed().prefix(5), id: \.id) { round in
                         HStack {
@@ -381,6 +425,7 @@ private struct ScoringToolSheet: View {
 
     private func timerButton(_ title: String, seconds: Int) -> some View {
         Button(title) {
+            isTimerRunning = false
             timerSeconds = seconds
         }
         .font(AppFonts.body)
@@ -468,13 +513,13 @@ struct ScoreboardHeader: View {
                     .padding(AppTheme.spacingSmall)
                     .frame(minWidth: 88)
                     .background(
-                        isLeading ? PlayerColors.lightColor(for: player.colorIndex) : ClubhouseTheme.paperCard,
+                        ClubhouseTheme.paperCard,
                         in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
                     )
                     .overlay {
                         RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
                             .strokeBorder(
-                                isLeading ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.rule,
+                                isLeading ? ClubhouseTheme.bauhausYellow : ClubhouseTheme.panelBorder,
                                 lineWidth: isLeading ? 2 : 1
                             )
                     }

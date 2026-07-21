@@ -19,6 +19,8 @@ enum AppMotion {
     static let page = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.24)
     static let theme = Animation.timingCurve(0.77, 0, 0.175, 1, duration: 0.22)
     static let criticallyDamped = Animation.spring(response: 0.34, dampingFraction: 1)
+    static let entrance = Animation.timingCurve(0.23, 1, 0.32, 1, duration: 0.22)
+    static let staggerStep: Double = 0.04
 }
 
 struct AppBackgroundModifier: ViewModifier {

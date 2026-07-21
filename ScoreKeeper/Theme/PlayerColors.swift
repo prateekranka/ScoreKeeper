@@ -25,16 +25,16 @@ enum PlayerShape: CaseIterable {
 }
 
 struct PlayerColors {
-    /// Bauhaus primary player palette: blue, red, yellow, green, then supporting tones.
+    /// Bauhaus primary player palette: blue, red, yellow, green, then supporting tones (no purple/indigo).
     static let palette: [Color] = [
         ClubhouseTheme.bauhausBlue,
         ClubhouseTheme.bauhausRed,
         ClubhouseTheme.bauhausYellow,
         ClubhouseTheme.bauhausGreen,
         Color(light: 0x1A1A1A, dark: 0xF0EDE4),
-        Color(light: 0x5C6BC0, dark: 0x9FA8DA),
         Color(light: 0x00838F, dark: 0x4DD0E1),
-        Color(light: 0x6A1B9A, dark: 0xCE93D8),
+        Color(light: 0x2E5090, dark: 0x7A9BC8),
+        Color(light: 0x5A6B3A, dark: 0xA3B87A),
     ]
 
     private static let shapes: [PlayerShape] = PlayerShape.allCases

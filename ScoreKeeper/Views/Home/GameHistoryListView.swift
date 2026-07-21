@@ -11,11 +11,17 @@ struct GameHistoryListView: View {
     var body: some View {
         Group {
             if completedGames.isEmpty {
-                ContentUnavailableView(
-                    "No Games Yet",
-                    systemImage: "trophy",
-                    description: Text("Completed games will appear here.")
-                )
+                ScrollView {
+                    BauhausEmptyState(
+                        title: "No Games Yet",
+                        message: "Completed games will appear here once you finish a scoreboard.",
+                        systemImage: "trophy.fill",
+                        heroStyle: .gameOver,
+                        actionTitle: "Start a Game",
+                        action: { router.push(.gamePicker) }
+                    )
+                    .padding(AppTheme.spacingMedium)
+                }
             } else {
                 List {
                     Section {
@@ -25,6 +31,7 @@ struct GameHistoryListView: View {
                             } label: {
                                 gameRow(session)
                             }
+                            .buttonStyle(PressableButtonStyle())
                             .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                             .listRowBackground(Color.clear)
                         }
@@ -53,18 +60,19 @@ struct GameHistoryListView: View {
 
                     if let date = session.completedAt {
                         Text(date, style: .date)
-                            .columnHeaderStyle()
+                            .font(AppFonts.caption)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
                     }
                 }
                 Spacer()
-                StampBadge(text: "Final")
+                StatusPill(kind: .completed)
             }
 
             HStack(spacing: 4) {
                 VStack(alignment: .leading, spacing: 2) {
                     if let resultText = resultText(for: session) {
                         Text(resultText)
-                            .foregroundStyle(ClubhouseTheme.brass)
+                            .foregroundStyle(ClubhouseTheme.bauhausGreen)
                     }
                     Text("\(session.players.count.quantityText("player")) / \(session.rounds.count.quantityText("round"))")
                         .foregroundStyle(ClubhouseTheme.inkMuted)
@@ -73,7 +81,7 @@ struct GameHistoryListView: View {
 
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.caption)
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
