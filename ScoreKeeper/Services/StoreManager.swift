@@ -17,8 +17,10 @@ struct LiveStoreProductLoader: StoreProductLoading {
 @MainActor
 @Observable
 final class StoreManager {
-    // Keep this identifier aligned with the existing App Store Connect product.
-    static let productID = "com.icequeen.scorekeeper.unlimited"
+    // The original `.unlimited` product was created as a consumable in App
+    // Store Connect. Product types cannot be changed after creation, so Pro
+    // uses a new identifier that must be configured as Non-Consumable.
+    static let productID = "com.icequeen.scorekeeper.pro"
     static let freeGameLimit = 25
 
     enum PurchaseState: Equatable {

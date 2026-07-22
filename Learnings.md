@@ -63,7 +63,7 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 
 ## App Store Submission Prep (July 12, 2026)
 
-- The ASC product is `com.icequeen.scorekeeper.unlimited`; `StoreManager`, `ScoreKeeper.storekit`, and the UI identify it as PipCount Pro.
+- The original ASC product `com.icequeen.scorekeeper.unlimited` was reported by App Review as consumable. Because ASC product types are immutable, PipCount Pro now uses `com.icequeen.scorekeeper.pro`, which must be created and submitted as a non-consumable; `StoreManager` and `ScoreKeeper.storekit` use the replacement ID.
 - Version `1.0` build `7` is valid in ASC, has export compliance set to no non-exempt encryption, and is attached to App Store version 1.0. The target/project signing team is `4JRB53LG5C`.
 - `.asc/metadata` contains English PipCount app-info/version drafts. Support and privacy URLs are live. Remaining App Store submission gates are confirming published App Privacy, rechecking agreement/banking/tax status, and submitting the first non-consumable together with version 1.0.
 - `docs/privacy-policy.md` reflects the implementation: SwiftData/UserDefaults and a device-only Keychain allowance counter, StoreKit purchases, and no analytics, tracking, ads, developer server, or cloud sync.
