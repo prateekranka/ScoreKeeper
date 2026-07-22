@@ -151,7 +151,7 @@ Change:
 New files: `ScoreKeeper/Services/StoreManager.swift`, `ScoreKeeper/Views/Paywall/PaywallView.swift`,
 `ScoreKeeper/ScoreKeeper.storekit`.
 
-- Product: non-consumable, id `com.icequeen.scorekeeper.pro`, display name "PipCount Pro",
+- Product: non-consumable, id `com.icequeen.scorekeeper.unlimited`, display name "PipCount Pro",
   $0.99. Create the `.storekit` config file with this product and register it in the project
   (document in `docs/monetization.md` how to select it in the scheme for local testing).
 - `StoreManager` (@MainActor @Observable, StoreKit 2): loads product, `purchase()`, `restore()`,

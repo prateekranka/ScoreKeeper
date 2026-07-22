@@ -7,7 +7,7 @@ This tracks product, release, and App Store Connect work that must be true befor
 | Screen | Current State | Required Before Review | Notes |
 | --- | --- | --- | --- |
 | Onboarding | Rebuilt in the Clubhouse Scorecard design system: three pages whose artwork previews the real product (ledger, setup slips, FINAL stamp) | Done for App Store review: saves completion state, supports Skip/Start, covered by a focused UI test | Route remains a first-launch `fullScreenCover`; no paywall or review prompt is included. |
-| Paywall | Done: StoreKit 2 `PaywallView` + `StoreManager`; one-time $0.99 non-consumable `com.icequeen.scorekeeper.pro`; 25 free games via monotonic `gamesStartedCount`, gated at every GameSession creation site; restore + close always available | Create `com.icequeen.scorekeeper.pro` as a **Non-Consumable** in App Store Connect, complete its metadata, and submit it with the next app version. Do not reuse the original `.unlimited` consumable. | Local testing via `ScoreKeeper/ScoreKeeper.storekit` (see `docs/monetization.md`). If StoreKit cannot load the product, PipCount disables purchase and exposes a retry action; the restore and close controls remain available and labeled for accessibility. UI-test hooks: `-free-games-exhausted`, `-unlock-pro`. |
+| Paywall | Done: StoreKit 2 `PaywallView` + `StoreManager`; one-time $0.99 non-consumable `com.icequeen.scorekeeper.unlimited`; 25 free games via monotonic `gamesStartedCount`, gated at every GameSession creation site; restore + close always available | Submit the existing **Non-Consumable** with the next app version. | Local testing via `ScoreKeeper/ScoreKeeper.storekit` (see `docs/monetization.md`). If StoreKit cannot load the product, PipCount disables purchase and exposes a retry action; the restore and close controls remain available and labeled for accessibility. UI-test hooks: `-free-games-exhausted`, `-unlock-pro`. |
 | Review Ask | Done: `ReviewAskManager` invokes Apple’s native StoreKit `requestReview` directly after the 2nd and 5th completed game (max once per 120 days, never in the first session, never alongside the paywall) | None | UI-test hook: `-force-review-ask`. There is no custom pre-review sheet. |
 
 ## Release Mechanics
@@ -36,8 +36,8 @@ This tracks product, release, and App Store Connect work that must be true befor
 - ASC Admin authentication is active through the `ScoreKeeper Release` system-keychain profile (key `Y3G56JD647`, issuer `50b76771-2e18-454c-81fd-845e94864820`).
 - Public support and privacy URLs are live and PipCount-branded.
 - App Review contact is Esha Bhoon, `+91-7208406820`, `eshabhoon@gmail.com`; copyright year is 2026.
-- The replacement product must be `com.icequeen.scorekeeper.pro`, PipCount Pro, $0.99, with type **Non-Consumable**. The original `.unlimited` product was observed by App Review as consumable and must not be reused.
-- Recheck Paid Apps agreement, banking, and tax status in App Store Connect before the paid App Store submission; the public API does not expose a reliable final status.
+- Live App Store Connect verification on July 22 confirmed `com.icequeen.scorekeeper.unlimited` is PipCount Pro, $0.99, type **Non-Consumable**, and ready for review. App Review's “consumable item” wording did not reflect the configured product type.
+- The Paid Apps Agreement is active through April 30, 2027; banking and tax forms are active.
 - Complete/export compliance for the selected build, publish the privacy answers, refresh screenshots, and submit the IAP with the App Store version.
 
 Do not submit the App Store version until the refreshed metadata/screenshots, privacy answers, IAP, agreements, and selected build pass the final release review. TestFlight beta review is a separate gate.

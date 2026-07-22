@@ -2,7 +2,7 @@
 
 PipCount Pro is a one-time StoreKit 2 non-consumable:
 
-- Product id: `com.icequeen.scorekeeper.pro`
+- Product id: `com.icequeen.scorekeeper.unlimited`
 - Display name: `PipCount Pro`
 - Price: `$0.99`
 - Local config: `ScoreKeeper/ScoreKeeper.storekit`
