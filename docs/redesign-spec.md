@@ -1,26 +1,75 @@
-# ScoreKeeper iOS 26 Redesign — "Clubhouse Scorecard" Spec
+# ScoreKeeper iOS 26 Redesign — Bauhaus PipCount Spec
 
-This is the frozen spec for the full visual redesign plus release screens (onboarding, paywall,
-review ask). Implementation happens on branch `redesign/ios26-scorecard`.
+This is the active visual spec for branch `cursor/bauhaus-ui-overhaul-6d76`. It supersedes the earlier
+**Clubhouse Scorecard** direction on this branch while keeping the same product behavior,
+monetization, and review-ask flows documented below.
 
-## Design Direction
+## Design Direction — Bauhaus PipCount
 
-The owner's reference board is entirely **physical scorekeeping artifacts**: vintage baseball
-scorecards, paper score pads and tally notepads, laser-cut maple Phase 10 peg boards, brass/wood
-snooker scoreboards, dry-erase game-night boards, flip-number scoreboards. The redesign brings that
-analog warmth to a native iOS 26 app.
+The active visual system is **Swiss-modern Bauhaus**: warm cream surfaces, primary RGB primaries
+plus green, geometric player shapes, halftone accents, and floating tab chrome. PipCount should
+feel like a confident game-night utility — organized, tactile, and unmistakably geometric — not a
+vintage paper scorecard.
 
-**One sentence:** *A beautifully printed scorecard on a clubhouse table — paper, ink, felt green,
+**One sentence:** *Game night, organized — cream fields, Bauhaus blue/red/yellow/green, geometric
+player pips, and Liquid Glass only on floating chrome.*
+
+### Active tokens (`ClubhouseTheme.swift` — name kept for migration)
+
+| Token | Role |
+| --- | --- |
+| `paper` / `paperCard` / `paperSunken` | Warm cream surfaces (light) / deep ink fields (dark) |
+| `ink` / `inkMuted` | Primary and secondary text |
+| `bauhausBlue` | Primary actions, active states, round emphasis |
+| `bauhausRed` | Destructive / minus controls |
+| `bauhausYellow` | Leader accents, secondary roster actions |
+| `bauhausGreen` | Completed / success badges |
+| `felt` / `brass` / `lacquer` | Semantic aliases → blue / yellow / red |
+
+### Signature components (`BauhausComponents.swift`)
+
+1. **`PlayerShapeIcon`** — circle, square, triangle, diamond, star, plus, capsule, hexagon per player color index.
+2. **`BauhausHeroArt`** — geometric hero compositions per screen (home, choose game, add players, scoring, game over).
+3. **`BauhausPrimaryButton`** — full-width CTA with halftone accent; black (`ink`) or blue fill.
+4. **`BauhausRoundDots`** — phase/round progress strip; blue fills for completed/current rounds.
+5. **`PipCountTabBar`** — floating capsule tab chrome with blue selection.
+6. **`BauhausScreenHeader`** — large-title header + optional hero art.
+7. **`StatusPill`** — in-progress (blue) / completed (green) badges.
+
+### Layout patterns
+
+- **Scoring:** game title + “Round **X** of **Y**” (blue current number) + round dots in the tools/header bar; ledger rows with shape icons, player-color scores, blue **ACTIVE** border on the edited row; full-width **Submit Round** + outlined **Undo Last Round** bottom bar.
+- **Player setup:** “Add Players” / “Build tonight's lineup.” hero; roster rows on scorecard surfaces; blue/yellow circle icons for Add Player / From Roster.
+- **Onboarding:** geometric `BauhausHeroArt` panels, tagline **“Game night, organized.”**, `AppFonts.largeTitle` page titles, `BauhausPrimaryButton` CTAs.
+- **Liquid Glass:** floating bottom bars, tab chrome, and toolbar overlays only — content cards stay opaque cream scorecard surfaces.
+
+### Superseded on this branch
+
+The Clubhouse Scorecard spec (felt green, brass crowns, VT323 flip-score voice, paper-grain clubhouse
+table) remains in git history on `redesign/ios26-scorecard` but is **not** the active target here.
+Do not reintroduce pastel washes, serif scorecard covers, or peg-board clubhouse language unless
+explicitly requested.
+
+---
+
+## Legacy reference — Clubhouse Scorecard (archived direction)
+
+The owner's original reference board was physical scorekeeping artifacts: vintage baseball scorecards,
+paper pads, maple Phase 10 peg boards, brass snooker scoreboards. That analog warmth informed the
+Clubhouse branch. The Bauhaus branch keeps the same screens and identifiers but trades paper/ink
+nostalgia for geometric clarity.
+
+**Archived one-liner:** *A beautifully printed scorecard on a clubhouse table — paper, ink, felt green,
 lacquer red, and brass — with iOS 26 Liquid Glass reserved for the app chrome.*
 
-Anti-goals (what makes the current UI feel like AI slop, to be removed everywhere):
-- Pastel candy palette (coral/teal/sunny-yellow/purple) and `tint.opacity(0.15)` washes.
+Anti-goals (still apply — avoid everywhere):
+- Pastel candy palette and `tint.opacity(0.15)` washes.
 - `design: .rounded` fonts everywhere.
 - Diagonal pastel background gradients.
 - `.regularMaterial` cards floating on gradients.
 - Generic `RoundedRectangle` + SF Symbol + capsule-chip composition on every screen.
 
-## Design Tokens
+## Design Tokens (Clubhouse archive — see Bauhaus tokens above for active branch)
 
 Create `ScoreKeeper/Theme/ClubhouseTheme.swift` (replaces the guts of `AppTheme.swift`; keep the
 `appBackground()` entry point working so call sites migrate mechanically). All colors defined for

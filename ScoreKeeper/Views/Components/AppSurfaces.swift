@@ -184,10 +184,15 @@ struct EmptyStateView: View {
     let title: String
     let systemImage: String
     let message: String
+    var heroStyle: BauhausHeroStyle = .home
 
     var body: some View {
-        ContentUnavailableView(title, systemImage: systemImage, description: Text(message))
-            .frame(maxWidth: .infinity, minHeight: 220)
+        BauhausEmptyState(
+            title: title,
+            message: message,
+            systemImage: systemImage,
+            heroStyle: heroStyle
+        )
     }
 }
 
@@ -237,10 +242,19 @@ struct AppGlassModifier: ViewModifier {
 struct StaggeredEntranceModifier: ViewModifier {
     let visible: Bool
     let index: Int
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     func body(content: Content) -> some View {
-        // Frequent navigation should arrive immediately. Rare celebration motion is
-        // owned by the destination itself rather than this global modifier.
+        let delay = Double(index) * AppMotion.staggerStep
         content
+            .opacity(visible ? 1 : 0)
+            .offset(y: visible || reduceMotion ? 0 : 8)
+            .animation(
+                reduceMotion
+                    ? AppMotion.fade.delay(delay * 0.35)
+                    : AppMotion.entrance.delay(delay),
+                value: visible
+            )
+            .allowsHitTesting(visible)
     }
 }

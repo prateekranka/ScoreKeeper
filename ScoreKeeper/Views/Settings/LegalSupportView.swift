@@ -9,26 +9,22 @@ struct LegalSupportView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
-                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                    Label("PipCount", systemImage: "checkmark.seal")
-                        .font(AppFonts.title)
-                        .foregroundStyle(ClubhouseTheme.ink)
-
-                    Text("Find the privacy details and support you need while keeping game night moving.")
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                BauhausScreenHeader(
+                    title: "Legal & Support",
+                    subtitle: "Privacy details and help while game night keeps moving.",
+                    heroStyle: .home
+                )
 
                 VStack(alignment: .leading, spacing: 0) {
                     Link(destination: LegalSupportLinks.privacyPolicy) {
                         LegalSupportLink(
                             title: "Privacy Policy",
                             subtitle: "How PipCount handles your information",
-                            systemImage: "hand.raised"
+                            systemImage: "hand.raised",
+                            accent: ClubhouseTheme.bauhausBlue
                         )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableButtonStyle())
                     .accessibilityLabel("PipCount Privacy Policy")
                     .accessibilityHint("Open PipCount's privacy policy")
                     .accessibilityIdentifier("privacy_policy_link")
@@ -40,10 +36,11 @@ struct LegalSupportView: View {
                         LegalSupportLink(
                             title: "Support",
                             subtitle: "Get help or contact the PipCount team",
-                            systemImage: "questionmark.bubble"
+                            systemImage: "questionmark.bubble",
+                            accent: ClubhouseTheme.bauhausYellow
                         )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableButtonStyle())
                     .accessibilityLabel("PipCount Support")
                     .accessibilityHint("Open PipCount support")
                     .accessibilityIdentifier("support_link")
@@ -68,13 +65,15 @@ private struct LegalSupportLink: View {
     let title: String
     let subtitle: String
     let systemImage: String
+    let accent: Color
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
             Image(systemName: systemImage)
-                .font(.title3)
-                .foregroundStyle(ClubhouseTheme.felt)
-                .frame(width: 32)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.onPrimary)
+                .frame(width: 36, height: 36)
+                .background(accent, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {

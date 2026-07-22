@@ -10,12 +10,12 @@ struct ScorecardSurface<Content: View>: View {
             .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                    .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
             }
             .shadow(
-                color: isInteractive ? ClubhouseTheme.paperShadow : .clear,
-                radius: isInteractive ? 6 : 0,
-                y: isInteractive ? 3 : 0
+                color: ClubhouseTheme.paperShadow,
+                radius: isInteractive ? 12 : 6,
+                y: isInteractive ? 4 : 2
             )
     }
 }
@@ -36,6 +36,7 @@ struct LedgerRow: View {
     var isLeader = false
     var isHighlighted = false
     var trailingLabel: String?
+    var scoreColor: Color? = nil
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
@@ -47,14 +48,12 @@ struct LedgerRow: View {
                     .frame(width: 24, alignment: .leading)
             }
 
-            PlayerColorPip(colorIndex: player.colorIndex)
+            PlayerShapeIcon(colorIndex: player.colorIndex, size: 22)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 5) {
-                    PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
-
                     Text(player.name)
-                        .font(AppFonts.body)
+                        .font(AppFonts.body.weight(.semibold))
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
                         .layoutPriority(1)
@@ -70,7 +69,7 @@ struct LedgerRow: View {
                     Text(subtitle)
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .lineLimit(1)
+                        .lineLimit(1)
                 }
             }
             .layoutPriority(1)
@@ -87,12 +86,12 @@ struct LedgerRow: View {
                 .font(AppFonts.scoreSmall)
                 .monospacedDigit()
                 .contentTransition(.numericText(value: Double(score)))
-                .foregroundStyle(isLeader ? ClubhouseTheme.brass : ClubhouseTheme.ink)
+                .foregroundStyle(scoreColor ?? PlayerColors.color(for: player.colorIndex))
                 .frame(minWidth: 48, alignment: .trailing)
         }
         .padding(.vertical, AppTheme.spacingSmall)
         .padding(.horizontal, AppTheme.spacingSmall)
-        .background(isHighlighted ? PlayerColors.lightColor(for: player.colorIndex) : Color.clear)
+        .background(Color.clear)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(ClubhouseTheme.rule)
@@ -107,18 +106,7 @@ struct PlayerColorPip: View {
     var size: CGFloat = 14
 
     var body: some View {
-        Circle()
-            .fill(PlayerColors.color(for: colorIndex))
-            .frame(width: size, height: size)
-            .overlay {
-                Circle()
-                    .stroke(ClubhouseTheme.paperCard, lineWidth: 2)
-            }
-            .overlay {
-                Circle()
-                    .stroke(ClubhouseTheme.rule, lineWidth: 1)
-            }
-            .accessibilityHidden(true)
+        PlayerShapeIcon(colorIndex: colorIndex, size: size)
     }
 }
 
@@ -126,19 +114,7 @@ struct StampBadge: View {
     let text: String
 
     var body: some View {
-        Text(text.uppercased())
-            .font(AppFonts.columnHeader)
-            .tracking(1.8)
-            .foregroundStyle(ClubhouseTheme.lacquer.opacity(0.85))
-            .padding(.horizontal, 9)
-            .padding(.vertical, 5)
-            .overlay {
-                RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.lacquer.opacity(0.85), lineWidth: 1.5)
-            }
-            .rotationEffect(.degrees(-4))
-            .opacity(0.92)
-            .accessibilityLabel(text)
+        StatusPill(kind: .custom(text.uppercased(), ClubhouseTheme.bauhausGreen))
     }
 }
 
@@ -174,42 +150,56 @@ struct PipStepper: View {
     var range: ClosedRange<Int> = -9999...9999
     var step = 1
     var identifierPrefix = ""
+    var accentColor: Color = ClubhouseTheme.bauhausBlue
 
     var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
+        HStack(spacing: AppTheme.spacingMedium) {
+            stepButton(
+                systemImage: "minus",
+                fill: ClubhouseTheme.bauhausRed,
+                delta: -step,
+                identifier: "decrement",
+                label: "Decrease score"
+            )
 
-            VStack(spacing: 0) {
-                Text("RD")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-
-                Text(roundScoreText)
+            VStack(spacing: 2) {
+                Text("\(value)")
                     .font(AppFonts.scoreMedium)
                     .monospacedDigit()
                     .contentTransition(.numericText(value: Double(value)))
                     .foregroundStyle(ClubhouseTheme.ink)
+                Text("POINTS")
+                    .font(AppFonts.columnHeader)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
-                .frame(minWidth: 60)
-                .accessibilityLabel("Round score \(value)")
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 64)
+            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                    .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
+            }
+            .accessibilityLabel("Round score \(value)")
 
-            stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
+            stepButton(
+                systemImage: "plus",
+                fill: accentColor,
+                delta: step,
+                identifier: "increment",
+                label: "Increase score"
+            )
         }
     }
 
-    private func stepButton(systemImage: String, delta: Int, identifier: String, label: String) -> some View {
+    private func stepButton(systemImage: String, fill: Color, delta: Int, identifier: String, label: String) -> some View {
         Button {
             apply(delta)
         } label: {
             Image(systemName: systemImage)
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.ink)
-                .frame(width: 56, height: 56)
-                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-                }
+                .font(.title.weight(.bold))
+                .foregroundStyle(.white)
+                .frame(width: 64, height: 64)
+                .background(fill, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
         }
         .buttonStyle(ClubhousePressableButtonStyle())
         .accessibilityIdentifier(identifierPrefix + identifier)
@@ -221,9 +211,5 @@ struct PipStepper: View {
         if range.contains(newValue) {
             value = newValue
         }
-    }
-
-    private var roundScoreText: String {
-        value >= 0 ? "+\(value)" : "\(value)"
     }
 }

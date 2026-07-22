@@ -35,43 +35,19 @@ struct PlayerBadge: View {
     var showName: Bool = true
 
     var body: some View {
-        VStack(spacing: 4) {
-            ZStack {
-                Circle()
-                    .fill(PlayerColors.color(for: colorIndex))
-                    .frame(width: size.diameter, height: size.diameter)
-                    .overlay {
-                        Circle()
-                            .stroke(ClubhouseTheme.paperCard, lineWidth: 3)
-                    }
-                    .overlay {
-                        Circle()
-                            .stroke(ClubhouseTheme.rule, lineWidth: 1)
-                    }
-
-                Text(initial)
-                    .font(size.font)
-                    .foregroundStyle(ClubhouseTheme.onFelt)
-            }
+        VStack(spacing: 6) {
+            PlayerShapeIcon(colorIndex: colorIndex, size: size.diameter)
 
             if showName {
-                HStack(spacing: 4) {
-                    PlayerGlyph(colorIndex: colorIndex, font: AppFonts.caption)
-
-                    Text(name)
-                        .font(size.nameFont)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                }
+                Text(name)
+                    .font(size.nameFont.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
             }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(name)
-    }
-
-    private var initial: String {
-        String(name.prefix(1)).uppercased()
     }
 }
 
@@ -80,9 +56,7 @@ struct PlayerGlyph: View {
     var font: Font = AppFonts.caption
 
     var body: some View {
-        Text(PlayerColors.glyph(for: colorIndex))
-            .font(font)
-            .foregroundStyle(PlayerColors.color(for: colorIndex))
+        PlayerShapeIcon(colorIndex: colorIndex, size: 14)
             .accessibilityHidden(true)
     }
 }

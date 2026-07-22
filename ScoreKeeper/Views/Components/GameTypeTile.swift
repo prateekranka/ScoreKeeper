@@ -32,11 +32,6 @@ struct GameTypeTile: View {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
                     .strokeBorder(gameType.color, lineWidth: 1)
             }
-            .overlay {
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge - 4, style: .continuous)
-                    .inset(by: 4)
-                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.5)
-            }
             .shadow(color: ClubhouseTheme.paperShadow, radius: 5, y: 2)
         }
         .buttonStyle(PressableButtonStyle())
@@ -50,96 +45,93 @@ struct GameTypeArtwork: View {
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
                 .fill(ClubhouseTheme.paperSunken)
                 .overlay {
-                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                    BauhausGridLines()
+                        .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
                         .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
                 }
 
-            GeometryReader { proxy in
-                artwork
-                    .scaleEffect(min(1, proxy.size.height / 58))
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-            }
+            artwork
         }
         .accessibilityHidden(true)
     }
 
+    @ViewBuilder
     private var artwork: some View {
-        ScoreSheetArtwork(gameType: gameType)
+        switch gameType {
+        case .generic:
+            ScoreboardGeometricArt()
+        case .phase10:
+            Phase10GeometricArt()
+        case .whatsForDinner:
+            DinnerGeometricArt()
+        }
     }
 }
 
-private struct ScoreSheetArtwork: View {
-    let gameType: GameType
-
+private struct ScoreboardGeometricArt: View {
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                .fill(ClubhouseTheme.paperCard)
-                .overlay {
-                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-                }
-
-            sheetContent
-                .padding(7)
+        HStack(alignment: .bottom, spacing: 5) {
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .fill(ClubhouseTheme.bauhausBlue)
+                .frame(width: 16, height: 26)
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .fill(ClubhouseTheme.bauhausYellow)
+                .frame(width: 16, height: 38)
+            RoundedRectangle(cornerRadius: 2, style: .continuous)
+                .fill(ClubhouseTheme.bauhausRed)
+                .frame(width: 16, height: 20)
         }
-        .frame(width: 62, height: 46)
     }
+}
 
-    @ViewBuilder
-    private var sheetContent: some View {
-        switch gameType {
-        case .generic:
-            VStack(spacing: 5) {
-                ledgerLine(colorIndex: 0, score: "12")
-                ledgerLine(colorIndex: 1, score: "7")
-                ledgerLine(colorIndex: 2, score: "24")
-            }
-        case .whatsForDinner:
-            HStack(spacing: 6) {
-                Image(systemName: "fork.knife")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(gameType.color)
-                VStack(spacing: 5) {
-                    ledgerLine(colorIndex: 3, score: "3")
-                    ledgerLine(colorIndex: 4, score: "9")
-                }
-            }
-        case .phase10:
-            VStack(spacing: 4) {
-                ForEach(0..<2, id: \.self) { row in
-                    HStack(spacing: 4) {
-                        ForEach(0..<5, id: \.self) { column in
-                            RoundedRectangle(cornerRadius: 1.5)
-                                .fill(row * 5 + column < 3 ? gameType.color : ClubhouseTheme.paperSunken)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 1.5)
-                                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.75)
-                                }
-                                .frame(width: 8, height: 8)
-                        }
+private struct Phase10GeometricArt: View {
+    var body: some View {
+        VStack(spacing: 4) {
+            ForEach(0..<2, id: \.self) { row in
+                HStack(spacing: 4) {
+                    ForEach(0..<5, id: \.self) { column in
+                        let index = row * 5 + column
+                        RoundedRectangle(cornerRadius: 2, style: .continuous)
+                            .fill(index < 4 ? ClubhouseTheme.bauhausRed : ClubhouseTheme.paperCard)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.75)
+                            }
+                            .frame(width: 9, height: 9)
                     }
                 }
             }
         }
-    }
-
-    private func ledgerLine(colorIndex: Int, score: String) -> some View {
-        HStack(spacing: 4) {
+        .overlay(alignment: .topTrailing) {
             Circle()
-                .fill(PlayerColors.color(for: colorIndex))
-                .frame(width: 5, height: 5)
+                .fill(ClubhouseTheme.bauhausYellow)
+                .frame(width: 10, height: 10)
+                .offset(x: 6, y: -6)
+        }
+    }
+}
 
-            Rectangle()
-                .fill(ClubhouseTheme.rule)
-                .frame(height: 1)
+private struct DinnerGeometricArt: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(ClubhouseTheme.bauhausYellow)
+                .frame(width: 30, height: 30)
 
-            Text(score)
-                .font(Font.custom("VT323", size: 12))
-                .foregroundStyle(ClubhouseTheme.ink)
+            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                .fill(ClubhouseTheme.bauhausGreen)
+                .frame(width: 18, height: 18)
+                .offset(x: 12, y: 10)
+
+            BauhausStar(color: ClubhouseTheme.bauhausRed)
+                .frame(width: 12, height: 12)
+                .offset(x: -14, y: -12)
         }
     }
 }

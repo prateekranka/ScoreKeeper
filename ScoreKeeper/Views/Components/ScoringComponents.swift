@@ -14,7 +14,25 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
     @State private var saveError: String?
-    private let bottomBarContentInset: CGFloat = 132
+    #if DEBUG
+    @ObservedObject private var tuning = PipTuning.shared
+    #endif
+
+    private var bottomBarContentInset: CGFloat {
+        #if DEBUG
+        CGFloat(tuning.scoringBottomInset)
+        #else
+        180
+        #endif
+    }
+
+    private var submitBarBottomGap: CGFloat {
+        #if DEBUG
+        CGFloat(tuning.submitBarBottomGap)
+        #else
+        12
+        #endif
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -34,43 +52,50 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
             .safeAreaInset(edge: .bottom) {
                 glassGroup(spacing: AppTheme.spacingSmall) {
                     VStack(spacing: AppTheme.spacingSmall) {
-                        HStack(spacing: AppTheme.spacingSmall) {
-                            Button {
-                                undoTrigger &+= 1
-                                undoLastRound()
-                            } label: {
-                                Label("Undo Last", systemImage: "arrow.uturn.backward")
-                                    .font(AppFonts.body)
-                                    .foregroundStyle(ClubhouseTheme.ink)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(minHeight: 44)
-                                    .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                                            .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 2)
-                                    }
-                            }
-                            .buttonStyle(PressableButtonStyle())
-                            .disabled(session.sortedRounds.isEmpty)
-                            .sensoryFeedback(.warning, trigger: undoTrigger)
-                            .accessibilityIdentifier("undo_last_round_button")
-
-                            AppActionButton(role: .primary(session.gameType.color), action: action) {
-                                if let actionSystemImage {
-                                    Label(actionTitle, systemImage: actionSystemImage)
-                                } else {
-                                    Text(actionTitle)
-                                }
-                            }
+                        if actionTitle == "Submit" {
+                            BauhausPrimaryButton(
+                                title: "Submit Round",
+                                systemImage: nil,
+                                fill: ClubhouseTheme.bauhausBlue,
+                                action: action
+                            )
+                            .accessibilityIdentifier("submit_round_button")
+                        } else {
+                            BauhausPrimaryButton(
+                                title: actionTitle,
+                                systemImage: actionSystemImage,
+                                fill: session.gameType.color,
+                                action: action
+                            )
                             .accessibilityIdentifier("submit_round_button")
                         }
+
+                        Button {
+                            undoTrigger &+= 1
+                            undoLastRound()
+                        } label: {
+                            Label("Undo Last Round", systemImage: "arrow.uturn.backward")
+                                .font(AppFonts.body.weight(.semibold))
+                                .foregroundStyle(ClubhouseTheme.ink)
+                                .frame(maxWidth: .infinity)
+                                .frame(minHeight: 48)
+                                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                                        .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
+                                }
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .disabled(session.sortedRounds.isEmpty)
+                        .sensoryFeedback(.warning, trigger: undoTrigger)
+                        .accessibilityIdentifier("undo_last_round_button")
                     }
                     .padding(.horizontal, AppTheme.spacingMedium)
                     .padding(.top, AppTheme.spacingSmall)
                     .padding(.bottom, AppTheme.spacingSmall)
                     .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
                     .padding(.horizontal, AppTheme.spacingMedium)
-                    .padding(.bottom, AppTheme.spacingSmall)
+                    .padding(.bottom, submitBarBottomGap)
                 }
             }
         }
@@ -143,41 +168,121 @@ private enum ScoringTool: String, CaseIterable, Identifiable {
     }
 }
 
+private enum ScoringRoundProgress {
+    static func knownTotalRounds(for session: GameSession) -> Int? {
+        switch session.gameType {
+        case .phase10:
+            return 10
+        case .generic, .whatsForDinner:
+            return nil
+        }
+    }
+
+    static func cappedDotTotal(for session: GameSession) -> Int {
+        min(max(session.currentRoundNumber, 1), 10)
+    }
+}
+
 private struct ScoringToolsBar: View {
     let session: GameSession
     @Binding var selectedTool: ScoringTool?
 
+    private var knownTotal: Int? {
+        ScoringRoundProgress.knownTotalRounds(for: session)
+    }
+
     var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Label("Round \(session.currentRoundNumber)", systemImage: session.gameType.icon)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-                .accessibilityLabel("\(session.gameType.displayName), Round \(session.currentRoundNumber)")
-
-            Spacer()
-
-            ForEach(ScoringTool.allCases) { tool in
-                Button {
-                    selectedTool = tool
-                } label: {
-                    Image(systemName: tool.systemImage)
-                        .font(.headline)
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            HStack(alignment: .top, spacing: AppTheme.spacingSmall) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(session.gameType.displayName)
+                        .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .frame(width: 40, height: 40)
-                        .background(ClubhouseTheme.paperCard.opacity(0.72), in: Circle())
-                        .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+
+                    roundLabel
                 }
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel(tool.title)
+
+                Spacer(minLength: AppTheme.spacingSmall)
+
+                Text("PipCount")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted.opacity(0.72))
+                    .accessibilityHidden(true)
+            }
+
+            HStack(alignment: .center) {
+                if let knownTotal {
+                    BauhausRoundDots(
+                        current: session.currentRoundNumber,
+                        total: knownTotal
+                    )
+                } else {
+                    BauhausRoundDots(
+                        current: session.currentRoundNumber,
+                        total: ScoringRoundProgress.cappedDotTotal(for: session)
+                    )
+                }
+
+                Spacer(minLength: AppTheme.spacingSmall)
+
+                HStack(spacing: 6) {
+                    ForEach(ScoringTool.allCases) { tool in
+                        Button {
+                            selectedTool = tool
+                        } label: {
+                            Image(systemName: tool.systemImage)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(ClubhouseTheme.ink)
+                                .frame(width: 38, height: 38)
+                                .background(ClubhouseTheme.paperCard, in: Circle())
+                                .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
+                        }
+                        .buttonStyle(PressableButtonStyle())
+                        .accessibilityLabel(tool.title)
+                    }
+                }
             }
         }
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.vertical, AppTheme.spacingSmall)
-        .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.top, AppTheme.spacingSmall)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(scoringAccessibilityLabel)
+    }
+
+    private var roundLabel: some View {
+        HStack(spacing: 4) {
+            Text("Round")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+
+            Text("\(session.currentRoundNumber)")
+                .font(AppFonts.body.weight(.bold))
+                .foregroundStyle(ClubhouseTheme.bauhausBlue)
+                .monospacedDigit()
+
+            if let knownTotal {
+                Text("of")
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+
+                Text("\(knownTotal)")
+                    .font(AppFonts.body.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .monospacedDigit()
+            }
+        }
+    }
+
+    private var scoringAccessibilityLabel: String {
+        if let knownTotal {
+            return "\(session.gameType.displayName), Round \(session.currentRoundNumber) of \(knownTotal)"
+        }
+        return "\(session.gameType.displayName), Round \(session.currentRoundNumber)"
     }
 }
 
@@ -188,6 +293,7 @@ private struct ScoringToolSheet: View {
     @State private var dieRoll = 1
     @State private var selectedStarter: Player?
     @State private var timerSeconds = 60
+    @State private var isTimerRunning = false
 
     var body: some View {
         NavigationStack {
@@ -225,11 +331,27 @@ private struct ScoringToolSheet: View {
                     .font(.system(size: 64, weight: .heavy, design: .default))
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.ink)
+                    .contentTransition(.numericText(value: Double(timerSeconds)))
 
                 HStack(spacing: AppTheme.spacingSmall) {
                     timerButton("30s", seconds: 30)
                     timerButton("1m", seconds: 60)
                     timerButton("2m", seconds: 120)
+                }
+
+                BauhausPrimaryButton(
+                    title: isTimerRunning ? "Pause" : "Start",
+                    systemImage: isTimerRunning ? "pause.fill" : "play.fill",
+                    fill: ClubhouseTheme.bauhausBlue
+                ) {
+                    isTimerRunning.toggle()
+                }
+            }
+            .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+                guard isTimerRunning, timerSeconds > 0 else { return }
+                timerSeconds -= 1
+                if timerSeconds == 0 {
+                    isTimerRunning = false
                 }
             }
         case .dice:
@@ -239,12 +361,14 @@ private struct ScoringToolSheet: View {
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.ink)
                     .contentTransition(.numericText(value: Double(dieRoll)))
-                AppActionButton(role: .primary(tool.tint)) {
+                BauhausPrimaryButton(
+                    title: "Roll",
+                    systemImage: "dice",
+                    fill: tool.tint
+                ) {
                     withAnimation(AppMotion.state) {
                         dieRoll = Int.random(in: 1...6)
                     }
-                } label: {
-                    Label("Roll", systemImage: "dice")
                 }
             }
         case .starter:
@@ -254,18 +378,25 @@ private struct ScoringToolSheet: View {
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.opacity)
-                AppActionButton(role: .primary(tool.tint)) {
+                BauhausPrimaryButton(
+                    title: "Pick Starter",
+                    systemImage: "shuffle",
+                    fill: tool.tint
+                ) {
                     withAnimation(AppMotion.state) {
                         selectedStarter = session.players.randomElement()
                     }
-                } label: {
-                    Label("Pick Starter", systemImage: "shuffle")
                 }
             }
         case .log:
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 if session.sortedRounds.isEmpty {
-                    ContentUnavailableView("No rounds yet", systemImage: "list.bullet.rectangle")
+                    BauhausEmptyState(
+                        title: "No rounds yet",
+                        message: "Submitted rounds will show up here.",
+                        systemImage: "list.bullet.rectangle",
+                        heroStyle: .scoring
+                    )
                 } else {
                     ForEach(session.sortedRounds.reversed().prefix(5), id: \.id) { round in
                         HStack {
@@ -294,6 +425,7 @@ private struct ScoringToolSheet: View {
 
     private func timerButton(_ title: String, seconds: Int) -> some View {
         Button(title) {
+            isTimerRunning = false
             timerSeconds = seconds
         }
         .font(AppFonts.body)
@@ -355,17 +487,51 @@ struct ScoreboardHeader: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: AppTheme.spacingSmall) {
                 ForEach(session.players, id: \.id) { player in
-                    ScoreCard(
-                        player: player,
-                        totalScore: player.totalScore(in: session),
-                        isLeading: leadingPlayers.contains(player.id)
+                    let isLeading = leadingPlayers.contains(player.id)
+                    VStack(spacing: 6) {
+                        PlayerShapeIcon(colorIndex: player.colorIndex, size: 28)
+
+                        Text(player.name)
+                            .font(AppFonts.caption.weight(.semibold))
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(1)
+
+                        Text("\(player.totalScore(in: session))")
+                            .font(AppFonts.scoreSmall)
+                            .monospacedDigit()
+                            .foregroundStyle(
+                                isLeading
+                                    ? ClubhouseTheme.bauhausYellow
+                                    : PlayerColors.color(for: player.colorIndex)
+                            )
+                            .contentTransition(.numericText(value: Double(player.totalScore(in: session))))
+
+                        if isLeading {
+                            BrassCrown()
+                        }
+                    }
+                    .padding(AppTheme.spacingSmall)
+                    .frame(minWidth: 88)
+                    .background(
+                        ClubhouseTheme.paperCard,
+                        in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                    )
+                    .overlay {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                            .strokeBorder(
+                                isLeading ? ClubhouseTheme.bauhausYellow : ClubhouseTheme.panelBorder,
+                                lineWidth: isLeading ? 2 : 1
+                            )
+                    }
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(
+                        "\(player.name), total score \(player.totalScore(in: session))\(isLeading ? ", leading" : "")"
                     )
                 }
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.vertical, AppTheme.spacingSmall)
         }
-        .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.vertical, AppTheme.spacingSmall)
     }
@@ -481,12 +647,7 @@ struct RoundHistoryStrip: View {
 
             ForEach(session.players, id: \.id) { player in
                 HStack(spacing: 6) {
-                    Circle()
-                        .fill(PlayerColors.color(for: player.colorIndex))
-                        .frame(width: 9, height: 9)
-                        .accessibilityHidden(true)
-
-                    PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
+                    PlayerShapeIcon(colorIndex: player.colorIndex, size: 12)
 
                     Text(player.name)
                         .font(AppFonts.caption)

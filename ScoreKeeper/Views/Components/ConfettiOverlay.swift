@@ -15,7 +15,12 @@ struct ConfettiOverlay: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var pieces: [ConfettiPiece] = []
     @State private var animationProgress: CGFloat = 0
-    let colors: [Color] = PlayerColors.palette + [ClubhouseTheme.paperCard, ClubhouseTheme.brass, ClubhouseTheme.lacquer]
+    let colors: [Color] = [
+        ClubhouseTheme.bauhausBlue,
+        ClubhouseTheme.bauhausRed,
+        ClubhouseTheme.bauhausYellow,
+        ClubhouseTheme.bauhausGreen,
+    ] + PlayerColors.palette
 
     var body: some View {
         if !reduceMotion {

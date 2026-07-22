@@ -18,12 +18,6 @@ struct WhatsForDinnerScoringView: View {
             actionSystemImage: "fork.knife",
             action: submitRound
         ) {
-            RoundBanner(
-                icon: GameType.whatsForDinner.icon,
-                color: GameType.whatsForDinner.color,
-                title: "Round \(session.currentRoundNumber)",
-                subtitle: "Lowest total wins"
-            )
             mealRevealSection
             playerHandsSection
         } footer: {
@@ -45,37 +39,43 @@ struct WhatsForDinnerScoringView: View {
 
     private var mealRevealSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "Meal Reveal", subtitle: "Choose the player who called it", systemImage: "person.crop.circle.badge.checkmark")
+            Text("Meal Reveal")
+                .columnHeaderStyle()
+            Text("Choose the player who called it")
+                .font(AppFonts.caption)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: AppTheme.spacingSmall) {
                     ForEach(session.players, id: \.id) { player in
+                        let isCaller = callerID == player.id
                         Button {
                             withAnimation(AppMotion.state) {
                                 callerID = player.id
                             }
                         } label: {
-                            VStack(spacing: 4) {
-                                PlayerBadge(
-                                    name: player.name,
-                                    colorIndex: player.colorIndex,
-                                    size: .small,
-                                    showName: true
-                                )
+                            VStack(spacing: 6) {
+                                PlayerShapeIcon(colorIndex: player.colorIndex, size: 28)
+                                Text(player.name)
+                                    .font(AppFonts.caption.weight(.semibold))
+                                    .foregroundStyle(ClubhouseTheme.ink)
+                                    .lineLimit(1)
 
-                                if callerID == player.id {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(ClubhouseTheme.felt)
-                                        .font(.caption)
+                                if isCaller {
+                                    StatusPill(kind: .custom("Caller", ClubhouseTheme.bauhausBlue))
                                         .transition(.scale(scale: 0.96).combined(with: .opacity))
                                 }
                             }
                             .padding(AppTheme.spacingSmall)
-                            .background(
-                                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall)
-                                    .fill(callerID == player.id ?
-                                          PlayerColors.lightColor(for: player.colorIndex) : .clear)
-                            )
+                            .frame(minWidth: 88)
+                            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                            .overlay {
+                                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                    .strokeBorder(
+                                        isCaller ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
+                                        lineWidth: isCaller ? 2 : 1
+                                    )
+                            }
                         }
                         .buttonStyle(PressableButtonStyle())
                         .accessibilityIdentifier("meal_reveal_\(player.name)")

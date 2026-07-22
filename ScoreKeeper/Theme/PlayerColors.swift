@@ -1,18 +1,43 @@
 import SwiftUI
 
+enum PlayerShape: CaseIterable {
+    case circle
+    case square
+    case triangle
+    case diamond
+    case star
+    case plus
+    case capsule
+    case hexagon
+
+    var systemName: String {
+        switch self {
+        case .circle: return "circle.fill"
+        case .square: return "square.fill"
+        case .triangle: return "triangle.fill"
+        case .diamond: return "diamond.fill"
+        case .star: return "star.fill"
+        case .plus: return "plus"
+        case .capsule: return "capsule.fill"
+        case .hexagon: return "hexagon.fill"
+        }
+    }
+}
+
 struct PlayerColors {
+    /// Bauhaus primary player palette: blue, red, yellow, green, then supporting tones (no purple/indigo).
     static let palette: [Color] = [
-        Color(light: 0x5D538F, dark: 0xE9A63A),
-        Color(light: 0x2F5E93, dark: 0xE0662E),
-        Color(light: 0x3F6630, dark: 0xA8B060),
-        Color(light: 0x8A4E2A, dark: 0xD89B6A),
-        Color(light: 0x7A6210, dark: 0xF2C94C),
-        Color(light: 0x555B60, dark: 0xC9B8A0),
-        Color(light: 0x7C3A55, dark: 0xC97B8E),
-        Color(light: 0x2F6E6A, dark: 0x7FBDB5),
+        ClubhouseTheme.bauhausBlue,
+        ClubhouseTheme.bauhausRed,
+        ClubhouseTheme.bauhausYellow,
+        ClubhouseTheme.bauhausGreen,
+        Color(light: 0x1A1A1A, dark: 0xF0EDE4),
+        Color(light: 0x00838F, dark: 0x4DD0E1),
+        Color(light: 0x2E5090, dark: 0x7A9BC8),
+        Color(light: 0x5A6B3A, dark: 0xA3B87A),
     ]
 
-    private static let glyphs = ["◆", "●", "▲", "■", "★", "✚", "◗", "⬢"]
+    private static let shapes: [PlayerShape] = PlayerShape.allCases
 
     static func color(for index: Int) -> Color {
         palette[index % palette.count]
@@ -22,7 +47,20 @@ struct PlayerColors {
         color(for: index).opacity(0.12)
     }
 
+    static func shape(for index: Int) -> PlayerShape {
+        shapes[index % shapes.count]
+    }
+
     static func glyph(for index: Int) -> String {
-        glyphs[index % glyphs.count]
+        switch shape(for: index) {
+        case .circle: return "●"
+        case .square: return "■"
+        case .triangle: return "▲"
+        case .diamond: return "◆"
+        case .star: return "★"
+        case .plus: return "✚"
+        case .capsule: return "◗"
+        case .hexagon: return "⬢"
+        }
     }
 }

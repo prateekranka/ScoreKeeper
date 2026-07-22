@@ -12,6 +12,10 @@ struct PlayerSetupView: View {
     @State private var showRoster = false
     @State private var showPaywall = false
     @State private var saveError: String?
+    @State private var sectionsVisible = false
+    #if DEBUG
+    @ObservedObject private var tuning = PipTuning.shared
+    #endif
 
     private var recentNames: [String] {
         Array(Set(allPlayers.map(\.name)).filter { !$0.isEmpty }).sorted().prefix(20).map { $0 }
@@ -49,7 +53,12 @@ struct PlayerSetupView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
-                SetupPlayerHeader(gameType: gameType)
+                BauhausScreenHeader(
+                    title: "Add Players",
+                    subtitle: "Build tonight's lineup.",
+                    heroStyle: .addPlayers
+                )
+                .staggeredEntrance(visible: sectionsVisible, index: 0)
 
                 if !recentNames.isEmpty {
                     SavedPlayersBar(
@@ -57,6 +66,7 @@ struct PlayerSetupView: View {
                         cleanedNames: cleanedNames,
                         onTap: addRosterNames
                     )
+                    .staggeredEntrance(visible: sectionsVisible, index: 1)
                 }
 
                 PlayerNameFields(
@@ -64,6 +74,7 @@ struct PlayerSetupView: View {
                     focusedIndex: $focusedIndex,
                     gameType: gameType
                 )
+                .staggeredEntrance(visible: sectionsVisible, index: recentNames.isEmpty ? 1 : 2)
 
                 AddPlayerControls(
                     gameType: gameType,
@@ -71,29 +82,39 @@ struct PlayerSetupView: View {
                     onAdd: addPlayer,
                     onRoster: { showRoster = true }
                 )
+                .staggeredEntrance(visible: sectionsVisible, index: recentNames.isEmpty ? 2 : 3)
 
                 if let validationMessage {
                     Text(validationMessage)
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.lacquer)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityIdentifier("player_setup_validation")
                 }
             }
             .padding(AppTheme.spacingMedium)
+            .padding(.bottom, 24)
         }
         .appBackground()
         .navigationTitle("Players")
         .safeAreaInset(edge: .bottom) {
-            AppActionButton(role: canStart ? .primary(gameType.color) : .secondary, action: startGame) {
-                Text("Start Game")
-            }
+            BauhausPrimaryButton(
+                title: "Start Game",
+                systemImage: "play.fill",
+                fill: canStart ? gameType.color : ClubhouseTheme.inkMuted,
+                action: startGame
+            )
             .accessibilityIdentifier("start_game_button")
             .disabled(!canStart)
+            .opacity(canStart ? 1 : 0.48)
             .padding(.vertical, AppTheme.spacingSmall)
-            .padding(.horizontal, AppTheme.spacingSmall)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
             .padding(.horizontal, AppTheme.spacingMedium)
+            .background(ClubhouseTheme.paper.opacity(0.94))
+            #if DEBUG
+            .padding(.bottom, focusedIndex != nil ? CGFloat(tuning.setupCTAKeyboardGap) : AppTheme.spacingSmall)
+            #else
             .padding(.bottom, AppTheme.spacingSmall)
+            #endif
         }
         .sheet(isPresented: $showRoster) {
             PlayerRosterSheet { names in addRosterNames(names) }
@@ -113,10 +134,11 @@ struct PlayerSetupView: View {
         } message: {
             Text(saveError ?? "Please try again.")
         }
+        .onAppear { sectionsVisible = true }
     }
 
     private func addPlayer() {
-        withAnimation {
+        withAnimation(AppMotion.state) {
             playerNames.append("")
             focusedIndex = playerNames.count - 1
         }
@@ -182,7 +204,7 @@ struct PlayerSetupView: View {
                 existing.gamesPlayed += 1
                 existing.lastUsed = .now
             } else {
-                let saved = SavedPlayer(name: name, colorIndex: Int.random(in: 0..<PlayerColors.palette.count))
+                let saved = SavedPlayer(name: name, colorIndex: names.firstIndex(of: name) ?? 0)
                 saved.gamesPlayed = 1
                 modelContext.insert(saved)
             }
@@ -192,39 +214,6 @@ struct PlayerSetupView: View {
 
 // MARK: - Subviews
 
-private struct SetupPlayerHeader: View {
-    let gameType: GameType
-
-    var body: some View {
-        VStack(spacing: AppTheme.spacingMedium) {
-            VStack(spacing: AppTheme.spacingSmall) {
-                Image(systemName: gameType.icon)
-                    .font(.title2)
-                    .foregroundStyle(gameType.color)
-                Text(gameType.displayName)
-                    .font(AppFonts.title)
-                    .foregroundStyle(ClubhouseTheme.ink)
-                Text("\(gameType.minPlayers)-\(gameType.maxPlayers) players")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-            }
-
-            HStack(spacing: AppTheme.spacingSmall) {
-                Label(gameType.defaultWinCondition == .highestScore ? "Highest wins" : "Lowest wins", systemImage: "trophy.fill")
-                Label("Saved roster", systemImage: "person.2.fill")
-                Label("Fast start", systemImage: "bolt.fill")
-            }
-            .font(AppFonts.caption)
-            .foregroundStyle(gameType.color)
-            .lineLimit(1)
-            .minimumScaleFactor(0.75)
-            .frame(maxWidth: .infinity)
-        }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-    }
-}
-
 private struct SavedPlayersBar: View {
     let names: [String]
     let cleanedNames: [String]
@@ -232,11 +221,11 @@ private struct SavedPlayersBar: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(
-                title: "Saved Players",
-                subtitle: "Tap names to fill the table faster.",
-                systemImage: "person.crop.circle.badge.plus"
-            )
+            Text("Saved")
+                .columnHeaderStyle()
+            Text("Tap a name to drop them into the lineup.")
+                .font(AppFonts.caption)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: AppTheme.spacingSmall) {
@@ -245,16 +234,36 @@ private struct SavedPlayersBar: View {
                         Button {
                             onTap([name])
                         } label: {
-                            PaperChip(isSelected: alreadyAdded) {
-                                Label(name, systemImage: alreadyAdded ? "checkmark.circle.fill" : "plus.circle.fill")
+                            HStack(spacing: 6) {
+                                Image(systemName: alreadyAdded ? "checkmark" : "plus")
+                                    .font(.caption.weight(.bold))
+                                Text(name)
+                                    .font(AppFonts.caption.weight(.semibold))
+                            }
+                            .foregroundStyle(alreadyAdded ? ClubhouseTheme.onPrimary : ClubhouseTheme.ink)
+                            .padding(.horizontal, 12)
+                            .frame(minHeight: 36)
+                            .background(
+                                alreadyAdded ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.paperCard,
+                                in: Capsule()
+                            )
+                            .overlay {
+                                Capsule()
+                                    .strokeBorder(
+                                        alreadyAdded ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
+                                        lineWidth: 1
+                                    )
                             }
                         }
                         .buttonStyle(PressableButtonStyle())
                         .disabled(alreadyAdded)
+                        .accessibilityLabel(alreadyAdded ? "\(name), already added" : "Add \(name)")
                     }
                 }
             }
         }
+        .padding(AppTheme.spacingMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -264,7 +273,7 @@ private struct PlayerNameFields: View {
     let gameType: GameType
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingSmall) {
+        VStack(spacing: 0) {
             ForEach(playerNames.indices, id: \.self) { index in
                 PlayerNameRow(
                     name: $playerNames[index],
@@ -273,12 +282,22 @@ private struct PlayerNameFields: View {
                     focusedIndex: focusedIndex,
                     onRemove: { removePlayer(at: index) }
                 )
+
+                if index < playerNames.count - 1 {
+                    Rectangle()
+                        .fill(ClubhouseTheme.rule)
+                        .frame(height: 1)
+                        .padding(.leading, 52)
+                }
             }
         }
+        .padding(.vertical, AppTheme.spacingSmall)
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private func removePlayer(at index: Int) {
-        withAnimation {
+        withAnimation(AppMotion.state) {
             _ = playerNames.remove(at: index)
         }
     }
@@ -291,39 +310,50 @@ private struct PlayerNameRow: View {
     var focusedIndex: FocusState<Int?>.Binding
     let onRemove: () -> Void
 
+    private var isFocused: Bool {
+        focusedIndex.wrappedValue == index
+    }
+
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            PlayerBadge(
-                name: name.isEmpty ? "\(index + 1)" : name,
-                colorIndex: index,
-                size: .small,
-                showName: false
-            )
+            PlayerShapeIcon(colorIndex: index, size: 32)
 
             TextField("Player \(index + 1)", text: $name)
-                .font(AppFonts.body)
+                .font(AppFonts.body.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.ink)
                 .textFieldStyle(.plain)
                 .focused(focusedIndex, equals: index)
                 .autocorrectionDisabled()
-                .padding(.horizontal, AppTheme.spacingSmall)
-                .padding(.vertical, AppTheme.spacingSmall)
-                .background(ClubhouseTheme.paperCard)
-                .overlay(alignment: .bottom) {
-                    Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                        .strokeBorder(
+                            isFocused ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
+                            lineWidth: isFocused ? 2 : 1
+                        )
                 }
+                .animation(AppMotion.state, value: isFocused)
                 .accessibilityIdentifier("player_name_field_\(index)")
 
             if canRemove {
-                Button("Remove Player", systemImage: "xmark.circle.fill", action: onRemove)
-                    .labelStyle(.iconOnly)
-                    .foregroundStyle(.secondary)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(Rectangle())
-                    .buttonStyle(PressableButtonStyle())
-                    .accessibilityIdentifier("remove_player_\(index)_button")
+                Button(action: onRemove) {
+                    Image(systemName: "minus")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(ClubhouseTheme.bauhausRed)
+                        .frame(width: 36, height: 36)
+                        .overlay {
+                            Circle()
+                                .strokeBorder(ClubhouseTheme.bauhausRed.opacity(0.45), lineWidth: 1.5)
+                        }
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityLabel("Remove Player")
+                .accessibilityIdentifier("remove_player_\(index)_button")
             }
         }
+        .padding(.vertical, 8)
     }
 }
 
@@ -334,26 +364,65 @@ private struct AddPlayerControls: View {
     let onRoster: () -> Void
 
     var body: some View {
-        Group {
+        VStack(spacing: AppTheme.spacingSmall) {
             if playerCount < gameType.maxPlayers {
-                Button(action: onAdd) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                        Text("Add Player")
-                    }
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.felt)
-                }
+                lineupActionButton(
+                    title: "Add Player",
+                    subtitle: "Open another seat at the table.",
+                    iconFill: ClubhouseTheme.bauhausBlue,
+                    iconSymbol: "plus",
+                    action: onAdd
+                )
                 .accessibilityIdentifier("add_player_button")
             }
 
-            Button(action: onRoster) {
-                Label("From Roster", systemImage: "person.2.fill")
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.felt)
-            }
+            lineupActionButton(
+                title: "From Roster",
+                subtitle: "Pull in a saved crew.",
+                iconFill: ClubhouseTheme.bauhausYellow,
+                iconSymbol: "person.2.fill",
+                action: onRoster
+            )
             .accessibilityIdentifier("roster_button")
         }
-        .frame(maxWidth: .infinity)
+    }
+
+    private func lineupActionButton(
+        title: String,
+        subtitle: String,
+        iconFill: Color,
+        iconSymbol: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: AppTheme.spacingSmall) {
+                ZStack {
+                    Circle()
+                        .fill(iconFill)
+                        .frame(width: 40, height: 40)
+                    Image(systemName: iconSymbol)
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(iconFill == ClubhouseTheme.bauhausYellow ? ClubhouseTheme.ink : ClubhouseTheme.onPrimary)
+                }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(AppFonts.body.weight(.semibold))
+                        .foregroundStyle(ClubhouseTheme.ink)
+                    Text(subtitle)
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
+
+                Spacer(minLength: 0)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+            .padding(AppTheme.spacingMedium)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+        }
+        .buttonStyle(PressableButtonStyle())
     }
 }

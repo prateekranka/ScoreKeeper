@@ -125,6 +125,7 @@ private struct GenericFocusScoreTable: View {
     let engine: GameEngine
     let scores: (Player) -> Binding<Int>
     let winConditionLabel: String
+    @State private var activePlayerID: UUID?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -143,7 +144,9 @@ private struct GenericFocusScoreTable: View {
                         player: player,
                         totalScore: player.totalScore(in: session),
                         isLeading: leadingPlayers.contains(player.id),
-                        value: scores(player)
+                        isActive: activePlayerID == player.id,
+                        value: scores(player),
+                        onActivate: { activePlayerID = player.id }
                     )
 
                     if index < session.players.count - 1 {
@@ -160,38 +163,49 @@ private struct GenericFocusScoreTable: View {
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Round \(session.currentRoundNumber) score table, \(winConditionLabel)")
+        .onAppear {
+            if activePlayerID == nil {
+                activePlayerID = session.players.first?.id
+            }
+        }
     }
 
     private var header: some View {
-        HStack(alignment: .firstTextBaseline, spacing: AppTheme.spacingSmall) {
-            Label("Round \(session.currentRoundNumber)", systemImage: session.gameType.icon)
-                .font(AppFonts.title)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .monospacedDigit()
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            HStack(alignment: .firstTextBaseline, spacing: AppTheme.spacingSmall) {
+                Text("Enter scores")
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
 
-            Spacer(minLength: AppTheme.spacingSmall)
+                Spacer(minLength: AppTheme.spacingSmall)
 
-            Text(winConditionLabel)
-                .columnHeaderStyle()
-                .padding(.horizontal, 10)
-                .frame(minHeight: 28)
-                .background(ClubhouseTheme.paperSunken, in: Capsule())
-                .overlay { Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1) }
+                Text(winConditionLabel)
+                    .columnHeaderStyle()
+                    .padding(.horizontal, 10)
+                    .frame(minHeight: 28)
+                    .background(ClubhouseTheme.paperSunken, in: Capsule())
+                    .overlay { Capsule().strokeBorder(ClubhouseTheme.rule, lineWidth: 1) }
+            }
+
+            Text("Tap +/− or quick adds for each player this round.")
+                .font(AppFonts.caption)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
         }
         .padding(AppTheme.spacingMedium)
     }
 
     private var tableHeader: some View {
-        HStack {
+        HStack(spacing: AppTheme.spacingSmall) {
             Text("Player")
                 .frame(maxWidth: .infinity, alignment: .leading)
             Text("Total")
                 .frame(width: 64, alignment: .trailing)
-            Text("This round")
+            Text("This Round")
                 .frame(width: 140, alignment: .trailing)
         }
         .columnHeaderStyle()
         .padding(.vertical, AppTheme.spacingSmall)
+        .padding(.horizontal, AppTheme.spacingSmall)
     }
 
     private var leadingPlayers: [UUID] {
@@ -203,16 +217,17 @@ private struct FocusScoreRow: View {
     let player: Player
     let totalScore: Int
     let isLeading: Bool
+    var isActive = false
     @Binding var value: Int
     var range: ClosedRange<Int> = -9999...9999
     var step = 1
+    var onActivate: () -> Void = {}
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingSmall) {
-            HStack(spacing: AppTheme.spacingSmall) {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            HStack(alignment: .center, spacing: AppTheme.spacingSmall) {
                 playerIdentity
-
-                Spacer(minLength: AppTheme.spacingSmall)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                 totalColumn
 
@@ -228,32 +243,45 @@ private struct FocusScoreRow: View {
             }
         }
         .padding(.vertical, AppTheme.spacingMedium)
+        .padding(.horizontal, AppTheme.spacingSmall)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(alignment: .leading) {
+            if isActive {
+                Capsule()
+                    .fill(ClubhouseTheme.bauhausBlue)
+                    .frame(width: 4)
+                    .padding(.vertical, 10)
+            }
+        }
+        .background(
+            ClubhouseTheme.paperCard,
+            in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                .strokeBorder(
+                    isActive ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
+                    lineWidth: isActive ? 2 : 1
+                )
+        }
+        .animation(AppMotion.state, value: isActive)
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("\(player.name), total score \(totalScore), round score \(value)")
+        .accessibilityLabel("\(player.name), total score \(totalScore), round score \(value)\(isActive ? ", active" : "")")
+        .accessibilityAddTraits(isActive ? .isSelected : [])
+        .onTapGesture(perform: onActivate)
     }
 
     private var playerIdentity: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            ZStack {
-                Circle()
-                    .fill(PlayerColors.color(for: player.colorIndex))
-                    .frame(width: 38, height: 38)
-                    .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
-
-                Text(String(player.name.prefix(1)).uppercased())
-                    .font(.subheadline.bold())
-                    .foregroundStyle(ClubhouseTheme.onFelt)
-            }
+            PlayerShapeIcon(colorIndex: player.colorIndex, size: 36)
 
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 4) {
-                    PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
-
+                HStack(spacing: 6) {
                     Text(player.name)
-                        .font(AppFonts.body)
+                        .font(AppFonts.body.weight(.semibold))
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.8)
+                        .minimumScaleFactor(0.85)
                         .layoutPriority(1)
 
                     if isLeading {
@@ -262,34 +290,41 @@ private struct FocusScoreRow: View {
                             .accessibilityLabel("Leading")
                     }
                 }
-                .layoutPriority(1)
 
-                Text("Round points")
+                Text("This round")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
         }
-        .frame(minWidth: 108, maxWidth: .infinity, alignment: .leading)
-        .layoutPriority(2)
     }
 
     private var totalColumn: some View {
         Text("\(totalScore)")
             .font(AppFonts.scoreSmall)
             .monospacedDigit()
-            .foregroundStyle(isLeading ? ClubhouseTheme.brass : ClubhouseTheme.ink)
+            .foregroundStyle(PlayerColors.color(for: player.colorIndex))
             .contentTransition(.numericText(value: Double(totalScore)))
-        .frame(width: 64, alignment: .trailing)
+            .frame(width: 64, alignment: .trailing)
+            .accessibilityLabel("Total \(totalScore)")
     }
 
     private var scoreStepper: some View {
-        CompactScoreStepper(value: $value, range: range, step: step, identifierPrefix: identifierPrefix)
-            .frame(width: 140, alignment: .trailing)
+        CompactScoreStepper(
+            value: $value,
+            range: range,
+            step: step,
+            identifierPrefix: identifierPrefix,
+            accentColor: PlayerColors.color(for: player.colorIndex),
+            onInteract: onActivate
+        )
+        .frame(width: 140, alignment: .trailing)
     }
 
     private func quickButton(_ amount: Int) -> some View {
         Button("+\(amount)") {
+            onActivate()
             apply(amount)
         }
         .font(AppFonts.caption)
@@ -325,26 +360,22 @@ private struct CompactScoreStepper: View {
     var range: ClosedRange<Int>
     var step: Int
     var identifierPrefix: String
+    var accentColor: Color = ClubhouseTheme.bauhausBlue
+    var onInteract: () -> Void = {}
 
     var body: some View {
         HStack(spacing: 6) {
             stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
 
-            VStack(spacing: 0) {
-                Text("RD")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-
-                Text(roundScoreText)
-                    .font(AppFonts.scoreSmall)
-                    .monospacedDigit()
-                    .contentTransition(.numericText(value: Double(value)))
-                    .foregroundStyle(ClubhouseTheme.ink)
-            }
-            .frame(width: 44)
-            .accessibilityElement(children: .ignore)
-            .accessibilityIdentifier(identifierPrefix + "score")
-            .accessibilityLabel("Score \(value)")
+            Text(roundScoreText)
+                .font(AppFonts.scoreSmall)
+                .monospacedDigit()
+                .contentTransition(.numericText(value: Double(value)))
+                .foregroundStyle(accentColor)
+                .frame(width: 52)
+                .accessibilityElement(children: .ignore)
+                .accessibilityIdentifier(identifierPrefix + "score")
+                .accessibilityLabel("Round score \(value)")
 
             stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
         }
@@ -352,16 +383,23 @@ private struct CompactScoreStepper: View {
 
     private func stepButton(systemImage: String, delta: Int, identifier: String, label: String) -> some View {
         Button {
+            onInteract()
             apply(delta)
         } label: {
             Image(systemName: systemImage)
                 .font(.title3.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.ink)
+                .foregroundStyle(systemImage == "plus" ? .white : ClubhouseTheme.ink)
                 .frame(width: 44, height: 44)
-                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                .background(
+                    systemImage == "plus" ? accentColor : ClubhouseTheme.paperCard,
+                    in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                )
                 .overlay {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                        .strokeBorder(
+                            systemImage == "plus" ? accentColor : ClubhouseTheme.rule,
+                            lineWidth: 1
+                        )
                 }
         }
         .buttonStyle(ClubhousePressableButtonStyle())

@@ -2,154 +2,128 @@ import SwiftUI
 
 struct GamePickerView: View {
     @Environment(NavigationRouter.self) private var router
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var sectionsVisible = false
-
-    private let columns = [
-        GridItem(.flexible(), spacing: AppTheme.spacingMedium),
-        GridItem(.flexible(), spacing: AppTheme.spacingMedium)
-    ]
+    @State private var selectedGameType: GameType = .generic
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                GamePickerHero()
-                    .staggeredEntrance(visible: sectionsVisible, index: 0)
+            VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
+                BauhausScreenHeader(
+                    title: "Choose a Game",
+                    subtitle: "Pick your format for tonight.",
+                    heroStyle: .chooseGame
+                )
+                .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                LazyVGrid(columns: columns, spacing: AppTheme.spacingMedium) {
+                VStack(spacing: AppTheme.spacingSmall) {
                     ForEach(Array(GameType.allCases.enumerated()), id: \.element.id) { index, gameType in
-                        GameTypeTile(gameType: gameType, action: {
-                            router.push(.playerSetup(gameType))
-                        }, accessibilityID: "game_tile_\(gameType.rawValue)")
+                        GamePickerOptionCard(
+                            gameType: gameType,
+                            isSelected: selectedGameType == gameType,
+                            action: {
+                                withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
+                                    selectedGameType = gameType
+                                }
+                            }
+                        )
+                        .accessibilityIdentifier("game_tile_\(gameType.rawValue)")
                         .staggeredEntrance(visible: sectionsVisible, index: index + 1)
                     }
                 }
-
-                SmartSetupPreview()
-                    .staggeredEntrance(visible: sectionsVisible, index: GameType.allCases.count + 1)
             }
             .padding(AppTheme.spacingMedium)
+            .padding(.bottom, 88)
         }
         .appBackground()
         .navigationTitle("Games")
+        .safeAreaInset(edge: .bottom) {
+            BauhausPrimaryButton(
+                title: "Continue",
+                systemImage: "arrow.right",
+                fill: ClubhouseTheme.bauhausBlue,
+                action: { router.push(.playerSetup(selectedGameType)) }
+            )
+            .accessibilityIdentifier("game_picker_continue_button")
+            .padding(.vertical, AppTheme.spacingSmall)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .background(ClubhouseTheme.paper.opacity(0.92))
+            .padding(.bottom, AppTheme.spacingSmall)
+        }
         .onAppear {
             sectionsVisible = true
         }
     }
 }
 
-private struct GamePickerHero: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            AppSectionHeader(
-                title: "Choose a Game",
-                subtitle: "Pick a rule set, then PipCount will shape the score sheet.",
-                systemImage: "dice"
-            )
+private struct GamePickerOptionCard: View {
+    let gameType: GameType
+    let isSelected: Bool
+    let action: () -> Void
 
-            SetupFeatureStrip()
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: AppTheme.spacingMedium) {
+                GameTypeArtwork(gameType: gameType)
+                    .frame(width: 56, height: 56)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(gameType.displayName)
+                        .font(AppFonts.headline)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .multilineTextAlignment(.leading)
+
+                    Text(gameType.subtitle)
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: AppTheme.spacingSmall)
+
+                RadioIndicator(isSelected: isSelected)
+            }
+            .padding(AppTheme.spacingMedium)
+            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
+                    .strokeBorder(
+                        isSelected ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
+                        lineWidth: isSelected ? 2 : 1
+                    )
+            }
+            .shadow(
+                color: isSelected ? ClubhouseTheme.bauhausBlue.opacity(0.14) : ClubhouseTheme.paperShadow,
+                radius: isSelected ? 12 : 6,
+                y: isSelected ? 4 : 2
+            )
+            .contentShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
         }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .buttonStyle(PressableButtonStyle())
+        .accessibilityLabel("\(gameType.displayName). \(gameType.subtitle)")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
-private struct SetupFeature: Identifiable {
-    let title: String
-    let systemImage: String
-    let tint: Color
-    var id: String { title }
-}
-
-private struct SetupFeatureStrip: View {
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
-    private let features = [
-        SetupFeature(title: "Smart defaults", systemImage: "wand.and.stars", tint: PlayerColors.palette[2]),
-        SetupFeature(title: "Saved crews", systemImage: "person.2.fill", tint: PlayerColors.palette[1]),
-        SetupFeature(title: "Fast rematch", systemImage: "arrow.counterclockwise", tint: PlayerColors.palette[0])
-    ]
+private struct RadioIndicator: View {
+    let isSelected: Bool
 
     var body: some View {
-        let layout = dynamicTypeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
-            : AnyLayout(HStackLayout(spacing: AppTheme.spacingSmall))
-
-        layout {
-            ForEach(features) { feature in
-                SetupFeatureChip(
-                    title: feature.title,
-                    systemImage: feature.systemImage,
-                    tint: feature.tint
+        ZStack {
+            Circle()
+                .strokeBorder(
+                    isSelected ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.panelBorder,
+                    lineWidth: 2
                 )
-            }
+                .frame(width: 22, height: 22)
+
+            Circle()
+                .fill(ClubhouseTheme.bauhausBlue)
+                .frame(width: 12, height: 12)
+                .scaleEffect(isSelected ? 1 : 0.4)
+                .opacity(isSelected ? 1 : 0)
         }
-    }
-}
-
-private struct SetupFeatureChip: View {
-    let title: String
-    let systemImage: String
-    let tint: Color
-
-    var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: systemImage)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(tint)
-                .accessibilityHidden(true)
-
-            Text(title)
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(2)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(minHeight: 44)
-        .accessibilityElement(children: .combine)
-    }
-}
-
-private struct SmartSetupPreview: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(
-                title: "What gets set up",
-                subtitle: "Each mode keeps only the choices that matter.",
-                systemImage: "checklist"
-            )
-
-            FeatureRow(systemImage: "plus.forwardslash.minus", title: "Scoreboard", detail: "Highest or lowest score, target score, any game")
-            FeatureRow(systemImage: "10.circle.fill", title: "Ten Phases", detail: "ten-stage card-game scoring")
-            FeatureRow(systemImage: "fork.knife.circle.fill", title: "Dinner", detail: "Caller, card values, lowest total wins")
-        }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-    }
-}
-
-private struct FeatureRow: View {
-    let systemImage: String
-    let title: String
-    let detail: String
-
-    var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: systemImage)
-                .foregroundStyle(PlayerColors.palette[3])
-                .frame(width: 28)
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.ink)
-                Text(detail)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .lineLimit(2)
-            }
-
-            Spacer()
-        }
+        .accessibilityHidden(true)
     }
 }

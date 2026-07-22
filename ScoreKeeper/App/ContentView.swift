@@ -44,18 +44,6 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $router.path) {
             HomeView()
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    NavigationLink(value: AppDestination.legalSupport) {
-                            Label("PipCount Legal & Support", systemImage: "questionmark.circle")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                    }
-                    .accessibilityLabel("PipCount legal and support")
-                    .accessibilityHint("Open PipCount privacy policy and support links")
-                    .accessibilityIdentifier("legal_support_button")
-                    .background(ClubhouseTheme.paperCard.opacity(0.92))
-                }
                 .navigationDestination(for: AppDestination.self) { destination in
                     switch destination {
                     case .gamePicker:
@@ -135,17 +123,18 @@ private struct OnboardingView: View {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("PipCount")
-                        .font(AppFonts.headline)
-                    Text("Game night, under control")
+                        .font(AppFonts.largeTitle)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                    Text("Game night, organized.")
                         .font(AppFonts.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
                 Spacer()
 
                 Button("Skip", action: finish)
                     .font(AppFonts.body)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
                     .frame(minWidth: 44, minHeight: 44)
                     .accessibilityIdentifier("onboarding_skip_button")
             }
@@ -163,10 +152,12 @@ private struct OnboardingView: View {
             VStack(spacing: AppTheme.spacingMedium) {
                 OnboardingPageDots(count: pages.count, selectedPage: selectedPage)
 
-                AppActionButton(role: .primary(ClubhouseTheme.felt), action: primaryAction) {
-                    Label(selectedPage == pages.count - 1 ? "Start keeping score" : "Continue",
-                          systemImage: selectedPage == pages.count - 1 ? "play.fill" : "arrow.right")
-                }
+                BauhausPrimaryButton(
+                    title: selectedPage == pages.count - 1 ? "Start keeping score" : "Continue",
+                    systemImage: selectedPage == pages.count - 1 ? "play.fill" : "arrow.right",
+                    fill: ClubhouseTheme.bauhausBlue,
+                    action: primaryAction
+                )
                 .accessibilityIdentifier("onboarding_primary_button")
             }
             .padding(AppTheme.spacingMedium)
@@ -240,12 +231,17 @@ private struct OnboardingArtwork: View {
     let page: OnboardingPage
     let isVisible: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var scoreInput = 12
 
     var body: some View {
-        artworkContent
-            .padding(AppTheme.spacingMedium)
+        ZStack {
+            BauhausCornerTexture()
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
+
+            artworkContent
+                .padding(AppTheme.spacingLarge)
+        }
         .frame(maxWidth: .infinity)
+        .frame(minHeight: 220)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
         .scaleEffect(isVisible || reduceMotion ? 1 : 0.97)
         .opacity(isVisible ? 1 : 0)
@@ -257,168 +253,73 @@ private struct OnboardingArtwork: View {
     private var artworkContent: some View {
         switch page {
         case .scoreFast:
-            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                HStack {
-                    Text("Round 4")
-                        .columnHeaderStyle()
-                    Spacer()
-                    Text("Live")
-                        .columnHeaderStyle()
-                }
-
-                VStack(spacing: 0) {
-                    LedgerRow(player: Player(name: "Mina", colorIndex: 0), score: 128, rank: 1, isLeader: true, isHighlighted: true)
-                    LedgerRow(player: Player(name: "Omar", colorIndex: 1), score: 116, rank: 2)
-                    LedgerRow(player: Player(name: "Jules", colorIndex: 3), score: 94, rank: 3)
-                }
+            VStack(spacing: AppTheme.spacingMedium) {
+                BauhausHeroArt(style: .scoring, height: 110)
 
                 HStack(spacing: AppTheme.spacingSmall) {
-                    Text("Mina")
-                        .columnHeaderStyle()
-                    Spacer(minLength: AppTheme.spacingSmall)
-                    PipStepper(value: $scoreInput, range: -99...99)
-                        .scaleEffect(0.82)
-                        .frame(width: 160, height: 48)
+                    ForEach(0..<3, id: \.self) { index in
+                        HStack(spacing: 6) {
+                            PlayerShapeIcon(colorIndex: index, size: 22)
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(PlayerColors.color(for: index))
+                                .frame(width: 36, height: 8)
+                        }
+                    }
                 }
+
+                BauhausRoundDots(current: 4, total: 10)
             }
         case .setupFast:
-            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            VStack(spacing: AppTheme.spacingMedium) {
+                BauhausHeroArt(style: .addPlayers, height: 110)
+
                 HStack(spacing: AppTheme.spacingSmall) {
-                    OnboardingGameCover(gameType: .generic, isSelected: true)
-                    OnboardingGameCover(gameType: .phase10, isSelected: false)
-                    OnboardingGameCover(gameType: .whatsForDinner, isSelected: false)
+                    ForEach(0..<3, id: \.self) { index in
+                        PlayerShapeIcon(colorIndex: index, size: 28)
+                    }
                 }
 
-                HStack {
-                    Text("Tonight's Crew")
-                        .columnHeaderStyle()
-                    Spacer()
-                    Text("Saved")
-                        .columnHeaderStyle()
+                HStack(spacing: AppTheme.spacingSmall) {
+                    Circle()
+                        .fill(ClubhouseTheme.bauhausBlue)
+                        .frame(width: 28, height: 28)
+                        .overlay {
+                            Image(systemName: "plus")
+                                .font(.caption.bold())
+                                .foregroundStyle(.white)
+                        }
+                    Circle()
+                        .fill(ClubhouseTheme.bauhausYellow)
+                        .frame(width: 28, height: 28)
+                        .overlay {
+                            Image(systemName: "person.2.fill")
+                                .font(.caption2.bold())
+                                .foregroundStyle(ClubhouseTheme.ink)
+                        }
                 }
-
-                VStack(spacing: 0) {
-                    OnboardingRosterLine(name: "Mina", colorIndex: 0)
-                    OnboardingRosterLine(name: "Omar", colorIndex: 1)
-                    OnboardingRosterLine(name: "Jules", colorIndex: 3)
-                }
-
-                OnboardingPegStrip(currentPhase: 5)
             }
         case .toolsAndHistory:
-            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Final Scores")
-                            .columnHeaderStyle()
-                        Text("Game night archive")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                    }
+            VStack(spacing: AppTheme.spacingMedium) {
+                BauhausHeroArt(style: .gameOver, height: 110)
 
-                    Spacer()
-
-                    StampBadge(text: "Final")
+                HStack(spacing: AppTheme.spacingSmall) {
+                    StatusPill(kind: .completed)
+                    BauhausStar(color: ClubhouseTheme.bauhausYellow)
+                        .frame(width: 18, height: 18)
                 }
 
-                VStack(spacing: 0) {
-                    LedgerRow(player: Player(name: "Mina", colorIndex: 0), score: 184, rank: 1, isLeader: true, isHighlighted: true)
-                    LedgerRow(player: Player(name: "Omar", colorIndex: 1), score: 172, rank: 2)
-                    LedgerRow(player: Player(name: "Jules", colorIndex: 3), score: 160, rank: 3)
-                }
-
-                OnboardingStatsLine()
-            }
-        }
-    }
-}
-
-private struct OnboardingGameCover: View {
-    let gameType: GameType
-    let isSelected: Bool
-
-    var body: some View {
-        VStack(spacing: 5) {
-            GameTypeArtwork(gameType: gameType)
-                .frame(height: 36)
-            Text(gameType.displayName)
-                .font(AppFonts.caption)
-                .foregroundStyle(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.ink)
-                .lineLimit(1)
-                .minimumScaleFactor(0.62)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 76)
-        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                .strokeBorder(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.rule, lineWidth: 1)
-        }
-    }
-}
-
-private struct OnboardingRosterLine: View {
-    let name: String
-    let colorIndex: Int
-
-    var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            PlayerColorPip(colorIndex: colorIndex)
-            Text(name)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(1)
-            Spacer()
-            Text("Roster")
-                .columnHeaderStyle()
-        }
-        .padding(.vertical, 7)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(ClubhouseTheme.rule)
-                .frame(height: 1)
-        }
-    }
-}
-
-private struct OnboardingPegStrip: View {
-    let currentPhase: Int
-
-    var body: some View {
-        HStack(spacing: 6) {
-            ForEach(1...10, id: \.self) { phase in
-                Circle()
-                    .fill(phase < currentPhase ? ClubhouseTheme.felt : phase == currentPhase ? ClubhouseTheme.brass : ClubhouseTheme.paperSunken)
-                    .frame(width: 13, height: 13)
-                    .overlay {
-                        Circle()
-                            .stroke(ClubhouseTheme.rule, lineWidth: 1)
+                HStack(spacing: AppTheme.spacingSmall) {
+                    ForEach(0..<3, id: \.self) { index in
+                        VStack(spacing: 4) {
+                            PlayerShapeIcon(colorIndex: index, size: 20)
+                            Text(["128", "116", "94"][index])
+                                .font(AppFonts.scoreSmall)
+                                .monospacedDigit()
+                                .foregroundStyle(PlayerColors.color(for: index))
+                        }
                     }
+                }
             }
-        }
-        .padding(.top, 3)
-    }
-}
-
-private struct OnboardingStatsLine: View {
-    var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            PlayerColorPip(colorIndex: 0, size: 12)
-            Text("Mina leads head-to-head")
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(1)
-            Spacer()
-            Text("3-1")
-                .font(AppFonts.scoreSmall)
-                .monospacedDigit()
-                .foregroundStyle(ClubhouseTheme.brass)
-        }
-        .padding(AppTheme.spacingSmall)
-        .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
         }
     }
 }
@@ -429,8 +330,9 @@ private struct OnboardingHighlightRow: View {
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(ClubhouseTheme.felt)
+            Circle()
+                .fill(tint)
+                .frame(width: 10, height: 10)
                 .accessibilityHidden(true)
             Text(highlight)
                 .font(AppFonts.body)
@@ -442,7 +344,7 @@ private struct OnboardingHighlightRow: View {
         .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
         }
     }
 }
@@ -456,7 +358,7 @@ private struct OnboardingPageDots: View {
         HStack(spacing: 7) {
             ForEach(0..<count, id: \.self) { index in
                 Circle()
-                    .fill(index == selectedPage ? ClubhouseTheme.felt : ClubhouseTheme.ink.opacity(0.28))
+                    .fill(index == selectedPage ? ClubhouseTheme.bauhausBlue : ClubhouseTheme.ink.opacity(0.22))
                     .frame(width: 8, height: 8)
                     .scaleEffect(index == selectedPage && !reduceMotion ? 1.25 : 1)
                     .opacity(index == selectedPage ? 1 : 0.55)
