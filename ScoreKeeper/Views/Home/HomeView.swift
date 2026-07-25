@@ -40,7 +40,7 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: AppTheme.spacingLarge) {
+            VStack(spacing: AppTheme.spacingMedium) {
                 HomeHeader(
                     subtitle: headerSubtitle,
                     themeIconName: themeManager.iconName,
@@ -99,8 +99,9 @@ struct HomeView: View {
                 HomeQuickToolsRow(selectedTool: $selectedTool)
                     .staggeredEntrance(visible: sectionsVisible, index: 7)
             }
-            .padding(AppTheme.spacingMedium)
-            .padding(.bottom, 76)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.top, 6)
+            .padding(.bottom, 92)
         }
         .appBackground()
         .navigationTitle("")
@@ -209,11 +210,11 @@ private struct HomeHeader: View {
     @State private var themeTrigger = 0
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: 8) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("PipCount")
-                        .font(AppFonts.hero)
+                        .font(AppFonts.largeTitle)
                         .foregroundStyle(ClubhouseTheme.ink)
 
                     Text("Game night, organized.")
@@ -247,23 +248,24 @@ private struct HomeHeader: View {
 
             ZStack(alignment: .topTrailing) {
                 BauhausHalftone(color: ClubhouseTheme.ink)
-                    .frame(width: 120, height: 92)
-                    .offset(x: -32, y: 32)
+                    .frame(width: 148, height: 118)
+                    .offset(x: -40, y: 48)
 
                 BauhausBlocksArtwork()
-                    .frame(height: 184)
+                    .frame(height: 226)
 
                 BauhausStarburst(color: ClubhouseTheme.blue, size: 34)
-                    .offset(x: -156, y: 8)
+                    .offset(x: -174, y: 12)
             }
-            .frame(height: 184)
+            .frame(height: 226)
         }
-        .padding(.top, AppTheme.spacingSmall)
+        .padding(.top, 2)
     }
 }
 
 private struct HomeEmptyHero: View {
     let action: () -> Void
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(spacing: AppTheme.spacingMedium) {
@@ -281,21 +283,27 @@ private struct HomeEmptyHero: View {
                     .padding(.top, 4)
             }
 
-            ZStack {
-                Circle()
-                    .fill(ClubhouseTheme.yellow)
-                    .frame(width: 64, height: 64)
-                    .offset(x: 18, y: -32)
-                BauhausPlayerShape(colorIndex: 0, size: 82)
-                BauhausPlayerShape(colorIndex: 1, size: 44)
-                    .offset(x: 42, y: 30)
-                BauhausPlayerShape(colorIndex: 3, size: 34)
-                    .offset(x: -8, y: 48)
+            Group {
+                if colorScheme == .light {
+                    PipCountAssetArtwork(asset: .emptyState, contentMode: .fit)
+                } else {
+                    ZStack {
+                        Circle()
+                            .fill(ClubhouseTheme.yellow)
+                            .frame(width: 72, height: 72)
+                            .offset(x: 18, y: -38)
+                        BauhausPlayerShape(colorIndex: 0, size: 92)
+                        BauhausPlayerShape(colorIndex: 1, size: 48)
+                            .offset(x: 42, y: 34)
+                        BauhausPlayerShape(colorIndex: 3, size: 38)
+                            .offset(x: -10, y: 52)
+                    }
+                }
             }
-            .frame(width: 112, height: 132)
+            .frame(width: 116, height: 154)
             .accessibilityHidden(true)
         }
-        .padding(AppTheme.spacingMedium)
+        .padding(20)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
     }
 }
@@ -305,7 +313,7 @@ private struct NewGameButton: View {
 
     var body: some View {
         AppActionButton(role: .primary(ClubhouseTheme.felt), action: action) {
-            Label("New Game", systemImage: "plus.circle.fill")
+            Label("Start New Game", systemImage: "plus")
         }
         .accessibilityIdentifier("new_game_button")
     }
@@ -362,7 +370,7 @@ private struct HomeActiveGamesSection: View {
     let onDelete: (GameSession) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Active Games")
                     .columnHeaderStyle()
@@ -409,15 +417,18 @@ private struct ActiveGameRow: View {
     let session: GameSession
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+        VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Label(session.gameType.displayName, systemImage: session.gameType.icon)
-                    .font(AppFonts.headline)
+                Text(session.gameType.displayName)
+                    .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
                 Spacer()
-                Label("Resume", systemImage: "play.fill")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.felt)
+                Text("In Progress")
+                    .font(AppFonts.caption.weight(.bold))
+                    .foregroundStyle(ClubhouseTheme.blue)
+                    .padding(.horizontal, 10)
+                    .frame(minHeight: 30)
+                    .overlay { Capsule().strokeBorder(ClubhouseTheme.blue, lineWidth: 1) }
             }
 
             HStack(spacing: AppTheme.spacingSmall) {
@@ -438,8 +449,26 @@ private struct ActiveGameRow: View {
                     )
                 }
             }
+
+            HStack(spacing: 12) {
+                ZStack {
+                    Circle().fill(ClubhouseTheme.paperCard).frame(width: 42, height: 42)
+                    Image(systemName: "arrow.right")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(ClubhouseTheme.ink)
+                }
+                Text("Resume Game")
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.onPrimary)
+                Spacer()
+                BauhausHalftone(color: ClubhouseTheme.paperCard, spacing: 6)
+                    .frame(width: 70, height: 42)
+            }
+            .padding(.horizontal, 14)
+            .frame(minHeight: 62)
+            .background(ClubhouseTheme.blue, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
         }
-        .padding(AppTheme.spacingMedium)
+        .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
     }

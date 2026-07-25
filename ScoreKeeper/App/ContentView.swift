@@ -227,13 +227,15 @@ private struct OnboardingArtwork: View {
 
             artworkContent
                 .padding(AppTheme.spacingMedium)
-                .background(ClubhouseTheme.paperCard)
+                .background {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge)
+                        .fill(ClubhouseTheme.paperCard)
+                        .shadow(color: ClubhouseTheme.ink.opacity(0.18), radius: 0, x: 5, y: 6)
+                }
                 .overlay {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge)
                         .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
                 }
-                .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge))
-                .shadow(color: ClubhouseTheme.ink.opacity(0.18), radius: 0, x: 5, y: 6)
                 .padding(.horizontal, 22)
                 .rotationEffect(.degrees(page == .setupFast ? 2 : page == .toolsAndHistory ? -1.5 : 0))
         }

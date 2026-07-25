@@ -8,6 +8,8 @@ struct GamePickerView: View {
         GridItem(.flexible(), spacing: AppTheme.spacingSmall)
     ]
 
+    private let gameTypes: [GameType] = [.generic, .phase10, .whatsForDinner]
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
@@ -15,7 +17,7 @@ struct GamePickerView: View {
                     .staggeredEntrance(visible: sectionsVisible, index: 0)
 
                 LazyVGrid(columns: columns, spacing: AppTheme.spacingMedium) {
-                    ForEach(Array(GameType.allCases.enumerated()), id: \.element.id) { index, gameType in
+                    ForEach(Array(gameTypes.enumerated()), id: \.element.id) { index, gameType in
                         GameTypeTile(gameType: gameType, action: {
                             router.push(.playerSetup(gameType))
                         }, accessibilityID: "game_tile_\(gameType.rawValue)")
@@ -23,8 +25,9 @@ struct GamePickerView: View {
                     }
                 }
             }
-            .padding(AppTheme.spacingMedium)
-            .padding(.bottom, 76)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.top, 6)
+            .padding(.bottom, 92)
         }
         .appBackground()
         .navigationTitle("")
@@ -76,15 +79,15 @@ private struct GamePickerHero: View {
             if !dynamicTypeSize.isAccessibilitySize {
                 ZStack {
                     BauhausBlocksArtwork(compact: true)
-                        .frame(width: 160, height: 138)
+                        .frame(width: 176, height: 166)
                     BauhausStarburst(color: ClubhouseTheme.red, size: 34)
-                        .offset(x: 46, y: -48)
+                        .offset(x: 54, y: -58)
                 }
-                .frame(width: 160, height: 138)
+                .frame(width: 176, height: 166)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, AppTheme.spacingSmall)
+        .padding(.top, 2)
     }
 }
 

@@ -124,12 +124,20 @@ struct AppActionButton<LabelContent: View>: View {
                 .frame(minHeight: 52)
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .foregroundStyle(foregroundStyle)
-                .background(backgroundStyle, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
+                .background {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .fill(backgroundStyle)
+                        .shadow(
+                            color: role.isSecondary ? .clear : ClubhouseTheme.ink.opacity(0.14),
+                            radius: 0,
+                            x: 2,
+                            y: 3
+                        )
+                }
                 .overlay {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
                         .strokeBorder(strokeStyle, lineWidth: role.isSecondary ? 1.25 : 0)
                 }
-                .shadow(color: role.isSecondary ? .clear : ClubhouseTheme.ink.opacity(0.14), radius: 0, x: 2, y: 3)
         }
         .buttonStyle(PressableButtonStyle())
         .opacity(isEnabled ? 1 : 0.48)
@@ -293,7 +301,7 @@ struct PipCountDock: View {
                     }
                     .foregroundStyle(selected == tab ? ClubhouseTheme.blue : ClubhouseTheme.inkMuted)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 52)
+                    .frame(height: 56)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(PressableButtonStyle())
@@ -303,16 +311,21 @@ struct PipCountDock: View {
                 .accessibilityAddTraits(selected == tab ? .isSelected : [])
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 7)
-        .background(ClubhouseTheme.paperCard.opacity(0.94), in: Capsule())
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(ClubhouseTheme.paperCard.opacity(0.97), in: Capsule())
         .overlay {
             Capsule()
-                .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                .strokeBorder(Color.white.opacity(0.82), lineWidth: 1.5)
         }
-        .shadow(color: ClubhouseTheme.ink.opacity(0.14), radius: 14, y: 7)
-        .padding(.horizontal, AppTheme.spacingMedium)
-        .padding(.bottom, 4)
+        .overlay {
+            Capsule()
+                .inset(by: 1.5)
+                .strokeBorder(ClubhouseTheme.rule.opacity(0.8), lineWidth: 0.75)
+        }
+        .shadow(color: ClubhouseTheme.ink.opacity(0.15), radius: 18, y: 9)
+        .padding(.horizontal, 28)
+        .padding(.bottom, 6)
     }
 
     private func selectedImage(for tab: PipCountTab) -> String {

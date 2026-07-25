@@ -7,7 +7,7 @@ struct PlayerColors {
         ClubhouseTheme.yellow,
         ClubhouseTheme.green,
         Color(light: 0xE75C16, dark: 0xFF8B4A),
-        Color(light: 0x7447B8, dark: 0xA986F0),
+        Color(light: 0x8A4B24, dark: 0xD99762),
         Color(light: 0x00838F, dark: 0x56C8D2),
         Color(light: 0xD43A73, dark: 0xF27AA4),
     ]

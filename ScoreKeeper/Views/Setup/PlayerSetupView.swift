@@ -48,7 +48,7 @@ struct PlayerSetupView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: AppTheme.spacingLarge) {
+            VStack(spacing: AppTheme.spacingMedium) {
                 SetupPlayerHeader(gameType: gameType)
 
                 if !recentNames.isEmpty {
@@ -79,7 +79,9 @@ struct PlayerSetupView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
-            .padding(AppTheme.spacingMedium)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.top, 8)
+            .padding(.bottom, 96)
         }
         .appBackground()
         .navigationTitle("Players")
@@ -222,12 +224,12 @@ private struct SetupPlayerHeader: View {
             if !dynamicTypeSize.isAccessibilitySize {
                 ZStack {
                     BauhausBlocksArtwork(compact: true)
-                        .frame(width: 166, height: 134)
+                        .frame(width: 176, height: 154)
                     BauhausHalftone(color: ClubhouseTheme.ink)
                         .frame(width: 72, height: 72)
                         .offset(x: -54, y: 28)
                 }
-                .frame(width: 166, height: 134)
+                .frame(width: 176, height: 154)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -284,7 +286,8 @@ private struct PlayerNameFields: View {
                 )
             }
         }
-        .padding(.horizontal, AppTheme.spacingSmall)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
@@ -312,13 +315,13 @@ private struct PlayerNameRow: View {
             )
 
             TextField("Player \(index + 1)", text: $name)
-                .font(AppFonts.body)
+                .font(AppFonts.headline)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .textFieldStyle(.plain)
                 .focused(focusedIndex, equals: index)
                 .autocorrectionDisabled()
                 .padding(.horizontal, AppTheme.spacingSmall)
-                .padding(.vertical, AppTheme.spacingSmall)
+                .padding(.vertical, 12)
                 .background(ClubhouseTheme.paperCard)
                 .overlay(alignment: .bottom) {
                     Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
@@ -336,6 +339,7 @@ private struct PlayerNameRow: View {
                     .accessibilityIdentifier("remove_player_\(index)_button")
             }
         }
+        .frame(minHeight: 58)
     }
 }
 
@@ -363,7 +367,7 @@ private struct AddPlayerControls: View {
                     .foregroundStyle(ClubhouseTheme.ink)
                     .padding(.horizontal, AppTheme.spacingMedium)
                     .frame(maxWidth: .infinity)
-                    .frame(minHeight: 54)
+                    .frame(minHeight: 62)
                     .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
                 }
                 .buttonStyle(PressableButtonStyle())
@@ -384,7 +388,7 @@ private struct AddPlayerControls: View {
                 .foregroundStyle(ClubhouseTheme.ink)
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .frame(maxWidth: .infinity)
-                .frame(minHeight: 54)
+                .frame(minHeight: 62)
                 .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
             }
             .buttonStyle(PressableButtonStyle())

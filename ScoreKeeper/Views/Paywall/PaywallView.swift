@@ -70,29 +70,34 @@ struct PaywallView: View {
                 Text("Unlock\nunlimited\ngame night.")
                     .font(AppFonts.hero)
                     .foregroundStyle(ClubhouseTheme.ink)
+                    .lineLimit(3)
+                    .minimumScaleFactor(0.82)
                     .fixedSize(horizontal: false, vertical: true)
 
                 Rectangle()
                     .fill(ClubhouseTheme.blue)
                     .frame(width: 76, height: 4)
 
-                Text("More games. More moments.\nYours forever.")
+                (Text("More games.\nMore moments.\n")
+                    .foregroundColor(ClubhouseTheme.inkMuted)
+                 + Text("Yours forever.")
+                    .foregroundColor(ClubhouseTheme.red))
                     .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(minWidth: dynamicTypeSize.isAccessibilitySize ? 0 : 190, maxWidth: .infinity, alignment: .leading)
+            .layoutPriority(2)
 
             if !dynamicTypeSize.isAccessibilitySize {
                 ZStack(alignment: .bottomTrailing) {
-                    BauhausTargetArtwork(accent: ClubhouseTheme.ink)
-                        .frame(width: 170, height: 170)
+                    PipCountAssetArtwork(asset: .unlimitedEmblem)
+                        .frame(width: 146, height: 146)
                         .offset(y: -32)
                     BauhausBlocksArtwork(compact: true)
-                        .frame(width: 154, height: 138)
+                        .frame(width: 134, height: 124)
                     BauhausStarburst(color: ClubhouseTheme.red, size: 34)
-                        .offset(x: -104, y: -150)
+                        .offset(x: -86, y: -136)
                 }
-                .frame(width: 176, height: 232)
+                .frame(width: 148, height: 212)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -148,13 +153,7 @@ struct PaywallView: View {
     }
 
     private var benefitsPanel: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            AppSectionHeader(
-                title: "What Pro unlocks",
-                subtitle: "The same PipCount, with no game limit.",
-                systemImage: "checkmark.seal.fill"
-            )
-
+        VStack(alignment: .leading, spacing: 0) {
             VStack(spacing: 0) {
                 benefitRow(
                     colorIndex: 0,
@@ -181,15 +180,14 @@ struct PaywallView: View {
                 )
             }
         }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .padding(.horizontal, 2)
     }
 
     private var divider: some View {
         Rectangle()
             .fill(ClubhouseTheme.rule)
             .frame(height: 1)
-            .padding(.leading, 44)
+            .padding(.leading, 54)
     }
 
     private var purchaseFooter: some View {
@@ -329,12 +327,12 @@ struct PaywallView: View {
 
     private func benefitRow(colorIndex: Int, title: String, detail: String) -> some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            BauhausPlayerShape(colorIndex: colorIndex, size: 38)
+            BauhausPlayerShape(colorIndex: colorIndex, size: 46)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(AppFonts.body.weight(.semibold))
+                    .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
 
                 Text(detail)
@@ -345,7 +343,7 @@ struct PaywallView: View {
 
             Spacer(minLength: 0)
         }
-        .padding(.vertical, AppTheme.spacingSmall)
+        .padding(.vertical, 12)
         .accessibilityElement(children: .combine)
     }
 

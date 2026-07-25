@@ -150,7 +150,7 @@ private struct GenericFocusScoreTable: View {
                         Rectangle()
                             .fill(ClubhouseTheme.rule)
                             .frame(height: 1)
-                            .padding(.leading, 64)
+                            .padding(.leading, 76)
                     }
                 }
             }
@@ -206,7 +206,7 @@ private struct FocusScoreRow: View {
     var step = 1
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingSmall) {
+        VStack(spacing: 12) {
             HStack(spacing: AppTheme.spacingSmall) {
                 playerIdentity
 
@@ -231,8 +231,8 @@ private struct FocusScoreRow: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
-        .padding(.vertical, AppTheme.spacingMedium)
-        .padding(.horizontal, AppTheme.spacingSmall)
+        .padding(.vertical, 18)
+        .padding(.horizontal, 10)
         .background(value == 0 ? Color.clear : PlayerColors.lightColor(for: player.colorIndex))
         .animation(AppMotion.state, value: value == 0)
         .accessibilityElement(children: .contain)
@@ -241,14 +241,14 @@ private struct FocusScoreRow: View {
 
     private var playerIdentity: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            BauhausPlayerShape(colorIndex: player.colorIndex, size: 38)
+            BauhausPlayerShape(colorIndex: player.colorIndex, size: 50)
 
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
                     PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
 
                     Text(player.name)
-                        .font(AppFonts.body)
+                        .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
@@ -274,7 +274,7 @@ private struct FocusScoreRow: View {
 
     private var totalColumn: some View {
         Text("\(totalScore)")
-            .font(AppFonts.scoreSmall)
+            .font(AppFonts.scoreMedium)
             .monospacedDigit()
             .foregroundStyle(isLeading ? ClubhouseTheme.brass : ClubhouseTheme.ink)
             .contentTransition(.numericText(value: Double(totalScore)))

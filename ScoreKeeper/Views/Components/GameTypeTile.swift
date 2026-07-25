@@ -31,21 +31,22 @@ struct GameTypeTile: View {
                                     .frame(width: 12, height: 12)
                             }
 
-                        Text("Choose")
-                            .columnHeaderStyle()
-                            .foregroundStyle(gameType.color)
                     }
-                    .padding(.top, 4)
+                    .padding(.top, 8)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 GameTypeArtwork(gameType: gameType)
-                    .frame(width: 150, height: 132)
+                    .frame(width: 154, height: 142)
             }
             .frame(maxWidth: .infinity)
             .padding(.horizontal, AppTheme.spacingMedium)
-            .padding(.vertical, 14)
-            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
+            .padding(.vertical, 18)
+            .background {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
+                    .fill(ClubhouseTheme.paperCard)
+                    .shadow(color: ClubhouseTheme.paperShadow, radius: 0, x: 3, y: 4)
+            }
             .overlay {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
                     .strokeBorder(gameType.color, lineWidth: 2)
@@ -55,7 +56,6 @@ struct GameTypeTile: View {
                     .inset(by: 4)
                     .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.75)
             }
-            .shadow(color: ClubhouseTheme.paperShadow, radius: 0, x: 3, y: 4)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(accessibilityID ?? "")
@@ -65,6 +65,7 @@ struct GameTypeTile: View {
 
 struct GameTypeArtwork: View {
     let gameType: GameType
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         GeometryReader { proxy in
@@ -80,6 +81,26 @@ struct GameTypeArtwork: View {
 
     @ViewBuilder
     private var artwork: some View {
+        if colorScheme == .light {
+            PipCountAssetArtwork(asset: illustrationAsset)
+        } else {
+            legacyArtwork
+        }
+    }
+
+    private var illustrationAsset: PipCountIllustrationAsset {
+        switch gameType {
+        case .generic:
+            return .scoreEmblem
+        case .phase10:
+            return .crewEmblem
+        case .whatsForDinner:
+            return .celebrationEmblem
+        }
+    }
+
+    @ViewBuilder
+    private var legacyArtwork: some View {
         switch gameType {
         case .generic:
             ZStack {

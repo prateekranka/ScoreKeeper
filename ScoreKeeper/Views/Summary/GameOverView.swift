@@ -36,6 +36,7 @@ struct GameOverView: View {
                             .staggeredEntrance(visible: sectionsVisible, index: 3)
                     }
                     .padding(AppTheme.spacingMedium)
+                    .padding(.bottom, 92)
                 }
 
                 if !reduceMotion, !ProcessInfo.processInfo.arguments.contains("-in-memory-store") {
@@ -60,6 +61,9 @@ struct GameOverView: View {
             }
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                PipCountDock(selected: .games, onSelect: selectTab)
+            }
             .alert(
                 "Couldn’t save rematch",
                 isPresented: Binding(
@@ -71,6 +75,22 @@ struct GameOverView: View {
             } message: {
                 Text(saveError ?? "Please try again.")
             }
+        }
+    }
+
+    private func selectTab(_ tab: PipCountTab) {
+        switch tab {
+        case .home:
+            router.goHome()
+        case .games:
+            router.goHome()
+            router.push(.gamePicker)
+        case .players:
+            router.goHome()
+            router.push(.players)
+        case .more:
+            router.goHome()
+            router.push(.legalSupport)
         }
     }
 

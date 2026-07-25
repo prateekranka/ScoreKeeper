@@ -7,17 +7,20 @@ struct ScorecardSurface<Content: View>: View {
 
     var body: some View {
         content
-            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .background {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(ClubhouseTheme.paperCard)
+                    .shadow(
+                        color: isInteractive ? ClubhouseTheme.paperShadow : ClubhouseTheme.ink.opacity(0.035),
+                        radius: isInteractive ? 0 : 10,
+                        x: isInteractive ? 3 : 0,
+                        y: isInteractive ? 4 : 5
+                    )
+            }
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
+                    .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.35)
             }
-            .shadow(
-                color: isInteractive ? ClubhouseTheme.paperShadow : .clear,
-                radius: isInteractive ? 0 : 0,
-                x: isInteractive ? 3 : 0,
-                y: isInteractive ? 4 : 0
-            )
     }
 }
 
@@ -178,6 +181,8 @@ struct PipStepper: View {
                 Text(roundScoreText)
                     .font(AppFonts.scoreMedium)
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.55)
                     .contentTransition(.numericText(value: Double(value)))
                     .foregroundStyle(ClubhouseTheme.ink)
             }
@@ -220,6 +225,27 @@ struct PipStepper: View {
 }
 
 // MARK: - PipCount Geometry
+
+enum PipCountIllustrationAsset: String {
+    case hero = "PipCountHeroArtwork"
+    case emptyState = "PipCountEmptyStateArtwork"
+    case scoreEmblem = "PipCountScoreEmblem"
+    case crewEmblem = "PipCountCrewEmblem"
+    case unlimitedEmblem = "PipCountUnlimitedEmblem"
+    case celebrationEmblem = "PipCountCelebrationEmblem"
+}
+
+struct PipCountAssetArtwork: View {
+    let asset: PipCountIllustrationAsset
+    var contentMode: ContentMode = .fit
+
+    var body: some View {
+        Image(asset.rawValue)
+            .resizable()
+            .aspectRatio(contentMode: contentMode)
+            .accessibilityHidden(true)
+    }
+}
 
 struct BauhausPlayerShape: View {
     let colorIndex: Int
@@ -320,8 +346,17 @@ struct BauhausHalftone: View {
 
 struct BauhausTargetArtwork: View {
     var accent: Color = ClubhouseTheme.red
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
+        if colorScheme == .light {
+            PipCountAssetArtwork(asset: .scoreEmblem)
+        } else {
+            legacyArtwork
+        }
+    }
+
+    private var legacyArtwork: some View {
         GeometryReader { proxy in
             let side = min(proxy.size.width, proxy.size.height)
 
@@ -358,8 +393,18 @@ struct BauhausTargetArtwork: View {
 
 struct BauhausBlocksArtwork: View {
     var compact = false
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
+        if colorScheme == .light {
+            PipCountAssetArtwork(asset: .hero, contentMode: .fill)
+                .clipped()
+        } else {
+            legacyArtwork
+        }
+    }
+
+    private var legacyArtwork: some View {
         GeometryReader { proxy in
             let unit = min(proxy.size.width / 5, proxy.size.height / 4)
 
@@ -369,11 +414,18 @@ struct BauhausBlocksArtwork: View {
                     .frame(width: unit * 2.25, height: unit * 2.25)
                     .offset(x: -unit * 2.15, y: -unit * 0.05)
 
+                Circle()
+                    .trim(from: 0.25, to: 0.75)
+                    .stroke(ClubhouseTheme.blue, lineWidth: unit * 0.78)
+                    .rotationEffect(.degrees(90))
+                    .frame(width: unit * 3.2, height: unit * 3.2)
+                    .offset(x: -unit * 0.2, y: -unit * 0.65)
+
                 HStack(alignment: .bottom, spacing: 0) {
-                    block(height: unit * 1.15, color: ClubhouseTheme.blue)
-                    block(height: unit * 1.85, color: ClubhouseTheme.red)
-                    block(height: unit * 2.55, color: ClubhouseTheme.ink)
-                    block(height: unit * 3.25, color: ClubhouseTheme.blue)
+                    block(height: unit * 1.10, color: ClubhouseTheme.blue)
+                    block(height: unit * 1.75, color: ClubhouseTheme.red)
+                    block(height: unit * 2.50, color: ClubhouseTheme.ink)
+                    block(height: unit * 3.20, color: ClubhouseTheme.blue)
                     block(height: unit * 2.05, color: ClubhouseTheme.ink)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)

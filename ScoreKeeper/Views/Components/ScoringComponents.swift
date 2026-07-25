@@ -14,7 +14,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
     @State private var saveError: String?
-    private let bottomBarContentInset: CGFloat = 132
+    private let bottomBarContentInset: CGFloat = 176
 
     var body: some View {
         VStack(spacing: 0) {
@@ -35,12 +35,21 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
             .safeAreaInset(edge: .bottom) {
                 glassGroup(spacing: AppTheme.spacingSmall) {
                     VStack(spacing: AppTheme.spacingSmall) {
+                        AppActionButton(role: .primary(ClubhouseTheme.ink), action: action) {
+                            if let actionSystemImage {
+                                Label(actionTitle, systemImage: actionSystemImage)
+                            } else {
+                                Text(actionTitle)
+                            }
+                        }
+                        .accessibilityIdentifier("submit_round_button")
+
                         HStack(spacing: AppTheme.spacingSmall) {
                             Button {
                                 undoTrigger &+= 1
                                 undoLastRound()
                             } label: {
-                                Label("Undo Last", systemImage: "arrow.uturn.backward")
+                                Label("Undo", systemImage: "arrow.uturn.backward")
                                     .font(AppFonts.body)
                                     .foregroundStyle(ClubhouseTheme.ink)
                                     .frame(maxWidth: .infinity)
@@ -56,14 +65,22 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                             .sensoryFeedback(.warning, trigger: undoTrigger)
                             .accessibilityIdentifier("undo_last_round_button")
 
-                            AppActionButton(role: .primary(ClubhouseTheme.ink), action: action) {
-                                if let actionSystemImage {
-                                    Label(actionTitle, systemImage: actionSystemImage)
-                                } else {
-                                    Text(actionTitle)
-                                }
+                            Button {
+                                selectedTool = .log
+                            } label: {
+                                Label("Round Log", systemImage: "list.bullet")
+                                    .font(AppFonts.body)
+                                    .foregroundStyle(ClubhouseTheme.ink)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(minHeight: 44)
+                                    .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                            .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
+                                    }
                             }
-                            .accessibilityIdentifier("submit_round_button")
+                            .buttonStyle(PressableButtonStyle())
+                            .accessibilityIdentifier("round_log_button")
                         }
                     }
                     .padding(.horizontal, AppTheme.spacingMedium)
@@ -162,7 +179,8 @@ private struct ScoringGameHeader: View {
             }
         }
         .padding(.horizontal, AppTheme.spacingMedium)
-        .padding(.top, 4)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
         .accessibilityElement(children: .combine)
     }
 }
@@ -232,7 +250,7 @@ private struct ScoringToolsBar: View {
                     Image(systemName: tool.systemImage)
                         .font(.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 44, height: 44)
                         .background(ClubhouseTheme.paperCard.opacity(0.72), in: Circle())
                         .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
                 }
