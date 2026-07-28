@@ -2,13 +2,13 @@ import SwiftUI
 
 struct AppTheme {
     static let cornerRadiusSmall: CGFloat = 10
-    static let cornerRadiusMedium: CGFloat = 14
-    static let cornerRadiusLarge: CGFloat = 18
+    static let cornerRadiusMedium: CGFloat = 16
+    static let cornerRadiusLarge: CGFloat = 22
 
     static let spacingSmall: CGFloat = 8
-    static let spacingMedium: CGFloat = 16
-    static let spacingLarge: CGFloat = 24
-    static let spacingXLarge: CGFloat = 32
+    static let spacingMedium: CGFloat = 18
+    static let spacingLarge: CGFloat = 28
+    static let spacingXLarge: CGFloat = 36
 }
 
 enum AppMotion {

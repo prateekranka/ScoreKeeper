@@ -26,16 +26,17 @@ struct GameOverView: View {
                         WinnerHeroSection(session: session, winners: winners, sectionsVisible: sectionsVisible)
                             .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                        VStack(spacing: AppTheme.spacingLarge) {
-                            GameRecapPanel(session: session, engine: engine)
-                            StandingsList(title: "Final Scores", standings: session.standings(using: engine))
-                        }
+                        StandingsList(title: "Final Scores", standings: session.standings(using: engine))
                         .staggeredEntrance(visible: sectionsVisible, index: 1)
 
                         EndGameButtons(session: session, onPlayAgain: { playAgain(session) }, onHome: { router.goHome() })
                             .staggeredEntrance(visible: sectionsVisible, index: 2)
+
+                        GameRecapPanel(session: session, engine: engine)
+                            .staggeredEntrance(visible: sectionsVisible, index: 3)
                     }
                     .padding(AppTheme.spacingMedium)
+                    .padding(.bottom, 92)
                 }
 
                 if !reduceMotion, !ProcessInfo.processInfo.arguments.contains("-in-memory-store") {
@@ -60,6 +61,9 @@ struct GameOverView: View {
             }
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                PipCountDock(selected: .games, onSelect: selectTab)
+            }
             .alert(
                 "Couldn’t save rematch",
                 isPresented: Binding(
@@ -71,6 +75,22 @@ struct GameOverView: View {
             } message: {
                 Text(saveError ?? "Please try again.")
             }
+        }
+    }
+
+    private func selectTab(_ tab: PipCountTab) {
+        switch tab {
+        case .home:
+            router.goHome()
+        case .games:
+            router.goHome()
+            router.push(.gamePicker)
+        case .players:
+            router.goHome()
+            router.push(.players)
+        case .more:
+            router.goHome()
+            router.push(.legalSupport)
         }
     }
 
@@ -126,37 +146,95 @@ private struct WinnerHeroSection: View {
     let winners: [Player]
     let sectionsVisible: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingSmall) {
-            if winners.isEmpty {
-                Image(systemName: "flag.checkered")
-                    .font(AppFonts.scoreDisplay)
-                    .foregroundStyle(session.gameType.color)
-                    .accessibilityHidden(true)
-                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
-                    .opacity(sectionsVisible ? 1 : 0)
-                    .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.06), value: sectionsVisible)
-            } else {
-                CupMascotView()
-                    .frame(width: 72, height: 60)
-                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
-                    .opacity(sectionsVisible ? 1 : 0)
-                    .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.06), value: sectionsVisible)
+        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
+                : AnyLayout(HStackLayout(alignment: .top, spacing: AppTheme.spacingSmall))
+
+            layout {
+                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                    Text("Game\nOver")
+                        .font(AppFonts.hero)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Rectangle()
+                        .fill(ClubhouseTheme.blue)
+                        .frame(width: 86, height: 5)
+
+                    Text("Thanks for playing!")
+                        .font(AppFonts.body)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                if !dynamicTypeSize.isAccessibilitySize {
+                    ZStack {
+                        BauhausTargetArtwork(accent: ClubhouseTheme.red)
+                            .frame(width: 142, height: 142)
+                        Rectangle()
+                            .fill(ClubhouseTheme.ink)
+                            .frame(width: 48, height: 82)
+                            .offset(x: 46, y: 42)
+                        BauhausStarburst(color: ClubhouseTheme.yellow, size: 30)
+                            .offset(x: -62, y: 56)
+                    }
+                    .frame(width: 168, height: 166)
+                }
             }
 
-            winnerText
+            if winners.count == 1, let winner = winners.first {
+                HStack(spacing: AppTheme.spacingMedium) {
+                    ZStack {
+                        Circle()
+                            .fill(ClubhouseTheme.blue)
+                            .frame(width: 86, height: 86)
+                        BauhausStarburst(color: ClubhouseTheme.paperCard, size: 48)
+                    }
+                    .accessibilityHidden(true)
 
-            Text(session.gameType.displayName)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Winner")
+                            .columnHeaderStyle()
+                            .foregroundStyle(ClubhouseTheme.blue)
+                        Text(winner.name)
+                            .font(AppFonts.title)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(1)
+                            .accessibilityIdentifier("winner_text")
+                            .accessibilityLabel("\(winner.name) wins!")
+                        Text("Great game!")
+                            .font(AppFonts.body)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                    }
 
-            if !winners.isEmpty {
-                StampBadge(text: "Winner")
+                    Spacer(minLength: 0)
+
+                    Rectangle()
+                        .fill(ClubhouseTheme.ruleStrong)
+                        .frame(width: 1, height: 76)
+
+                    Text("\(winner.totalScore(in: session))")
+                        .font(AppFonts.scoreDisplay)
+                        .monospacedDigit()
+                        .foregroundStyle(ClubhouseTheme.blue)
+                        .contentTransition(.numericText(value: Double(winner.totalScore(in: session))))
+                }
+                .padding(AppTheme.spacingMedium)
+                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+            } else {
+                winnerText
+                    .frame(maxWidth: .infinity)
+                    .padding(AppTheme.spacingLarge)
+                    .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
             }
         }
-        .padding(.top, AppTheme.spacingXLarge)
-        .accessibilityElement(children: .combine)
+        .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.97)
+        .opacity(sectionsVisible ? 1 : 0)
+        .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped, value: sectionsVisible)
     }
 
     @ViewBuilder
@@ -188,13 +266,13 @@ private struct EndGameButtons: View {
 
     var body: some View {
         VStack(spacing: AppTheme.spacingSmall) {
-            AppActionButton(role: .primary(session.gameType.color), action: onPlayAgain) {
-                Label("Play Again", systemImage: "arrow.counterclockwise")
+            AppActionButton(role: .primary(ClubhouseTheme.blue), action: onPlayAgain) {
+                Label("Play Again", systemImage: "arrow.right.circle.fill")
             }
             .accessibilityIdentifier("play_again_button")
 
             AppActionButton(role: .secondary, action: onHome) {
-                Text("Home")
+                Label("Back Home", systemImage: "house")
             }
             .accessibilityIdentifier("home_button")
         }
@@ -233,7 +311,11 @@ private struct GameRecapPanel: View {
             if showsScoreTrend {
                 ScoreSparkline(session: session, standings: standings)
                     .frame(height: 86)
-                    .accessibilityLabel("Score trend")
+                    .accessibilityLabel(
+                        "Score trend. " + standings
+                            .map { "\($0.player.name), final score \($0.score)" }
+                            .joined(separator: ". ")
+                    )
             }
         }
         .padding(AppTheme.spacingMedium)

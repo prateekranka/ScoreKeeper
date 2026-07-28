@@ -31,7 +31,7 @@ struct ScoringView: View {
             }
         }
         .appBackground()
-        .navigationTitle(session.gameType.displayName)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {

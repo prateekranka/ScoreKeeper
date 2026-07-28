@@ -14,10 +14,11 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
     @State private var saveError: String?
-    private let bottomBarContentInset: CGFloat = 132
+    private let bottomBarContentInset: CGFloat = 176
 
     var body: some View {
         VStack(spacing: 0) {
+            ScoringGameHeader(session: session)
             ScoringToolsBar(session: session, selectedTool: $selectedTool)
             if showsScoreboardHeader {
                 ScoreboardHeader(session: session, engine: engine)
@@ -34,12 +35,21 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
             .safeAreaInset(edge: .bottom) {
                 glassGroup(spacing: AppTheme.spacingSmall) {
                     VStack(spacing: AppTheme.spacingSmall) {
+                        AppActionButton(role: .primary(ClubhouseTheme.ink), action: action) {
+                            if let actionSystemImage {
+                                Label(actionTitle, systemImage: actionSystemImage)
+                            } else {
+                                Text(actionTitle)
+                            }
+                        }
+                        .accessibilityIdentifier("submit_round_button")
+
                         HStack(spacing: AppTheme.spacingSmall) {
                             Button {
                                 undoTrigger &+= 1
                                 undoLastRound()
                             } label: {
-                                Label("Undo Last", systemImage: "arrow.uturn.backward")
+                                Label("Undo", systemImage: "arrow.uturn.backward")
                                     .font(AppFonts.body)
                                     .foregroundStyle(ClubhouseTheme.ink)
                                     .frame(maxWidth: .infinity)
@@ -47,7 +57,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                                     .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
                                     .overlay {
                                         RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                                            .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 2)
+                                            .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
                                     }
                             }
                             .buttonStyle(PressableButtonStyle())
@@ -55,14 +65,22 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                             .sensoryFeedback(.warning, trigger: undoTrigger)
                             .accessibilityIdentifier("undo_last_round_button")
 
-                            AppActionButton(role: .primary(session.gameType.color), action: action) {
-                                if let actionSystemImage {
-                                    Label(actionTitle, systemImage: actionSystemImage)
-                                } else {
-                                    Text(actionTitle)
-                                }
+                            Button {
+                                selectedTool = .log
+                            } label: {
+                                Label("Round Log", systemImage: "list.bullet")
+                                    .font(AppFonts.body)
+                                    .foregroundStyle(ClubhouseTheme.ink)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(minHeight: 44)
+                                    .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                                    .overlay {
+                                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                            .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
+                                    }
                             }
-                            .accessibilityIdentifier("submit_round_button")
+                            .buttonStyle(PressableButtonStyle())
+                            .accessibilityIdentifier("round_log_button")
                         }
                     }
                     .padding(.horizontal, AppTheme.spacingMedium)
@@ -104,6 +122,66 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
             modelContext.rollback()
             saveError = message
         }
+    }
+}
+
+private struct ScoringGameHeader: View {
+    let session: GameSession
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
+            : AnyLayout(HStackLayout(alignment: .bottom, spacing: AppTheme.spacingSmall))
+
+        return layout {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("PipCount")
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Text(session.gameType.displayName)
+                    .font(AppFonts.hero)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.75)
+
+                Text("Round \(session.currentRoundNumber)")
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .monospacedDigit()
+
+                HStack(spacing: 7) {
+                    ForEach(0..<min(session.currentRoundNumber, 6), id: \.self) { _ in
+                        Circle()
+                            .fill(ClubhouseTheme.blue)
+                            .frame(width: 11, height: 11)
+                    }
+
+                    if session.currentRoundNumber > 6 {
+                        Text("+\(session.currentRoundNumber - 6)")
+                            .font(AppFonts.caption.weight(.bold))
+                            .foregroundStyle(ClubhouseTheme.blue)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            if !dynamicTypeSize.isAccessibilitySize {
+                ZStack {
+                    BauhausTargetArtwork(accent: ClubhouseTheme.red)
+                        .frame(width: 132, height: 132)
+                    BauhausHalftone(color: ClubhouseTheme.ink)
+                        .frame(width: 54, height: 64)
+                        .offset(x: 54, y: 48)
+                }
+                .frame(width: 148, height: 142)
+            }
+        }
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -149,9 +227,16 @@ private struct ScoringToolsBar: View {
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Label("Round \(session.currentRoundNumber)", systemImage: session.gameType.icon)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
+            Text("Round \(session.currentRoundNumber)")
+                .columnHeaderStyle()
+                .foregroundStyle(ClubhouseTheme.blue)
+                .padding(.horizontal, 10)
+                .frame(minHeight: 34)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 4)
+                        .strokeBorder(ClubhouseTheme.blue, lineWidth: 1.5)
+                }
+                .rotationEffect(.degrees(-2))
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
                 .accessibilityLabel("\(session.gameType.displayName), Round \(session.currentRoundNumber)")
@@ -165,7 +250,7 @@ private struct ScoringToolsBar: View {
                     Image(systemName: tool.systemImage)
                         .font(.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 44, height: 44)
                         .background(ClubhouseTheme.paperCard.opacity(0.72), in: Circle())
                         .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
                 }

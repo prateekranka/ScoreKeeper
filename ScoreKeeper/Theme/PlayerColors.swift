@@ -2,17 +2,17 @@ import SwiftUI
 
 struct PlayerColors {
     static let palette: [Color] = [
-        Color(light: 0x5D538F, dark: 0xE9A63A),
-        Color(light: 0x2F5E93, dark: 0xE0662E),
-        Color(light: 0x3F6630, dark: 0xA8B060),
-        Color(light: 0x8A4E2A, dark: 0xD89B6A),
-        Color(light: 0x7A6210, dark: 0xF2C94C),
-        Color(light: 0x555B60, dark: 0xC9B8A0),
-        Color(light: 0x7C3A55, dark: 0xC97B8E),
-        Color(light: 0x2F6E6A, dark: 0x7FBDB5),
+        ClubhouseTheme.blue,
+        ClubhouseTheme.red,
+        ClubhouseTheme.yellow,
+        ClubhouseTheme.green,
+        Color(light: 0xE75C16, dark: 0xFF8B4A),
+        Color(light: 0x8A4B24, dark: 0xD99762),
+        Color(light: 0x00838F, dark: 0x56C8D2),
+        Color(light: 0xD43A73, dark: 0xF27AA4),
     ]
 
-    private static let glyphs = ["◆", "●", "▲", "■", "★", "✚", "◗", "⬢"]
+    private static let glyphs = ["●", "■", "▲", "◆", "✦", "✚", "◗", "⬢"]
 
     static func color(for index: Int) -> Color {
         palette[index % palette.count]

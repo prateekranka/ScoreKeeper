@@ -5,9 +5,10 @@ struct GamePickerView: View {
     @State private var sectionsVisible = false
 
     private let columns = [
-        GridItem(.flexible(), spacing: AppTheme.spacingMedium),
-        GridItem(.flexible(), spacing: AppTheme.spacingMedium)
+        GridItem(.flexible(), spacing: AppTheme.spacingSmall)
     ]
+
+    private let gameTypes: [GameType] = [.generic, .phase10, .whatsForDinner]
 
     var body: some View {
         ScrollView {
@@ -16,40 +17,77 @@ struct GamePickerView: View {
                     .staggeredEntrance(visible: sectionsVisible, index: 0)
 
                 LazyVGrid(columns: columns, spacing: AppTheme.spacingMedium) {
-                    ForEach(Array(GameType.allCases.enumerated()), id: \.element.id) { index, gameType in
+                    ForEach(Array(gameTypes.enumerated()), id: \.element.id) { index, gameType in
                         GameTypeTile(gameType: gameType, action: {
                             router.push(.playerSetup(gameType))
                         }, accessibilityID: "game_tile_\(gameType.rawValue)")
                         .staggeredEntrance(visible: sectionsVisible, index: index + 1)
                     }
                 }
-
-                SmartSetupPreview()
-                    .staggeredEntrance(visible: sectionsVisible, index: GameType.allCases.count + 1)
             }
-            .padding(AppTheme.spacingMedium)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.top, 6)
+            .padding(.bottom, 92)
         }
         .appBackground()
-        .navigationTitle("Games")
+        .navigationTitle("")
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            PipCountDock(selected: .games, onSelect: selectTab)
+        }
         .onAppear {
             sectionsVisible = true
+        }
+    }
+
+    private func selectTab(_ tab: PipCountTab) {
+        switch tab {
+        case .home:
+            router.goHome()
+        case .games:
+            break
+        case .players:
+            router.goHome()
+            router.push(.players)
+        case .more:
+            router.push(.legalSupport)
         }
     }
 }
 
 private struct GamePickerHero: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            AppSectionHeader(
-                title: "Choose a Game",
-                subtitle: "Pick a rule set, then PipCount will shape the score sheet.",
-                systemImage: "dice"
-            )
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-            SetupFeatureStrip()
+    var body: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
+            : AnyLayout(HStackLayout(alignment: .bottom, spacing: AppTheme.spacingMedium))
+
+        layout {
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                Text("Choose\na Game")
+                    .font(AppFonts.hero)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text("Pick your format for tonight.")
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            if !dynamicTypeSize.isAccessibilitySize {
+                ZStack {
+                    BauhausBlocksArtwork(compact: true)
+                        .frame(width: 176, height: 166)
+                    BauhausStarburst(color: ClubhouseTheme.red, size: 34)
+                        .offset(x: 54, y: -58)
+                }
+                .frame(width: 176, height: 166)
+            }
         }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 2)
     }
 }
 

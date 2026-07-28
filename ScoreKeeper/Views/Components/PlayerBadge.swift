@@ -36,42 +36,18 @@ struct PlayerBadge: View {
 
     var body: some View {
         VStack(spacing: 4) {
-            ZStack {
-                Circle()
-                    .fill(PlayerColors.color(for: colorIndex))
-                    .frame(width: size.diameter, height: size.diameter)
-                    .overlay {
-                        Circle()
-                            .stroke(ClubhouseTheme.paperCard, lineWidth: 3)
-                    }
-                    .overlay {
-                        Circle()
-                            .stroke(ClubhouseTheme.rule, lineWidth: 1)
-                    }
-
-                Text(initial)
-                    .font(size.font)
-                    .foregroundStyle(ClubhouseTheme.onFelt)
-            }
+            BauhausPlayerShape(colorIndex: colorIndex, size: size.diameter)
 
             if showName {
-                HStack(spacing: 4) {
-                    PlayerGlyph(colorIndex: colorIndex, font: AppFonts.caption)
-
-                    Text(name)
-                        .font(size.nameFont)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                }
+                Text(name)
+                    .font(size.nameFont)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
             }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(name)
-    }
-
-    private var initial: String {
-        String(name.prefix(1)).uppercased()
     }
 }
 
