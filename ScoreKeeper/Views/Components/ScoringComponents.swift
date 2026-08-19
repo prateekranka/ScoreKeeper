@@ -1,12 +1,19 @@
 import SwiftUI
 import SwiftData
 
+enum ScoringHeaderStyle {
+    case hero
+    case compact
+}
+
 struct ScoringScreenLayout<Content: View, Footer: View>: View {
     let session: GameSession
     let engine: GameEngine
     let actionTitle: String
     let actionSystemImage: String?
     var showsScoreboardHeader = true
+    var headerStyle: ScoringHeaderStyle = .hero
+    var showsToolsBar = true
     let action: () -> Void
     @ViewBuilder var content: Content
     @ViewBuilder var footer: Footer
@@ -14,12 +21,20 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
     @State private var saveError: String?
-    private let bottomBarContentInset: CGFloat = 176
+    private var bottomBarContentInset: CGFloat {
+        headerStyle == .compact ? 150 : 176
+    }
 
     var body: some View {
         VStack(spacing: 0) {
-            ScoringGameHeader(session: session)
-            ScoringToolsBar(session: session, selectedTool: $selectedTool)
+            if headerStyle == .compact {
+                CompactScoringGameHeader(session: session)
+            } else {
+                ScoringGameHeader(session: session)
+            }
+            if showsToolsBar {
+                ScoringToolsBar(session: session, selectedTool: $selectedTool)
+            }
             if showsScoreboardHeader {
                 ScoreboardHeader(session: session, engine: engine)
             }
@@ -125,6 +140,43 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     }
 }
 
+private struct CompactScoringGameHeader: View {
+    let session: GameSession
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            BauhausPlayerShape(colorIndex: session.currentRoundNumber - 1, size: 38)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text(session.gameType.displayName)
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .lineLimit(1)
+
+                Text("Round \(session.currentRoundNumber)")
+                    .font(AppFonts.caption.weight(.bold))
+                    .foregroundStyle(ClubhouseTheme.blue)
+                    .monospacedDigit()
+            }
+
+            Spacer()
+
+            Text("\(session.players.count.quantityText("player"))")
+                .columnHeaderStyle()
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+        }
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .padding(.vertical, 10)
+        .background(ClubhouseTheme.paper)
+        .overlay(alignment: .bottom) {
+            Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(session.gameType.displayName), round \(session.currentRoundNumber), \(session.players.count.quantityText("player"))")
+    }
+}
+
 private struct ScoringGameHeader: View {
     let session: GameSession
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -168,14 +220,8 @@ private struct ScoringGameHeader: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             if !dynamicTypeSize.isAccessibilitySize {
-                ZStack {
-                    BauhausTargetArtwork(accent: ClubhouseTheme.red)
-                        .frame(width: 132, height: 132)
-                    BauhausHalftone(color: ClubhouseTheme.ink)
-                        .frame(width: 54, height: 64)
-                        .offset(x: 54, y: 48)
-                }
-                .frame(width: 148, height: 142)
+                PipCountGeometricArtwork(scene: .scoring)
+                    .frame(width: 148, height: 142)
             }
         }
         .padding(.horizontal, AppTheme.spacingMedium)

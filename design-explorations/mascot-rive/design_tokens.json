@@ -1,0 +1,88 @@
+{
+ "mood": "playful",
+ "scheme": "light",
+ "palette": {
+  "bg": "#f0f5ff",
+  "bgDeep": "#dde9fd",
+  "surface": "#ffffff",
+  "primary": "#2a6bda",
+  "primaryStrong": "#0c4cb5",
+  "primarySoft": "#b3cffd",
+  "accent": "#b9690d",
+  "accentSoft": "#fdcda5",
+  "text": "#1e2229",
+  "textMuted": "#5d646f",
+  "outline": "#bdc5d1"
+ },
+ "gradients": {
+  "primary": [
+   "#5e72ec",
+   "#05568c"
+  ],
+  "accent": [
+   "#c48222",
+   "#9d4604"
+  ],
+  "bg": [
+   "#f0f5ff",
+   "#dde9fd"
+  ]
+ },
+ "contrast": {
+  "textOnBg": 14.6,
+  "textOnSurface": 16,
+  "mutedOnBg": 5.5,
+  "primaryOnBg": 4.6
+ },
+ "motion": {
+  "fps": 60,
+  "durations": {
+   "tap": 6,
+   "exit": 15,
+   "enter": 27,
+   "emphasis": 30,
+   "ambientCycleSec": 3.5
+  },
+  "easing": {
+   "enter": "emphasized-decel",
+   "exit": "emphasized-accel",
+   "move": "smooth",
+   "spring": "elastic-out",
+   "loop": "ease-in-out"
+  },
+  "rule": "enter=decelerate, exit=accelerate, never linear on x/y/scale/rotation"
+ },
+ "layout": {
+  "spacing": [
+   4,
+   8,
+   12,
+   16,
+   24,
+   32,
+   48,
+   64
+  ],
+  "radius": {
+   "s": 6,
+   "m": 12,
+   "l": 20,
+   "pill": 999
+  },
+  "strokeWidth": {
+   "hairline": 1.5,
+   "regular": 2.5,
+   "bold": 4
+  }
+ },
+ "type": {
+  "sizes": {
+   "caption": 13,
+   "body": 16,
+   "subtitle": 20,
+   "title": 28,
+   "display": 44
+  }
+ },
+ "usage": "Use ONLY these values in the scene spec. bg/bgDeep for backdrop (prefer gradients.bg), surface for cards, primary for the hero element, accent sparingly (<=15% of area), text/textMuted for typography. Pick sizes/spacing/radius from layout.*."
+}

@@ -65,7 +65,6 @@ struct GameTypeTile: View {
 
 struct GameTypeArtwork: View {
     let gameType: GameType
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         GeometryReader { proxy in
@@ -81,26 +80,6 @@ struct GameTypeArtwork: View {
 
     @ViewBuilder
     private var artwork: some View {
-        if colorScheme == .light {
-            PipCountAssetArtwork(asset: illustrationAsset)
-        } else {
-            legacyArtwork
-        }
-    }
-
-    private var illustrationAsset: PipCountIllustrationAsset {
-        switch gameType {
-        case .generic:
-            return .scoreEmblem
-        case .phase10:
-            return .crewEmblem
-        case .whatsForDinner:
-            return .celebrationEmblem
-        }
-    }
-
-    @ViewBuilder
-    private var legacyArtwork: some View {
         switch gameType {
         case .generic:
             ZStack {

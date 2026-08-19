@@ -252,6 +252,7 @@ struct StaggeredEntranceModifier: ViewModifier {
         content
             .opacity(visible ? 1 : 0)
             .offset(y: visible || reduceMotion ? 0 : 10)
+            .scaleEffect(visible || reduceMotion ? 1 : 0.97)
             .animation(
                 reduceMotion
                     ? AppMotion.fade

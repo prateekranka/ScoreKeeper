@@ -19,7 +19,9 @@ struct PaywallView: View {
                 VStack(spacing: AppTheme.spacingMedium) {
                     paywallHero
                     benefitsPanel
+                        .staggeredEntrance(visible: heroVisible, index: 1)
                     unlockSummary
+                        .staggeredEntrance(visible: heroVisible, index: 2)
                 }
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.bottom, AppTheme.spacingLarge)
@@ -78,26 +80,20 @@ struct PaywallView: View {
                     .fill(ClubhouseTheme.blue)
                     .frame(width: 76, height: 4)
 
-                (Text("More games.\nMore moments.\n")
-                    .foregroundColor(ClubhouseTheme.inkMuted)
-                 + Text("Yours forever.")
-                    .foregroundColor(ClubhouseTheme.red))
-                    .font(AppFonts.body)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("More games.\nMore moments.")
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                    Text("Yours forever.")
+                        .foregroundStyle(ClubhouseTheme.red)
+                }
+                .font(AppFonts.body)
             }
             .frame(minWidth: dynamicTypeSize.isAccessibilitySize ? 0 : 190, maxWidth: .infinity, alignment: .leading)
             .layoutPriority(2)
 
             if !dynamicTypeSize.isAccessibilitySize {
-                ZStack(alignment: .bottomTrailing) {
-                    PipCountAssetArtwork(asset: .unlimitedEmblem)
-                        .frame(width: 146, height: 146)
-                        .offset(y: -32)
-                    BauhausBlocksArtwork(compact: true)
-                        .frame(width: 134, height: 124)
-                    BauhausStarburst(color: ClubhouseTheme.red, size: 34)
-                        .offset(x: -86, y: -136)
-                }
-                .frame(width: 148, height: 212)
+                PipCountGeometricArtwork(scene: .paywall)
+                    .frame(width: 148, height: 212)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

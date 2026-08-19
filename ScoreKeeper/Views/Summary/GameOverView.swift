@@ -172,17 +172,8 @@ private struct WinnerHeroSection: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 if !dynamicTypeSize.isAccessibilitySize {
-                    ZStack {
-                        BauhausTargetArtwork(accent: ClubhouseTheme.red)
-                            .frame(width: 142, height: 142)
-                        Rectangle()
-                            .fill(ClubhouseTheme.ink)
-                            .frame(width: 48, height: 82)
-                            .offset(x: 46, y: 42)
-                        BauhausStarburst(color: ClubhouseTheme.yellow, size: 30)
-                            .offset(x: -62, y: 56)
-                    }
-                    .frame(width: 168, height: 166)
+                    PipCountGeometricArtwork(scene: .gameOver)
+                        .frame(width: 168, height: 166)
                 }
             }
 
@@ -194,6 +185,9 @@ private struct WinnerHeroSection: View {
                             .frame(width: 86, height: 86)
                         BauhausStarburst(color: ClubhouseTheme.paperCard, size: 48)
                     }
+                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.92)
+                    .rotationEffect(.degrees(sectionsVisible || reduceMotion ? 0 : -10))
+                    .animation(reduceMotion ? AppMotion.fade : AppMotion.celebration, value: sectionsVisible)
                     .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 2) {

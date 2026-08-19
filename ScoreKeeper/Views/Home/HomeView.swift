@@ -208,6 +208,7 @@ private struct HomeHeader: View {
     let themeIconName: String
     let onThemeTap: () -> Void
     @State private var themeTrigger = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: 8) {
@@ -236,6 +237,8 @@ private struct HomeHeader: View {
                     Image(systemName: themeIconName)
                         .font(.title3)
                         .foregroundStyle(ClubhouseTheme.ink)
+                        .contentTransition(reduceMotion ? .opacity : .symbolEffect(.replace))
+                        .animation(reduceMotion ? AppMotion.fade : AppMotion.state, value: themeIconName)
                         .frame(width: 44, height: 44)
                         .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
                 }
@@ -246,18 +249,8 @@ private struct HomeHeader: View {
             }
             .frame(maxWidth: .infinity)
 
-            ZStack(alignment: .topTrailing) {
-                BauhausHalftone(color: ClubhouseTheme.ink)
-                    .frame(width: 148, height: 118)
-                    .offset(x: -40, y: 48)
-
-                BauhausBlocksArtwork()
-                    .frame(height: 226)
-
-                BauhausStarburst(color: ClubhouseTheme.blue, size: 34)
-                    .offset(x: -174, y: 12)
-            }
-            .frame(height: 226)
+            PipCountGeometricArtwork(scene: .home)
+                .frame(height: 226)
         }
         .padding(.top, 2)
     }
@@ -265,7 +258,6 @@ private struct HomeHeader: View {
 
 private struct HomeEmptyHero: View {
     let action: () -> Void
-    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         HStack(spacing: AppTheme.spacingMedium) {
@@ -283,24 +275,8 @@ private struct HomeEmptyHero: View {
                     .padding(.top, 4)
             }
 
-            Group {
-                if colorScheme == .light {
-                    PipCountAssetArtwork(asset: .emptyState, contentMode: .fit)
-                } else {
-                    ZStack {
-                        Circle()
-                            .fill(ClubhouseTheme.yellow)
-                            .frame(width: 72, height: 72)
-                            .offset(x: 18, y: -38)
-                        BauhausPlayerShape(colorIndex: 0, size: 92)
-                        BauhausPlayerShape(colorIndex: 1, size: 48)
-                            .offset(x: 42, y: 34)
-                        BauhausPlayerShape(colorIndex: 3, size: 38)
-                            .offset(x: -10, y: 52)
-                    }
-                }
-            }
-            .frame(width: 116, height: 154)
+            PipCountGeometricArtwork(scene: .homeEmpty)
+                .frame(width: 116, height: 154)
             .accessibilityHidden(true)
         }
         .padding(20)
@@ -973,18 +949,8 @@ struct SavedPlayersView: View {
 
                     Spacer()
 
-                    ZStack {
-                        Circle()
-                            .stroke(ClubhouseTheme.ruleStrong, lineWidth: 1)
-                            .frame(width: 96, height: 96)
-                        BauhausPlayerShape(colorIndex: 2, size: 46)
-                            .offset(x: -22, y: 14)
-                        BauhausPlayerShape(colorIndex: 0, size: 56)
-                            .offset(x: 18, y: 12)
-                        BauhausStarburst(color: ClubhouseTheme.red, size: 30)
-                            .offset(x: 31, y: -34)
-                    }
-                    .frame(width: 112, height: 112)
+                    PipCountGeometricArtwork(scene: .roster)
+                        .frame(width: 112, height: 112)
                 }
                 .staggeredEntrance(visible: contentVisible, index: 0)
 

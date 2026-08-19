@@ -250,38 +250,11 @@ private struct OnboardingArtwork: View {
     private var artworkBackdrop: some View {
         switch page {
         case .scoreFast:
-            ZStack {
-                BauhausTargetArtwork(accent: ClubhouseTheme.red)
-                    .frame(width: 230, height: 230)
-                    .offset(x: 92, y: -34)
-                BauhausHalftone(color: ClubhouseTheme.blue)
-                    .frame(width: 108, height: 118)
-                    .offset(x: -130, y: 92)
-                BauhausStarburst(color: ClubhouseTheme.blue, size: 38)
-                    .offset(x: -138, y: -110)
-            }
+            PipCountGeometricArtwork(scene: .onboardingScore)
         case .setupFast:
-            ZStack {
-                BauhausBlocksArtwork()
-                    .frame(height: 250)
-                    .offset(y: 40)
-                BauhausStarburst(color: ClubhouseTheme.red, size: 40)
-                    .offset(x: 132, y: -116)
-            }
+            PipCountGeometricArtwork(scene: .onboardingSetup)
         case .toolsAndHistory:
-            ZStack {
-                Circle()
-                    .fill(ClubhouseTheme.red)
-                    .frame(width: 180, height: 180)
-                    .offset(x: 104, y: -58)
-                Circle()
-                    .fill(ClubhouseTheme.blue)
-                    .frame(width: 126, height: 126)
-                    .offset(x: -136, y: 88)
-                BauhausHalftone(color: ClubhouseTheme.ink)
-                    .frame(width: 90, height: 130)
-                    .offset(x: 142, y: 84)
-            }
+            PipCountGeometricArtwork(scene: .onboardingHistory)
         }
     }
 

@@ -449,3 +449,372 @@ struct BauhausBlocksArtwork: View {
             }
     }
 }
+
+// MARK: - Screen-specific geometric artwork
+
+enum PipCountArtworkScene {
+    case home
+    case homeEmpty
+    case gamePicker
+    case playerSetup
+    case gameSettings
+    case handwriting
+    case scoring
+    case gameOver
+    case paywall
+    case onboardingScore
+    case onboardingSetup
+    case onboardingHistory
+    case roster
+}
+
+struct PipCountGeometricArtwork: View {
+    let scene: PipCountArtworkScene
+
+    var body: some View {
+        GeometryReader { proxy in
+            let scale = min(proxy.size.width / 240, proxy.size.height / 200)
+
+            sceneArtwork
+                .frame(width: 240, height: 200)
+                .scaleEffect(scale)
+                .frame(width: proxy.size.width, height: proxy.size.height)
+        }
+        .accessibilityHidden(true)
+    }
+
+    @ViewBuilder
+    private var sceneArtwork: some View {
+        switch scene {
+        case .home:
+            ZStack {
+                draftingGrid
+                Circle().fill(ClubhouseTheme.yellow).frame(width: 112, height: 112).offset(x: -64, y: 36)
+                BauhausBars(heights: [54, 86, 128, 164, 104])
+                    .frame(width: 196, height: 164)
+                    .offset(x: 18, y: 18)
+                BauhausStarburst(color: ClubhouseTheme.red, size: 42).offset(x: 82, y: -72)
+                BauhausStarburst(color: ClubhouseTheme.blue, size: 28).offset(x: -80, y: -62)
+            }
+        case .homeEmpty:
+            ZStack {
+                draftingGrid
+                Circle().fill(ClubhouseTheme.blue).frame(width: 118, height: 118).offset(x: -28, y: 18)
+                Circle().fill(ClubhouseTheme.yellow).frame(width: 64, height: 64).offset(x: 64, y: -42)
+                Rectangle().fill(ClubhouseTheme.red).frame(width: 54, height: 54).offset(x: 76, y: 48)
+                Rectangle().fill(ClubhouseTheme.ink).frame(width: 42, height: 88).offset(x: 32, y: 54)
+                BauhausPlayerShape(colorIndex: 3, size: 38).offset(x: -4, y: 70)
+            }
+        case .gamePicker:
+            GamePickerOrbitArtwork()
+        case .playerSetup:
+            CrewConstellationArtwork()
+        case .gameSettings:
+            GameCalibrationArtwork()
+        case .handwriting:
+            HandwrittenNumeralArtwork()
+        case .scoring:
+            ZStack {
+                draftingGrid
+                Circle().trim(from: 0, to: 0.75).stroke(ClubhouseTheme.blue, lineWidth: 34)
+                    .frame(width: 132, height: 132).offset(x: 42, y: -16)
+                Circle().fill(ClubhouseTheme.red).frame(width: 42, height: 42).offset(x: 42, y: -16)
+                Rectangle().fill(ClubhouseTheme.yellow).frame(width: 64, height: 80).offset(x: 70, y: 58)
+                StairStepArtwork().fill(ClubhouseTheme.ink).frame(width: 112, height: 104).offset(x: 54, y: 52)
+                BauhausHalftone(color: ClubhouseTheme.ink, spacing: 6).frame(width: 58, height: 74).offset(x: -76, y: 38)
+            }
+        case .gameOver:
+            ZStack {
+                draftingGrid
+                QuadrantDisk().frame(width: 150, height: 150).offset(x: 42, y: -2)
+                Rectangle().fill(ClubhouseTheme.ink).frame(width: 56, height: 108).offset(x: 60, y: 60)
+                BauhausStarburst(color: ClubhouseTheme.blue, size: 32).offset(x: 88, y: -76)
+                BauhausStarburst(color: ClubhouseTheme.yellow, size: 30).offset(x: -62, y: 58)
+                BauhausStarburst(color: ClubhouseTheme.ink, size: 24).offset(x: -70, y: -20)
+            }
+        case .paywall:
+            UnlockedGateArtwork()
+        case .onboardingScore:
+            ZStack {
+                draftingGrid
+                Circle().trim(from: 0.25, to: 0.75).stroke(ClubhouseTheme.blue, lineWidth: 34)
+                    .rotationEffect(.degrees(90)).frame(width: 144, height: 144).offset(x: 64, y: 4)
+                Circle().fill(ClubhouseTheme.red).frame(width: 40, height: 40).offset(x: 64, y: 4)
+                BauhausHalftone(color: ClubhouseTheme.ink, spacing: 6).frame(width: 70, height: 92).offset(x: -78, y: 46)
+                BauhausStarburst(color: ClubhouseTheme.blue, size: 40).offset(x: -76, y: -62)
+            }
+        case .onboardingSetup:
+            ZStack {
+                draftingGrid
+                Circle().fill(ClubhouseTheme.yellow).frame(width: 110, height: 110).offset(x: -58, y: 42)
+                BauhausBars(heights: [46, 80, 120, 158, 96]).frame(width: 184, height: 158).offset(x: 26, y: 20)
+                HStack(spacing: 18) {
+                    BauhausPlayerShape(colorIndex: 0, size: 28)
+                    BauhausPlayerShape(colorIndex: 1, size: 28)
+                    BauhausPlayerShape(colorIndex: 2, size: 28)
+                    BauhausPlayerShape(colorIndex: 3, size: 28)
+                }
+                .offset(y: 78)
+                BauhausStarburst(color: ClubhouseTheme.red, size: 38).offset(x: 84, y: -70)
+            }
+        case .onboardingHistory:
+            ZStack {
+                draftingGrid
+                ForEach(0..<4, id: \.self) { index in
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill([ClubhouseTheme.ink, ClubhouseTheme.red, ClubhouseTheme.yellow, ClubhouseTheme.blue][index])
+                        .frame(width: 126, height: 144)
+                        .offset(x: CGFloat(index * 10) - 2, y: CGFloat(index * -8) + 24)
+                }
+                RoundedRectangle(cornerRadius: 12).fill(ClubhouseTheme.paperCard).frame(width: 126, height: 144).offset(x: -18, y: -8)
+                Circle().fill(ClubhouseTheme.blue).frame(width: 72, height: 72).offset(x: -74, y: 54)
+                BauhausStarburst(color: ClubhouseTheme.paperCard, size: 38).offset(x: -74, y: 54)
+                BauhausStarburst(color: ClubhouseTheme.red, size: 34).offset(x: 84, y: -66)
+            }
+        case .roster:
+            ZStack {
+                draftingGrid
+                Circle().fill(ClubhouseTheme.blue).frame(width: 92, height: 92).offset(x: 46, y: -6)
+                Circle().fill(ClubhouseTheme.yellow).frame(width: 64, height: 64).offset(x: -8, y: -42)
+                StairStepArtwork().fill(ClubhouseTheme.ink).frame(width: 106, height: 100).offset(x: -42, y: 32)
+                Rectangle().fill(ClubhouseTheme.red).frame(width: 48, height: 68).offset(x: -66, y: 44)
+                SemiBowl().fill(ClubhouseTheme.ink).frame(width: 100, height: 54).offset(x: 56, y: 58)
+                BauhausPlayerShape(colorIndex: 3, size: 28).offset(x: 88, y: -52)
+            }
+        }
+    }
+
+    private var draftingGrid: some View {
+        ZStack {
+            Path { path in
+                path.move(to: CGPoint(x: 18, y: 100)); path.addLine(to: CGPoint(x: 222, y: 100))
+                path.move(to: CGPoint(x: 120, y: 10)); path.addLine(to: CGPoint(x: 120, y: 190))
+                path.addEllipse(in: CGRect(x: 42, y: 22, width: 156, height: 156))
+            }
+            .stroke(ClubhouseTheme.ruleStrong.opacity(0.62), lineWidth: 0.8)
+
+            BauhausHalftone(color: ClubhouseTheme.ink, spacing: 7)
+                .frame(width: 54, height: 68)
+                .offset(x: 84, y: 48)
+        }
+    }
+}
+
+private struct GamePickerOrbitArtwork: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(ClubhouseTheme.blue, lineWidth: 30)
+                .frame(width: 146, height: 146)
+                .offset(x: -34, y: 12)
+
+            Rectangle()
+                .fill(ClubhouseTheme.paper)
+                .frame(width: 54, height: 188)
+                .offset(x: -2, y: 4)
+
+            Rectangle()
+                .fill(ClubhouseTheme.ink)
+                .frame(width: 18, height: 176)
+                .rotationEffect(.degrees(-34))
+                .offset(x: 18, y: -2)
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: 78, height: 78)
+                .offset(x: 62, y: -42)
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: 54, height: 54)
+                .rotationEffect(.degrees(45))
+                .offset(x: 66, y: 48)
+
+            BauhausPlayerShape(colorIndex: 3, size: 30)
+                .offset(x: -76, y: -68)
+        }
+    }
+}
+
+private struct CrewConstellationArtwork: View {
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: 176, height: 5)
+                .rotationEffect(.degrees(28))
+
+            Rectangle()
+                .fill(ClubhouseTheme.blue)
+                .frame(width: 176, height: 5)
+                .rotationEffect(.degrees(-28))
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: 94, height: 94)
+                .overlay { Circle().stroke(ClubhouseTheme.ink, lineWidth: 5) }
+
+            BauhausPlayerShape(colorIndex: 0, size: 42).offset(x: -72, y: -54)
+            BauhausPlayerShape(colorIndex: 1, size: 42).offset(x: 72, y: -54)
+            BauhausPlayerShape(colorIndex: 2, size: 42).offset(x: -72, y: 56)
+            BauhausPlayerShape(colorIndex: 3, size: 42).offset(x: 72, y: 56)
+
+            BauhausStarburst(color: ClubhouseTheme.paperCard, size: 42)
+        }
+    }
+}
+
+private struct GameCalibrationArtwork: View {
+    var body: some View {
+        ZStack {
+            Circle()
+                .trim(from: 0.08, to: 0.86)
+                .stroke(ClubhouseTheme.ink, lineWidth: 16)
+                .frame(width: 148, height: 148)
+                .rotationEffect(.degrees(-38))
+
+            HStack(spacing: 34) {
+                sliderRail(color: ClubhouseTheme.blue, knobOffset: -42)
+                sliderRail(color: ClubhouseTheme.red, knobOffset: 20)
+                sliderRail(color: ClubhouseTheme.yellow, knobOffset: -6)
+            }
+
+            Circle()
+                .fill(ClubhouseTheme.paperCard)
+                .frame(width: 62, height: 62)
+                .overlay { Circle().stroke(ClubhouseTheme.ink, lineWidth: 4) }
+
+            BauhausStarburst(color: ClubhouseTheme.blue, size: 34)
+            Rectangle().fill(ClubhouseTheme.red).frame(width: 70, height: 6).offset(x: 72, y: 66)
+        }
+    }
+
+    private func sliderRail(color: Color, knobOffset: CGFloat) -> some View {
+        ZStack {
+            Rectangle().fill(ClubhouseTheme.ruleStrong).frame(width: 5, height: 150)
+            Rectangle().fill(color).frame(width: 30, height: 30).offset(y: knobOffset)
+        }
+    }
+}
+
+private struct HandwrittenNumeralArtwork: View {
+    var body: some View {
+        ZStack {
+            VStack(spacing: 24) {
+                ForEach(0..<4, id: \.self) { _ in
+                    Rectangle().fill(ClubhouseTheme.rule).frame(width: 210, height: 1)
+                }
+            }
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: 122, height: 122)
+                .offset(x: -44, y: 4)
+
+            Text("12")
+                .font(.system(size: 104, weight: .black, design: .rounded))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .rotationEffect(.degrees(-7))
+                .offset(x: 18, y: -4)
+
+            Rectangle()
+                .fill(ClubhouseTheme.blue)
+                .frame(width: 150, height: 12)
+                .rotationEffect(.degrees(-7))
+                .offset(x: 20, y: 70)
+
+            BauhausStarburst(color: ClubhouseTheme.red, size: 32)
+                .offset(x: 86, y: -66)
+        }
+    }
+}
+
+private struct UnlockedGateArtwork: View {
+    var body: some View {
+        ZStack(alignment: .bottom) {
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: 108, height: 108)
+                .offset(y: -44)
+
+            HStack(alignment: .bottom, spacing: 28) {
+                Rectangle().fill(ClubhouseTheme.blue).frame(width: 62, height: 174)
+                Rectangle().fill(ClubhouseTheme.ink).frame(width: 62, height: 136)
+            }
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: 196, height: 18)
+                .offset(y: -78)
+
+            BauhausStarburst(color: ClubhouseTheme.paperCard, size: 34)
+                .offset(x: -45, y: -116)
+
+            BauhausPlayerShape(colorIndex: 3, size: 34)
+                .offset(x: 74, y: -16)
+        }
+    }
+}
+
+private struct BauhausBars: View {
+    let heights: [CGFloat]
+    private let colors = [ClubhouseTheme.blue, ClubhouseTheme.red, ClubhouseTheme.ink, ClubhouseTheme.blue, ClubhouseTheme.ink]
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 0) {
+            ForEach(Array(heights.enumerated()), id: \.offset) { index, height in
+                Rectangle().fill(colors[index % colors.count]).frame(maxWidth: .infinity).frame(height: height)
+            }
+        }
+    }
+}
+
+private struct StairStepArtwork: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY * 0.72))
+        path.addLine(to: CGPoint(x: rect.width * 0.28, y: rect.maxY * 0.72))
+        path.addLine(to: CGPoint(x: rect.width * 0.28, y: rect.maxY * 0.44))
+        path.addLine(to: CGPoint(x: rect.width * 0.58, y: rect.maxY * 0.44))
+        path.addLine(to: CGPoint(x: rect.width * 0.58, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct BauhausStackedSteps: View {
+    var body: some View {
+        ZStack {
+            StairStepArtwork().fill(ClubhouseTheme.blue).offset(x: -24, y: -18)
+            StairStepArtwork().fill(ClubhouseTheme.ink).offset(x: 0, y: 0)
+            StairStepArtwork().fill(ClubhouseTheme.red).offset(x: 24, y: 18)
+            StairStepArtwork().fill(ClubhouseTheme.yellow).offset(x: 48, y: 36)
+        }
+    }
+}
+
+private struct QuadrantDisk: View {
+    var body: some View {
+        ZStack {
+            Circle().fill(ClubhouseTheme.red)
+            Circle().trim(from: 0, to: 0.25).fill(ClubhouseTheme.yellow).rotationEffect(.degrees(-90))
+            Circle().trim(from: 0.25, to: 0.5).fill(ClubhouseTheme.blue).rotationEffect(.degrees(-90))
+            Circle().trim(from: 0.5, to: 0.75).fill(ClubhouseTheme.ink).rotationEffect(.degrees(-90))
+            Circle().fill(ClubhouseTheme.paperCard).frame(width: 72, height: 72)
+        }
+    }
+}
+
+private struct SemiBowl: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX, y: rect.minY))
+        path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
+        path.addQuadCurve(to: CGPoint(x: rect.minX, y: rect.minY), control: CGPoint(x: rect.midX, y: rect.maxY * 1.8))
+        path.closeSubpath()
+        return path
+    }
+}

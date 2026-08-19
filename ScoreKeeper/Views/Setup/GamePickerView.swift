@@ -77,13 +77,8 @@ private struct GamePickerHero: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             if !dynamicTypeSize.isAccessibilitySize {
-                ZStack {
-                    BauhausBlocksArtwork(compact: true)
-                        .frame(width: 176, height: 166)
-                    BauhausStarburst(color: ClubhouseTheme.red, size: 34)
-                        .offset(x: 54, y: -58)
-                }
-                .frame(width: 176, height: 166)
+                PipCountGeometricArtwork(scene: .gamePicker)
+                    .frame(width: 176, height: 166)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

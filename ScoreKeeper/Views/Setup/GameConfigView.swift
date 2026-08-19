@@ -67,13 +67,25 @@ struct GameConfigView: View {
     }
 
     private var headerSection: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: gameType.icon)
-                .font(.title2)
-                .foregroundStyle(gameType.color)
-            Text(gameType.displayName)
-                .font(AppFonts.title)
-                .foregroundStyle(ClubhouseTheme.ink)
+        HStack(spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                Image(systemName: gameType.icon)
+                    .font(.title2)
+                    .foregroundStyle(gameType.color)
+
+                Text(gameType.displayName)
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .lineLimit(2)
+
+                Text("Calibrate the rules for tonight.")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            PipCountGeometricArtwork(scene: .gameSettings)
+                .frame(width: 136, height: 124)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppTheme.spacingMedium)

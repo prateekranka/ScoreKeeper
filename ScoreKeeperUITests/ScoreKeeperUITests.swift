@@ -291,13 +291,10 @@ final class ScoreKeeperUITests: XCTestCase {
     func testPlayerStatsNavigationFromStatsEntry() throws {
         completeGenericGame(playerNames: ["Taylor", "Morgan"])
 
-        let playerStatsButton = app.buttons["player_stats_Taylor"]
-        if !playerStatsButton.waitForExistence(timeout: 1) {
-            app.swipeUp()
-        }
+        _ = waitForHittable(app.buttons["new_game_button"])
 
-        XCTAssertTrue(playerStatsButton.waitForExistence(timeout: 3))
-        playerStatsButton.tap()
+        let playerStatsButton = app.buttons["player_stats_Taylor"]
+        tapButtonInSafeArea(playerStatsButton)
 
         XCTAssertTrue(app.navigationBars["Taylor"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["Games Played"].exists)
@@ -411,6 +408,22 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.buttons["roster_player_Bob"].exists)
     }
 
+    // MARK: - Test 19: Handwritten round entry presents the first player canvas
+
+    func testHandwrittenRoundEntryPresentsPlayerCanvas() throws {
+        relaunch(arguments: ["-in-memory-store", "-force-handwriting-entry"])
+        navigateToGenericScoring(playerNames: ["Mina", "Omar"])
+
+        app.buttons["submit_round_button"].tap()
+
+        XCTAssertTrue(app.staticTexts["Mina"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["accept_handwritten_score_button"].exists)
+        XCTAssertFalse(app.buttons["accept_handwritten_score_button"].isEnabled)
+        XCTAssertFalse(app.staticTexts["WRITE SCORES"].exists)
+        XCTAssertFalse(app.staticTexts["Write the round score"].exists)
+        XCTAssertFalse(app.buttons["Clear"].exists)
+    }
+
     // MARK: - Helpers
 
     private func relaunch(arguments: [String]) {
@@ -435,8 +448,12 @@ final class ScoreKeeperUITests: XCTestCase {
     }
 
     private func navigateToGenericScoring(playerNames: [String]) {
-        app.buttons["new_game_button"].tap()
-        app.buttons["game_tile_generic"].tap()
+        let newGame = app.buttons["new_game_button"]
+        XCTAssertTrue(newGame.waitForExistence(timeout: 3))
+        tapButtonInSafeArea(newGame)
+        let tile = app.buttons["game_tile_generic"]
+        XCTAssertTrue(tile.waitForExistence(timeout: 3))
+        tile.tap()
         fillPlayerNames(playerNames)
         app.buttons["start_game_button"].tap()
         XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 1))
@@ -446,7 +463,9 @@ final class ScoreKeeperUITests: XCTestCase {
 
     private func navigateToScoring(gameTileID: String, playerNames: [String]) {
         app.buttons["new_game_button"].tap()
-        app.buttons[gameTileID].tap()
+        let tile = app.buttons[gameTileID]
+        XCTAssertTrue(tile.waitForExistence(timeout: 3))
+        tile.tap()
         fillPlayerNames(playerNames)
 
         // Scoreboard and Ten Phases include a game config step before scoring.
@@ -724,6 +743,25 @@ final class ScoreKeeperUITests: XCTestCase {
         }
 
         return expectedValues.isSubset(of: Set(fields.compactMap { $0.value as? String }))
+    }
+
+    private func tapButtonInSafeArea(_ element: XCUIElement) {
+        XCTAssertTrue(waitForHittable(element))
+        let safeBottom = app.frame.height - 120
+        for _ in 0..<4 where element.frame.midY > safeBottom {
+            app.swipeUp()
+        }
+        _ = waitForHittable(element, timeout: 1)
+        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+    }
+
+    private func waitForHittable(_ element: XCUIElement, timeout: TimeInterval = 3) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.isHittable { return true }
+            usleep(100_000)
+        }
+        return element.isHittable
     }
 
     private func scrollToHittable(_ element: XCUIElement, maxSwipes: Int = 5) -> Bool {

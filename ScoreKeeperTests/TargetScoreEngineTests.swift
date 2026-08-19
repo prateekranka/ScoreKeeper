@@ -79,6 +79,14 @@ final class TargetScoreEngineTests: XCTestCase {
         XCTAssertEqual(rematch.winCondition.rawValueString, "lowest")
     }
 
+    func testHandwritingScoreParserAcceptsDigitsAndCommonRecognitionSubstitutions() {
+        XCTAssertEqual(HandwritingScoreRecognizer.parse("42"), 42)
+        XCTAssertEqual(HandwritingScoreRecognizer.parse("−15"), -15)
+        XCTAssertEqual(HandwritingScoreRecognizer.parse("O8"), 8)
+        XCTAssertEqual(HandwritingScoreRecognizer.parse("Score: 1S"), 15)
+        XCTAssertNil(HandwritingScoreRecognizer.parse("no score"))
+    }
+
     private func makeSession(targetScore: Int?, winCondition: WinCondition) -> GameSession {
         let session = GameSession(gameType: .generic)
         session.targetScore = targetScore
