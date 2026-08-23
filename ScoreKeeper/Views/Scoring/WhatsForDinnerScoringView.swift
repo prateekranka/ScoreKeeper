@@ -4,6 +4,7 @@ import SwiftData
 struct WhatsForDinnerScoringView: View {
     @Bindable var session: GameSession
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var handValues: [UUID: Int] = [:]
     @State private var callerID: UUID?
     @State private var scoreHapticTrigger = 0
@@ -51,7 +52,7 @@ struct WhatsForDinnerScoringView: View {
                 HStack(spacing: AppTheme.spacingSmall) {
                     ForEach(session.players, id: \.id) { player in
                         Button {
-                            withAnimation(AppMotion.state) {
+                            withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
                                 callerID = player.id
                             }
                         } label: {
@@ -67,7 +68,7 @@ struct WhatsForDinnerScoringView: View {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundStyle(ClubhouseTheme.felt)
                                         .font(.caption)
-                                        .transition(.scale(scale: 0.96).combined(with: .opacity))
+                                        .transition(reduceMotion ? .opacity : .scale(scale: 0.96).combined(with: .opacity))
                                 }
                             }
                             .padding(AppTheme.spacingSmall)
