@@ -198,7 +198,7 @@ struct HeadToHeadView: View {
                 }
             }
             .padding(.vertical, 4)
-            .transition(.opacity.combined(with: .move(edge: .top)))
+            .transition(.opacity)
         }
     }
 

@@ -3,7 +3,6 @@ import SwiftData
 
 struct GameDetailView: View {
     let sessionID: PersistentIdentifier
-    @State private var sectionsVisible = false
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
@@ -12,11 +11,8 @@ struct GameDetailView: View {
             ScrollView {
                 VStack(spacing: AppTheme.spacingLarge) {
                     DetailHeader(session: session)
-                        .staggeredEntrance(visible: sectionsVisible, index: 0)
                     StandingsList(title: "Final Standings", standings: session.standings(using: engine))
-                        .staggeredEntrance(visible: sectionsVisible, index: 1)
                     RoundBreakdownSection(session: session)
-                        .staggeredEntrance(visible: sectionsVisible, index: 2)
                 }
                 .padding(AppTheme.spacingMedium)
             }
@@ -24,9 +20,6 @@ struct GameDetailView: View {
             .appBackground()
             .navigationTitle("Game Details")
             .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                sectionsVisible = true
-            }
         }
     }
 }

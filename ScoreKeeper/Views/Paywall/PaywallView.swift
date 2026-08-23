@@ -348,11 +348,8 @@ struct PaywallView: View {
 
         isCompleting = true
 
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(300))
-            dismiss()
-            onUnlocked?()
-        }
+        dismiss()
+        onUnlocked?()
     }
 }
 

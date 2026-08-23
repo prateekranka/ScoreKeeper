@@ -20,31 +20,18 @@ struct GameOverView: View {
             let winnerIDs = engine.winners(session: session)
             let winners = session.players.filter { winnerIDs.contains($0.id) }
 
-            ZStack {
-                ScrollView {
-                    VStack(spacing: AppTheme.spacingLarge) {
-                        WinnerHeroSection(session: session, winners: winners, sectionsVisible: sectionsVisible)
-                            .staggeredEntrance(visible: sectionsVisible, index: 0)
-
-                        StandingsList(title: "Final Scores", standings: session.standings(using: engine))
-                        .staggeredEntrance(visible: sectionsVisible, index: 1)
-
-                        EndGameButtons(session: session, onPlayAgain: { playAgain(session) }, onHome: { router.goHome() })
-                            .staggeredEntrance(visible: sectionsVisible, index: 2)
-
-                        GameRecapPanel(session: session, engine: engine)
-                            .staggeredEntrance(visible: sectionsVisible, index: 3)
-                    }
-                    .padding(AppTheme.spacingMedium)
-                    .padding(.bottom, 92)
+            ScrollView {
+                VStack(spacing: AppTheme.spacingLarge) {
+                    WinnerHeroSection(session: session, winners: winners, sectionsVisible: sectionsVisible)
+                    StandingsList(title: "Final Scores", standings: session.standings(using: engine))
+                    EndGameButtons(session: session, onPlayAgain: { playAgain(session) }, onHome: { router.goHome() })
+                    GameRecapPanel(session: session, engine: engine)
                 }
-
-                if !reduceMotion, !ProcessInfo.processInfo.arguments.contains("-in-memory-store") {
-                    if sectionsVisible {
-                        ConfettiOverlay()
-                            .ignoresSafeArea()
-                    }
-                }
+                .padding(AppTheme.spacingMedium)
+                .padding(.bottom, 92)
+                .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.97)
+                .opacity(sectionsVisible ? 1 : 0)
+                .animation(reduceMotion ? AppMotion.fade : AppMotion.page, value: sectionsVisible)
             }
             .appBackground()
             .onAppear {
@@ -122,11 +109,7 @@ struct GameOverView: View {
         }
         storeManager.recordGameStarted()
 
-        router.goHome()
-        Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(100))
-            router.push(.scoring(newSession.persistentModelID))
-        }
+        router.path = NavigationPath([AppDestination.scoring(newSession.persistentModelID)])
     }
 
     private func evaluateReviewAskIfNeeded() {
@@ -170,11 +153,6 @@ private struct WinnerHeroSection: View {
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-
-                if !dynamicTypeSize.isAccessibilitySize {
-                    PipCountGeometricArtwork(scene: .gameOver)
-                        .frame(width: 168, height: 166)
-                }
             }
 
             if winners.count == 1, let winner = winners.first {
@@ -185,9 +163,6 @@ private struct WinnerHeroSection: View {
                             .frame(width: 86, height: 86)
                         BauhausStarburst(color: ClubhouseTheme.paperCard, size: 48)
                     }
-                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.92)
-                    .rotationEffect(.degrees(sectionsVisible || reduceMotion ? 0 : -10))
-                    .animation(reduceMotion ? AppMotion.fade : AppMotion.celebration, value: sectionsVisible)
                     .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 2) {
@@ -226,9 +201,6 @@ private struct WinnerHeroSection: View {
                     .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
             }
         }
-        .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.97)
-        .opacity(sectionsVisible ? 1 : 0)
-        .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped, value: sectionsVisible)
     }
 
     @ViewBuilder
