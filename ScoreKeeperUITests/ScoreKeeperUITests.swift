@@ -150,7 +150,7 @@ final class ScoreKeeperUITests: XCTestCase {
         let newGameButton = app.buttons["new_game_button"]
         XCTAssertTrue(newGameButton.waitForExistence(timeout: 3))
         newGameButton.tap()
-        app.buttons["game_tile_generic"].tap()
+        tapGameTile("game_tile_generic")
         fillPlayerNames(["Charlie", "Diana"])
         app.buttons["start_game_button"].tap()
         app.buttons["start_game_button"].tap()
@@ -173,7 +173,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
     func testPlayerSetupValidatesDuplicateNames() throws {
         app.buttons["new_game_button"].tap()
-        app.buttons["game_tile_generic"].tap()
+        tapGameTile("game_tile_generic")
 
         fillPlayerNames(["Alex", "Alex"])
 
@@ -230,7 +230,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
         app.buttons["new_game_button"].tap()
-        app.buttons["game_tile_phase10"].tap()
+        tapGameTile("game_tile_phase10")
         app.buttons["roster_button"].tap()
 
         let riley = app.buttons["roster_player_Riley"]
@@ -307,7 +307,7 @@ final class ScoreKeeperUITests: XCTestCase {
         relaunch(arguments: ["-in-memory-store", "-free-games-exhausted", "-force-light-theme"])
 
         app.buttons["new_game_button"].tap()
-        app.buttons["game_tile_whatsForDinner"].tap()
+        tapGameTile("game_tile_whatsForDinner")
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
 
@@ -321,7 +321,7 @@ final class ScoreKeeperUITests: XCTestCase {
         relaunch(arguments: ["-in-memory-store", "-unlock-pro"])
 
         app.buttons["new_game_button"].tap()
-        app.buttons["game_tile_whatsForDinner"].tap()
+        tapGameTile("game_tile_whatsForDinner")
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
 
@@ -369,7 +369,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
     func testTargetScoreConfigurationCompletesGenericGame() throws {
         app.buttons["new_game_button"].tap()
-        app.buttons["game_tile_generic"].tap()
+        tapGameTile("game_tile_generic")
         fillPlayerNames(["Alice", "Bob"])
         app.buttons["start_game_button"].tap()
 
@@ -393,7 +393,7 @@ final class ScoreKeeperUITests: XCTestCase {
         completeGenericGame(playerNames: ["Alice", "Bob"])
 
         app.buttons["new_game_button"].tap()
-        app.buttons["game_tile_generic"].tap()
+        tapGameTile("game_tile_generic")
         app.buttons["roster_button"].tap()
 
         let deleteAlice = app.buttons["delete_roster_player_Alice"]
@@ -452,9 +452,7 @@ final class ScoreKeeperUITests: XCTestCase {
         let newGame = app.buttons["new_game_button"]
         XCTAssertTrue(newGame.waitForExistence(timeout: 3))
         tapButtonInSafeArea(newGame)
-        let tile = app.buttons["game_tile_generic"]
-        XCTAssertTrue(tile.waitForExistence(timeout: 3))
-        tile.tap()
+        tapGameTile("game_tile_generic")
         fillPlayerNames(playerNames)
         app.buttons["start_game_button"].tap()
         XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 1))
@@ -464,9 +462,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
     private func navigateToScoring(gameTileID: String, playerNames: [String]) {
         app.buttons["new_game_button"].tap()
-        let tile = app.buttons[gameTileID]
-        XCTAssertTrue(tile.waitForExistence(timeout: 3))
-        tile.tap()
+        tapGameTile(gameTileID)
         fillPlayerNames(playerNames)
 
         // Scoreboard and Ten Phases include a game config step before scoring.
@@ -477,6 +473,13 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["start_game_button"].tap()
 
         XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 3))
+    }
+
+    private func tapGameTile(_ identifier: String) {
+        let tile = app.buttons[identifier]
+        XCTAssertTrue(tile.waitForExistence(timeout: 3))
+        XCTAssertTrue(scrollToHittable(tile, maxSwipes: 4))
+        tile.tap()
     }
 
     private func fillPlayerNames(_ names: [String]) {
@@ -521,7 +524,7 @@ final class ScoreKeeperUITests: XCTestCase {
         _ = app.buttons["game_tile_generic"].waitForExistence(timeout: 2)
         snap("05-game-picker")
 
-        app.buttons["game_tile_generic"].tap()
+        tapGameTile("game_tile_generic")
         fillPlayerNames(["Mina", "Omar", "Jules"])
         snap("06-player-setup")
 
@@ -562,7 +565,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
         relaunch(arguments: ["-in-memory-store", "-free-games-exhausted", "-force-light-theme"])
         app.buttons["new_game_button"].tap()
-        app.buttons["game_tile_whatsForDinner"].tap()
+        tapGameTile("game_tile_whatsForDinner")
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
         _ = app.descendants(matching: .any)["paywall_title"].waitForExistence(timeout: 3)
