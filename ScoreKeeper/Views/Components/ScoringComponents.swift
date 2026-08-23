@@ -345,6 +345,7 @@ private struct ScoringToolSheet: View {
     let tool: ScoringTool
     let session: GameSession
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dieRoll = 1
     @State private var selectedStarter: Player?
     @State private var timerSeconds = 60
@@ -400,8 +401,11 @@ private struct ScoringToolSheet: View {
                     .foregroundStyle(ClubhouseTheme.ink)
                     .contentTransition(.numericText(value: Double(dieRoll)))
                 AppActionButton(role: .primary(tool.tint)) {
-                    withAnimation(AppMotion.state) {
-                        dieRoll = Int.random(in: 1...6)
+                    let nextRoll = Int.random(in: 1...6)
+                    if reduceMotion {
+                        dieRoll = nextRoll
+                    } else {
+                        withAnimation(AppMotion.state) { dieRoll = nextRoll }
                     }
                 } label: {
                     Label("Roll", systemImage: "dice")
@@ -415,8 +419,11 @@ private struct ScoringToolSheet: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.opacity)
                 AppActionButton(role: .primary(tool.tint)) {
-                    withAnimation(AppMotion.state) {
-                        selectedStarter = session.players.randomElement()
+                    let nextStarter = session.players.randomElement()
+                    if reduceMotion {
+                        selectedStarter = nextStarter
+                    } else {
+                        withAnimation(AppMotion.state) { selectedStarter = nextStarter }
                     }
                 } label: {
                     Label("Pick Starter", systemImage: "shuffle")

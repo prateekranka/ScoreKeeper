@@ -274,6 +274,7 @@ private struct PlayerNameFields: View {
     @Binding var playerNames: [String]
     var focusedIndex: FocusState<Int?>.Binding
     let gameType: GameType
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: AppTheme.spacingSmall) {
@@ -297,8 +298,12 @@ private struct PlayerNameFields: View {
     }
 
     private func removePlayer(at index: Int) {
-        withAnimation(AppMotion.fade) {
+        if reduceMotion {
             _ = playerNames.remove(at: index)
+        } else {
+            withAnimation(AppMotion.fade) {
+                _ = playerNames.remove(at: index)
+            }
         }
     }
 }

@@ -885,6 +885,7 @@ private struct ToolSheetContent: View {
     let activeGame: GameSession?
     @Binding var dieRoll: Int
     @Binding var selectedStarter: Player?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         switch tool {
@@ -899,8 +900,11 @@ private struct ToolSheetContent: View {
                     .foregroundStyle(ClubhouseTheme.ink)
                     .contentTransition(.numericText(value: Double(dieRoll)))
                 AppActionButton(role: .primary(tool.tint)) {
-                    withAnimation(AppMotion.state) {
-                        dieRoll = Int.random(in: 1...6)
+                    let nextRoll = Int.random(in: 1...6)
+                    if reduceMotion {
+                        dieRoll = nextRoll
+                    } else {
+                        withAnimation(AppMotion.state) { dieRoll = nextRoll }
                     }
                 } label: {
                     Label("Roll", systemImage: "dice")
@@ -913,8 +917,11 @@ private struct ToolSheetContent: View {
                     .multilineTextAlignment(.center)
                     .contentTransition(.opacity)
                 AppActionButton(role: .primary(tool.tint)) {
-                    withAnimation(AppMotion.state) {
-                        selectedStarter = activeGame?.players.randomElement()
+                    let nextStarter = activeGame?.players.randomElement()
+                    if reduceMotion {
+                        selectedStarter = nextStarter
+                    } else {
+                        withAnimation(AppMotion.state) { selectedStarter = nextStarter }
                     }
                 } label: {
                     Label("Pick Starter", systemImage: "shuffle")
