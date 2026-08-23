@@ -489,7 +489,10 @@ final class ScoreKeeperUITests: XCTestCase {
             }
             let field = app.textFields["player_name_field_\(index)"]
             if !field.waitForExistence(timeout: 1) || !field.isHittable {
-                XCTAssertTrue(scrollToHittable(field, maxSwipes: 4))
+                guard scrollToHittable(field, maxSwipes: 4) else {
+                    XCTFail("Missing or unreachable \(field.identifier). Current hierarchy:\n\(app.debugDescription)")
+                    return
+                }
             }
             XCTAssertTrue(field.waitForExistence(timeout: 1))
             field.tap()
