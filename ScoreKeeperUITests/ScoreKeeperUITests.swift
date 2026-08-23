@@ -408,20 +408,21 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.buttons["roster_player_Bob"].exists)
     }
 
-    // MARK: - Test 19: Handwritten round entry presents the first player canvas
+    // MARK: - Test 19: Generic scoring ignores the retired handwriting flag
 
-    func testHandwrittenRoundEntryPresentsPlayerCanvas() throws {
+    func testGenericScoringIgnoresLegacyHandwritingFlagAndSubmitsDirectly() throws {
         relaunch(arguments: ["-in-memory-store", "-force-handwriting-entry"])
         navigateToGenericScoring(playerNames: ["Mina", "Omar"])
 
+        XCTAssertTrue(app.buttons["Mina_increment"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["Omar_increment"].exists)
+        XCTAssertFalse(app.buttons["accept_handwritten_score_button"].exists)
+
+        app.buttons["Mina_increment"].tap()
         app.buttons["submit_round_button"].tap()
 
-        XCTAssertTrue(app.staticTexts["Mina"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.buttons["accept_handwritten_score_button"].exists)
-        XCTAssertFalse(app.buttons["accept_handwritten_score_button"].isEnabled)
-        XCTAssertFalse(app.staticTexts["WRITE SCORES"].exists)
-        XCTAssertFalse(app.staticTexts["Write the round score"].exists)
-        XCTAssertFalse(app.buttons["Clear"].exists)
+        XCTAssertTrue(app.staticTexts["Round 2"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["1"].exists)
     }
 
     // MARK: - Helpers
