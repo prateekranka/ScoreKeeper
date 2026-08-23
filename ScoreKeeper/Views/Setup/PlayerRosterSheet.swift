@@ -100,6 +100,7 @@ struct PlayerRosterSheet: View {
                 }
                 .padding(.vertical, 10)
                 .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
                 .background(
                     selectedNames.contains(player.name)
                         ? PlayerColors.lightColor(for: player.colorIndex).opacity(0.35)

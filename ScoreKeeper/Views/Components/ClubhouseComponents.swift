@@ -170,25 +170,35 @@ struct PipStepper: View {
     var identifierPrefix = ""
 
     var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
+        VStack(spacing: 6) {
+            HStack(spacing: AppTheme.spacingSmall) {
+                stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
 
-            VStack(spacing: 0) {
-                Text("RD")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                VStack(spacing: 0) {
+                    Text("RD")
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
 
-                Text(roundScoreText)
-                    .font(AppFonts.scoreMedium)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.55)
-                    .foregroundStyle(ClubhouseTheme.ink)
-            }
+                    Text(roundScoreText)
+                        .font(AppFonts.scoreMedium)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.55)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                }
                 .frame(minWidth: 60)
-                .accessibilityLabel("Round score \(value)")
+                .accessibilityElement(children: .ignore)
+                .accessibilityIdentifier(identifierPrefix + "score")
+                .accessibilityLabel("Score \(value)")
 
-            stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
+                stepButton(systemImage: "plus", delta: step, identifier: "increment", label: "Increase score")
+            }
+
+            HStack(spacing: 6) {
+                quickButton(delta: 1)
+                quickButton(delta: 5)
+                quickButton(delta: 10)
+            }
         }
     }
 
@@ -209,6 +219,25 @@ struct PipStepper: View {
         .buttonStyle(ClubhousePressableButtonStyle())
         .accessibilityIdentifier(identifierPrefix + identifier)
         .accessibilityLabel(label)
+    }
+
+    private func quickButton(delta: Int) -> some View {
+        Button {
+            apply(delta)
+        } label: {
+            Text("+\(delta)")
+                .font(AppFonts.caption.weight(.bold))
+                .foregroundStyle(ClubhouseTheme.blue)
+                .frame(minWidth: 44, minHeight: 44)
+                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                }
+        }
+        .buttonStyle(ClubhousePressableButtonStyle())
+        .accessibilityIdentifier(identifierPrefix + "quick_\(delta)")
+        .accessibilityLabel("Add \(delta) points")
     }
 
     private func apply(_ delta: Int) {
