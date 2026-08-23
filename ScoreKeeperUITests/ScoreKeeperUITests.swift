@@ -478,8 +478,7 @@ final class ScoreKeeperUITests: XCTestCase {
     private func tapGameTile(_ identifier: String) {
         let tile = app.buttons[identifier]
         XCTAssertTrue(tile.waitForExistence(timeout: 3))
-        XCTAssertTrue(scrollToHittable(tile, maxSwipes: 4))
-        tile.tap()
+        tapButtonInSafeArea(tile)
     }
 
     private func fillPlayerNames(_ names: [String]) {
@@ -757,12 +756,21 @@ final class ScoreKeeperUITests: XCTestCase {
     }
 
     private func tapButtonInSafeArea(_ element: XCUIElement) {
-        XCTAssertTrue(waitForHittable(element))
-        let safeBottom = app.frame.height - 120
-        for _ in 0..<4 where element.frame.midY > safeBottom {
-            app.swipeUp()
+        guard element.waitForExistence(timeout: 3) else {
+            XCTFail("Button did not exist: \(element)")
+            return
         }
-        _ = waitForHittable(element, timeout: 1)
+
+        let safeBottom = app.frame.height - 120
+        for _ in 0..<6 {
+            if element.isHittable && element.frame.maxY <= safeBottom {
+                break
+            }
+            app.swipeUp(velocity: .fast)
+        }
+
+        XCTAssertTrue(element.isHittable)
+        XCTAssertLessThanOrEqual(element.frame.maxY, safeBottom)
         element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
     }
 
