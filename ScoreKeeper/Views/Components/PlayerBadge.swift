@@ -37,6 +37,7 @@ struct PlayerBadge: View {
     var body: some View {
         VStack(spacing: 4) {
             BauhausPlayerShape(colorIndex: colorIndex, size: size.diameter)
+                .frame(minWidth: 44, minHeight: 44)
 
             if showName {
                 Text(name)

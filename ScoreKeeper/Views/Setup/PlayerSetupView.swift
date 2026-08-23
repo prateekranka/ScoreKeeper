@@ -12,7 +12,7 @@ struct PlayerSetupView: View {
     @State private var showRoster = false
     @State private var showPaywall = false
     @State private var saveError: String?
-    @State private var sectionsVisible = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var recentNames: [String] {
         Array(Set(allPlayers.map(\.name)).filter { !$0.isEmpty }).sorted().prefix(20).map { $0 }
@@ -51,7 +51,6 @@ struct PlayerSetupView: View {
         ScrollView {
             VStack(spacing: AppTheme.spacingMedium) {
                 SetupPlayerHeader(gameType: gameType)
-                    .staggeredEntrance(visible: sectionsVisible, index: 0)
 
                 if !recentNames.isEmpty {
                     SavedPlayersBar(
@@ -59,7 +58,7 @@ struct PlayerSetupView: View {
                         cleanedNames: cleanedNames,
                         onTap: addRosterNames
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 1)
+
                 }
 
                 PlayerNameFields(
@@ -67,7 +66,7 @@ struct PlayerSetupView: View {
                     focusedIndex: $focusedIndex,
                     gameType: gameType
                 )
-                .staggeredEntrance(visible: sectionsVisible, index: recentNames.isEmpty ? 1 : 2)
+
 
                 AddPlayerControls(
                     gameType: gameType,
@@ -75,7 +74,7 @@ struct PlayerSetupView: View {
                     onAdd: addPlayer,
                     onRoster: { showRoster = true }
                 )
-                .staggeredEntrance(visible: sectionsVisible, index: recentNames.isEmpty ? 2 : 3)
+
 
                 if let validationMessage {
                     Text(validationMessage)
@@ -102,9 +101,7 @@ struct PlayerSetupView: View {
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.bottom, AppTheme.spacingSmall)
         }
-        .onAppear {
-            sectionsVisible = true
-        }
+
         .sheet(isPresented: $showRoster) {
             PlayerRosterSheet { names in addRosterNames(names) }
         }
@@ -126,7 +123,7 @@ struct PlayerSetupView: View {
     }
 
     private func addPlayer() {
-        withAnimation(AppMotion.state) {
+        withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
             playerNames.append("")
             focusedIndex = playerNames.count - 1
         }
@@ -149,7 +146,7 @@ struct PlayerSetupView: View {
     }
 
     private func addRosterNames(_ names: [String]) {
-        withAnimation(AppMotion.state) {
+        withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
             for name in names where playerNames.count <= gameType.maxPlayers {
                 guard !cleanedNames.contains(where: { $0.caseInsensitiveCompare(name) == .orderedSame }) else { continue }
                 if let emptyIndex = playerNames.firstIndex(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
@@ -288,21 +285,19 @@ private struct PlayerNameFields: View {
                     focusedIndex: focusedIndex,
                     onRemove: { removePlayer(at: index) }
                 )
-                .transition(
-                    .asymmetric(
-                        insertion: .scale(scale: 0.97).combined(with: .opacity),
-                        removal: .opacity
-                    )
-                )
+                .transition(.opacity)
             }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .background(ClubhouseTheme.paperCard)
+        .overlay {
+            Rectangle().stroke(ClubhouseTheme.ruleStrong, lineWidth: 1)
+        }
     }
 
     private func removePlayer(at index: Int) {
-        withAnimation(AppMotion.state) {
+        withAnimation(AppMotion.fade) {
             _ = playerNames.remove(at: index)
         }
     }

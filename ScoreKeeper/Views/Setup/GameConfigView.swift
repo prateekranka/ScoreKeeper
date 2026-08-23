@@ -30,7 +30,7 @@ struct GameConfigView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: AppTheme.spacingLarge) {
+            VStack(spacing: AppTheme.spacingMedium) {
                 headerSection
                 configSection
             }
@@ -67,7 +67,7 @@ struct GameConfigView: View {
     }
 
     private var headerSection: some View {
-        HStack(spacing: AppTheme.spacingMedium) {
+        HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 Image(systemName: gameType.icon)
                     .font(.title2)
@@ -84,12 +84,17 @@ struct GameConfigView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            PipCountGeometricArtwork(scene: .gameSettings)
-                .frame(width: 136, height: 124)
+            Rectangle()
+                .fill(ClubhouseTheme.ruleStrong)
+                .frame(width: 1)
+                .accessibilityHidden(true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .background(ClubhouseTheme.paperCard)
+        .overlay {
+            Rectangle().stroke(ClubhouseTheme.ruleStrong, lineWidth: 1)
+        }
     }
 
     private var configSection: some View {
@@ -121,7 +126,10 @@ struct GameConfigView: View {
             }
         }
         .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .background(ClubhouseTheme.paperCard)
+        .overlay {
+            Rectangle().stroke(ClubhouseTheme.ruleStrong, lineWidth: 1)
+        }
     }
 
     private var targetScoreSection: some View {
