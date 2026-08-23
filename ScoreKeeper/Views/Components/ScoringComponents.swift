@@ -18,6 +18,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @ViewBuilder var content: Content
     @ViewBuilder var footer: Footer
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
     @State private var saveError: String?
@@ -69,7 +70,9 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                                 }
                             } label: {
                                 Label("Undo", systemImage: "arrow.uturn.backward")
-                                    .font(AppFonts.body)
+                                    .font(dynamicTypeSize.isAccessibilitySize ? .caption.weight(.semibold) : AppFonts.body)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.65)
                                     .foregroundStyle(ClubhouseTheme.ink)
                                     .frame(maxWidth: .infinity)
                                     .frame(minHeight: 44)
@@ -88,7 +91,9 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                                 selectedTool = .log
                             } label: {
                                 Label("Round Log", systemImage: "list.bullet")
-                                    .font(AppFonts.body)
+                                    .font(dynamicTypeSize.isAccessibilitySize ? .caption.weight(.semibold) : AppFonts.body)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.65)
                                     .foregroundStyle(ClubhouseTheme.ink)
                                     .frame(maxWidth: .infinity)
                                     .frame(minHeight: 44)
