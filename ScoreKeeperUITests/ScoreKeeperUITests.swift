@@ -627,23 +627,24 @@ final class ScoreKeeperUITests: XCTestCase {
         }
 
         // Tool sheets from Home
-        XCTAssertTrue(app.buttons["Open game timer"].waitForExistence(timeout: 3))
-        app.buttons["Open game timer"].tap()
+        let timerTool = app.buttons["Open game timer"]
+        XCTAssertTrue(timerTool.waitForExistence(timeout: 3))
+        tapButtonInSafeArea(timerTool)
         sleep(1); snap("15-tool-timer")
         dismissToolSheet(named: "Timer")
         assertHome()
 
-        app.buttons["Roll dice"].tap()
+        tapButtonInSafeArea(app.buttons["Roll dice"])
         sleep(1); snap("16-tool-dice")
         dismissToolSheet(named: "Dice")
         assertHome()
 
-        app.buttons["Pick a random starter"].tap()
+        tapButtonInSafeArea(app.buttons["Pick a random starter"])
         sleep(1); snap("17-tool-starter")
         dismissToolSheet(named: "Starter")
         assertHome()
 
-        app.buttons["Learn about undo"].tap()
+        tapButtonInSafeArea(app.buttons["Learn about undo"])
         sleep(1); snap("18-tool-undo")
         dismissToolSheet(named: "Undo")
         assertHome()
