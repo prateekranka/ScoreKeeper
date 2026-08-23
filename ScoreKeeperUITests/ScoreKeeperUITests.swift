@@ -488,6 +488,9 @@ final class ScoreKeeperUITests: XCTestCase {
                 app.buttons["add_player_button"].tap()
             }
             let field = app.textFields["player_name_field_\(index)"]
+            if !field.waitForExistence(timeout: 1) || !field.isHittable {
+                XCTAssertTrue(scrollToHittable(field, maxSwipes: 4))
+            }
             XCTAssertTrue(field.waitForExistence(timeout: 1))
             field.tap()
             // Keep the semantic tap for scrolling, then target the field directly so iOS 26 transfers keyboard focus before typeText.
