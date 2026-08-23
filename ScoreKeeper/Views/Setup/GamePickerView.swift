@@ -2,11 +2,6 @@ import SwiftUI
 
 struct GamePickerView: View {
     @Environment(NavigationRouter.self) private var router
-    @State private var sectionsVisible = false
-
-    private let columns = [
-        GridItem(.flexible(), spacing: AppTheme.spacingSmall)
-    ]
 
     private let gameTypes: [GameType] = [.generic, .phase10, .whatsForDinner]
 
@@ -14,14 +9,12 @@ struct GamePickerView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
                 GamePickerHero()
-                    .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                LazyVGrid(columns: columns, spacing: AppTheme.spacingMedium) {
-                    ForEach(Array(gameTypes.enumerated()), id: \.element.id) { index, gameType in
+                LazyVStack(spacing: AppTheme.spacingMedium) {
+                    ForEach(gameTypes) { gameType in
                         GameTypeTile(gameType: gameType, action: {
                             router.push(.playerSetup(gameType))
                         }, accessibilityID: "game_tile_\(gameType.rawValue)")
-                        .staggeredEntrance(visible: sectionsVisible, index: index + 1)
                     }
                 }
             }
@@ -34,9 +27,6 @@ struct GamePickerView: View {
         .toolbar(.hidden, for: .navigationBar)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             PipCountDock(selected: .games, onSelect: selectTab)
-        }
-        .onAppear {
-            sectionsVisible = true
         }
     }
 

@@ -7,7 +7,21 @@ struct GameTypeTile: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("PIPCOUNT / \(gameType.displayName.uppercased())")
+                        .font(AppFonts.caption.weight(.bold))
+                        .tracking(1.2)
+                    Spacer()
+                    Text("\(gameType.minPlayers)—\(gameType.maxPlayers)")
+                        .font(AppFonts.caption.monospacedDigit().weight(.bold))
+                }
+                .foregroundStyle(ClubhouseTheme.ink)
+
+                GameTypeArtwork(gameType: gameType)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 126)
+
                 VStack(alignment: .leading, spacing: 6) {
                     Text(gameType.displayName)
                         .font(AppFonts.tileTitle)
@@ -21,38 +35,22 @@ struct GameTypeTile: View {
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .multilineTextAlignment(.leading)
 
-                    HStack(spacing: 6) {
-                        Circle()
-                            .stroke(gameType.color, lineWidth: 2)
-                            .frame(width: 24, height: 24)
-                            .overlay {
-                                Circle()
-                                    .fill(gameType.color)
-                                    .frame(width: 12, height: 12)
-                            }
-
-                    }
-                    .padding(.top, 8)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-
-                GameTypeArtwork(gameType: gameType)
-                    .frame(width: 154, height: 142)
             }
             .frame(maxWidth: .infinity)
-            .padding(.horizontal, AppTheme.spacingMedium)
-            .padding(.vertical, 18)
+            .padding(AppTheme.spacingMedium)
             .background {
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
+                Rectangle()
                     .fill(ClubhouseTheme.paperCard)
                     .shadow(color: ClubhouseTheme.paperShadow, radius: 0, x: 3, y: 4)
             }
             .overlay {
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
+                Rectangle()
                     .strokeBorder(gameType.color, lineWidth: 2)
             }
             .overlay {
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge - 4, style: .continuous)
+                Rectangle()
                     .inset(by: 4)
                     .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.75)
             }
@@ -83,61 +81,26 @@ struct GameTypeArtwork: View {
         switch gameType {
         case .generic:
             ZStack {
-                Circle()
-                    .fill(ClubhouseTheme.blue)
-                    .frame(width: 108, height: 108)
-                Circle()
-                    .fill(ClubhouseTheme.yellow)
-                    .frame(width: 76, height: 76)
-                    .offset(x: 24, y: 22)
-                Circle()
-                    .fill(ClubhouseTheme.paperCard)
-                    .frame(width: 46, height: 46)
-                Rectangle()
-                    .fill(ClubhouseTheme.ruleStrong)
-                    .frame(width: 1, height: 132)
-                Rectangle()
-                    .fill(ClubhouseTheme.ruleStrong)
-                    .frame(width: 132, height: 1)
+                Rectangle().fill(ClubhouseTheme.blue).frame(width: 108, height: 108)
+                Circle().fill(ClubhouseTheme.yellow).frame(width: 68, height: 68).offset(x: 22, y: 18)
+                Rectangle().fill(ClubhouseTheme.ink).frame(width: 5, height: 132).rotationEffect(.degrees(45))
             }
         case .phase10:
             ZStack {
-                Circle()
-                    .trim(from: 0, to: 0.25)
-                    .stroke(ClubhouseTheme.yellow, lineWidth: 30)
-                Circle()
-                    .trim(from: 0.25, to: 0.5)
-                    .stroke(ClubhouseTheme.green, lineWidth: 30)
-                Circle()
-                    .trim(from: 0.5, to: 0.75)
-                    .stroke(ClubhouseTheme.blue, lineWidth: 30)
-                Circle()
-                    .trim(from: 0.75, to: 1)
-                    .stroke(ClubhouseTheme.red, lineWidth: 30)
-                Text("10")
-                    .font(AppFonts.scoreMedium)
-                    .foregroundStyle(ClubhouseTheme.ink)
+                Rectangle().fill(ClubhouseTheme.red).frame(width: 108, height: 108)
+                ForEach(0..<5, id: \.self) { index in
+                    Rectangle().fill(index < 3 ? ClubhouseTheme.yellow : ClubhouseTheme.paperCard)
+                        .frame(width: 14, height: 14).offset(x: CGFloat(index - 2) * 22)
+                }
+                Text("10").font(AppFonts.scoreMedium).foregroundStyle(ClubhouseTheme.ink)
             }
             .padding(22)
         case .whatsForDinner:
             ZStack {
-                Circle()
-                    .fill(ClubhouseTheme.blue)
-                    .frame(width: 82, height: 82)
-                    .offset(x: -18, y: -20)
-                Circle()
-                    .fill(ClubhouseTheme.yellow)
-                    .frame(width: 92, height: 92)
-                    .offset(x: -36, y: 38)
-                Rectangle()
-                    .fill(ClubhouseTheme.ink)
-                    .frame(width: 96, height: 48)
-                    .offset(x: 24, y: 37)
-                TriangleShape()
-                    .fill(ClubhouseTheme.green)
-                    .frame(width: 44, height: 62)
-                    .rotationEffect(.degrees(50))
-                    .offset(x: 48, y: -24)
+                Rectangle().fill(ClubhouseTheme.yellow).frame(width: 108, height: 108)
+                Circle().fill(ClubhouseTheme.blue).frame(width: 52, height: 52).offset(x: -22, y: -18)
+                TriangleShape().fill(ClubhouseTheme.green).frame(width: 52, height: 52).offset(x: 26, y: 22)
+                Rectangle().fill(ClubhouseTheme.ink).frame(width: 86, height: 5).rotationEffect(.degrees(-25))
             }
         }
     }
