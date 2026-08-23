@@ -4,6 +4,9 @@ Generated for a future Argent Lens redesign pass. This is a route and screen inv
 
 ## Artifacts
 
+- Editable major-workflow map: `docs/pipcount-screen-network.excalidraw`
+- Quick-view major-workflow SVG: `docs/pipcount-screen-network.svg`
+- Clickable source/dependency map: `docs/codemap/codemap.html`
 - Route-strip manifest: `docs/ui-screen-network-manifest.json`
 - Generated route-strip PNG: `docs/ui-screen-network-route-strips.png`
 - Source screenshot folder: `screenshots/app-screens`
