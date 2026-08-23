@@ -499,16 +499,11 @@ final class ScoreKeeperUITests: XCTestCase {
             }
             let fieldIdentifier = "player_name_field_\(index)"
             let field = app.textFields[fieldIdentifier]
-            if !field.waitForExistence(timeout: 1) || !field.isHittable {
-                guard scrollToHittable(field, maxSwipes: 4) else {
-                    XCTFail("Missing or unreachable \(fieldIdentifier). Current hierarchy:\n\(app.debugDescription)")
-                    return
-                }
+            guard field.waitForExistence(timeout: 2) else {
+                XCTFail("Missing \(fieldIdentifier). Current hierarchy:\n\(app.debugDescription)")
+                return
             }
-            XCTAssertTrue(field.waitForExistence(timeout: 1))
-            field.tap()
-            // Keep the semantic tap for scrolling, then target the field directly so iOS 26 transfers keyboard focus before typeText.
-            field.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+            tapTextFieldInSafeArea(field, identifier: fieldIdentifier)
             field.typeText(name)
         }
     }
@@ -778,6 +773,37 @@ final class ScoreKeeperUITests: XCTestCase {
         }
 
         return expectedValues.isSubset(of: Set(fields.compactMap { $0.value as? String }))
+    }
+
+    private func tapTextFieldInSafeArea(_ element: XCUIElement, identifier: String) {
+        let appFrame = app.frame
+        let safeTop: CGFloat = 120
+
+        for _ in 0..<6 {
+            let keyboard = app.keyboards.firstMatch
+            let safeBottom = keyboard.exists ? keyboard.frame.minY - 12 : appFrame.height - 120
+            let frame = element.frame
+            let visibleTop = max(frame.minY, safeTop)
+            let visibleBottom = min(frame.maxY, safeBottom)
+
+            if visibleBottom - visibleTop >= 44 {
+                let point = CGPoint(x: frame.midX, y: (visibleTop + visibleBottom) / 2)
+                let normalizedPoint = CGVector(
+                    dx: (point.x - appFrame.minX) / appFrame.width,
+                    dy: (point.y - appFrame.minY) / appFrame.height
+                )
+                app.coordinate(withNormalizedOffset: normalizedPoint).tap()
+                return
+            }
+
+            if frame.maxY <= safeTop + 44 {
+                app.swipeDown(velocity: .fast)
+            } else {
+                app.swipeUp(velocity: .fast)
+            }
+        }
+
+        XCTFail("Text field never exposed a safe 44-point focus area: \(identifier)")
     }
 
     private func tapButtonInSafeArea(_ element: XCUIElement) {
