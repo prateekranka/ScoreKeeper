@@ -61,8 +61,9 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
 
                         HStack(spacing: AppTheme.spacingSmall) {
                             Button {
-                                undoTrigger &+= 1
-                                undoLastRound()
+                                if undoLastRound() {
+                                    undoTrigger &+= 1
+                                }
                             } label: {
                                 Label("Undo", systemImage: "arrow.uturn.backward")
                                     .font(AppFonts.body)
@@ -124,18 +125,20 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
         }
     }
 
-    private func undoLastRound() {
+    private func undoLastRound() -> Bool {
         guard let lastRound = session.sortedRounds.last else {
-            return
+            return false
         }
 
         modelContext.delete(lastRound)
         do {
             try modelContext.save()
+            return true
         } catch {
             let message = error.localizedDescription
             modelContext.rollback()
             saveError = message
+            return false
         }
     }
 }

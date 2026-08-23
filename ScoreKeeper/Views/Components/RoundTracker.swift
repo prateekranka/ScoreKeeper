@@ -3,7 +3,6 @@ import SwiftUI
 struct RoundTracker: View {
     let totalRounds: Int
     let currentRound: Int
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -16,7 +15,7 @@ struct RoundTracker: View {
                                       round == currentRound ? ClubhouseTheme.brass :
                                       ClubhouseTheme.paperSunken)
                                 .frame(width: 14, height: 14)
-                                .scaleEffect(round == currentRound || reduceMotion ? 1 : 0.72)
+                                .scaleEffect(round == currentRound ? 1 : 0.72)
                                 .overlay {
                                     Circle().stroke(ClubhouseTheme.rule, lineWidth: 1)
                                 }
@@ -31,9 +30,7 @@ struct RoundTracker: View {
                 .padding(.horizontal, AppTheme.spacingMedium)
             }
             .onChange(of: currentRound) { _, newValue in
-                withAnimation(reduceMotion ? nil : AppMotion.state) {
-                    proxy.scrollTo(newValue, anchor: .center)
-                }
+                proxy.scrollTo(newValue, anchor: .center)
             }
         }
     }
