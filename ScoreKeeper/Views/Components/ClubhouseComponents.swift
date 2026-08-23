@@ -183,7 +183,6 @@ struct PipStepper: View {
                     .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.55)
-                    .contentTransition(.numericText(value: Double(value)))
                     .foregroundStyle(ClubhouseTheme.ink)
             }
                 .frame(minWidth: 60)
