@@ -289,44 +289,55 @@ struct PipCountDock: View {
     let onSelect: (PipCountTab) -> Void
 
     var body: some View {
-        HStack(spacing: 2) {
-            ForEach(PipCountTab.allCases, id: \.rawValue) { tab in
-                Button {
-                    onSelect(tab)
-                } label: {
-                    VStack(spacing: 3) {
-                        Image(systemName: selected == tab ? selectedImage(for: tab) : tab.systemImage)
-                            .font(.system(size: 17, weight: selected == tab ? .bold : .medium))
-                        Text(tab.title)
-                            .font(.caption2.weight(selected == tab ? .bold : .medium))
+        ZStack(alignment: .bottom) {
+            LinearGradient(
+                colors: [ClubhouseTheme.paper.opacity(0), ClubhouseTheme.paper],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 96)
+            .allowsHitTesting(false)
+
+            HStack(spacing: 2) {
+                ForEach(PipCountTab.allCases, id: \.rawValue) { tab in
+                    Button {
+                        onSelect(tab)
+                    } label: {
+                        VStack(spacing: 3) {
+                            Image(systemName: selected == tab ? selectedImage(for: tab) : tab.systemImage)
+                                .font(.system(size: 17, weight: selected == tab ? .bold : .medium))
+                            Text(tab.title)
+                                .font(.caption2.weight(selected == tab ? .bold : .medium))
+                        }
+                        .foregroundStyle(selected == tab ? ClubhouseTheme.blue : ClubhouseTheme.inkMuted)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 56)
+                        .contentShape(Rectangle())
                     }
-                    .foregroundStyle(selected == tab ? ClubhouseTheme.blue : ClubhouseTheme.inkMuted)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .contentShape(Rectangle())
+                    .buttonStyle(PressableButtonStyle())
+                    .accessibilityLabel(tab == .more ? "Legal & Support" : tab.title)
+                    .accessibilityHint(tab == .more ? "Opens privacy, legal, and support links" : "")
+                    .accessibilityIdentifier(tab == .more ? "legal_support_button" : "tab_\(tab.rawValue)")
+                    .accessibilityAddTraits(selected == tab ? .isSelected : [])
                 }
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel(tab == .more ? "Legal & Support" : tab.title)
-                .accessibilityHint(tab == .more ? "Opens privacy, legal, and support links" : "")
-                .accessibilityIdentifier(tab == .more ? "legal_support_button" : "tab_\(tab.rawValue)")
-                .accessibilityAddTraits(selected == tab ? .isSelected : [])
             }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(ClubhouseTheme.paperCard.opacity(0.97), in: Capsule())
+            .overlay {
+                Capsule()
+                    .strokeBorder(Color.white.opacity(0.82), lineWidth: 1.5)
+            }
+            .overlay {
+                Capsule()
+                    .inset(by: 1.5)
+                    .strokeBorder(ClubhouseTheme.rule.opacity(0.8), lineWidth: 0.75)
+            }
+            .shadow(color: ClubhouseTheme.ink.opacity(0.15), radius: 18, y: 9)
+            .padding(.horizontal, 28)
+            .padding(.bottom, 6)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(ClubhouseTheme.paperCard.opacity(0.97), in: Capsule())
-        .overlay {
-            Capsule()
-                .strokeBorder(Color.white.opacity(0.82), lineWidth: 1.5)
-        }
-        .overlay {
-            Capsule()
-                .inset(by: 1.5)
-                .strokeBorder(ClubhouseTheme.rule.opacity(0.8), lineWidth: 0.75)
-        }
-        .shadow(color: ClubhouseTheme.ink.opacity(0.15), radius: 18, y: 9)
-        .padding(.horizontal, 28)
-        .padding(.bottom, 6)
+        .frame(maxWidth: .infinity)
     }
 
     private func selectedImage(for tab: PipCountTab) -> String {

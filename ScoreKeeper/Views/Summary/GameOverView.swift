@@ -28,7 +28,7 @@ struct GameOverView: View {
                     GameRecapPanel(session: session, engine: engine)
                 }
                 .padding(AppTheme.spacingMedium)
-                .padding(.bottom, 92)
+                .padding(.bottom, AppTheme.spacingLarge)
                 .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.97)
                 .opacity(sectionsVisible ? 1 : 0)
                 .animation(reduceMotion ? AppMotion.fade : AppMotion.page, value: sectionsVisible)
@@ -48,9 +48,6 @@ struct GameOverView: View {
             }
             .navigationBarBackButtonHidden(true)
             .toolbar(.hidden, for: .navigationBar)
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                PipCountDock(selected: .games, onSelect: selectTab)
-            }
             .alert(
                 "Couldn’t save rematch",
                 isPresented: Binding(
@@ -62,22 +59,6 @@ struct GameOverView: View {
             } message: {
                 Text(saveError ?? "Please try again.")
             }
-        }
-    }
-
-    private func selectTab(_ tab: PipCountTab) {
-        switch tab {
-        case .home:
-            router.goHome()
-        case .games:
-            router.goHome()
-            router.push(.gamePicker)
-        case .players:
-            router.goHome()
-            router.push(.players)
-        case .more:
-            router.goHome()
-            router.push(.legalSupport)
         }
     }
 
@@ -163,6 +144,12 @@ private struct WinnerHeroSection: View {
                             .frame(width: 86, height: 86)
                         BauhausStarburst(color: ClubhouseTheme.paperCard, size: 48)
                     }
+                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
+                    .opacity(sectionsVisible ? 1 : 0)
+                    .animation(
+                        reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.12),
+                        value: sectionsVisible
+                    )
                     .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 2) {
