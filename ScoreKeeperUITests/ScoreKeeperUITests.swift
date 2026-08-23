@@ -599,6 +599,8 @@ final class ScoreKeeperUITests: XCTestCase {
             throw XCTSkip("SCREENSHOT_DIR not set")
         }
         try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+        relaunch(arguments: ["-in-memory-store", "-force-light-theme"])
+        XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
 
         func snap(_ name: String) {
             let png = XCUIScreen.main.screenshot().pngRepresentation
@@ -702,11 +704,10 @@ final class ScoreKeeperUITests: XCTestCase {
         app.navigationBars.buttons.firstMatch.tap()
         sleep(1)
 
-        // Dark mode: cycle system -> light -> dark, then fresh scoring and game over
+        // Dark mode: the tour starts in forced light, so one cycle enters dark.
         app.swipeDown()
         let theme = app.buttons["theme_button"]
         XCTAssertTrue(theme.waitForExistence(timeout: 3))
-        theme.tap(); sleep(1)
         theme.tap(); sleep(1)
         snap("24-home-dark")
 
