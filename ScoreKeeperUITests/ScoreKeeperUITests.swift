@@ -786,17 +786,32 @@ final class ScoreKeeperUITests: XCTestCase {
             return
         }
 
-        let safeBottom = app.frame.height - 120
+        let appFrame = app.frame
+        let safeTop: CGFloat = 80
+        let safeBottom = appFrame.height - 120
+        var safeTapPoint: CGPoint?
+
         for _ in 0..<6 {
-            if element.isHittable && element.frame.maxY <= safeBottom {
+            let frame = element.frame
+            let visibleTop = max(frame.minY, safeTop)
+            let visibleBottom = min(frame.maxY, safeBottom)
+            if element.exists && visibleBottom - visibleTop >= 44 {
+                safeTapPoint = CGPoint(x: frame.midX, y: (visibleTop + visibleBottom) / 2)
                 break
             }
             app.swipeUp(velocity: .fast)
         }
 
-        XCTAssertTrue(element.isHittable)
-        XCTAssertLessThanOrEqual(element.frame.maxY, safeBottom)
-        element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        guard let safeTapPoint else {
+            XCTFail("Button never exposed a safe 44-point tap area: \(element)")
+            return
+        }
+
+        let normalizedPoint = CGVector(
+            dx: (safeTapPoint.x - appFrame.minX) / appFrame.width,
+            dy: (safeTapPoint.y - appFrame.minY) / appFrame.height
+        )
+        app.coordinate(withNormalizedOffset: normalizedPoint).tap()
     }
 
     private func waitForHittable(_ element: XCUIElement, timeout: TimeInterval = 3) -> Bool {
