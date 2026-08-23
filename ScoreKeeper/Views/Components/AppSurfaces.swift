@@ -109,11 +109,9 @@ struct AppActionButton<LabelContent: View>: View {
     let role: AppButtonRole
     let action: () -> Void
     @ViewBuilder var label: LabelContent
-    @State private var trigger = 0
 
     var body: some View {
         Button {
-            trigger &+= 1
             action()
         } label: {
             label
@@ -141,18 +139,6 @@ struct AppActionButton<LabelContent: View>: View {
         }
         .buttonStyle(PressableButtonStyle())
         .opacity(isEnabled ? 1 : 0.48)
-        .sensoryFeedback(buttonHaptic, trigger: trigger)
-    }
-
-    private var buttonHaptic: SensoryFeedback {
-        switch role {
-        case .primary:
-            return .impact(weight: .medium, intensity: 0.6)
-        case .secondary:
-            return .impact(weight: .light, intensity: 0.5)
-        case .destructive:
-            return .impact(weight: .heavy, intensity: 0.7)
-        }
     }
 
     private var foregroundStyle: Color {
