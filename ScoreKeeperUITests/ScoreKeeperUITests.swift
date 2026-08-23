@@ -610,34 +610,48 @@ final class ScoreKeeperUITests: XCTestCase {
             try? png.write(to: URL(fileURLWithPath: "\(dir)/\(name).png"))
         }
 
-        func dismissSheet() {
-            if app.buttons["Done"].exists {
-                app.buttons["Done"].tap()
-            } else if app.buttons["Close"].exists {
-                app.buttons["Close"].tap()
-            } else {
-                app.swipeDown(velocity: .fast)
-            }
-            sleep(1)
+        func dismissToolSheet(named title: String) {
+            let sheetNavigationBar = app.navigationBars[title]
+            XCTAssertTrue(sheetNavigationBar.waitForExistence(timeout: 3))
+
+            // Use the sheet's Done button. A full-screen swipe can land on the
+            // floating dock instead of dismissing the sheet.
+            let done = sheetNavigationBar.buttons["Done"]
+            XCTAssertTrue(done.waitForExistence(timeout: 3))
+            XCTAssertTrue(done.isHittable)
+            done.tap()
+            XCTAssertFalse(sheetNavigationBar.waitForExistence(timeout: 1))
+        }
+
+        func assertHome() {
+            XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
+            XCTAssertFalse(app.navigationBars["Timer"].exists)
+            XCTAssertFalse(app.navigationBars["Dice"].exists)
+            XCTAssertFalse(app.navigationBars["Starter"].exists)
+            XCTAssertFalse(app.navigationBars["Undo"].exists)
         }
 
         // Tool sheets from Home
         XCTAssertTrue(app.buttons["Open game timer"].waitForExistence(timeout: 3))
         app.buttons["Open game timer"].tap()
         sleep(1); snap("15-tool-timer")
-        dismissSheet()
+        dismissToolSheet(named: "Timer")
+        assertHome()
 
         app.buttons["Roll dice"].tap()
         sleep(1); snap("16-tool-dice")
-        dismissSheet()
+        dismissToolSheet(named: "Dice")
+        assertHome()
 
         app.buttons["Pick a random starter"].tap()
         sleep(1); snap("17-tool-starter")
-        dismissSheet()
+        dismissToolSheet(named: "Starter")
+        assertHome()
 
         app.buttons["Learn about undo"].tap()
         sleep(1); snap("18-tool-undo")
-        dismissSheet()
+        dismissToolSheet(named: "Undo")
+        assertHome()
 
         // Complete a game, snapping the end-game confirmation on the way
         navigateToGenericScoring(playerNames: ["Taylor", "Morgan"])
