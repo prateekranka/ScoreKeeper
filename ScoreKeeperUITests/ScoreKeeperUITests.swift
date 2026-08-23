@@ -487,10 +487,11 @@ final class ScoreKeeperUITests: XCTestCase {
             if index >= 2 {
                 app.buttons["add_player_button"].tap()
             }
-            let field = app.textFields["player_name_field_\(index)"]
+            let fieldIdentifier = "player_name_field_\(index)"
+            let field = app.textFields[fieldIdentifier]
             if !field.waitForExistence(timeout: 1) || !field.isHittable {
                 guard scrollToHittable(field, maxSwipes: 4) else {
-                    XCTFail("Missing or unreachable \(field.identifier). Current hierarchy:\n\(app.debugDescription)")
+                    XCTFail("Missing or unreachable \(fieldIdentifier). Current hierarchy:\n\(app.debugDescription)")
                     return
                 }
             }
