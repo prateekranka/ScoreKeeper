@@ -425,6 +425,17 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Total 1"].waitForExistence(timeout: 2))
     }
 
+    func testRapidDuplicateSubmitCreatesOnlyOneRound() throws {
+        navigateToGenericScoring(playerNames: ["Mina", "Omar"])
+
+        let submit = app.buttons["submit_round_button"]
+        XCTAssertTrue(submit.waitForExistence(timeout: 3))
+        submit.doubleTap()
+
+        XCTAssertTrue(app.staticTexts["Round 2"].waitForExistence(timeout: 3))
+        XCTAssertFalse(app.staticTexts["Round 3"].waitForExistence(timeout: 1))
+    }
+
     // MARK: - Helpers
 
     private func relaunch(arguments: [String]) {
