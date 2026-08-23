@@ -4,6 +4,22 @@ import XCTest
 
 @MainActor
 final class StoreManagerStoreKitTests: XCTestCase {
+    func testLocalCatalogMatchesNonConsumableProProduct() throws {
+        let configurationURL = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appendingPathComponent("ScoreKeeper/ScoreKeeper.storekit")
+        let data = try Data(contentsOf: configurationURL)
+        let catalog = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: data) as? [String: Any]
+        )
+        let products = try XCTUnwrap(catalog["products"] as? [[String: Any]])
+        let proProduct = try XCTUnwrap(products.first)
+
+        XCTAssertEqual(proProduct["productID"] as? String, StoreManager.productID)
+        XCTAssertEqual(proProduct["type"] as? String, "NonConsumable")
+    }
+
     func testMissingCurrentEntitlementRevokesStaleCachedUnlock() {
         let defaults = makeDefaults()
         defaults.set(true, forKey: "proUnlocked")

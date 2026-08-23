@@ -17,7 +17,8 @@ struct LiveStoreProductLoader: StoreProductLoading {
 @MainActor
 @Observable
 final class StoreManager {
-    // Keep this identifier aligned with the existing App Store Connect product.
+    // This identifier matches the existing Non-Consumable PipCount Pro
+    // product in App Store Connect.
     static let productID = "com.icequeen.scorekeeper.unlimited"
     static let freeGameLimit = 25
 

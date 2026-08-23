@@ -63,9 +63,9 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 
 ## App Store Submission Prep (July 12, 2026)
 
-- The ASC product is `com.icequeen.scorekeeper.unlimited`; `StoreManager`, `ScoreKeeper.storekit`, and the UI identify it as PipCount Pro.
+- Live App Store Connect verification on July 22 confirmed `com.icequeen.scorekeeper.unlimited` is already a Non-Consumable. The App Review message's “consumable item” wording was generic; the actual issue was that the IAP was omitted from the original version submission. The existing product was restored to Ready for Review and added to the draft submission, and the app/catalog continue to use that verified identifier.
 - Version `1.0` build `7` is valid in ASC, has export compliance set to no non-exempt encryption, and is attached to App Store version 1.0. The target/project signing team is `4JRB53LG5C`.
-- `.asc/metadata` contains English PipCount app-info/version drafts. Support and privacy URLs are live. Remaining App Store submission gates are confirming published App Privacy, rechecking agreement/banking/tax status, and submitting the first non-consumable together with version 1.0.
+- `.asc/metadata` contains English PipCount app-info/version drafts. Support and privacy URLs are live. The Paid Apps Agreement, banking, and tax forms were active on July 22; the existing non-consumable must be submitted together with version 1.0.
 - `docs/privacy-policy.md` reflects the implementation: SwiftData/UserDefaults and a device-only Keychain allowance counter, StoreKit purchases, and no analytics, tracking, ads, developer server, or cloud sync.
 - `screenshots/app-store-raw/` contains a 14-screen iPhone 17 Pro Max tour; `screenshots/app-store-69/` is the curated 10-screen upload set. Both use 1320×2868 PNGs and pass `asc screenshots validate --device-type IPHONE_69`.
 - Distribution signing uses Apple Distribution identity `7A3BD74D6E377B4512D66FCBF8C3701F3B4CF297` and installed profile `ScoreKeeper App Store Build 3`; archive only from the canonical trophy-mascot code.
