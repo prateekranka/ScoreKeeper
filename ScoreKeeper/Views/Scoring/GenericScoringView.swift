@@ -183,6 +183,7 @@ private struct CompactRoundScoreRow: View {
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
+                        .minimumScaleFactor(0.65)
                     if isLeading {
                         BrassCrown()
                             .accessibilityLabel("Leading")
