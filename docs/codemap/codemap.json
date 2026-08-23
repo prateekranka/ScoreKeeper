@@ -2,10 +2,10 @@
   "schema_version": 1,
   "repository": "ScoreKeeper",
   "root": "/home/bobbyranka/Cowork/ScoreKeeper",
-  "commit": "eb985566c31ce223bfc6f1e082ca385342d77281",
-  "generated_at": "2026-08-23T12:13:22.228963+00:00",
-  "baseline_commit": null,
-  "has_previous_baseline": false,
+  "commit": "2772d65317303acea9490ab10449a602d865b93d",
+  "generated_at": "2026-08-23T16:53:10.135251+00:00",
+  "baseline_commit": "2772d65317303acea9490ab10449a602d865b93d",
+  "has_previous_baseline": true,
   "nodes": [
     {
       "id": "m-ed07733c157f",
@@ -61,7 +61,6 @@
         "m-3982a76a7594",
         "m-95114df760d9",
         "m-dbe2347c6eb0",
-        "m-e02316f9686d",
         "m-ea89de1ef09c"
       ],
       "callers": [],
@@ -72,6 +71,41 @@
       "related_tests": [],
       "evidence": [
         "design-explorations/mascot-rive/rive-bridge.mjs:1 declares rive-bridge"
+      ]
+    },
+    {
+      "id": "m-502329c2eed8",
+      "label": "verify-prototype",
+      "path": "design-explorations/pipcount-motion-prototype-20260823/verify-prototype.mjs",
+      "group": "design-explorations/pipcount-motion-prototype-20260823",
+      "role": "Module",
+      "language": "mjs",
+      "changed": false,
+      "new": false,
+      "symbols": [
+        {
+          "name": "verify-prototype",
+          "line": 1
+        }
+      ],
+      "dependencies": [
+        "m-1a6112e3f77d",
+        "m-3982a76a7594",
+        "m-8cfbebdc4411",
+        "m-8eafb6d0bb0c",
+        "m-95114df760d9",
+        "m-ea89de1ef09c"
+      ],
+      "callers": [],
+      "external_dependencies": [
+        "node:child_process",
+        "node:fs",
+        "node:path",
+        "node:url"
+      ],
+      "related_tests": [],
+      "evidence": [
+        "design-explorations/pipcount-motion-prototype-20260823/verify-prototype.mjs:1 declares verify-prototype"
       ]
     },
     {
@@ -1167,7 +1201,6 @@
         "m-95114df760d9",
         "m-b3a0f891ae86",
         "m-bc1b0e015b50",
-        "m-e02316f9686d",
         "m-e0b25c3751a8",
         "m-e2330f24d0c9",
         "m-e2f53d4b39fd",
@@ -1187,8 +1220,8 @@
         "m-36a64c8fe97a",
         "m-4649be8a6991",
         "m-472979840d20",
-        "m-47332d8185ba",
         "m-4cec4f681cbf",
+        "m-502329c2eed8",
         "m-5082583d1d52",
         "m-50d5fa165965",
         "m-55b2e3971769",
@@ -1211,6 +1244,7 @@
         "m-95114df760d9",
         "m-95646f0435fa",
         "m-9d511b895bfc",
+        "m-9df098f7dcbe",
         "m-9fb4ac4e1fec",
         "m-ac70cc805a96",
         "m-add458053b5d",
@@ -1223,7 +1257,6 @@
         "m-c349a0909479",
         "m-cc52dc49e1a6",
         "m-ced7aefbb20e",
-        "m-d37003c71b1d",
         "m-d530bf8fc242",
         "m-dbe2347c6eb0",
         "m-dd44d07ab7b8",
@@ -1396,7 +1429,6 @@
       ],
       "dependencies": [
         "m-3982a76a7594",
-        "m-e02316f9686d",
         "m-ea89de1ef09c"
       ],
       "callers": [
@@ -1585,7 +1617,6 @@
         "m-c2af430a265b",
         "m-c349a0909479",
         "m-ced7aefbb20e",
-        "m-d37003c71b1d",
         "m-dd44d07ab7b8",
         "m-e02316f9686d",
         "m-e0eea0aa8a95",
@@ -1604,7 +1635,9 @@
       "external_dependencies": [
         "next"
       ],
-      "related_tests": [],
+      "related_tests": [
+        "ScoreKeeperTests/TargetScoreEngineTests.swift"
+      ],
       "evidence": [
         "release/app-store-screenshots/src/app/layout.tsx:1 declares layout",
         "release/app-store-screenshots/src/app/layout.tsx:5 declares font",
@@ -1636,7 +1669,9 @@
         "m-95114df760d9",
         "m-ea89de1ef09c"
       ],
-      "callers": [],
+      "callers": [
+        "m-502329c2eed8"
+      ],
       "external_dependencies": [
         "@"
       ],
@@ -1958,8 +1993,7 @@
         "m-dd44d07ab7b8",
         "m-e02316f9686d",
         "m-e2330f24d0c9",
-        "m-ea83661f6423",
-        "m-ed4be491113a"
+        "m-ea83661f6423"
       ],
       "external_dependencies": [
         "@",
@@ -2390,6 +2424,7 @@
         "m-3982a76a7594",
         "m-4649be8a6991",
         "m-472979840d20",
+        "m-502329c2eed8",
         "m-57e54444c2de",
         "m-8790f67b1df6",
         "m-89cb5b8ffd76",
@@ -2549,7 +2584,9 @@
         "lucide-react",
         "react"
       ],
-      "related_tests": [],
+      "related_tests": [
+        "ScoreKeeperTests/TargetScoreEngineTests.swift"
+      ],
       "evidence": [
         "release/app-store-screenshots/src/components/editor/screenshot-picker.tsx:1 declares screenshot-picker",
         "release/app-store-screenshots/src/components/editor/screenshot-picker.tsx:8 declares Props",
@@ -3084,8 +3121,8 @@
         "m-3982a76a7594",
         "m-4649be8a6991",
         "m-472979840d20",
-        "m-47332d8185ba",
         "m-4cec4f681cbf",
+        "m-502329c2eed8",
         "m-50d5fa165965",
         "m-57e54444c2de",
         "m-6fdc7cbbab3f",
@@ -3256,7 +3293,6 @@
         "m-e3d6840cbc4b",
         "m-e4a2589d425b",
         "m-ea83661f6423",
-        "m-fb5213d93356",
         "m-fc5361ceb90a",
         "m-fe46be728c3f"
       ],
@@ -3367,7 +3403,6 @@
         "m-95114df760d9",
         "m-c349a0909479",
         "m-ced7aefbb20e",
-        "m-e02316f9686d",
         "m-ed4be491113a"
       ],
       "external_dependencies": [
@@ -3461,7 +3496,9 @@
         "class-variance-authority",
         "react"
       ],
-      "related_tests": [],
+      "related_tests": [
+        "ScoreKeeperUITests/ScoreKeeperUITests.swift"
+      ],
       "evidence": [
         "release/app-store-screenshots/src/components/ui/button.tsx:1 declares button",
         "release/app-store-screenshots/src/components/ui/button.tsx:6 declares buttonVariants",
@@ -3761,7 +3798,6 @@
         "m-9279b9d4beb9",
         "m-bfafbf2abca9",
         "m-c349a0909479",
-        "m-e02316f9686d",
         "m-e3d6840cbc4b",
         "m-e4a2589d425b",
         "m-ee46ac974059",
@@ -4651,7 +4687,6 @@
         "m-be404ed99abd",
         "m-ced7aefbb20e",
         "m-dd44d07ab7b8",
-        "m-e02316f9686d",
         "m-ea89de1ef09c"
       ],
       "callers": [
@@ -4689,6 +4724,7 @@
       ],
       "related_tests": [
         "ScoreKeeperTests/StoreManagerStoreKitTests.swift",
+        "ScoreKeeperTests/TargetScoreEngineTests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift"
       ],
       "evidence": [
@@ -5021,6 +5057,7 @@
         "m-11a7d533440b",
         "m-36a64c8fe97a",
         "m-3982a76a7594",
+        "m-502329c2eed8",
         "m-5082583d1d52",
         "m-57e54444c2de",
         "m-7a860dcea9d5",
@@ -5390,6 +5427,7 @@
         "m-3982a76a7594",
         "m-4649be8a6991",
         "m-472979840d20",
+        "m-502329c2eed8",
         "m-57e54444c2de",
         "m-6fdc7cbbab3f",
         "m-73ae6e01d9ff",
@@ -5411,10 +5449,10 @@
         "m-b3a0f891ae86",
         "m-b55b24c11de5",
         "m-bc1b0e015b50",
+        "m-cc52dc49e1a6",
         "m-d530bf8fc242",
         "m-dbe2347c6eb0",
         "m-dd44d07ab7b8",
-        "m-e02316f9686d",
         "m-e0b25c3751a8",
         "m-e19875c7afc0",
         "m-e2330f24d0c9",
@@ -5423,7 +5461,6 @@
         "m-ed07733c157f",
         "m-ee666478b505",
         "m-f8ff060f8ac8",
-        "m-fb5213d93356",
         "m-fd1746dad61b",
         "m-fe46be728c3f",
         "m-ff599e09ddd3"
@@ -5626,7 +5663,6 @@
       ],
       "callers": [
         "m-0dd59b2605f6",
-        "m-0f75696778d6",
         "m-11a7d533440b",
         "m-1a6112e3f77d",
         "m-1dfdc4f51048",
@@ -5877,16 +5913,15 @@
       "callers": [
         "m-11a7d533440b",
         "m-1a6112e3f77d",
-        "m-7a860dcea9d5",
-        "m-c349a0909479",
-        "m-e02316f9686d",
-        "m-ee46ac974059"
+        "m-c349a0909479"
       ],
       "external_dependencies": [
         "Foundation",
         "Observation"
       ],
-      "related_tests": [],
+      "related_tests": [
+        "ScoreKeeperTests/StoreManagerStoreKitTests.swift"
+      ],
       "evidence": [
         "ScoreKeeper/Services/ReviewAskManager.swift:6 declares ReviewAskManager",
         "ScoreKeeper/Services/ReviewAskManager.swift:34 declares considerReviewAsk",
@@ -5948,6 +5983,7 @@
         "Foundation"
       ],
       "related_tests": [
+        "ScoreKeeperTests/TargetScoreEngineTests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift"
       ],
       "evidence": [
@@ -6060,12 +6096,9 @@
         "m-3982a76a7594",
         "m-4649be8a6991",
         "m-57e54444c2de",
-        "m-7a860dcea9d5",
         "m-9fb4ac4e1fec",
         "m-c349a0909479",
-        "m-e02316f9686d",
-        "m-e4a2589d425b",
-        "m-ee46ac974059"
+        "m-e4a2589d425b"
       ],
       "external_dependencies": [
         "Foundation",
@@ -6175,22 +6208,23 @@
         },
         {
           "name": "AppMotion",
-          "line": 14
+          "line": 15
         },
         {
           "name": "AppBackgroundModifier",
-          "line": 25
+          "line": 26
         },
         {
           "name": "View",
-          "line": 32
+          "line": 33
         },
         {
           "name": "appBackground",
-          "line": 33
+          "line": 34
         }
       ],
       "dependencies": [
+        "m-3982a76a7594",
         "m-95114df760d9",
         "m-cc52dc49e1a6"
       ],
@@ -6212,7 +6246,6 @@
         "m-bdc0116cacd2",
         "m-bfafbf2abca9",
         "m-c349a0909479",
-        "m-d37003c71b1d",
         "m-e02316f9686d",
         "m-e0eea0aa8a95",
         "m-e22ae20dc432",
@@ -6229,10 +6262,10 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Theme/AppTheme.swift:3 declares AppTheme",
-        "ScoreKeeper/Theme/AppTheme.swift:14 declares AppMotion",
-        "ScoreKeeper/Theme/AppTheme.swift:25 declares AppBackgroundModifier",
-        "ScoreKeeper/Theme/AppTheme.swift:32 declares View",
-        "ScoreKeeper/Theme/AppTheme.swift:33 declares appBackground"
+        "ScoreKeeper/Theme/AppTheme.swift:15 declares AppMotion",
+        "ScoreKeeper/Theme/AppTheme.swift:26 declares AppBackgroundModifier",
+        "ScoreKeeper/Theme/AppTheme.swift:33 declares View",
+        "ScoreKeeper/Theme/AppTheme.swift:34 declares appBackground"
       ]
     },
     {
@@ -6251,18 +6284,19 @@
         },
         {
           "name": "Color",
-          "line": 50
+          "line": 51
         },
         {
           "name": "UIColor",
-          "line": 58
+          "line": 59
         }
       ],
       "dependencies": [
         "m-3982a76a7594",
         "m-8eafb6d0bb0c",
         "m-d530bf8fc242",
-        "m-e2330f24d0c9"
+        "m-e2330f24d0c9",
+        "m-ea89de1ef09c"
       ],
       "callers": [
         "m-0f75696778d6",
@@ -6271,7 +6305,6 @@
         "m-1dfdc4f51048",
         "m-36a64c8fe97a",
         "m-4649be8a6991",
-        "m-47332d8185ba",
         "m-4cec4f681cbf",
         "m-50d5fa165965",
         "m-57e54444c2de",
@@ -6290,7 +6323,6 @@
         "m-bdc0116cacd2",
         "m-bfafbf2abca9",
         "m-c349a0909479",
-        "m-d37003c71b1d",
         "m-e02316f9686d",
         "m-e0eea0aa8a95",
         "m-e22ae20dc432",
@@ -6307,8 +6339,8 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Theme/ClubhouseTheme.swift:3 declares ClubhouseTheme",
-        "ScoreKeeper/Theme/ClubhouseTheme.swift:50 declares Color",
-        "ScoreKeeper/Theme/ClubhouseTheme.swift:58 declares UIColor"
+        "ScoreKeeper/Theme/ClubhouseTheme.swift:51 declares Color",
+        "ScoreKeeper/Theme/ClubhouseTheme.swift:59 declares UIColor"
       ]
     },
     {
@@ -6350,7 +6382,6 @@
         "m-36a64c8fe97a",
         "m-3982a76a7594",
         "m-4649be8a6991",
-        "m-47332d8185ba",
         "m-50d5fa165965",
         "m-57e54444c2de",
         "m-6fdc7cbbab3f",
@@ -6436,29 +6467,17 @@
       "symbols": [
         {
           "name": "AnimatedScoreChange",
-          "line": 3
-        },
-        {
-          "name": "ScoreChangeModifier",
-          "line": 27
+          "line": 1
         }
       ],
-      "dependencies": [
-        "m-35ed9d18e80f",
-        "m-3982a76a7594",
-        "m-4649be8a6991",
-        "m-9df098f7dcbe",
-        "m-cc52dc49e1a6",
-        "m-fc5361ceb90a"
-      ],
+      "dependencies": [],
       "callers": [],
       "external_dependencies": [
         "SwiftUI"
       ],
       "related_tests": [],
       "evidence": [
-        "ScoreKeeper/Views/Components/AnimatedScoreChange.swift:3 declares AnimatedScoreChange",
-        "ScoreKeeper/Views/Components/AnimatedScoreChange.swift:27 declares ScoreChangeModifier"
+        "ScoreKeeper/Views/Components/AnimatedScoreChange.swift:1 declares AnimatedScoreChange"
       ]
     },
     {
@@ -6505,43 +6524,43 @@
         },
         {
           "name": "EmptyStateView",
-          "line": 192
+          "line": 181
         },
         {
           "name": "View",
-          "line": 205
+          "line": 194
         },
         {
           "name": "appGlass",
-          "line": 206
+          "line": 195
         },
         {
           "name": "staggeredEntrance",
-          "line": 210
+          "line": 199
         },
         {
           "name": "glassGroup",
-          "line": 217
+          "line": 206
         },
         {
           "name": "AppGlassModifier",
-          "line": 227
+          "line": 216
         },
         {
           "name": "StaggeredEntranceModifier",
-          "line": 246
+          "line": 235
         },
         {
           "name": "PipCountTab",
-          "line": 267
+          "line": 256
         },
         {
           "name": "PipCountDock",
-          "line": 287
+          "line": 276
         },
         {
           "name": "selectedImage",
-          "line": 332
+          "line": 334
         }
       ],
       "dependencies": [
@@ -6574,7 +6593,6 @@
         "m-57e54444c2de",
         "m-69a1d1f39773",
         "m-7757bb2fbe56",
-        "m-7a860dcea9d5",
         "m-823b1aa2f40e",
         "m-858733bc014d",
         "m-8a58970fdb24",
@@ -6586,7 +6604,6 @@
         "m-ac70cc805a96",
         "m-c2af430a265b",
         "m-c349a0909479",
-        "m-d37003c71b1d",
         "m-e02316f9686d",
         "m-e0eea0aa8a95",
         "m-e22ae20dc432",
@@ -6670,112 +6687,115 @@
         },
         {
           "name": "stepButton",
-          "line": 196
+          "line": 205
+        },
+        {
+          "name": "quickButton",
+          "line": 224
         },
         {
           "name": "apply",
-          "line": 215
+          "line": 243
         },
         {
           "name": "PipCountIllustrationAsset",
-          "line": 229
+          "line": 257
         },
         {
           "name": "PipCountAssetArtwork",
-          "line": 238
+          "line": 266
         },
         {
           "name": "BauhausPlayerShape",
-          "line": 250
+          "line": 278
         },
         {
           "name": "TriangleShape",
-          "line": 281
+          "line": 309
         },
         {
           "name": "path",
-          "line": 282
+          "line": 310
         },
         {
           "name": "BauhausStarburst",
-          "line": 292
+          "line": 320
         },
         {
           "name": "DiamondShape",
-          "line": 314
+          "line": 342
         },
         {
           "name": "BauhausHalftone",
-          "line": 326
+          "line": 354
         },
         {
           "name": "BauhausTargetArtwork",
-          "line": 347
+          "line": 375
         },
         {
           "name": "BauhausBlocksArtwork",
-          "line": 394
+          "line": 422
         },
         {
           "name": "block",
-          "line": 440
+          "line": 468
         },
         {
           "name": "PipCountArtworkScene",
-          "line": 455
+          "line": 483
         },
         {
           "name": "PipCountGeometricArtwork",
-          "line": 471
+          "line": 499
         },
         {
           "name": "GamePickerOrbitArtwork",
-          "line": 603
+          "line": 631
         },
         {
           "name": "CrewConstellationArtwork",
-          "line": 639
-        },
-        {
-          "name": "GameCalibrationArtwork",
           "line": 667
         },
         {
+          "name": "GameCalibrationArtwork",
+          "line": 695
+        },
+        {
           "name": "sliderRail",
-          "line": 692
+          "line": 720
         },
         {
           "name": "HandwrittenNumeralArtwork",
-          "line": 700
+          "line": 728
         },
         {
           "name": "UnlockedGateArtwork",
-          "line": 732
+          "line": 760
         },
         {
           "name": "BauhausBars",
-          "line": 759
+          "line": 787
         },
         {
           "name": "StairStepArtwork",
-          "line": 772
+          "line": 800
         },
         {
           "name": "BauhausStackedSteps",
-          "line": 788
+          "line": 816
         },
         {
           "name": "QuadrantDisk",
-          "line": 799
+          "line": 827
         },
         {
           "name": "SemiBowl",
-          "line": 811
+          "line": 839
         }
       ],
       "dependencies": [
         "m-129a660f4f5d",
-        "m-135f1761cffd",
         "m-35ed9d18e80f",
         "m-3982a76a7594",
         "m-4649be8a6991",
@@ -6794,11 +6814,9 @@
       "callers": [
         "m-1a6112e3f77d",
         "m-1dfdc4f51048",
-        "m-36a64c8fe97a",
         "m-4649be8a6991",
         "m-50d5fa165965",
         "m-57e54444c2de",
-        "m-6fdc7cbbab3f",
         "m-858733bc014d",
         "m-9279b9d4beb9",
         "m-940c77c01b0d",
@@ -6845,35 +6863,18 @@
       "new": false,
       "symbols": [
         {
-          "name": "ConfettiPiece",
-          "line": 3
-        },
-        {
           "name": "ConfettiOverlay",
-          "line": 14
-        },
-        {
-          "name": "generatePieces",
-          "line": 56
+          "line": 1
         }
       ],
-      "dependencies": [
-        "m-3982a76a7594",
-        "m-69a1d1f39773",
-        "m-8eafb6d0bb0c",
-        "m-cc52dc49e1a6"
-      ],
-      "callers": [
-        "m-c349a0909479"
-      ],
+      "dependencies": [],
+      "callers": [],
       "external_dependencies": [
         "SwiftUI"
       ],
       "related_tests": [],
       "evidence": [
-        "ScoreKeeper/Views/Components/ConfettiOverlay.swift:3 declares ConfettiPiece",
-        "ScoreKeeper/Views/Components/ConfettiOverlay.swift:14 declares ConfettiOverlay",
-        "ScoreKeeper/Views/Components/ConfettiOverlay.swift:56 declares generatePieces"
+        "ScoreKeeper/Views/Components/ConfettiOverlay.swift:1 declares ConfettiOverlay"
       ]
     },
     {
@@ -6927,15 +6928,15 @@
         },
         {
           "name": "GameTypeArtwork",
-          "line": 66
+          "line": 64
         },
         {
           "name": "ScoreSheetArtwork",
-          "line": 146
+          "line": 109
         },
         {
           "name": "ledgerLine",
-          "line": 202
+          "line": 165
         }
       ],
       "dependencies": [
@@ -6950,9 +6951,7 @@
         "m-8eafb6d0bb0c",
         "m-9d511b895bfc",
         "m-9df098f7dcbe",
-        "m-bc1b0e015b50",
         "m-cc52dc49e1a6",
-        "m-ea89de1ef09c",
         "m-fc5361ceb90a"
       ],
       "callers": [
@@ -6965,9 +6964,9 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Components/GameTypeTile.swift:3 declares GameTypeTile",
-        "ScoreKeeper/Views/Components/GameTypeTile.swift:66 declares GameTypeArtwork",
-        "ScoreKeeper/Views/Components/GameTypeTile.swift:146 declares ScoreSheetArtwork",
-        "ScoreKeeper/Views/Components/GameTypeTile.swift:202 declares ledgerLine"
+        "ScoreKeeper/Views/Components/GameTypeTile.swift:64 declares GameTypeArtwork",
+        "ScoreKeeper/Views/Components/GameTypeTile.swift:109 declares ScoreSheetArtwork",
+        "ScoreKeeper/Views/Components/GameTypeTile.swift:165 declares ledgerLine"
       ]
     },
     {
@@ -6990,7 +6989,7 @@
         },
         {
           "name": "PlayerGlyph",
-          "line": 54
+          "line": 55
         }
       ],
       "dependencies": [
@@ -7011,7 +7010,6 @@
         "m-6fdc7cbbab3f",
         "m-858733bc014d",
         "m-9279b9d4beb9",
-        "m-e02316f9686d",
         "m-e22ae20dc432",
         "m-e3d6840cbc4b",
         "m-e4a2589d425b",
@@ -7024,7 +7022,7 @@
       "evidence": [
         "ScoreKeeper/Views/Components/PlayerBadge.swift:3 declares BadgeSize",
         "ScoreKeeper/Views/Components/PlayerBadge.swift:31 declares PlayerBadge",
-        "ScoreKeeper/Views/Components/PlayerBadge.swift:54 declares PlayerGlyph"
+        "ScoreKeeper/Views/Components/PlayerBadge.swift:55 declares PlayerGlyph"
       ]
     },
     {
@@ -7062,7 +7060,6 @@
         "m-858733bc014d",
         "m-9279b9d4beb9",
         "m-940c77c01b0d",
-        "m-e02316f9686d",
         "m-e4a2589d425b",
         "m-fb5213d93356",
         "m-fc5361ceb90a"
@@ -7218,56 +7215,60 @@
           "line": 9
         },
         {
+          "name": "performAction",
+          "line": 139
+        },
+        {
           "name": "undoLastRound",
-          "line": 127
+          "line": 153
         },
         {
           "name": "CompactScoringGameHeader",
-          "line": 143
+          "line": 171
         },
         {
           "name": "ScoringGameHeader",
-          "line": 180
+          "line": 209
         },
         {
           "name": "ScoringTool",
-          "line": 234
+          "line": 263
         },
         {
           "name": "ScoringToolsBar",
-          "line": 270
+          "line": 299
         },
         {
           "name": "ScoringToolSheet",
-          "line": 315
+          "line": 344
         },
         {
           "name": "timerButton",
-          "line": 426
+          "line": 455
         },
         {
           "name": "ToolArtwork",
-          "line": 443
+          "line": 472
         },
         {
           "name": "ScoreboardHeader",
-          "line": 481
+          "line": 510
         },
         {
           "name": "RoundBanner",
-          "line": 509
-        },
-        {
-          "name": "ScoreEntryRow",
           "line": 538
         },
         {
+          "name": "ScoreEntryRow",
+          "line": 567
+        },
+        {
           "name": "RoundHistoryStrip",
-          "line": 585
+          "line": 614
         },
         {
           "name": "roundCard",
-          "line": 608
+          "line": 637
         }
       ],
       "dependencies": [
@@ -7309,11 +7310,11 @@
         "ScoreKeeper/Views/Components/ScoringComponents.swift:1 declares ScoringComponents",
         "ScoreKeeper/Views/Components/ScoringComponents.swift:4 declares ScoringHeaderStyle",
         "ScoreKeeper/Views/Components/ScoringComponents.swift:9 declares ScoringScreenLayout",
-        "ScoreKeeper/Views/Components/ScoringComponents.swift:127 declares undoLastRound",
-        "ScoreKeeper/Views/Components/ScoringComponents.swift:143 declares CompactScoringGameHeader",
-        "ScoreKeeper/Views/Components/ScoringComponents.swift:180 declares ScoringGameHeader",
-        "ScoreKeeper/Views/Components/ScoringComponents.swift:234 declares ScoringTool",
-        "ScoreKeeper/Views/Components/ScoringComponents.swift:270 declares ScoringToolsBar"
+        "ScoreKeeper/Views/Components/ScoringComponents.swift:139 declares performAction",
+        "ScoreKeeper/Views/Components/ScoringComponents.swift:153 declares undoLastRound",
+        "ScoreKeeper/Views/Components/ScoringComponents.swift:171 declares CompactScoringGameHeader",
+        "ScoreKeeper/Views/Components/ScoringComponents.swift:209 declares ScoringGameHeader",
+        "ScoreKeeper/Views/Components/ScoringComponents.swift:263 declares ScoringTool"
       ]
     },
     {
@@ -7447,107 +7448,107 @@
         },
         {
           "name": "cycleTheme",
-          "line": 146
+          "line": 148
         },
         {
           "name": "revealSections",
-          "line": 152
+          "line": 154
         },
         {
           "name": "selectTab",
-          "line": 156
+          "line": 158
         },
         {
           "name": "requestDelete",
-          "line": 169
+          "line": 171
         },
         {
           "name": "deletePendingGame",
-          "line": 174
+          "line": 176
         },
         {
           "name": "resultText",
-          "line": 191
+          "line": 193
         },
         {
           "name": "HomeHeader",
-          "line": 206
+          "line": 208
         },
         {
           "name": "HomeEmptyHero",
-          "line": 259
+          "line": 261
         },
         {
           "name": "NewGameButton",
-          "line": 287
+          "line": 289
         },
         {
           "name": "FreeGamesNote",
-          "line": 298
+          "line": 300
         },
         {
           "name": "PipCountUpgradeEntry",
-          "line": 320
+          "line": 322
         },
         {
           "name": "HomeActiveGamesSection",
-          "line": 343
+          "line": 345
         },
         {
           "name": "ActiveGameRow",
-          "line": 392
+          "line": 394
         },
         {
           "name": "HomeDashboardRow",
-          "line": 453
+          "line": 455
         },
         {
           "name": "HomeMetric",
-          "line": 477
+          "line": 479
         },
         {
           "name": "HomeQuickToolsRow",
-          "line": 507
+          "line": 509
         },
         {
           "name": "HomeToolButton",
-          "line": 528
+          "line": 530
         },
         {
           "name": "HomeResumeBanner",
-          "line": 558
+          "line": 560
         },
         {
           "name": "HomeRecentGamesSection",
-          "line": 612
+          "line": 614
         },
         {
           "name": "RecentGameRow",
-          "line": 643
+          "line": 645
         },
         {
           "name": "HomeStatsSection",
-          "line": 697
+          "line": 699
         },
         {
           "name": "QuietLinkRow",
-          "line": 744
+          "line": 746
         },
         {
           "name": "HomeTool",
-          "line": 768
+          "line": 770
         },
         {
           "name": "HomeToolSheet",
-          "line": 815
+          "line": 817
         },
         {
           "name": "ToolSheetContent",
-          "line": 881
+          "line": 883
         },
         {
           "name": "SavedPlayersView",
-          "line": 931
+          "line": 933
         }
       ],
       "dependencies": [
@@ -7589,13 +7590,13 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Home/HomeView.swift:4 declares HomeView",
-        "ScoreKeeper/Views/Home/HomeView.swift:146 declares cycleTheme",
-        "ScoreKeeper/Views/Home/HomeView.swift:152 declares revealSections",
-        "ScoreKeeper/Views/Home/HomeView.swift:156 declares selectTab",
-        "ScoreKeeper/Views/Home/HomeView.swift:169 declares requestDelete",
-        "ScoreKeeper/Views/Home/HomeView.swift:174 declares deletePendingGame",
-        "ScoreKeeper/Views/Home/HomeView.swift:191 declares resultText",
-        "ScoreKeeper/Views/Home/HomeView.swift:206 declares HomeHeader"
+        "ScoreKeeper/Views/Home/HomeView.swift:148 declares cycleTheme",
+        "ScoreKeeper/Views/Home/HomeView.swift:154 declares revealSections",
+        "ScoreKeeper/Views/Home/HomeView.swift:158 declares selectTab",
+        "ScoreKeeper/Views/Home/HomeView.swift:171 declares requestDelete",
+        "ScoreKeeper/Views/Home/HomeView.swift:176 declares deletePendingGame",
+        "ScoreKeeper/Views/Home/HomeView.swift:193 declares resultText",
+        "ScoreKeeper/Views/Home/HomeView.swift:208 declares HomeHeader"
       ]
     },
     {
@@ -7622,11 +7623,11 @@
         },
         {
           "name": "Text",
-          "line": 359
+          "line": 356
         },
         {
           "name": "statusStyle",
-          "line": 360
+          "line": 357
         }
       ],
       "dependencies": [
@@ -7666,7 +7667,6 @@
         "m-bdc0116cacd2",
         "m-bfafbf2abca9",
         "m-c349a0909479",
-        "m-d37003c71b1d",
         "m-e02316f9686d",
         "m-e0eea0aa8a95",
         "m-e22ae20dc432",
@@ -7680,13 +7680,15 @@
       "external_dependencies": [
         "SwiftUI"
       ],
-      "related_tests": [],
+      "related_tests": [
+        "ScoreKeeperUITests/ScoreKeeperUITests.swift"
+      ],
       "evidence": [
         "ScoreKeeper/Views/Paywall/PaywallView.swift:3 declares PaywallView",
         "ScoreKeeper/Views/Paywall/PaywallView.swift:324 declares benefitRow",
         "ScoreKeeper/Views/Paywall/PaywallView.swift:346 declares completeUnlockFlow",
-        "ScoreKeeper/Views/Paywall/PaywallView.swift:359 declares Text",
-        "ScoreKeeper/Views/Paywall/PaywallView.swift:360 declares statusStyle"
+        "ScoreKeeper/Views/Paywall/PaywallView.swift:356 declares Text",
+        "ScoreKeeper/Views/Paywall/PaywallView.swift:357 declares statusStyle"
       ]
     },
     {
@@ -7701,127 +7703,46 @@
       "symbols": [
         {
           "name": "GenericScoringView",
-          "line": 6
+          "line": 4
         },
         {
           "name": "scoreBinding",
-          "line": 67
+          "line": 49
         },
         {
           "name": "endRound",
-          "line": 74
+          "line": 56
         },
         {
           "name": "submitRound",
-          "line": 83
+          "line": 60
         },
         {
           "name": "finishGame",
-          "line": 115
-        },
-        {
-          "name": "fetchCompletedGameCount",
-          "line": 145
+          "line": 92
         },
         {
           "name": "CompactRoundScoreTable",
-          "line": 151
+          "line": 113
         },
         {
           "name": "CompactRoundScoreRow",
-          "line": 207
-        },
-        {
-          "name": "GenericFocusScoreTable",
-          "line": 254
-        },
-        {
-          "name": "FocusScoreRow",
-          "line": 331
-        },
-        {
-          "name": "quickButton",
-          "line": 427
-        },
-        {
-          "name": "apply",
-          "line": 451
-        },
-        {
-          "name": "CompactScoreStepper",
-          "line": 459
-        },
-        {
-          "name": "stepButton",
-          "line": 491
-        },
-        {
-          "name": "HandwrittenRoundEntryView",
-          "line": 522
-        },
-        {
-          "name": "recognizeDrawing",
-          "line": 701
-        },
-        {
-          "name": "acceptScore",
-          "line": 718
-        },
-        {
-          "name": "HandwritingCanvas",
-          "line": 740
-        },
-        {
-          "name": "makeCoordinator",
-          "line": 744
-        },
-        {
-          "name": "makeUIView",
-          "line": 748
-        },
-        {
-          "name": "updateUIView",
-          "line": 760
-        },
-        {
-          "name": "Coordinator",
-          "line": 765
-        },
-        {
-          "name": "canvasViewDrawingDidChange",
-          "line": 774
-        },
-        {
-          "name": "HandwritingScoreRecognizer",
-          "line": 781
-        },
-        {
-          "name": "recognize",
-          "line": 782
-        },
-        {
-          "name": "parse",
-          "line": 801
+          "line": 169
         }
       ],
       "dependencies": [
         "m-0f75696778d6",
-        "m-129a660f4f5d",
         "m-135f1761cffd",
         "m-1a6112e3f77d",
-        "m-21bd860d9020",
         "m-35ed9d18e80f",
         "m-3982a76a7594",
         "m-4649be8a6991",
         "m-4cec4f681cbf",
-        "m-5082583d1d52",
-        "m-50d5fa165965",
         "m-69a1d1f39773",
         "m-73ae6e01d9ff",
         "m-857550864871",
         "m-858733bc014d",
         "m-8eafb6d0bb0c",
-        "m-8edab7e8c61e",
         "m-9df098f7dcbe",
         "m-ac70cc805a96",
         "m-bc1b0e015b50",
@@ -7829,37 +7750,25 @@
         "m-cc52dc49e1a6",
         "m-e2330f24d0c9",
         "m-e2f53d4b39fd",
-        "m-ea89de1ef09c",
-        "m-f8ff060f8ac8",
         "m-fc5361ceb90a",
         "m-fd1746dad61b"
       ],
       "callers": [
-        "m-1fe480a1e899",
-        "m-3982a76a7594",
-        "m-7a860dcea9d5",
-        "m-d530bf8fc242",
-        "m-e19875c7afc0",
-        "m-e2330f24d0c9"
+        "m-7a860dcea9d5"
       ],
       "external_dependencies": [
-        "PencilKit",
         "SwiftData",
-        "SwiftUI",
-        "Vision"
+        "SwiftUI"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
-        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:6 declares GenericScoringView",
-        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:67 declares scoreBinding",
-        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:74 declares endRound",
-        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:83 declares submitRound",
-        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:115 declares finishGame",
-        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:145 declares fetchCompletedGameCount",
-        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:151 declares CompactRoundScoreTable",
-        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:207 declares CompactRoundScoreRow"
+        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:4 declares GenericScoringView",
+        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:49 declares scoreBinding",
+        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:56 declares endRound",
+        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:60 declares submitRound",
+        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:92 declares finishGame",
+        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:113 declares CompactRoundScoreTable",
+        "ScoreKeeper/Views/Scoring/GenericScoringView.swift:169 declares CompactRoundScoreRow"
       ]
     },
     {
@@ -7878,43 +7787,37 @@
         },
         {
           "name": "phaseAccessory",
-          "line": 122
+          "line": 120
         },
         {
           "name": "completedPhaseBinding",
-          "line": 143
+          "line": 141
         },
         {
           "name": "leftoverPointsBinding",
-          "line": 150
+          "line": 148
         },
         {
           "name": "submitRound",
-          "line": 157
+          "line": 155
         },
         {
           "name": "finishGame",
-          "line": 199
-        },
-        {
-          "name": "fetchCompletedGameCount",
-          "line": 223
+          "line": 197
         },
         {
           "name": "PegBoardStrip",
-          "line": 229
+          "line": 213
         }
       ],
       "dependencies": [
         "m-0f75696778d6",
         "m-135f1761cffd",
         "m-1a6112e3f77d",
-        "m-21bd860d9020",
         "m-35ed9d18e80f",
         "m-3982a76a7594",
         "m-4649be8a6991",
         "m-4cec4f681cbf",
-        "m-5082583d1d52",
         "m-50d5fa165965",
         "m-69a1d1f39773",
         "m-73ae6e01d9ff",
@@ -7941,13 +7844,12 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:4 declares Phase10ScoringView",
-        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:122 declares phaseAccessory",
-        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:143 declares completedPhaseBinding",
-        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:150 declares leftoverPointsBinding",
-        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:157 declares submitRound",
-        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:199 declares finishGame",
-        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:223 declares fetchCompletedGameCount",
-        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:229 declares PegBoardStrip"
+        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:120 declares phaseAccessory",
+        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:141 declares completedPhaseBinding",
+        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:148 declares leftoverPointsBinding",
+        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:155 declares submitRound",
+        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:197 declares finishGame",
+        "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:213 declares PegBoardStrip"
       ]
     },
     {
@@ -7966,33 +7868,27 @@
         },
         {
           "name": "scoringContent",
-          "line": 20
+          "line": 18
         },
         {
           "name": "endGame",
-          "line": 79
-        },
-        {
-          "name": "fetchCompletedGameCount",
-          "line": 104
+          "line": 77
         },
         {
           "name": "SessionLoader",
-          "line": 112
+          "line": 96
         },
         {
           "name": "fetchSession",
-          "line": 125
+          "line": 109
         }
       ],
       "dependencies": [
         "m-1a6112e3f77d",
-        "m-21bd860d9020",
         "m-35ed9d18e80f",
         "m-3982a76a7594",
         "m-4649be8a6991",
         "m-4cec4f681cbf",
-        "m-5082583d1d52",
         "m-73ae6e01d9ff",
         "m-8eafb6d0bb0c",
         "m-8edab7e8c61e",
@@ -8002,8 +7898,7 @@
         "m-cc52dc49e1a6",
         "m-e02316f9686d",
         "m-e2330f24d0c9",
-        "m-ee46ac974059",
-        "m-fc5361ceb90a"
+        "m-ee46ac974059"
       ],
       "callers": [
         "m-1a6112e3f77d",
@@ -8017,11 +7912,10 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Scoring/ScoringView.swift:4 declares ScoringView",
-        "ScoreKeeper/Views/Scoring/ScoringView.swift:20 declares scoringContent",
-        "ScoreKeeper/Views/Scoring/ScoringView.swift:79 declares endGame",
-        "ScoreKeeper/Views/Scoring/ScoringView.swift:104 declares fetchCompletedGameCount",
-        "ScoreKeeper/Views/Scoring/ScoringView.swift:112 declares SessionLoader",
-        "ScoreKeeper/Views/Scoring/ScoringView.swift:125 declares fetchSession"
+        "ScoreKeeper/Views/Scoring/ScoringView.swift:18 declares scoringContent",
+        "ScoreKeeper/Views/Scoring/ScoringView.swift:77 declares endGame",
+        "ScoreKeeper/Views/Scoring/ScoringView.swift:96 declares SessionLoader",
+        "ScoreKeeper/Views/Scoring/ScoringView.swift:109 declares fetchSession"
       ]
     },
     {
@@ -8040,11 +7934,11 @@
         },
         {
           "name": "handValueBinding",
-          "line": 114
+          "line": 115
         },
         {
           "name": "submitRound",
-          "line": 121
+          "line": 122
         }
       ],
       "dependencies": [
@@ -8080,8 +7974,8 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:4 declares WhatsForDinnerScoringView",
-        "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:114 declares handValueBinding",
-        "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:121 declares submitRound"
+        "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:115 declares handValueBinding",
+        "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:122 declares submitRound"
       ]
     },
     {
@@ -8149,19 +8043,18 @@
         },
         {
           "name": "startConfiguredGame",
-          "line": 175
+          "line": 183
         },
         {
           "name": "createSession",
-          "line": 186
+          "line": 194
         },
         {
           "name": "savePlayersToRoster",
-          "line": 211
+          "line": 219
         }
       ],
       "dependencies": [
-        "m-0f75696778d6",
         "m-1a6112e3f77d",
         "m-21bd860d9020",
         "m-35ed9d18e80f",
@@ -8192,9 +8085,9 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Setup/GameConfigView.swift:4 declares GameConfigView",
-        "ScoreKeeper/Views/Setup/GameConfigView.swift:175 declares startConfiguredGame",
-        "ScoreKeeper/Views/Setup/GameConfigView.swift:186 declares createSession",
-        "ScoreKeeper/Views/Setup/GameConfigView.swift:211 declares savePlayersToRoster"
+        "ScoreKeeper/Views/Setup/GameConfigView.swift:183 declares startConfiguredGame",
+        "ScoreKeeper/Views/Setup/GameConfigView.swift:194 declares createSession",
+        "ScoreKeeper/Views/Setup/GameConfigView.swift:219 declares savePlayersToRoster"
       ]
     },
     {
@@ -8213,31 +8106,31 @@
         },
         {
           "name": "selectTab",
-          "line": 43
+          "line": 33
         },
         {
           "name": "GamePickerHero",
-          "line": 58
+          "line": 48
         },
         {
           "name": "SetupFeature",
-          "line": 89
+          "line": 79
         },
         {
           "name": "SetupFeatureStrip",
-          "line": 96
+          "line": 86
         },
         {
           "name": "SetupFeatureChip",
-          "line": 122
+          "line": 112
         },
         {
           "name": "SmartSetupPreview",
-          "line": 145
+          "line": 135
         },
         {
           "name": "FeatureRow",
-          "line": 163
+          "line": 153
         }
       ],
       "dependencies": [
@@ -8248,7 +8141,6 @@
         "m-4649be8a6991",
         "m-4cec4f681cbf",
         "m-69a1d1f39773",
-        "m-857550864871",
         "m-8eafb6d0bb0c",
         "m-8edab7e8c61e",
         "m-9d511b895bfc",
@@ -8266,13 +8158,13 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Setup/GamePickerView.swift:3 declares GamePickerView",
-        "ScoreKeeper/Views/Setup/GamePickerView.swift:43 declares selectTab",
-        "ScoreKeeper/Views/Setup/GamePickerView.swift:58 declares GamePickerHero",
-        "ScoreKeeper/Views/Setup/GamePickerView.swift:89 declares SetupFeature",
-        "ScoreKeeper/Views/Setup/GamePickerView.swift:96 declares SetupFeatureStrip",
-        "ScoreKeeper/Views/Setup/GamePickerView.swift:122 declares SetupFeatureChip",
-        "ScoreKeeper/Views/Setup/GamePickerView.swift:145 declares SmartSetupPreview",
-        "ScoreKeeper/Views/Setup/GamePickerView.swift:163 declares FeatureRow"
+        "ScoreKeeper/Views/Setup/GamePickerView.swift:33 declares selectTab",
+        "ScoreKeeper/Views/Setup/GamePickerView.swift:48 declares GamePickerHero",
+        "ScoreKeeper/Views/Setup/GamePickerView.swift:79 declares SetupFeature",
+        "ScoreKeeper/Views/Setup/GamePickerView.swift:86 declares SetupFeatureStrip",
+        "ScoreKeeper/Views/Setup/GamePickerView.swift:112 declares SetupFeatureChip",
+        "ScoreKeeper/Views/Setup/GamePickerView.swift:135 declares SmartSetupPreview",
+        "ScoreKeeper/Views/Setup/GamePickerView.swift:153 declares FeatureRow"
       ]
     },
     {
@@ -8295,11 +8187,10 @@
         },
         {
           "name": "deletePendingPlayer",
-          "line": 120
+          "line": 133
         }
       ],
       "dependencies": [
-        "m-0f75696778d6",
         "m-129a660f4f5d",
         "m-35ed9d18e80f",
         "m-3982a76a7594",
@@ -8327,7 +8218,7 @@
       "evidence": [
         "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:4 declares PlayerRosterSheet",
         "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:75 declares rosterRow",
-        "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:120 declares deletePendingPlayer"
+        "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:133 declares deletePendingPlayer"
       ]
     },
     {
@@ -8346,47 +8237,47 @@
         },
         {
           "name": "addPlayer",
-          "line": 128
+          "line": 125
         },
         {
           "name": "startGame",
-          "line": 135
+          "line": 132
         },
         {
           "name": "addRosterNames",
-          "line": 151
+          "line": 148
         },
         {
           "name": "createSession",
-          "line": 164
+          "line": 161
         },
         {
           "name": "savePlayersToRoster",
-          "line": 187
+          "line": 184
         },
         {
           "name": "SetupPlayerHeader",
-          "line": 207
+          "line": 204
         },
         {
           "name": "SavedPlayersBar",
-          "line": 243
+          "line": 240
         },
         {
           "name": "PlayerNameFields",
-          "line": 276
+          "line": 273
         },
         {
           "name": "removePlayer",
-          "line": 304
+          "line": 299
         },
         {
           "name": "PlayerNameRow",
-          "line": 311
+          "line": 306
         },
         {
           "name": "AddPlayerControls",
-          "line": 356
+          "line": 351
         }
       ],
       "dependencies": [
@@ -8423,13 +8314,13 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Setup/PlayerSetupView.swift:4 declares PlayerSetupView",
-        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:128 declares addPlayer",
-        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:135 declares startGame",
-        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:151 declares addRosterNames",
-        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:164 declares createSession",
-        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:187 declares savePlayersToRoster",
-        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:207 declares SetupPlayerHeader",
-        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:243 declares SavedPlayersBar"
+        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:125 declares addPlayer",
+        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:132 declares startGame",
+        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:148 declares addRosterNames",
+        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:161 declares createSession",
+        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:184 declares savePlayersToRoster",
+        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:204 declares SetupPlayerHeader",
+        "ScoreKeeper/Views/Setup/PlayerSetupView.swift:240 declares SavedPlayersBar"
       ]
     },
     {
@@ -8597,15 +8488,15 @@
         },
         {
           "name": "DetailHeader",
-          "line": 34
+          "line": 27
         },
         {
           "name": "RoundBreakdownSection",
-          "line": 61
+          "line": 54
         },
         {
           "name": "RoundCard",
-          "line": 79
+          "line": 72
         }
       ],
       "dependencies": [
@@ -8637,9 +8528,9 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Summary/GameDetailView.swift:4 declares GameDetailView",
-        "ScoreKeeper/Views/Summary/GameDetailView.swift:34 declares DetailHeader",
-        "ScoreKeeper/Views/Summary/GameDetailView.swift:61 declares RoundBreakdownSection",
-        "ScoreKeeper/Views/Summary/GameDetailView.swift:79 declares RoundCard"
+        "ScoreKeeper/Views/Summary/GameDetailView.swift:27 declares DetailHeader",
+        "ScoreKeeper/Views/Summary/GameDetailView.swift:54 declares RoundBreakdownSection",
+        "ScoreKeeper/Views/Summary/GameDetailView.swift:72 declares RoundCard"
       ]
     },
     {
@@ -8657,44 +8548,40 @@
           "line": 4
         },
         {
-          "name": "selectTab",
-          "line": 81
-        },
-        {
           "name": "playAgain",
-          "line": 97
+          "line": 65
         },
         {
           "name": "evaluateReviewAskIfNeeded",
-          "line": 132
+          "line": 96
         },
         {
           "name": "WinnerHeroSection",
-          "line": 144
+          "line": 108
         },
         {
           "name": "EndGameButtons",
-          "line": 256
+          "line": 215
         },
         {
           "name": "GameRecapPanel",
-          "line": 278
+          "line": 237
         },
         {
           "name": "RecapMetric",
-          "line": 324
+          "line": 283
         },
         {
           "name": "ScoreSparkline",
-          "line": 359
+          "line": 318
         },
         {
           "name": "chartSeries",
-          "line": 389
+          "line": 348
         },
         {
           "name": "PlayerChartSeries",
-          "line": 427
+          "line": 386
         }
       ],
       "dependencies": [
@@ -8705,7 +8592,6 @@
         "m-35ed9d18e80f",
         "m-3982a76a7594",
         "m-4649be8a6991",
-        "m-47332d8185ba",
         "m-4cec4f681cbf",
         "m-5082583d1d52",
         "m-69a1d1f39773",
@@ -8732,13 +8618,13 @@
       "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Summary/GameOverView.swift:4 declares GameOverView",
-        "ScoreKeeper/Views/Summary/GameOverView.swift:81 declares selectTab",
-        "ScoreKeeper/Views/Summary/GameOverView.swift:97 declares playAgain",
-        "ScoreKeeper/Views/Summary/GameOverView.swift:132 declares evaluateReviewAskIfNeeded",
-        "ScoreKeeper/Views/Summary/GameOverView.swift:144 declares WinnerHeroSection",
-        "ScoreKeeper/Views/Summary/GameOverView.swift:256 declares EndGameButtons",
-        "ScoreKeeper/Views/Summary/GameOverView.swift:278 declares GameRecapPanel",
-        "ScoreKeeper/Views/Summary/GameOverView.swift:324 declares RecapMetric"
+        "ScoreKeeper/Views/Summary/GameOverView.swift:65 declares playAgain",
+        "ScoreKeeper/Views/Summary/GameOverView.swift:96 declares evaluateReviewAskIfNeeded",
+        "ScoreKeeper/Views/Summary/GameOverView.swift:108 declares WinnerHeroSection",
+        "ScoreKeeper/Views/Summary/GameOverView.swift:215 declares EndGameButtons",
+        "ScoreKeeper/Views/Summary/GameOverView.swift:237 declares GameRecapPanel",
+        "ScoreKeeper/Views/Summary/GameOverView.swift:283 declares RecapMetric",
+        "ScoreKeeper/Views/Summary/GameOverView.swift:318 declares ScoreSparkline"
       ]
     },
     {
@@ -8758,7 +8644,6 @@
       ],
       "dependencies": [
         "m-3982a76a7594",
-        "m-e02316f9686d",
         "m-ea89de1ef09c"
       ],
       "callers": [],
@@ -8908,13 +8793,7 @@
       "from": "m-0f75696778d6",
       "to": "m-129a660f4f5d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:210 references ClubhousePressableButtonStyle"
-    },
-    {
-      "from": "m-0f75696778d6",
-      "to": "m-135f1761cffd",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:190 references Round"
+      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:219 references ClubhousePressableButtonStyle"
     },
     {
       "from": "m-0f75696778d6",
@@ -8926,7 +8805,7 @@
       "from": "m-0f75696778d6",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:816 references control"
+      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:844 references control"
     },
     {
       "from": "m-0f75696778d6",
@@ -8956,13 +8835,13 @@
       "from": "m-0f75696778d6",
       "to": "m-73ae6e01d9ff",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:197 references Button"
+      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:206 references Button"
     },
     {
       "from": "m-0f75696778d6",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:348 references accent"
+      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:376 references accent"
     },
     {
       "from": "m-0f75696778d6",
@@ -8992,7 +8871,7 @@
       "from": "m-0f75696778d6",
       "to": "m-ea89de1ef09c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:365 references from"
+      "evidence": "ScoreKeeper/Views/Components/ClubhouseComponents.swift:393 references from"
     },
     {
       "from": "m-0f75696778d6",
@@ -9304,103 +9183,103 @@
       "from": "m-1dfdc4f51048",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:56 references scorecardSurface"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:49 references scorecardSurface"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-135f1761cffd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:67 references Round"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:60 references Round"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:40 references font"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:33 references font"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:70 references players"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:63 references players"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:44 references Text"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:37 references Text"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:45 references AppFonts"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:38 references AppFonts"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-50d5fa165965",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:95 references PlayerGlyph"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:88 references PlayerGlyph"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:91 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:84 references PlayerColors"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-7a860dcea9d5",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:9 references SessionLoader"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:8 references SessionLoader"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:46 references ink"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:39 references ink"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-95646f0435fa",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:16 references StandingsList"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:14 references StandingsList"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:13 references AppTheme"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:12 references AppTheme"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-bc1b0e015b50",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:49 references style"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:42 references style"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-c2af430a265b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:10 references GameEngineFactory"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:9 references GameEngineFactory"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:46 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:39 references ClubhouseTheme"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-e2f53d4b39fd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:81 references Player"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:74 references Player"
     },
     {
       "from": "m-1dfdc4f51048",
       "to": "m-fc5361ceb90a",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:67 references AppSectionHeader"
+      "evidence": "ScoreKeeper/Views/Summary/GameDetailView.swift:60 references AppSectionHeader"
     },
     {
       "from": "m-1fe480a1e899",
@@ -9419,12 +9298,6 @@
       "to": "m-dbe2347c6eb0",
       "kind": "symbol",
       "evidence": "design-explorations/mascot-rive/rive-bridge.mjs:79 references ext"
-    },
-    {
-      "from": "m-1fe480a1e899",
-      "to": "m-e02316f9686d",
-      "kind": "symbol",
-      "evidence": "design-explorations/mascot-rive/rive-bridge.mjs:12 references parse"
     },
     {
       "from": "m-1fe480a1e899",
@@ -9488,12 +9361,6 @@
     },
     {
       "from": "m-36a64c8fe97a",
-      "to": "m-0f75696778d6",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:92 references scorecardSurface"
-    },
-    {
-      "from": "m-36a64c8fe97a",
       "to": "m-1a6112e3f77d",
       "kind": "symbol",
       "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:8 references NavigationRouter"
@@ -9514,7 +9381,7 @@
       "from": "m-36a64c8fe97a",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:196 references players"
+      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:204 references players"
     },
     {
       "from": "m-36a64c8fe97a",
@@ -9532,13 +9399,13 @@
       "from": "m-36a64c8fe97a",
       "to": "m-55b2e3971769",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:214 references SavedPlayer"
+      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:222 references SavedPlayer"
     },
     {
       "from": "m-36a64c8fe97a",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:221 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:229 references PlayerColors"
     },
     {
       "from": "m-36a64c8fe97a",
@@ -9574,13 +9441,13 @@
       "from": "m-36a64c8fe97a",
       "to": "m-e2330f24d0c9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:219 references now"
+      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:227 references now"
     },
     {
       "from": "m-36a64c8fe97a",
       "to": "m-e2f53d4b39fd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:194 references Player"
+      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:202 references Player"
     },
     {
       "from": "m-36a64c8fe97a",
@@ -9592,7 +9459,7 @@
       "from": "m-36a64c8fe97a",
       "to": "m-f8ff060f8ac8",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:169 references Label"
+      "evidence": "ScoreKeeper/Views/Setup/GameConfigView.swift:177 references Label"
     },
     {
       "from": "m-36a64c8fe97a",
@@ -9677,12 +9544,6 @@
       "to": "m-bc1b0e015b50",
       "kind": "symbol",
       "evidence": "redesign-loop/app/app.js:597 references style"
-    },
-    {
-      "from": "m-3982a76a7594",
-      "to": "m-e02316f9686d",
-      "kind": "symbol",
-      "evidence": "redesign-loop/app/app.js:94 references parse"
     },
     {
       "from": "m-3982a76a7594",
@@ -9859,30 +9720,6 @@
       "evidence": "release/app-store-screenshots/src/lib/constants.ts:27 references Phone"
     },
     {
-      "from": "m-47332d8185ba",
-      "to": "m-3982a76a7594",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ConfettiOverlay.swift:23 references context"
-    },
-    {
-      "from": "m-47332d8185ba",
-      "to": "m-69a1d1f39773",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ConfettiOverlay.swift:18 references PlayerColors"
-    },
-    {
-      "from": "m-47332d8185ba",
-      "to": "m-8eafb6d0bb0c",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ConfettiOverlay.swift:27 references width"
-    },
-    {
-      "from": "m-47332d8185ba",
-      "to": "m-cc52dc49e1a6",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ConfettiOverlay.swift:18 references ClubhouseTheme"
-    },
-    {
       "from": "m-4cec4f681cbf",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
@@ -9911,6 +9748,42 @@
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
       "evidence": "ScoreKeeper/Theme/AppFonts.swift:24 references ClubhouseTheme"
+    },
+    {
+      "from": "m-502329c2eed8",
+      "to": "m-1a6112e3f77d",
+      "kind": "symbol",
+      "evidence": "design-explorations/pipcount-motion-prototype-20260823/verify-prototype.mjs:118 references push"
+    },
+    {
+      "from": "m-502329c2eed8",
+      "to": "m-3982a76a7594",
+      "kind": "symbol",
+      "evidence": "design-explorations/pipcount-motion-prototype-20260823/verify-prototype.mjs:6 references meta"
+    },
+    {
+      "from": "m-502329c2eed8",
+      "to": "m-8cfbebdc4411",
+      "kind": "symbol",
+      "evidence": "design-explorations/pipcount-motion-prototype-20260823/verify-prototype.mjs:83 references Page"
+    },
+    {
+      "from": "m-502329c2eed8",
+      "to": "m-8eafb6d0bb0c",
+      "kind": "symbol",
+      "evidence": "design-explorations/pipcount-motion-prototype-20260823/verify-prototype.mjs:96 references screenshot"
+    },
+    {
+      "from": "m-502329c2eed8",
+      "to": "m-95114df760d9",
+      "kind": "symbol",
+      "evidence": "design-explorations/pipcount-motion-prototype-20260823/verify-prototype.mjs:98 references base64"
+    },
+    {
+      "from": "m-502329c2eed8",
+      "to": "m-ea89de1ef09c",
+      "kind": "symbol",
+      "evidence": "design-explorations/pipcount-motion-prototype-20260823/verify-prototype.mjs:1 references from"
     },
     {
       "from": "m-5082583d1d52",
@@ -9958,7 +9831,7 @@
       "from": "m-50d5fa165965",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/PlayerBadge.swift:42 references Text"
+      "evidence": "ScoreKeeper/Views/Components/PlayerBadge.swift:43 references Text"
     },
     {
       "from": "m-50d5fa165965",
@@ -9970,13 +9843,13 @@
       "from": "m-50d5fa165965",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/PlayerBadge.swift:59 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Components/PlayerBadge.swift:60 references PlayerColors"
     },
     {
       "from": "m-50d5fa165965",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/PlayerBadge.swift:44 references ink"
+      "evidence": "ScoreKeeper/Views/Components/PlayerBadge.swift:45 references ink"
     },
     {
       "from": "m-50d5fa165965",
@@ -9988,7 +9861,7 @@
       "from": "m-50d5fa165965",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/PlayerBadge.swift:44 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Components/PlayerBadge.swift:45 references ClubhouseTheme"
     },
     {
       "from": "m-50d5fa165965",
@@ -10024,19 +9897,19 @@
       "from": "m-57e54444c2de",
       "to": "m-07b70b82f265",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:702 references StatsCalculator"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:704 references StatsCalculator"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:283 references scorecardSurface"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:285 references scorecardSurface"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-129a660f4f5d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:247 references PressableButtonStyle"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:249 references PressableButtonStyle"
     },
     {
       "from": "m-57e54444c2de",
@@ -10060,7 +9933,7 @@
       "from": "m-57e54444c2de",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:218 references font"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:220 references font"
     },
     {
       "from": "m-57e54444c2de",
@@ -10072,55 +9945,55 @@
       "from": "m-57e54444c2de",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:117 references PaywallView"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:119 references PaywallView"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:218 references AppFonts"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:220 references AppFonts"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-55b2e3971769",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:933 references SavedPlayer"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:935 references SavedPlayer"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:464 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:466 references PlayerColors"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-73ae6e01d9ff",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:876 references button"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:878 references button"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-857550864871",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:420 references element"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:422 references element"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:219 references ink"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:221 references ink"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-8edab7e8c61e",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:108 references toolbar"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:110 references toolbar"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-95114df760d9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:147 references theme"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:149 references theme"
     },
     {
       "from": "m-57e54444c2de",
@@ -10132,43 +10005,43 @@
       "from": "m-57e54444c2de",
       "to": "m-bc1b0e015b50",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:433 references headline"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:435 references headline"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-c2af430a265b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:192 references GameEngineFactory"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:194 references GameEngineFactory"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:219 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:221 references ClubhouseTheme"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-e2330f24d0c9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:769 references timer"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:771 references timer"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-e2f53d4b39fd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:820 references Player"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:822 references Player"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-ea89de1ef09c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:702 references from"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:704 references from"
     },
     {
       "from": "m-57e54444c2de",
       "to": "m-f8ff060f8ac8",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:292 references Label"
+      "evidence": "ScoreKeeper/Views/Home/HomeView.swift:294 references Label"
     },
     {
       "from": "m-57e54444c2de",
@@ -10196,21 +10069,15 @@
     },
     {
       "from": "m-6fdc7cbbab3f",
-      "to": "m-0f75696778d6",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:98 references scorecardSurface"
-    },
-    {
-      "from": "m-6fdc7cbbab3f",
       "to": "m-129a660f4f5d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:100 references PressableButtonStyle"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:113 references PressableButtonStyle"
     },
     {
       "from": "m-6fdc7cbbab3f",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:87 references font"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:88 references font"
     },
     {
       "from": "m-6fdc7cbbab3f",
@@ -10228,7 +10095,7 @@
       "from": "m-6fdc7cbbab3f",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:87 references AppFonts"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:88 references AppFonts"
     },
     {
       "from": "m-6fdc7cbbab3f",
@@ -10246,7 +10113,7 @@
       "from": "m-6fdc7cbbab3f",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:94 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:106 references PlayerColors"
     },
     {
       "from": "m-6fdc7cbbab3f",
@@ -10258,7 +10125,7 @@
       "from": "m-6fdc7cbbab3f",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:111 references width"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:89 references ink"
     },
     {
       "from": "m-6fdc7cbbab3f",
@@ -10270,13 +10137,13 @@
       "from": "m-6fdc7cbbab3f",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:26 references AppTheme"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:31 references AppTheme"
     },
     {
       "from": "m-6fdc7cbbab3f",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:88 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerRosterSheet.swift:89 references ClubhouseTheme"
     },
     {
       "from": "m-6fdc7cbbab3f",
@@ -10318,7 +10185,7 @@
       "from": "m-7757bb2fbe56",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:25 references font"
+      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:24 references font"
     },
     {
       "from": "m-7757bb2fbe56",
@@ -10330,31 +10197,31 @@
       "from": "m-7757bb2fbe56",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:24 references Text"
+      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:23 references Text"
     },
     {
       "from": "m-7757bb2fbe56",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:25 references AppFonts"
+      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:24 references AppFonts"
     },
     {
       "from": "m-7757bb2fbe56",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:26 references ink"
+      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:25 references ink"
     },
     {
       "from": "m-7757bb2fbe56",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:11 references AppTheme"
+      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:10 references AppTheme"
     },
     {
       "from": "m-7757bb2fbe56",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:15 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Components/RoundTracker.swift:14 references ClubhouseTheme"
     },
     {
       "from": "m-7757bb2fbe56",
@@ -10370,105 +10237,87 @@
     },
     {
       "from": "m-7a860dcea9d5",
-      "to": "m-21bd860d9020",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:8 references StoreManager"
-    },
-    {
-      "from": "m-7a860dcea9d5",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:53 references font"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:51 references font"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:63 references current"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:61 references current"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:63 references Text"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:61 references Text"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:53 references AppFonts"
-    },
-    {
-      "from": "m-7a860dcea9d5",
-      "to": "m-5082583d1d52",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:9 references ReviewAskManager"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:51 references AppFonts"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-73ae6e01d9ff",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:38 references Button"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:36 references Button"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:45 references ink"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:43 references ink"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-8edab7e8c61e",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:36 references toolbar"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:34 references toolbar"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-9279b9d4beb9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:28 references WhatsForDinnerScoringView"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:26 references WhatsForDinnerScoringView"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:33 references appBackground"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:31 references appBackground"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-c2af430a265b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:79 references GameEngine"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:77 references GameEngine"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:45 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:43 references ClubhouseTheme"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-e02316f9686d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:26 references GenericScoringView"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:24 references GenericScoringView"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-e2330f24d0c9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:81 references now"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:79 references now"
     },
     {
       "from": "m-7a860dcea9d5",
       "to": "m-ee46ac974059",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:30 references Phase10ScoringView"
-    },
-    {
-      "from": "m-7a860dcea9d5",
-      "to": "m-fc5361ceb90a",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:104 references Int"
+      "evidence": "ScoreKeeper/Views/Scoring/ScoringView.swift:28 references Phase10ScoringView"
     },
     {
       "from": "m-823b1aa2f40e",
@@ -10702,91 +10551,91 @@
       "from": "m-858733bc014d",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:413 references scorecardSurface"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:442 references scorecardSurface"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-129a660f4f5d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:78 references PressableButtonStyle"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:85 references PressableButtonStyle"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-135f1761cffd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:86 references Round"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:93 references Round"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:185 references layout"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:214 references layout"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:421 references minutes"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:450 references minutes"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:57 references Text"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:60 references Text"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:68 references AppFonts"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:73 references AppFonts"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-50d5fa165965",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:549 references PlayerBadge"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:578 references PlayerBadge"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:262 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:291 references PlayerColors"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-73ae6e01d9ff",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:63 references Button"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:67 references Button"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:53 references ink"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:56 references ink"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-8edab7e8c61e",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:340 references toolbar"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:369 references toolbar"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-940c77c01b0d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:569 references ScoreEntryField"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:598 references ScoreEntryField"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:43 references AppTheme"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:46 references AppTheme"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-bc1b0e015b50",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:153 references headline"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:181 references headline"
     },
     {
       "from": "m-858733bc014d",
@@ -10798,43 +10647,43 @@
       "from": "m-858733bc014d",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:53 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:56 references ClubhouseTheme"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-e22ae20dc432",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:489 references ScoreCard"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:518 references ScoreCard"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-e2330f24d0c9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:235 references timer"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:264 references timer"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-e2f53d4b39fd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:320 references Player"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:349 references Player"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-ea89de1ef09c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:383 references from"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:412 references from"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-f8ff060f8ac8",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:55 references Label"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:58 references Label"
     },
     {
       "from": "m-858733bc014d",
       "to": "m-fc5361ceb90a",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:375 references Int"
+      "evidence": "ScoreKeeper/Views/Components/ScoringComponents.swift:404 references Int"
     },
     {
       "from": "m-8790f67b1df6",
@@ -11164,127 +11013,127 @@
       "from": "m-9279b9d4beb9",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:88 references scorecardSurface"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:89 references scorecardSurface"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-129a660f4f5d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:80 references PressableButtonStyle"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:81 references PressableButtonStyle"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-135f1761cffd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:24 references Round"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:25 references Round"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:69 references font"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:70 references font"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:52 references players"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:53 references players"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:42 references Text"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:43 references Text"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:104 references AppFonts"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:105 references AppFonts"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-50d5fa165965",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:59 references PlayerBadge"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:60 references PlayerBadge"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:77 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:78 references PlayerColors"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-73ae6e01d9ff",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:40 references Button"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:41 references Button"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-858733bc014d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:14 references ScoringScreenLayout"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:15 references ScoringScreenLayout"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-90935fa2f0e4",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:93 references Card"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:94 references Card"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-9d511b895bfc",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:22 references GameType"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:23 references GameType"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:47 references AppTheme"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:48 references AppTheme"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-c2af430a265b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:11 references engine"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:12 references engine"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:68 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:69 references ClubhouseTheme"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-e2f53d4b39fd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:114 references Player"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:115 references Player"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-f4513dcaea09",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:11 references WhatsForDinnerEngine"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:12 references WhatsForDinnerEngine"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-f8ff060f8ac8",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:103 references Label"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:104 references Label"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-fc5361ceb90a",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:7 references Int"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:8 references Int"
     },
     {
       "from": "m-9279b9d4beb9",
       "to": "m-fd1746dad61b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:127 references ScoreEntry"
+      "evidence": "ScoreKeeper/Views/Scoring/WhatsForDinnerScoringView.swift:128 references ScoreEntry"
     },
     {
       "from": "m-93cbd38d6bdf",
@@ -11606,15 +11455,21 @@
     },
     {
       "from": "m-9df098f7dcbe",
+      "to": "m-3982a76a7594",
+      "kind": "symbol",
+      "evidence": "ScoreKeeper/Theme/AppTheme.swift:4 references rows"
+    },
+    {
+      "from": "m-9df098f7dcbe",
       "to": "m-95114df760d9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Theme/AppTheme.swift:20 references theme"
+      "evidence": "ScoreKeeper/Theme/AppTheme.swift:21 references theme"
     },
     {
       "from": "m-9df098f7dcbe",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Theme/AppTheme.swift:28 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Theme/AppTheme.swift:29 references ClubhouseTheme"
     },
     {
       "from": "m-9edd4c2a3184",
@@ -12064,13 +11919,13 @@
       "from": "m-c349a0909479",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:221 references scorecardSurface"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:183 references scorecardSurface"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-135f1761cffd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:396 references entry"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:355 references entry"
     },
     {
       "from": "m-c349a0909479",
@@ -12088,7 +11943,7 @@
       "from": "m-c349a0909479",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:153 references layout"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:117 references layout"
     },
     {
       "from": "m-c349a0909479",
@@ -12100,19 +11955,13 @@
       "from": "m-c349a0909479",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:59 references PaywallView"
-    },
-    {
-      "from": "m-c349a0909479",
-      "to": "m-47332d8185ba",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:44 references ConfettiOverlay"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:46 references PaywallView"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:160 references AppFonts"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:124 references AppFonts"
     },
     {
       "from": "m-c349a0909479",
@@ -12124,13 +11973,13 @@
       "from": "m-c349a0909479",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:301 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:260 references PlayerColors"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-73ae6e01d9ff",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:74 references Button"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:58 references Button"
     },
     {
       "from": "m-c349a0909479",
@@ -12142,67 +11991,67 @@
       "from": "m-c349a0909479",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:161 references ink"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:125 references ink"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-8edab7e8c61e",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:63 references toolbar"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:50 references toolbar"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-95646f0435fa",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:282 references PlayerStanding"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:241 references PlayerStanding"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:25 references AppTheme"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:24 references AppTheme"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-bc1b0e015b50",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:348 references style"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:307 references style"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-c2af430a265b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:280 references GameEngine"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:239 references GameEngine"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:161 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:125 references ClubhouseTheme"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-e2f53d4b39fd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:110 references Player"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:78 references Player"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-f8ff060f8ac8",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:264 references Label"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:223 references Label"
     },
     {
       "from": "m-c349a0909479",
       "to": "m-fc5361ceb90a",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:286 references Int"
+      "evidence": "ScoreKeeper/Views/Summary/GameOverView.swift:245 references Int"
     },
     {
       "from": "m-cc52dc49e1a6",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Theme/ClubhouseTheme.swift:22 references names"
+      "evidence": "ScoreKeeper/Theme/ClubhouseTheme.swift:23 references names"
     },
     {
       "from": "m-cc52dc49e1a6",
@@ -12214,13 +12063,19 @@
       "from": "m-cc52dc49e1a6",
       "to": "m-d530bf8fc242",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Theme/ClubhouseTheme.swift:22 references code"
+      "evidence": "ScoreKeeper/Theme/ClubhouseTheme.swift:23 references code"
     },
     {
       "from": "m-cc52dc49e1a6",
       "to": "m-e2330f24d0c9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Theme/ClubhouseTheme.swift:23 references now"
+      "evidence": "ScoreKeeper/Theme/ClubhouseTheme.swift:24 references now"
+    },
+    {
+      "from": "m-cc52dc49e1a6",
+      "to": "m-ea89de1ef09c",
+      "kind": "symbol",
+      "evidence": "ScoreKeeper/Theme/ClubhouseTheme.swift:15 references from"
     },
     {
       "from": "m-ced7aefbb20e",
@@ -12289,52 +12144,10 @@
       "evidence": "release/app-store-screenshots/src/lib/types.ts:51 references transform"
     },
     {
-      "from": "m-d37003c71b1d",
-      "to": "m-35ed9d18e80f",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/AnimatedScoreChange.swift:11 references font"
-    },
-    {
-      "from": "m-d37003c71b1d",
-      "to": "m-3982a76a7594",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/AnimatedScoreChange.swift:36 references overlay"
-    },
-    {
-      "from": "m-d37003c71b1d",
-      "to": "m-4649be8a6991",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/AnimatedScoreChange.swift:10 references Text"
-    },
-    {
-      "from": "m-d37003c71b1d",
-      "to": "m-9df098f7dcbe",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/AnimatedScoreChange.swift:19 references AppMotion"
-    },
-    {
-      "from": "m-d37003c71b1d",
-      "to": "m-cc52dc49e1a6",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/AnimatedScoreChange.swift:13 references ClubhouseTheme"
-    },
-    {
-      "from": "m-d37003c71b1d",
-      "to": "m-fc5361ceb90a",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/AnimatedScoreChange.swift:4 references Int"
-    },
-    {
       "from": "m-d530bf8fc242",
       "to": "m-3982a76a7594",
       "kind": "symbol",
       "evidence": "release/app-store-screenshots/src/app/api/project/route.ts:7 references app"
-    },
-    {
-      "from": "m-d530bf8fc242",
-      "to": "m-e02316f9686d",
-      "kind": "symbol",
-      "evidence": "release/app-store-screenshots/src/app/api/project/route.ts:16 references parse"
     },
     {
       "from": "m-d530bf8fc242",
@@ -12418,169 +12231,127 @@
       "from": "m-e02316f9686d",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:197 references scorecardSurface"
-    },
-    {
-      "from": "m-e02316f9686d",
-      "to": "m-129a660f4f5d",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:438 references PressableButtonStyle"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:159 references scorecardSurface"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-135f1761cffd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:23 references Round"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:19 references Round"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-1a6112e3f77d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:9 references NavigationRouter"
-    },
-    {
-      "from": "m-e02316f9686d",
-      "to": "m-21bd860d9020",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:10 references StoreManager"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:7 references NavigationRouter"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:162 references font"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:124 references font"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:42 references players"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:64 references players"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:63 references Text"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:45 references Text"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:162 references AppFonts"
-    },
-    {
-      "from": "m-e02316f9686d",
-      "to": "m-5082583d1d52",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:11 references ReviewAskManager"
-    },
-    {
-      "from": "m-e02316f9686d",
-      "to": "m-50d5fa165965",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:379 references PlayerGlyph"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:124 references AppFonts"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:247 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:210 references PlayerColors"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-73ae6e01d9ff",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:61 references Button"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:43 references Button"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-857550864871",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:181 references element"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:143 references element"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-858733bc014d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:20 references ScoringScreenLayout"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:16 references ScoringScreenLayout"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:163 references ink"
-    },
-    {
-      "from": "m-e02316f9686d",
-      "to": "m-8edab7e8c61e",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:572 references toolbar"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:125 references ink"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:169 references AppTheme"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:131 references AppTheme"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-ac70cc805a96",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:17 references GenericEngine"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:13 references GenericEngine"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-bc1b0e015b50",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:221 references headline"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:183 references headline"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-c2af430a265b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:153 references GameEngine"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:115 references GameEngine"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:163 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:125 references ClubhouseTheme"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-e2330f24d0c9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:119 references now"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:96 references now"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-e2f53d4b39fd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:67 references Player"
-    },
-    {
-      "from": "m-e02316f9686d",
-      "to": "m-ea89de1ef09c",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:715 references from"
-    },
-    {
-      "from": "m-e02316f9686d",
-      "to": "m-f8ff060f8ac8",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:298 references Label"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:49 references Player"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-fc5361ceb90a",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:12 references Int"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:8 references Int"
     },
     {
       "from": "m-e02316f9686d",
       "to": "m-fd1746dad61b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:89 references ScoreEntry"
+      "evidence": "ScoreKeeper/Views/Scoring/GenericScoringView.swift:66 references ScoreEntry"
     },
     {
       "from": "m-e0b25c3751a8",
@@ -12689,12 +12460,6 @@
       "to": "m-3982a76a7594",
       "kind": "symbol",
       "evidence": "scripts/serve-sim.mjs:98 references app"
-    },
-    {
-      "from": "m-e19875c7afc0",
-      "to": "m-e02316f9686d",
-      "kind": "symbol",
-      "evidence": "scripts/serve-sim.mjs:44 references parse"
     },
     {
       "from": "m-e19875c7afc0",
@@ -12860,12 +12625,6 @@
     },
     {
       "from": "m-e2330f24d0c9",
-      "to": "m-e02316f9686d",
-      "kind": "symbol",
-      "evidence": "release/app-store-screenshots/src/lib/storage.ts:123 references parse"
-    },
-    {
-      "from": "m-e2330f24d0c9",
       "to": "m-ea89de1ef09c",
       "kind": "symbol",
       "evidence": "release/app-store-screenshots/src/lib/storage.ts:2 references from"
@@ -13012,13 +12771,13 @@
       "from": "m-e4a2589d425b",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:301 references scorecardSurface"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:376 references scorecardSurface"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-129a660f4f5d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:267 references PressableButtonStyle"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:264 references PressableButtonStyle"
     },
     {
       "from": "m-e4a2589d425b",
@@ -13036,7 +12795,7 @@
       "from": "m-e4a2589d425b",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:212 references layout"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:209 references layout"
     },
     {
       "from": "m-e4a2589d425b",
@@ -13048,49 +12807,49 @@
       "from": "m-e4a2589d425b",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:112 references PaywallView"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:109 references PaywallView"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:82 references AppFonts"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:81 references AppFonts"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-50d5fa165965",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:320 references PlayerBadge"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:315 references PlayerBadge"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-55b2e3971769",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:190 references SavedPlayer"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:187 references SavedPlayer"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:197 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:194 references PlayerColors"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-6fdc7cbbab3f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:109 references PlayerRosterSheet"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:106 references PlayerRosterSheet"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-73ae6e01d9ff",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:122 references Button"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:119 references Button"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:220 references ink"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:217 references ink"
     },
     {
       "from": "m-e4a2589d425b",
@@ -13108,19 +12867,19 @@
       "from": "m-e4a2589d425b",
       "to": "m-bc1b0e015b50",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:328 references headline"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:323 references headline"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:83 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:82 references ClubhouseTheme"
     },
     {
       "from": "m-e4a2589d425b",
       "to": "m-e2330f24d0c9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:195 references now"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:192 references now"
     },
     {
       "from": "m-e4a2589d425b",
@@ -13132,7 +12891,7 @@
       "from": "m-e4a2589d425b",
       "to": "m-f8ff060f8ac8",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:95 references Label"
+      "evidence": "ScoreKeeper/Views/Setup/PlayerSetupView.swift:94 references Label"
     },
     {
       "from": "m-e4a2589d425b",
@@ -13306,7 +13065,7 @@
       "from": "m-ed4be491113a",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:159 references scorecardSurface"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:149 references scorecardSurface"
     },
     {
       "from": "m-ed4be491113a",
@@ -13318,91 +13077,85 @@
       "from": "m-ed4be491113a",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:62 references layout"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:52 references layout"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:49 references players"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:39 references players"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:68 references Text"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:58 references Text"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:69 references AppFonts"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:59 references AppFonts"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:100 references PlayerColors"
-    },
-    {
-      "from": "m-ed4be491113a",
-      "to": "m-857550864871",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:20 references element"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:90 references PlayerColors"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:70 references ink"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:60 references ink"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-8edab7e8c61e",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:34 references toolbar"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:27 references toolbar"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-9d511b895bfc",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:11 references GameType"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:6 references GameType"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:8 references AppTheme"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:10 references AppTheme"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:70 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:60 references ClubhouseTheme"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-fb5213d93356",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:21 references GameTypeTile"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:15 references GameTypeTile"
     },
     {
       "from": "m-ed4be491113a",
       "to": "m-fc5361ceb90a",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:148 references AppSectionHeader"
+      "evidence": "ScoreKeeper/Views/Setup/GamePickerView.swift:138 references AppSectionHeader"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:98 references scorecardSurface"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:96 references scorecardSurface"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-135f1761cffd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:29 references Round"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:28 references Round"
     },
     {
       "from": "m-ee46ac974059",
@@ -13412,129 +13165,117 @@
     },
     {
       "from": "m-ee46ac974059",
-      "to": "m-21bd860d9020",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:8 references StoreManager"
-    },
-    {
-      "from": "m-ee46ac974059",
       "to": "m-35ed9d18e80f",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:69 references font"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:68 references font"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:63 references players"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:62 references players"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-4649be8a6991",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:44 references Text"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:43 references Text"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-4cec4f681cbf",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:69 references AppFonts"
-    },
-    {
-      "from": "m-ee46ac974059",
-      "to": "m-5082583d1d52",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:9 references ReviewAskManager"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:68 references AppFonts"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-50d5fa165965",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:69 references PlayerGlyph"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:68 references PlayerGlyph"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:28 references color"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:27 references color"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-73ae6e01d9ff",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:39 references Button"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:38 references Button"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-823b1aa2f40e",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:16 references Phase10Engine"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:15 references Phase10Engine"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-858733bc014d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:19 references ScoringScreenLayout"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:18 references ScoringScreenLayout"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:73 references ink"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:72 references ink"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-9d511b895bfc",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:27 references GameType"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:26 references GameType"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:60 references AppTheme"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:59 references AppTheme"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-c2af430a265b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:16 references engine"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:15 references engine"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:73 references ClubhouseTheme"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:72 references ClubhouseTheme"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-e2330f24d0c9",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:44 references now"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:43 references now"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-e2f53d4b39fd",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:122 references Player"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:120 references Player"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-f8ff060f8ac8",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:125 references Label"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:123 references Label"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-fc5361ceb90a",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:10 references Int"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:9 references Int"
     },
     {
       "from": "m-ee46ac974059",
       "to": "m-fd1746dad61b",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:172 references ScoreEntry"
+      "evidence": "ScoreKeeper/Views/Scoring/Phase10ScoringView.swift:170 references ScoreEntry"
     },
     {
       "from": "m-ee666478b505",
@@ -13606,13 +13347,13 @@
       "from": "m-fb5213d93356",
       "to": "m-0f75696778d6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:136 references TriangleShape"
+      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:102 references TriangleShape"
     },
     {
       "from": "m-fb5213d93356",
       "to": "m-129a660f4f5d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:60 references PressableButtonStyle"
+      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:58 references PressableButtonStyle"
     },
     {
       "from": "m-fb5213d93356",
@@ -13624,7 +13365,7 @@
       "from": "m-fb5213d93356",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:62 references players"
+      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:60 references players"
     },
     {
       "from": "m-fb5213d93356",
@@ -13642,7 +13383,7 @@
       "from": "m-fb5213d93356",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:205 references PlayerColors"
+      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:168 references PlayerColors"
     },
     {
       "from": "m-fb5213d93356",
@@ -13654,7 +13395,7 @@
       "from": "m-fb5213d93356",
       "to": "m-8eafb6d0bb0c",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:14 references ink"
+      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:19 references ink"
     },
     {
       "from": "m-fb5213d93356",
@@ -13666,31 +13407,19 @@
       "from": "m-fb5213d93356",
       "to": "m-9df098f7dcbe",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:10 references AppTheme"
-    },
-    {
-      "from": "m-fb5213d93356",
-      "to": "m-bc1b0e015b50",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:46 references style"
+      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:42 references AppTheme"
     },
     {
       "from": "m-fb5213d93356",
       "to": "m-cc52dc49e1a6",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:14 references ClubhouseTheme"
-    },
-    {
-      "from": "m-fb5213d93356",
-      "to": "m-ea89de1ef09c",
-      "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:106 references from"
+      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:19 references ClubhouseTheme"
     },
     {
       "from": "m-fb5213d93356",
       "to": "m-fc5361ceb90a",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:202 references Int"
+      "evidence": "ScoreKeeper/Views/Components/GameTypeTile.swift:165 references Int"
     },
     {
       "from": "m-fc5361ceb90a",
@@ -13702,7 +13431,7 @@
       "from": "m-fc5361ceb90a",
       "to": "m-129a660f4f5d",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/AppSurfaces.swift:142 references PressableButtonStyle"
+      "evidence": "ScoreKeeper/Views/Components/AppSurfaces.swift:143 references PressableButtonStyle"
     },
     {
       "from": "m-fc5361ceb90a",
@@ -13714,7 +13443,7 @@
       "from": "m-fc5361ceb90a",
       "to": "m-3982a76a7594",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/AppSurfaces.swift:270 references players"
+      "evidence": "ScoreKeeper/Views/Components/AppSurfaces.swift:259 references players"
     },
     {
       "from": "m-fc5361ceb90a",
@@ -13732,7 +13461,7 @@
       "from": "m-fc5361ceb90a",
       "to": "m-69a1d1f39773",
       "kind": "symbol",
-      "evidence": "ScoreKeeper/Views/Components/AppSurfaces.swift:131 references color"
+      "evidence": "ScoreKeeper/Views/Components/AppSurfaces.swift:132 references color"
     },
     {
       "from": "m-fc5361ceb90a",
@@ -13893,6 +13622,7 @@
         "m-0f75696778d6",
         "m-21bd860d9020",
         "m-3982a76a7594",
+        "m-5082583d1d52",
         "m-8eafb6d0bb0c",
         "m-95114df760d9",
         "m-9fb4ac4e1fec",
@@ -13907,14 +13637,17 @@
     {
       "path": "ScoreKeeperTests/TargetScoreEngineTests.swift",
       "related_modules": [
+        "m-07b70b82f265",
         "m-135f1761cffd",
+        "m-35ed9d18e80f",
         "m-3982a76a7594",
         "m-823b1aa2f40e",
         "m-95646f0435fa",
         "m-9d511b895bfc",
         "m-ac70cc805a96",
         "m-c2af430a265b",
-        "m-e02316f9686d",
+        "m-dd44d07ab7b8",
+        "m-e2330f24d0c9",
         "m-e2f53d4b39fd",
         "m-ea89de1ef09c",
         "m-f4513dcaea09",
@@ -13946,6 +13679,8 @@
         "m-07b70b82f265",
         "m-135f1761cffd",
         "m-3982a76a7594",
+        "m-4649be8a6991",
+        "m-73ae6e01d9ff",
         "m-857550864871",
         "m-89cb5b8ffd76",
         "m-8eafb6d0bb0c",
@@ -13980,121 +13715,133 @@
       "from": "OnboardingView · first launch fullScreenCover",
       "to": "HomeView",
       "label": "",
-      "evidence": "docs/ui-screen-network.md:31"
+      "evidence": "docs/ui-screen-network.md:36"
     },
     {
       "from": "H",
       "to": "GamePickerView",
       "label": "",
-      "evidence": "docs/ui-screen-network.md:32"
+      "evidence": "docs/ui-screen-network.md:37"
     },
     {
       "from": "GP",
       "to": "PlayerSetupView",
       "label": "",
-      "evidence": "docs/ui-screen-network.md:33"
+      "evidence": "docs/ui-screen-network.md:38"
     },
     {
       "from": "PS",
       "to": "GameConfigView",
       "label": "Scoreboard or Phase 10",
-      "evidence": "docs/ui-screen-network.md:34"
+      "evidence": "docs/ui-screen-network.md:39"
     },
     {
       "from": "PS",
       "to": "ScoringView",
       "label": "What's for Dinner",
-      "evidence": "docs/ui-screen-network.md:35"
+      "evidence": "docs/ui-screen-network.md:40"
     },
     {
       "from": "GC",
       "to": "SC",
       "label": "",
-      "evidence": "docs/ui-screen-network.md:36"
+      "evidence": "docs/ui-screen-network.md:41"
     },
     {
       "from": "H",
       "to": "SC",
       "label": "Resume active game",
-      "evidence": "docs/ui-screen-network.md:37"
+      "evidence": "docs/ui-screen-network.md:42"
     },
     {
       "from": "SC",
       "to": "GameOverView",
       "label": "End Game alert confirm",
-      "evidence": "docs/ui-screen-network.md:38"
+      "evidence": "docs/ui-screen-network.md:43"
     },
     {
       "from": "SC",
       "to": "GO",
       "label": "Phase 10 complete alert confirm",
-      "evidence": "docs/ui-screen-network.md:39"
+      "evidence": "docs/ui-screen-network.md:44"
     },
     {
       "from": "GO",
       "to": "H",
       "label": "Home",
-      "evidence": "docs/ui-screen-network.md:40"
+      "evidence": "docs/ui-screen-network.md:45"
     },
     {
       "from": "GO",
       "to": "SC",
       "label": "Play Again",
-      "evidence": "docs/ui-screen-network.md:41"
+      "evidence": "docs/ui-screen-network.md:46"
     },
     {
       "from": "H",
       "to": "GameDetailView",
       "label": "Recent game row",
-      "evidence": "docs/ui-screen-network.md:42"
+      "evidence": "docs/ui-screen-network.md:47"
     },
     {
       "from": "H",
       "to": "GameHistoryListView",
       "label": "See All, when completed games exist",
-      "evidence": "docs/ui-screen-network.md:43"
+      "evidence": "docs/ui-screen-network.md:48"
     },
     {
       "from": "GH",
       "to": "GD",
       "label": "",
-      "evidence": "docs/ui-screen-network.md:44"
+      "evidence": "docs/ui-screen-network.md:49"
     },
     {
       "from": "H",
       "to": "HeadToHeadView",
       "label": "Head to Head",
-      "evidence": "docs/ui-screen-network.md:45"
+      "evidence": "docs/ui-screen-network.md:50"
     },
     {
       "from": "H",
       "to": "PlayerStatsView",
       "label": "Player stat chip",
-      "evidence": "docs/ui-screen-network.md:46"
+      "evidence": "docs/ui-screen-network.md:51"
     },
     {
       "from": "HH",
       "to": "PV",
       "label": "Player name",
-      "evidence": "docs/ui-screen-network.md:47"
+      "evidence": "docs/ui-screen-network.md:52"
+    },
+    {
+      "from": "H",
+      "to": "SavedPlayersView",
+      "label": "Players dock tab",
+      "evidence": "docs/ui-screen-network.md:53"
+    },
+    {
+      "from": "H",
+      "to": "LegalSupportView",
+      "label": "More dock tab",
+      "evidence": "docs/ui-screen-network.md:54"
     },
     {
       "from": "H",
       "to": "HomeToolSheet",
       "label": "Timer / Dice / Starter / Undo",
-      "evidence": "docs/ui-screen-network.md:48"
+      "evidence": "docs/ui-screen-network.md:55"
     },
     {
       "from": "PS",
       "to": "PlayerRosterSheet",
       "label": "From Roster",
-      "evidence": "docs/ui-screen-network.md:49"
+      "evidence": "docs/ui-screen-network.md:56"
     },
     {
       "from": "SC",
       "to": "ScoringToolSheet",
       "label": "Timer / Dice / Starter / Log",
-      "evidence": "docs/ui-screen-network.md:50"
+      "evidence": "docs/ui-screen-network.md:57"
     }
   ],
   "removed_modules": [],
