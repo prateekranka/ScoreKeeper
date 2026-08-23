@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct AppTheme {
-    static let cornerRadiusSmall: CGFloat = 10
-    static let cornerRadiusMedium: CGFloat = 16
-    static let cornerRadiusLarge: CGFloat = 22
+    // Paper Bauhaus geometry: controls, grouped rows, and score slips.
+    static let cornerRadiusSmall: CGFloat = 6
+    static let cornerRadiusMedium: CGFloat = 10
+    static let cornerRadiusLarge: CGFloat = 14
 
     static let spacingSmall: CGFloat = 8
     static let spacingMedium: CGFloat = 18

@@ -240,9 +240,9 @@ private struct OnboardingArtwork: View {
                 .rotationEffect(.degrees(page == .setupFast ? 2 : page == .toolsAndHistory ? -1.5 : 0))
         }
         .frame(maxWidth: .infinity, minHeight: 322)
-        .scaleEffect(isVisible || reduceMotion ? 1 : 0.97)
+        .scaleEffect(isVisible || reduceMotion ? 1 : 0.985)
         .opacity(isVisible ? 1 : 0)
-        .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped, value: isVisible)
+        .animation(reduceMotion ? AppMotion.fade : AppMotion.page, value: isVisible)
         .accessibilityHidden(true)
     }
 

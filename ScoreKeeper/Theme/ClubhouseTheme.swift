@@ -12,8 +12,9 @@ struct ClubhouseTheme {
 
     // PipCount's Bauhaus primaries. These are also used by player identities,
     // illustration blocks, selection states, and celebratory motion.
-    static let blue = Color(light: 0x0036A8, dark: 0x487EE4)
-    static let blueDeep = Color(light: 0x002A78, dark: 0x3262C8)
+    // Final primary interaction token. Keep ultramarine distinct from player blue.
+    static let blue = Color(light: 0x0036A8, dark: 0x6E9BFF)
+    static let blueDeep = Color(light: 0x002A78, dark: 0x4B78E8)
     static let red = Color(light: 0xDE181E, dark: 0xFC5A60)
     static let yellow = Color(light: 0xFCB412, dark: 0xFCD248)
     static let green = Color(light: 0x008A42, dark: 0x3CCC78)

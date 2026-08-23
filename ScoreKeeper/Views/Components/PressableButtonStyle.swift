@@ -19,7 +19,7 @@ struct ClubhousePressableButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .background(configuration.isPressed ? ClubhouseTheme.felt.opacity(0.14) : Color.clear)
+            .background(configuration.isPressed ? ClubhouseTheme.blueDeep.opacity(0.14) : Color.clear)
             .scaleEffect(configuration.isPressed && !reduceMotion ? 0.97 : 1)
             .animation(
                 reduceMotion ? AppMotion.fade : configuration.isPressed ? AppMotion.pressIn : AppMotion.pressOut,

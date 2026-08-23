@@ -251,12 +251,12 @@ struct StaggeredEntranceModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .opacity(visible ? 1 : 0)
-            .offset(y: visible || reduceMotion ? 0 : 10)
-            .scaleEffect(visible || reduceMotion ? 1 : 0.97)
+            .offset(y: visible || reduceMotion ? 0 : 6)
+            .scaleEffect(visible || reduceMotion ? 1 : 0.985)
             .animation(
                 reduceMotion
                     ? AppMotion.fade
-                    : AppMotion.page.delay(min(Double(index) * 0.045, 0.24)),
+                    : AppMotion.state.delay(min(Double(index) * 0.035, 0.18)),
                 value: visible
             )
     }

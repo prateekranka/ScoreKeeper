@@ -101,7 +101,9 @@ struct HomeView: View {
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, 6)
-            .padding(.bottom, 92)
+            // The dock is an inset, but keep a final content buffer for compact
+            // devices and large Dynamic Type sizes.
+            .padding(.bottom, 116)
         }
         .appBackground()
         .navigationTitle("")
@@ -237,8 +239,8 @@ private struct HomeHeader: View {
                     Image(systemName: themeIconName)
                         .font(.title3)
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .contentTransition(reduceMotion ? .opacity : .symbolEffect(.replace))
-                        .animation(reduceMotion ? AppMotion.fade : AppMotion.state, value: themeIconName)
+                        .contentTransition(.opacity)
+                        .animation(AppMotion.fade, value: themeIconName)
                         .frame(width: 44, height: 44)
                         .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
                 }
@@ -250,7 +252,7 @@ private struct HomeHeader: View {
             .frame(maxWidth: .infinity)
 
             PipCountGeometricArtwork(scene: .home)
-                .frame(height: 226)
+                .frame(height: 136)
         }
         .padding(.top, 2)
     }
@@ -279,7 +281,7 @@ private struct HomeEmptyHero: View {
                 .frame(width: 116, height: 154)
             .accessibilityHidden(true)
         }
-        .padding(20)
+        .padding(AppTheme.spacingMedium)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
     }
 }
