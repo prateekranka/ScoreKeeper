@@ -21,6 +21,8 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
     @State private var saveError: String?
+    @State private var isActionLocked = false
+    @State private var actionUnlockTask: Task<Void, Never>?
     private var bottomBarContentInset: CGFloat {
         headerStyle == .compact ? 150 : 176
     }
@@ -50,13 +52,14 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
             .safeAreaInset(edge: .bottom) {
                 glassGroup(spacing: AppTheme.spacingSmall) {
                     VStack(spacing: AppTheme.spacingSmall) {
-                        AppActionButton(role: .primary(ClubhouseTheme.ink), action: action) {
+                        AppActionButton(role: .primary(ClubhouseTheme.ink), action: performAction) {
                             if let actionSystemImage {
                                 Label(actionTitle, systemImage: actionSystemImage)
                             } else {
                                 Text(actionTitle)
                             }
                         }
+                        .disabled(isActionLocked)
                         .accessibilityIdentifier("submit_round_button")
 
                         HStack(spacing: AppTheme.spacingSmall) {
@@ -122,6 +125,23 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
             Button("OK", role: .cancel) { saveError = nil }
         } message: {
             Text(saveError ?? "Please try again.")
+        }
+        .onDisappear {
+            actionUnlockTask?.cancel()
+        }
+    }
+
+    private func performAction() {
+        guard !isActionLocked else { return }
+
+        isActionLocked = true
+        action()
+
+        actionUnlockTask?.cancel()
+        actionUnlockTask = Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(400))
+            guard !Task.isCancelled else { return }
+            isActionLocked = false
         }
     }
 

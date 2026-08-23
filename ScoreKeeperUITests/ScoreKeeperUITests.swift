@@ -201,7 +201,7 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["submit_round_button"].tap()
 
         XCTAssertTrue(app.staticTexts["Round 2"].waitForExistence(timeout: 2))
-        XCTAssertTrue(app.staticTexts["2"].exists)
+        XCTAssertTrue(app.staticTexts["Total 2"].exists)
     }
 
     // MARK: - Test 8: What's for Dinner player records a meal reveal
