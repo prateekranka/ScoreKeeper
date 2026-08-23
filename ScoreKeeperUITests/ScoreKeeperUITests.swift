@@ -422,7 +422,7 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["submit_round_button"].tap()
 
         XCTAssertTrue(app.staticTexts["Round 2"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["1"].exists)
+        XCTAssertTrue(app.staticTexts["Total 1"].waitForExistence(timeout: 2))
     }
 
     // MARK: - Helpers
