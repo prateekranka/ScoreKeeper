@@ -176,6 +176,7 @@ private struct CompactScoringGameHeader: View {
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.7)
 
                 Text("Round \(session.currentRoundNumber)")
                     .font(AppFonts.caption.weight(.bold))

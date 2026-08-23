@@ -106,6 +106,7 @@ extension ReleaseSheetHeader where Trailing == EmptyView {
 
 struct AppActionButton<LabelContent: View>: View {
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let role: AppButtonRole
     let action: () -> Void
     @ViewBuilder var label: LabelContent
@@ -115,12 +116,14 @@ struct AppActionButton<LabelContent: View>: View {
             action()
         } label: {
             label
-                .font(AppFonts.headline)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .font(dynamicTypeSize.isAccessibilitySize ? .body.weight(.bold) : AppFonts.headline)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
+                .minimumScaleFactor(0.7)
+                .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: 52)
                 .padding(.horizontal, AppTheme.spacingMedium)
+                .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : 0)
                 .foregroundStyle(foregroundStyle)
                 .background {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
@@ -294,6 +297,8 @@ struct PipCountDock: View {
                                 .font(.system(size: 17, weight: selected == tab ? .bold : .medium))
                             Text(tab.title)
                                 .font(.caption2.weight(selected == tab ? .bold : .medium))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.65)
                         }
                         .foregroundStyle(selected == tab ? ClubhouseTheme.blue : ClubhouseTheme.inkMuted)
                         .frame(maxWidth: .infinity)
