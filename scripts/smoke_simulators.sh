@@ -82,9 +82,10 @@ launch_and_capture() {
 
   xcrun simctl boot "$udid"
   xcrun simctl bootstatus "$udid" -b
+  xcrun simctl ui "$udid" appearance light
   xcrun simctl install "$udid" "$APP_PATH"
-  xcrun simctl launch "$udid" "$BUNDLE_ID"
-  sleep 6
+  xcrun simctl launch "$udid" "$BUNDLE_ID" -in-memory-store
+  sleep 7
   xcrun simctl io "$udid" screenshot "$output"
 
   if [[ ! -s "$output" ]]; then
@@ -93,9 +94,9 @@ launch_and_capture() {
   fi
 }
 
-launch_and_capture "iPhone" "$IPHONE_TYPE" "$EVIDENCE_DIR/iphone-launch.png"
-launch_and_capture "iPad" "$IPAD_TYPE" "$EVIDENCE_DIR/ipad-launch.png"
+launch_and_capture "iPhone" "$IPHONE_TYPE" "$EVIDENCE_DIR/iphone-home-light.png"
+launch_and_capture "iPad" "$IPAD_TYPE" "$EVIDENCE_DIR/ipad-home-light.png"
 
-echo "Universal simulator smoke test passed."
-echo "Evidence: $EVIDENCE_DIR/iphone-launch.png"
-echo "Evidence: $EVIDENCE_DIR/ipad-launch.png"
+echo "Universal light-mode simulator smoke test passed."
+echo "Evidence: $EVIDENCE_DIR/iphone-home-light.png"
+echo "Evidence: $EVIDENCE_DIR/ipad-home-light.png"
