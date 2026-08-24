@@ -81,7 +81,7 @@ struct GameHistoryListView: View {
 
             Spacer(minLength: AppTheme.spacingSmall)
 
-            PipCountGeometricArtwork(scene: .history)
+            PipCountGeometricArtwork(scene: .onboardingHistory)
                 .frame(minWidth: 160, idealWidth: 260, maxWidth: 340)
                 .frame(height: 250)
         }
@@ -89,7 +89,7 @@ struct GameHistoryListView: View {
 
     private var emptyState: some View {
         VStack(spacing: AppTheme.spacingLarge) {
-            PipCountGeometricArtwork(scene: .history)
+            PipCountGeometricArtwork(scene: .onboardingHistory)
                 .frame(maxWidth: 390)
                 .frame(height: 300)
 
