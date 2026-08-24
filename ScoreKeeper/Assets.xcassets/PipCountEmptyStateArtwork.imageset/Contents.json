@@ -1,15 +1,13 @@
 {
   "images" : [
     {
-      "filename" : "pipcount-empty-tabletop.svg",
-      "idiom" : "universal"
+      "filename" : "pipcount-empty-state.png",
+      "idiom" : "universal",
+      "scale" : "1x"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
-  },
-  "properties" : {
-    "preserves-vector-representation" : true
   }
 }
