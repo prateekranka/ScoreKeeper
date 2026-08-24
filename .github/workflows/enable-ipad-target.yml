@@ -1,0 +1,53 @@
+name: Enable universal iPhone and iPad target
+
+on:
+  push:
+    branches:
+      - app-dev/pipcount-bauhaus-motion
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pipcount-universal-target
+  cancel-in-progress: true
+
+jobs:
+  normalize-target-family:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: app-dev/pipcount-bauhaus-motion
+
+      - name: Enable iPhone and iPad device families
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          project = Path("ScoreKeeper.xcodeproj/project.pbxproj")
+          source = project.read_text()
+          updated = source.replace(
+              "TARGETED_DEVICE_FAMILY = 1;",
+              'TARGETED_DEVICE_FAMILY = "1,2";'
+          )
+
+          if source == updated:
+              print("Target family is already universal.")
+          else:
+              project.write_text(updated)
+              print("Enabled iPhone and iPad target families.")
+          PY
+
+      - name: Commit universal target setting
+        run: |
+          if git diff --quiet -- ScoreKeeper.xcodeproj/project.pbxproj; then
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ScoreKeeper.xcodeproj/project.pbxproj
+          git commit -m "fix(project): enable native iPhone and iPad builds"
+          git push origin HEAD:app-dev/pipcount-bauhaus-motion
