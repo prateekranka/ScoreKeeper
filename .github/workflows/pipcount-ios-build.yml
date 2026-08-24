@@ -1,12 +1,14 @@
 name: PipCount iOS Build
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - app-dev/pipcount-bauhaus-motion
   pull_request:
     branches:
       - main
+      - claude/show-claude-md-0Z8wn
       - app-dev/pipcount-bauhaus-motion
 
 concurrency:
@@ -44,4 +46,4 @@ jobs:
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath "$RUNNER_TEMP/PipCountDerivedData" \
             CODE_SIGNING_ALLOWED=NO \
-            build | xcpretty
+            build
