@@ -1,15 +1,13 @@
 {
   "images" : [
     {
-      "filename" : "pipcount-celebration-tabletop.svg",
-      "idiom" : "universal"
+      "filename" : "pipcount-celebration.png",
+      "idiom" : "universal",
+      "scale" : "1x"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
-  },
-  "properties" : {
-    "preserves-vector-representation" : true
   }
 }
