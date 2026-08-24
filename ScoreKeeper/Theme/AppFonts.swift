@@ -1,18 +1,20 @@
 import SwiftUI
 
 struct AppFonts {
-    static let display = Font.system(size: 58, weight: .heavy, design: .rounded)
-    static let largeTitle = Font.system(.largeTitle, design: .rounded, weight: .heavy)
-    static let hero = Font.system(size: 46, weight: .heavy, design: .rounded)
-    static let title = Font.system(.title2, design: .rounded, weight: .bold)
-    static let headline = Font.system(.headline, design: .rounded, weight: .semibold)
-    static let tileTitle = Font.system(.title2, design: .rounded, weight: .bold)
-    static let body = Font.system(.body, design: .rounded)
-    static let caption = Font.system(.caption, design: .rounded)
-    static let columnHeader = Font.system(.caption, design: .rounded, weight: .bold)
-    static let scoreDisplay = Font.system(size: 56, weight: .heavy, design: .rounded)
-    static let scoreMedium = Font.system(.title, design: .rounded, weight: .bold)
-    static let scoreSmall = Font.system(.title2, design: .rounded, weight: .bold)
+    // A neutral grotesk system replaces the rounded display treatment. It
+    // keeps the approved Bauhaus reference sharp while retaining Dynamic Type.
+    static let display = Font.system(size: 62, weight: .black, design: .default)
+    static let largeTitle = Font.system(.largeTitle, design: .default, weight: .black)
+    static let hero = Font.system(size: 48, weight: .black, design: .default)
+    static let title = Font.system(.title2, design: .default, weight: .black)
+    static let headline = Font.system(.headline, design: .default, weight: .bold)
+    static let tileTitle = Font.system(.title2, design: .default, weight: .black)
+    static let body = Font.system(.body, design: .default)
+    static let caption = Font.system(.caption, design: .default)
+    static let columnHeader = Font.system(.caption, design: .default, weight: .black)
+    static let scoreDisplay = Font.system(size: 58, weight: .black, design: .default)
+    static let scoreMedium = Font.system(.title, design: .default, weight: .black)
+    static let scoreSmall = Font.system(.title2, design: .default, weight: .black)
 }
 
 struct ColumnHeaderModifier: ViewModifier {
@@ -20,7 +22,7 @@ struct ColumnHeaderModifier: ViewModifier {
         content
             .font(AppFonts.columnHeader)
             .textCase(.uppercase)
-            .tracking(0.7)
+            .tracking(1.05)
             .foregroundStyle(ClubhouseTheme.inkMuted)
     }
 }
