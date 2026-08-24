@@ -1,0 +1,42 @@
+import PencilKit
+import SwiftUI
+
+struct ScoreWritingCanvas: UIViewRepresentable {
+    @Binding var clearTrigger: Int
+    @Binding var captureTrigger: Int
+    @Binding var capturedImage: UIImage?
+    var accessibilityIdentifier: String = "score_writing_canvas"
+
+    func makeUIView(context: Context) -> PKCanvasView {
+        let canvas = PKCanvasView()
+        canvas.backgroundColor = .white
+        canvas.isOpaque = true
+        canvas.drawingPolicy = .anyInput
+        canvas.tool = PKInkingTool(.pen, color: .black, width: 8)
+        canvas.accessibilityIdentifier = accessibilityIdentifier
+        canvas.accessibilityLabel = "Draw score"
+        return canvas
+    }
+
+    func updateUIView(_ canvas: PKCanvasView, context: Context) {
+        if context.coordinator.lastClearTrigger != clearTrigger {
+            canvas.drawing = PKDrawing()
+            context.coordinator.lastClearTrigger = clearTrigger
+        }
+        if context.coordinator.lastCaptureTrigger != captureTrigger {
+            capturedImage = canvas.drawing.image(from: canvas.bounds, scale: UIScreen.main.scale)
+            context.coordinator.lastCaptureTrigger = captureTrigger
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    final class Coordinator {
+        var lastClearTrigger = 0
+        var lastCaptureTrigger = 0
+    }
+
+    static func captureImage(from canvas: PKCanvasView) -> UIImage {
+        canvas.drawing.image(from: canvas.bounds, scale: UIScreen.main.scale)
+    }
+}
