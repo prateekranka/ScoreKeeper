@@ -1,309 +1,416 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct GameOverView: View {
     let sessionID: PersistentIdentifier
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.modelContext) private var modelContext
+
     @Environment(NavigationRouter.self) private var router
-    @Environment(StoreManager.self) private var storeManager
-    @Environment(ReviewAskManager.self) private var reviewAskManager
-    @Query(filter: #Predicate<GameSession> { $0.isComplete }) private var completedGames: [GameSession]
-    @State private var sectionsVisible = false
-    @State private var showPaywall = false
-    @State private var didEvaluateReviewAsk = false
-    @State private var saveError: String?
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var contentVisible = false
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
-            let engine = GameEngineFactory.engine(for: session.gameType)
-            let winnerIDs = engine.winners(session: session)
-            let winners = session.players.filter { winnerIDs.contains($0.id) }
-
-            ScrollView {
-                VStack(spacing: AppTheme.spacingLarge) {
-                    WinnerHeroSection(session: session, winners: winners, sectionsVisible: sectionsVisible)
-                    StandingsList(title: "Final Scores", standings: session.standings(using: engine))
-                    EndGameButtons(session: session, onPlayAgain: { playAgain(session) }, onHome: { router.goHome() })
-                    GameRecapPanel(session: session, engine: engine)
-                }
-                .padding(AppTheme.spacingMedium)
-                .padding(.bottom, AppTheme.spacingLarge)
-                .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.97)
-                .opacity(sectionsVisible ? 1 : 0)
-                .animation(reduceMotion ? AppMotion.fade : AppMotion.page, value: sectionsVisible)
-            }
-            .appBackground()
-            .onAppear {
-                sectionsVisible = true
-            }
-            .sensoryFeedback(.success, trigger: sectionsVisible)
-            .task(id: session.persistentModelID) {
-                try? await Task.sleep(for: .milliseconds(750))
-                evaluateReviewAskIfNeeded()
-            }
-            .sheet(isPresented: $showPaywall) {
-                PaywallView(onUnlocked: { playAgain(session) })
-                    .presentationDetents([.large])
-            }
-            .navigationBarBackButtonHidden(true)
-            .toolbar(.hidden, for: .navigationBar)
-            .alert(
-                "Couldn’t save rematch",
-                isPresented: Binding(
-                    get: { saveError != nil },
-                    set: { if !$0 { saveError = nil } }
-                )
-            ) {
-                Button("OK", role: .cancel) { saveError = nil }
-            } message: {
-                Text(saveError ?? "Please try again.")
-            }
+            gameOverContent(session)
         }
-    }
-
-    private func playAgain(_ session: GameSession) {
-        guard storeManager.canStartNewGame else {
-            showPaywall = true
-            return
-        }
-
-        let newSession = GameSession(gameType: session.gameType)
-        newSession.winCondition = session.winCondition
-        newSession.targetScore = session.targetScore
-        newSession.phase10SkipOnFail = session.phase10SkipOnFail
-        modelContext.insert(newSession)
-
-        for player in session.players {
-            let newPlayer = Player(name: player.name, colorIndex: player.colorIndex)
-            newPlayer.session = newSession
-            newSession.players.append(newPlayer)
-        }
-
-        do {
-            try modelContext.save()
-        } catch {
-            let message = error.localizedDescription
-            modelContext.rollback()
-            saveError = message
-            return
-        }
-        storeManager.recordGameStarted()
-
-        router.path = NavigationPath([AppDestination.scoring(newSession.persistentModelID)])
-    }
-
-    private func evaluateReviewAskIfNeeded() {
-        guard !didEvaluateReviewAsk else { return }
-        didEvaluateReviewAsk = true
-        reviewAskManager.considerReviewAsk(
-            completedGameCount: completedGames.count,
-            paywallPresentedThisSession: storeManager.paywallPresentedThisSession
-        )
-    }
-}
-
-// MARK: - Subviews
-
-private struct WinnerHeroSection: View {
-    let session: GameSession
-    let winners: [Player]
-    let sectionsVisible: Bool
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            let layout = dynamicTypeSize.isAccessibilitySize
-                ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
-                : AnyLayout(HStackLayout(alignment: .top, spacing: AppTheme.spacingSmall))
-
-            layout {
-                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                    Text("Game\nOver")
-                        .font(AppFonts.hero)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    Rectangle()
-                        .fill(ClubhouseTheme.blue)
-                        .frame(width: 86, height: 5)
-
-                    Text("Thanks for playing!")
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            if winners.count == 1, let winner = winners.first {
-                HStack(spacing: AppTheme.spacingMedium) {
-                    ZStack {
-                        Circle()
-                            .fill(ClubhouseTheme.blue)
-                            .frame(width: 86, height: 86)
-                        BauhausStarburst(color: ClubhouseTheme.paperCard, size: 48)
-                    }
-                    .scaleEffect(sectionsVisible || reduceMotion ? 1 : 0.96)
-                    .opacity(sectionsVisible ? 1 : 0)
-                    .animation(
-                        reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped.delay(0.12),
-                        value: sectionsVisible
-                    )
-                    .accessibilityHidden(true)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Winner")
-                            .columnHeaderStyle()
-                            .foregroundStyle(ClubhouseTheme.blue)
-                        Text(winner.name)
-                            .font(AppFonts.title)
-                            .foregroundStyle(ClubhouseTheme.ink)
-                            .lineLimit(1)
-                            .accessibilityIdentifier("winner_text")
-                            .accessibilityLabel("\(winner.name) wins!")
-                        Text("Great game!")
-                            .font(AppFonts.body)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                    }
-
-                    Spacer(minLength: 0)
-
-                    Rectangle()
-                        .fill(ClubhouseTheme.ruleStrong)
-                        .frame(width: 1, height: 76)
-
-                    Text("\(winner.totalScore(in: session))")
-                        .font(AppFonts.scoreDisplay)
-                        .monospacedDigit()
-                        .foregroundStyle(ClubhouseTheme.blue)
-                        .contentTransition(.numericText(value: Double(winner.totalScore(in: session))))
-                }
-                .padding(AppTheme.spacingMedium)
-                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-            } else {
-                winnerText
-                    .frame(maxWidth: .infinity)
-                    .padding(AppTheme.spacingLarge)
-                    .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-            }
+        .navigationBarBackButtonHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+        .onAppear {
+            contentVisible = true
         }
     }
 
     @ViewBuilder
-    private var winnerText: some View {
-        if winners.count == 1, let winner = winners.first {
-            Text("\(winner.name) wins!")
-                .font(AppFonts.largeTitle)
-                .foregroundStyle(ClubhouseTheme.brass)
-                .multilineTextAlignment(.center)
-                .accessibilityIdentifier("winner_text")
-        } else if winners.count > 1 {
-            Text("\(winners.map(\.name).joined(separator: " & ")) win!")
-                .font(AppFonts.largeTitle)
-                .multilineTextAlignment(.center)
-                .accessibilityIdentifier("winner_text")
-        } else {
-            Text("No winner")
-                .font(AppFonts.largeTitle)
-                .multilineTextAlignment(.center)
-                .accessibilityIdentifier("winner_text")
+    private func gameOverContent(_ session: GameSession) -> some View {
+        GeometryReader { proxy in
+            ScrollView {
+                if proxy.size.width >= 820 {
+                    tabletLayout(session, availableWidth: proxy.size.width)
+                } else {
+                    phoneLayout(session)
+                }
+            }
+            .scrollIndicators(.hidden)
+        }
+        .appBackground()
+    }
+
+    private func phoneLayout(_ session: GameSession) -> some View {
+        VStack(spacing: AppTheme.spacingMedium) {
+            completionHeader(session)
+                .staggeredEntrance(visible: contentVisible, index: 0)
+
+            resultHero(session)
+                .staggeredEntrance(visible: contentVisible, index: 1)
+
+            standingsCard(session)
+                .staggeredEntrance(visible: contentVisible, index: 2)
+
+            actionStack(session)
+                .staggeredEntrance(visible: contentVisible, index: 3)
+
+            recapGrid(session)
+                .staggeredEntrance(visible: contentVisible, index: 4)
+
+            shareButton(session)
+                .staggeredEntrance(visible: contentVisible, index: 5)
+        }
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .padding(.top, AppTheme.spacingSmall)
+        .padding(.bottom, AppTheme.spacingLarge)
+        .responsiveContentWidth()
+    }
+
+    private func tabletLayout(_ session: GameSession, availableWidth: CGFloat) -> some View {
+        VStack(spacing: AppTheme.spacingLarge) {
+            HStack(alignment: .top, spacing: AppTheme.spacingXLarge) {
+                VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
+                    completionHeader(session)
+                        .staggeredEntrance(visible: contentVisible, index: 0)
+
+                    resultHero(session)
+                        .staggeredEntrance(visible: contentVisible, index: 1)
+
+                    actionStack(session)
+                        .staggeredEntrance(visible: contentVisible, index: 3)
+                }
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+
+                VStack(spacing: AppTheme.spacingMedium) {
+                    standingsCard(session)
+                        .staggeredEntrance(visible: contentVisible, index: 2)
+
+                    recapGrid(session)
+                        .staggeredEntrance(visible: contentVisible, index: 4)
+
+                    shareButton(session)
+                        .staggeredEntrance(visible: contentVisible, index: 5)
+                }
+                .frame(maxWidth: .infinity, alignment: .top)
+            }
+        }
+        .padding(AppTheme.spacingXLarge)
+        .frame(maxWidth: min(availableWidth, 1180), alignment: .top)
+        .frame(maxWidth: .infinity)
+    }
+
+    private func completionHeader(_ session: GameSession) -> some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Game\nOver")
+                        .font(AppFonts.display)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(session.gameType.displayName)
+                        .font(AppFonts.body.weight(.semibold))
+                        .foregroundStyle(ClubhouseTheme.blue)
+
+                    Text("The scores are saved. The rematch is one tap away.")
+                        .font(AppFonts.body)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: AppTheme.spacingSmall)
+
+                PipCountGeometricArtwork(scene: .gameOver)
+                    .frame(minWidth: 160, idealWidth: 220, maxWidth: 260)
+                    .frame(height: 210)
+            }
+
+            Rectangle()
+                .fill(ClubhouseTheme.blue)
+                .frame(width: 88, height: 5)
         }
     }
-}
 
-private struct EndGameButtons: View {
-    let session: GameSession
-    let onPlayAgain: () -> Void
-    let onHome: () -> Void
+    private func resultHero(_ session: GameSession) -> some View {
+        let winnerNames = winners(for: session).map(\.name)
+        let title: String
+        let subtitle: String
 
-    var body: some View {
+        if winnerNames.count == 1, let winner = winnerNames.first {
+            title = "\(winner) wins"
+            subtitle = "Tonight belongs to \(winner)."
+        } else if winnerNames.count > 1 {
+            title = "It's a tie"
+            subtitle = winnerNames.joined(separator: " • ")
+        } else {
+            title = "No winner"
+            subtitle = "A perfectly unresolved game night."
+        }
+
+        return VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
+                ZStack {
+                    Circle()
+                        .fill(ClubhouseTheme.yellow)
+                        .frame(width: 68, height: 68)
+
+                    BauhausStarburst(color: ClubhouseTheme.ink, size: 34)
+                }
+                .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(AppFonts.hero)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.72)
+
+                    Text(subtitle)
+                        .font(AppFonts.body)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
+            }
+
+            HStack(spacing: 8) {
+                ForEach(0..<min(max(session.sortedRounds.count, 1), 8), id: \.self) { index in
+                    Capsule()
+                        .fill(index.isMultiple(of: 2) ? ClubhouseTheme.blue : ClubhouseTheme.red)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 7)
+                }
+            }
+        }
+        .padding(AppTheme.spacingLarge)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func standingsCard(_ session: GameSession) -> some View {
+        let winnerIDs = Set(winners(for: session).map(\.id))
+
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Game Over")
+                        .font(AppFonts.title)
+                        .foregroundStyle(ClubhouseTheme.ink)
+
+                    Text(session.winCondition == .highestScore ? "Highest score wins" : "Lowest score wins")
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
+
+                Spacer()
+
+                Text(session.sortedRounds.count.quantityText("round"))
+                    .columnHeaderStyle()
+                    .foregroundStyle(ClubhouseTheme.blue)
+            }
+            .padding(AppTheme.spacingMedium)
+
+            Rectangle()
+                .fill(ClubhouseTheme.rule)
+                .frame(height: 1)
+
+            ForEach(Array(sortedPlayers(session).enumerated()), id: \.element.id) { index, player in
+                LedgerRow(
+                    player: player,
+                    score: player.totalScore(in: session),
+                    rank: index + 1,
+                    subtitle: playerRoundSubtitle(player, session: session),
+                    isLeader: winnerIDs.contains(player.id),
+                    isHighlighted: winnerIDs.contains(player.id)
+                )
+            }
+        }
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Game over standings")
+    }
+
+    private func actionStack(_ session: GameSession) -> some View {
         VStack(spacing: AppTheme.spacingSmall) {
-            AppActionButton(role: .primary(ClubhouseTheme.blue), action: onPlayAgain) {
-                Label("Play Again", systemImage: "arrow.right.circle.fill")
+            AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+                rematch(session)
+            } label: {
+                Label("Play Again", systemImage: "arrow.clockwise.circle.fill")
             }
             .accessibilityIdentifier("play_again_button")
 
-            AppActionButton(role: .secondary, action: onHome) {
+            AppActionButton(role: .secondary) {
+                router.goHome()
+            } label: {
                 Label("Back Home", systemImage: "house")
             }
-            .accessibilityIdentifier("home_button")
+            .accessibilityIdentifier("back_home_button")
         }
     }
-}
 
-// MARK: - Recap
+    private func recapGrid(_ session: GameSession) -> some View {
+        let metrics = recapMetrics(session)
 
-private struct GameRecapPanel: View {
-    let session: GameSession
-    let engine: GameEngine
+        return VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Game Recap")
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
 
-    private var standings: [PlayerStanding] {
-        session.standings(using: engine)
-    }
-
-    private var winningMargin: Int {
-        guard standings.count > 1 else { return 0 }
-        return abs(standings[0].score - standings[1].score)
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            AppSectionHeader(
-                title: "Game Recap",
-                subtitle: "A quick memory of how the table finished.",
-                systemImage: "sparkles"
-            )
-
-            HStack(spacing: AppTheme.spacingSmall) {
-                RecapMetric(title: "Rounds", value: "\(session.sortedRounds.count)", systemImage: "clock.arrow.circlepath", tint: session.gameType.color)
-                RecapMetric(title: "Players", value: "\(session.players.count)", systemImage: "person.2.fill", tint: PlayerColors.palette[1])
-                RecapMetric(title: "Margin", value: "\(winningMargin)", systemImage: "arrow.left.and.right", tint: PlayerColors.palette[0])
+                Text("A quick memory of how the table finished.")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
-            if showsScoreTrend {
-                ScoreSparkline(session: session, standings: standings)
-                    .frame(height: 86)
-                    .accessibilityLabel(
-                        "Score trend. " + standings
-                            .map { "\($0.player.name), final score \($0.score)" }
-                            .joined(separator: ". ")
-                    )
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppTheme.spacingSmall) {
+                ForEach(metrics) { metric in
+                    RecapMetricCard(metric: metric)
+                }
             }
         }
         .padding(AppTheme.spacingMedium)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
-    private var showsScoreTrend: Bool {
-        !standings.isEmpty && session.sortedRounds.count > 1
+    private func shareButton(_ session: GameSession) -> some View {
+        ShareLink(item: shareText(session)) {
+            HStack(spacing: AppTheme.spacingSmall) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.headline)
+
+                Text("Share Game Recap")
+                    .font(AppFonts.headline)
+
+                Spacer()
+
+                Image(systemName: "arrow.up.right")
+                    .font(.caption.weight(.bold))
+            }
+            .foregroundStyle(ClubhouseTheme.ink)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 58)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+        }
+        .buttonStyle(PressableButtonStyle())
+        .accessibilityIdentifier("share_game_recap_button")
+    }
+
+    private func winners(for session: GameSession) -> [Player] {
+        let winnerIDs = Set(GameEngineFactory.engine(for: session.gameType).winners(session: session))
+        return session.players.filter { winnerIDs.contains($0.id) }
+    }
+
+    private func sortedPlayers(_ session: GameSession) -> [Player] {
+        session.players.sorted { lhs, rhs in
+            let lhsScore = lhs.totalScore(in: session)
+            let rhsScore = rhs.totalScore(in: session)
+
+            if lhsScore == rhsScore {
+                return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+            }
+
+            return session.winCondition == .highestScore
+                ? lhsScore > rhsScore
+                : lhsScore < rhsScore
+        }
+    }
+
+    private func playerRoundSubtitle(_ player: Player, session: GameSession) -> String {
+        let scores = session.sortedRounds.compactMap { $0.entry(for: player.id)?.points }
+        guard let best = session.winCondition == .highestScore ? scores.max() : scores.min() else {
+            return "No submitted score"
+        }
+
+        return "Best round \(best > 0 ? "+\(best)" : "\(best)")"
+    }
+
+    private func recapMetrics(_ session: GameSession) -> [RecapMetric] {
+        let roundScores = session.sortedRounds.flatMap { round in
+            round.entries.map { entry in
+                (entry.playerID, entry.points)
+            }
+        }
+
+        let biggest = roundScores.max { lhs, rhs in
+            abs(lhs.1) < abs(rhs.1)
+        }
+
+        let biggestPlayer = biggest.flatMap { item in
+            session.players.first(where: { $0.id == item.0 })
+        }
+
+        let duration = session.completedAt.map { completion in
+            completion.timeIntervalSince(session.createdAt)
+        } ?? 0
+
+        return [
+            RecapMetric(title: "Rounds", value: "\(session.sortedRounds.count)", detail: "played", tint: ClubhouseTheme.blue),
+            RecapMetric(title: "Players", value: "\(session.players.count)", detail: "at the table", tint: ClubhouseTheme.red),
+            RecapMetric(
+                title: "Biggest Round",
+                value: biggest.map { $0.1 > 0 ? "+\($0.1)" : "\($0.1)" } ?? "—",
+                detail: biggestPlayer?.name ?? "No scores",
+                tint: ClubhouseTheme.green
+            ),
+            RecapMetric(title: "Duration", value: durationText(duration), detail: "game time", tint: ClubhouseTheme.yellow)
+        ]
+    }
+
+    private func durationText(_ interval: TimeInterval) -> String {
+        guard interval > 0 else { return "—" }
+        let totalMinutes = max(Int(interval / 60), 1)
+        let hours = totalMinutes / 60
+        let minutes = totalMinutes % 60
+
+        if hours > 0 {
+            return minutes == 0 ? "\(hours)h" : "\(hours)h \(minutes)m"
+        }
+        return "\(minutes)m"
+    }
+
+    private func rematch(_ session: GameSession) {
+        router.goHome()
+        router.push(.playerSetup(session.gameType))
+    }
+
+    private func shareText(_ session: GameSession) -> String {
+        let standings = sortedPlayers(session).enumerated().map { index, player in
+            "\(index + 1). \(player.name) — \(player.totalScore(in: session))"
+        }.joined(separator: "\n")
+
+        return "PipCount game over — \(session.gameType.displayName)\n\(standings)\n\(session.sortedRounds.count.quantityText("round")) played."
     }
 }
 
-private struct RecapMetric: View {
+private struct RecapMetric: Identifiable {
     let title: String
     let value: String
-    let systemImage: String
+    let detail: String
     let tint: Color
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Image(systemName: systemImage)
-                .foregroundStyle(tint)
-                .accessibilityHidden(true)
+    var id: String { title }
+}
 
-            Text(value)
-                .font(AppFonts.scoreSmall)
+private struct RecapMetricCard: View {
+    let metric: RecapMetric
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Circle()
+                .fill(metric.tint)
+                .frame(width: 10, height: 10)
+
+            Text(metric.value)
+                .font(AppFonts.scoreMedium)
                 .monospacedDigit()
-                .contentTransition(.numericText(value: Double(Int(value) ?? 0)))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
+
+            Text(metric.title)
+                .font(AppFonts.caption.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            Text(title)
+            Text(metric.detail)
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
+                .lineLimit(1)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppTheme.spacingSmall)
+        .frame(maxWidth: .infinity, minHeight: 116, alignment: .leading)
         .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
@@ -311,80 +418,4 @@ private struct RecapMetric: View {
         }
         .accessibilityElement(children: .combine)
     }
-}
-
-// MARK: - Sparkline
-
-private struct ScoreSparkline: View {
-    let session: GameSession
-    let standings: [PlayerStanding]
-
-    var body: some View {
-        GeometryReader { proxy in
-            let series = chartSeries(in: proxy.size)
-
-            ZStack(alignment: .bottomLeading) {
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall)
-                    .fill(ClubhouseTheme.paperSunken)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall)
-                            .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-                    }
-
-                ForEach(series) { playerSeries in
-                    Path { path in
-                        guard let firstPoint = playerSeries.points.first else { return }
-                        path.move(to: firstPoint)
-                        for point in playerSeries.points.dropFirst() {
-                            path.addLine(to: point)
-                        }
-                    }
-                    .stroke(playerSeries.color, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
-                }
-            }
-        }
-    }
-
-    private func chartSeries(in size: CGSize) -> [PlayerChartSeries] {
-        let rounds = session.sortedRounds
-        guard !rounds.isEmpty else { return [] }
-
-        let cumulativeScores = session.players.map { player in
-            var running = 0
-            return rounds.map { round in
-                running += round.entry(for: player.id)?.points ?? 0
-                return running
-            }
-        }
-
-        let allScores = cumulativeScores.flatMap { $0 }
-        let minScore = allScores.min() ?? 0
-        let maxScore = allScores.max() ?? 1
-        let scoreRange = max(maxScore - minScore, 1)
-        let usableWidth = max(size.width - 24, 1)
-        let usableHeight = max(size.height - 20, 1)
-
-        return session.players.enumerated().map { index, player in
-            let values = cumulativeScores[index]
-            let points = values.enumerated().map { valueIndex, value in
-                let xProgress = rounds.count == 1 ? 0.5 : CGFloat(valueIndex) / CGFloat(rounds.count - 1)
-                let yProgress = CGFloat(value - minScore) / CGFloat(scoreRange)
-                return CGPoint(
-                    x: 12 + xProgress * usableWidth,
-                    y: 10 + (1 - yProgress) * usableHeight
-                )
-            }
-            return PlayerChartSeries(
-                id: player.id,
-                color: PlayerColors.color(for: player.colorIndex),
-                points: points
-            )
-        }
-    }
-}
-
-private struct PlayerChartSeries: Identifiable {
-    let id: UUID
-    let color: Color
-    let points: [CGPoint]
 }
