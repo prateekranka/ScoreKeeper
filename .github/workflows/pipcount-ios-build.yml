@@ -50,3 +50,15 @@ jobs:
             -derivedDataPath "$RUNNER_TEMP/PipCountDerivedData" \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+      - name: Launch on iPhone and iPad simulators
+        run: bash scripts/smoke_simulators.sh
+
+      - name: Upload light-mode simulator evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipcount-light-mode-simulator-evidence
+          path: build-evidence/*.png
+          if-no-files-found: error
+          retention-days: 14
