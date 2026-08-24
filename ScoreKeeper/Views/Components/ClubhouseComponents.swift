@@ -1,6 +1,6 @@
 import SwiftUI
 
-// MARK: - Shared paper surfaces
+// MARK: - Paper surfaces
 
 struct ScorecardSurface<Content: View>: View {
     var cornerRadius: CGFloat = AppTheme.cornerRadiusMedium
@@ -10,72 +10,46 @@ struct ScorecardSurface<Content: View>: View {
     var body: some View {
         content
             .background {
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(ClubhouseTheme.paperCard)
-                    .overlay {
-                        PaperSpeckleOverlay()
-                            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-                            .opacity(0.22)
-                    }
-                    .shadow(
-                        color: ClubhouseTheme.paperShadow.opacity(isInteractive ? 1 : 0.66),
-                        radius: isInteractive ? 13 : 8,
-                        x: 0,
-                        y: isInteractive ? 8 : 5
-                    )
+                ZStack {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(ClubhouseTheme.paperShadow.opacity(isInteractive ? 0.78 : 0.44))
+                        .offset(x: isInteractive ? 4 : 2, y: isInteractive ? 7 : 4)
+
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(ClubhouseTheme.paperCard)
+                        .shadow(
+                            color: ClubhouseTheme.ink.opacity(isInteractive ? 0.10 : 0.06),
+                            radius: isInteractive ? 18 : 12,
+                            x: 0,
+                            y: isInteractive ? 9 : 6
+                        )
+                }
             }
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.panelBorder.opacity(0.88), lineWidth: 1)
+                    .strokeBorder(ClubhouseTheme.ruleStrong.opacity(0.42), lineWidth: 1)
             }
-            .overlay(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .trim(from: 0.50, to: 0.76)
-                    .stroke(ClubhouseTheme.warmHighlight.opacity(0.68), lineWidth: 1)
-                    .padding(1)
+            .overlay {
+                RoundedRectangle(cornerRadius: max(cornerRadius - 3, 0), style: .continuous)
+                    .inset(by: 3)
+                    .strokeBorder(Color.white.opacity(0.32), lineWidth: 1)
+                    .allowsHitTesting(false)
             }
     }
 }
 
 extension View {
-    func scorecardSurface(cornerRadius: CGFloat = AppTheme.cornerRadiusMedium, isInteractive: Bool = false) -> some View {
+    func scorecardSurface(
+        cornerRadius: CGFloat = AppTheme.cornerRadiusMedium,
+        isInteractive: Bool = false
+    ) -> some View {
         ScorecardSurface(cornerRadius: cornerRadius, isInteractive: isInteractive) {
             self
         }
     }
 }
 
-private struct PaperSpeckleOverlay: View {
-    var body: some View {
-        Canvas { context, size in
-            var y: CGFloat = 6
-            var row = 0
-            while y < size.height {
-                var x: CGFloat = 6
-                var column = 0
-                while x < size.width {
-                    let seed = CGFloat((row * 13 + column * 7) % 17)
-                    let dotSize: CGFloat = seed.truncatingRemainder(dividingBy: 4) == 0 ? 0.9 : 0.45
-                    let dot = CGRect(
-                        x: x + seed.truncatingRemainder(dividingBy: 3.2),
-                        y: y + seed.truncatingRemainder(dividingBy: 2.6),
-                        width: dotSize,
-                        height: dotSize
-                    )
-                    context.fill(Path(ellipseIn: dot), with: .color(ClubhouseTheme.ink.opacity(0.11)))
-                    column += 1
-                    x += 14
-                }
-                row += 1
-                y += 14
-            }
-        }
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
-    }
-}
-
-// MARK: - Ledger pieces
+// MARK: - Score rows and game-night pieces
 
 struct LedgerRow: View {
     let player: Player
@@ -96,12 +70,10 @@ struct LedgerRow: View {
                     .frame(width: 24, alignment: .leading)
             }
 
-            PlayerColorPip(colorIndex: player.colorIndex, size: 22)
+            PlayerColorPip(colorIndex: player.colorIndex, size: 18)
 
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
-                    PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
-
                     Text(player.name)
                         .font(AppFonts.body.weight(.medium))
                         .foregroundStyle(ClubhouseTheme.ink)
@@ -113,7 +85,6 @@ struct LedgerRow: View {
                             .fixedSize()
                     }
                 }
-                .layoutPriority(1)
 
                 if let subtitle {
                     Text(subtitle)
@@ -144,13 +115,13 @@ struct LedgerRow: View {
         .background {
             if isHighlighted {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(PlayerColors.lightColor(for: player.colorIndex).opacity(0.86))
+                    .fill(PlayerColors.lightColor(for: player.colorIndex))
             }
         }
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(ClubhouseTheme.rule)
-                .frame(height: 1)
+                .fill(ClubhouseTheme.rule.opacity(0.72))
+                .frame(height: 0.75)
         }
         .accessibilityElement(children: .combine)
     }
@@ -158,7 +129,7 @@ struct LedgerRow: View {
 
 struct PlayerColorPip: View {
     let colorIndex: Int
-    var size: CGFloat = 16
+    var size: CGFloat = 14
 
     var body: some View {
         BauhausPlayerShape(colorIndex: colorIndex, size: size)
@@ -173,13 +144,13 @@ struct StampBadge: View {
         Text(text.uppercased())
             .font(AppFonts.columnHeader)
             .tracking(1.4)
-            .foregroundStyle(ClubhouseTheme.red)
+            .foregroundStyle(ClubhouseTheme.lacquer)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(ClubhouseTheme.red.opacity(0.055), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+            .background(ClubhouseTheme.lacquer.opacity(0.07), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 9, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.red.opacity(0.72), lineWidth: 1.4)
+                    .strokeBorder(ClubhouseTheme.lacquer.opacity(0.72), style: StrokeStyle(lineWidth: 1.5, dash: [5, 2]))
             }
             .rotationEffect(.degrees(-3))
             .accessibilityLabel(text)
@@ -190,8 +161,8 @@ struct BrassCrown: View {
     var body: some View {
         Image(systemName: "crown.fill")
             .font(.caption2)
+            .symbolRenderingMode(.hierarchical)
             .foregroundStyle(ClubhouseTheme.brass)
-            .shadow(color: ClubhouseTheme.yellow.opacity(0.24), radius: 4)
             .accessibilityLabel("Leader")
     }
 }
@@ -202,26 +173,21 @@ struct PaperChip<Content: View>: View {
 
     var body: some View {
         content
-            .font(AppFonts.caption.weight(.medium))
+            .font(AppFonts.caption)
             .foregroundStyle(isSelected ? ClubhouseTheme.onFelt : ClubhouseTheme.ink)
             .padding(.horizontal, 12)
             .frame(minHeight: 38)
             .background {
                 Capsule()
-                    .fill(isSelected ? ClubhouseTheme.blue : ClubhouseTheme.paperCard)
-                    .shadow(color: ClubhouseTheme.paperShadow.opacity(0.45), radius: 5, y: 3)
+                    .fill(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.paperCard)
+                    .shadow(color: ClubhouseTheme.ink.opacity(isSelected ? 0.12 : 0.05), radius: 7, y: 3)
             }
             .overlay {
                 Capsule()
-                    .strokeBorder(
-                        isSelected ? ClubhouseTheme.warmHighlight.opacity(0.28) : ClubhouseTheme.panelBorder,
-                        lineWidth: 1
-                    )
+                    .strokeBorder(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.rule.opacity(0.72), lineWidth: 1)
             }
     }
 }
-
-// MARK: - Score controls
 
 struct PipStepper: View {
     @Binding var value: Int
@@ -231,13 +197,12 @@ struct PipStepper: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            HStack(spacing: 10) {
+            HStack(spacing: AppTheme.spacingSmall) {
                 stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
 
-                VStack(spacing: 1) {
+                VStack(spacing: 2) {
                     Text("THIS ROUND")
-                        .font(.caption2.weight(.bold))
-                        .tracking(0.7)
+                        .font(AppFonts.columnHeader)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
 
                     Text(roundScoreText)
@@ -247,7 +212,7 @@ struct PipStepper: View {
                         .minimumScaleFactor(0.55)
                         .foregroundStyle(ClubhouseTheme.ink)
                 }
-                .frame(minWidth: 70)
+                .frame(minWidth: 76)
                 .accessibilityElement(children: .ignore)
                 .accessibilityIdentifier(identifierPrefix + "score")
                 .accessibilityLabel("Score \(value)")
@@ -263,7 +228,12 @@ struct PipStepper: View {
         }
     }
 
-    private func stepButton(systemImage: String, delta: Int, identifier: String, label: String) -> some View {
+    private func stepButton(
+        systemImage: String,
+        delta: Int,
+        identifier: String,
+        label: String
+    ) -> some View {
         Button {
             apply(delta)
         } label: {
@@ -272,13 +242,13 @@ struct PipStepper: View {
                 .foregroundStyle(ClubhouseTheme.ink)
                 .frame(width: 58, height: 58)
                 .background {
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
                         .fill(ClubhouseTheme.paperCard)
-                        .shadow(color: ClubhouseTheme.paperShadow.opacity(0.52), radius: 7, y: 4)
+                        .shadow(color: ClubhouseTheme.ink.opacity(0.08), radius: 8, y: 4)
                 }
                 .overlay {
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .strokeBorder(ClubhouseTheme.rule.opacity(0.75), lineWidth: 1)
                 }
         }
         .buttonStyle(ClubhousePressableButtonStyle())
@@ -294,10 +264,10 @@ struct PipStepper: View {
                 .font(AppFonts.caption.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.blue)
                 .frame(minWidth: 48, minHeight: 42)
-                .background(ClubhouseTheme.blue.opacity(0.075), in: Capsule())
+                .background(ClubhouseTheme.blue.opacity(0.08), in: Capsule())
                 .overlay {
                     Capsule()
-                        .strokeBorder(ClubhouseTheme.blue.opacity(0.16), lineWidth: 1)
+                        .strokeBorder(ClubhouseTheme.blue.opacity(0.24), lineWidth: 1)
                 }
         }
         .buttonStyle(ClubhousePressableButtonStyle())
@@ -317,7 +287,7 @@ struct PipStepper: View {
     }
 }
 
-// MARK: - Illustration assets
+// MARK: - Illustrated asset family
 
 enum PipCountIllustrationAsset: String {
     case hero = "PipCountHeroArtwork"
@@ -340,53 +310,110 @@ struct PipCountAssetArtwork: View {
     }
 }
 
-// The old name is retained for source compatibility, but the shapes now read
-// as small tactile game tokens rather than strict Bauhaus primitives.
+// The original public type name remains for feature compatibility, but these
+// now read as friendly tabletop pieces rather than strict Bauhaus primitives.
 struct BauhausPlayerShape: View {
     let colorIndex: Int
     var size: CGFloat
 
-    var body: some View {
-        tokenShape
-            .frame(width: size, height: size)
-            .overlay(alignment: .topLeading) {
-                Circle()
-                    .fill(Color.white.opacity(0.48))
-                    .frame(width: size * 0.22, height: size * 0.16)
-                    .blur(radius: 0.4)
-                    .offset(x: size * 0.20, y: size * 0.18)
-            }
-            .shadow(color: ClubhouseTheme.paperShadow.opacity(0.58), radius: max(1.5, size * 0.10), y: max(1, size * 0.07))
+    private var color: Color {
+        PlayerColors.color(for: colorIndex)
     }
 
-    @ViewBuilder
-    private var tokenShape: some View {
-        switch colorIndex % 4 {
-        case 0:
-            Circle()
-                .fill(PlayerColors.color(for: colorIndex))
-                .overlay { Circle().stroke(ClubhouseTheme.ink.opacity(0.48), lineWidth: 0.8) }
-        case 1:
-            RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
-                .fill(PlayerColors.color(for: colorIndex))
-                .overlay {
-                    RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
-                        .stroke(ClubhouseTheme.ink.opacity(0.48), lineWidth: 0.8)
-                }
-        case 2:
-            SoftTriangleShape()
-                .fill(PlayerColors.color(for: colorIndex))
-                .overlay { SoftTriangleShape().stroke(ClubhouseTheme.ink.opacity(0.48), lineWidth: 0.8) }
-        default:
-            RoundedRectangle(cornerRadius: size * 0.24, style: .continuous)
-                .fill(PlayerColors.color(for: colorIndex))
-                .overlay {
-                    RoundedRectangle(cornerRadius: size * 0.24, style: .continuous)
-                        .stroke(ClubhouseTheme.ink.opacity(0.48), lineWidth: 0.8)
-                }
-                .rotationEffect(.degrees(45))
-                .scaleEffect(0.76)
+    var body: some View {
+        ZStack {
+            switch colorIndex % 4 {
+            case 0:
+                PokerChipShape()
+                    .fill(color)
+                    .overlay {
+                        PokerChipShape()
+                            .stroke(ClubhouseTheme.ruleStrong.opacity(0.68), lineWidth: max(size * 0.045, 0.75))
+                    }
+                    .overlay {
+                        Circle()
+                            .stroke(Color.white.opacity(0.62), lineWidth: max(size * 0.075, 1))
+                            .padding(size * 0.22)
+                    }
+            case 1:
+                RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
+                    .fill(color)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
+                            .stroke(ClubhouseTheme.ruleStrong.opacity(0.68), lineWidth: max(size * 0.045, 0.75))
+                    }
+                    .overlay {
+                        Circle()
+                            .fill(Color.white.opacity(0.82))
+                            .frame(width: size * 0.24, height: size * 0.24)
+                    }
+            case 2:
+                PawnPieceShape()
+                    .fill(color)
+                    .overlay {
+                        PawnPieceShape()
+                            .stroke(ClubhouseTheme.ruleStrong.opacity(0.68), lineWidth: max(size * 0.045, 0.75))
+                    }
+            default:
+                TicketPieceShape()
+                    .fill(color)
+                    .overlay {
+                        TicketPieceShape()
+                            .stroke(ClubhouseTheme.ruleStrong.opacity(0.68), lineWidth: max(size * 0.045, 0.75))
+                    }
+                    .rotationEffect(.degrees(-8))
+            }
         }
+        .frame(width: size, height: size)
+        .shadow(color: ClubhouseTheme.ink.opacity(0.10), radius: size * 0.08, y: size * 0.05)
+    }
+}
+
+private struct PokerChipShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        Path(ellipseIn: rect)
+    }
+}
+
+private struct PawnPieceShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let headRadius = rect.width * 0.23
+        path.addEllipse(in: CGRect(
+            x: rect.midX - headRadius,
+            y: rect.minY,
+            width: headRadius * 2,
+            height: headRadius * 2
+        ))
+        path.move(to: CGPoint(x: rect.midX - rect.width * 0.14, y: rect.minY + rect.height * 0.38))
+        path.addQuadCurve(
+            to: CGPoint(x: rect.midX - rect.width * 0.34, y: rect.maxY * 0.82),
+            control: CGPoint(x: rect.midX - rect.width * 0.18, y: rect.maxY * 0.63)
+        )
+        path.addQuadCurve(
+            to: CGPoint(x: rect.midX, y: rect.maxY),
+            control: CGPoint(x: rect.midX - rect.width * 0.31, y: rect.maxY)
+        )
+        path.addQuadCurve(
+            to: CGPoint(x: rect.midX + rect.width * 0.34, y: rect.maxY * 0.82),
+            control: CGPoint(x: rect.midX + rect.width * 0.31, y: rect.maxY)
+        )
+        path.addQuadCurve(
+            to: CGPoint(x: rect.midX + rect.width * 0.14, y: rect.minY + rect.height * 0.38),
+            control: CGPoint(x: rect.midX + rect.width * 0.18, y: rect.maxY * 0.63)
+        )
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct TicketPieceShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path(roundedRect: rect, cornerRadius: rect.width * 0.24)
+        let notch = rect.width * 0.16
+        path.addEllipse(in: CGRect(x: rect.minX - notch / 2, y: rect.midY - notch / 2, width: notch, height: notch))
+        path.addEllipse(in: CGRect(x: rect.maxX - notch / 2, y: rect.midY - notch / 2, width: notch, height: notch))
+        return path
     }
 }
 
@@ -401,44 +428,22 @@ struct TriangleShape: Shape {
     }
 }
 
-private struct SoftTriangleShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.midX, y: rect.minY + rect.height * 0.04))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.maxX - rect.width * 0.05, y: rect.maxY - rect.height * 0.07),
-            control: CGPoint(x: rect.maxX - rect.width * 0.08, y: rect.height * 0.68)
-        )
-        path.addQuadCurve(
-            to: CGPoint(x: rect.minX + rect.width * 0.05, y: rect.maxY - rect.height * 0.07),
-            control: CGPoint(x: rect.midX, y: rect.maxY)
-        )
-        path.addQuadCurve(
-            to: CGPoint(x: rect.midX, y: rect.minY + rect.height * 0.04),
-            control: CGPoint(x: rect.minX + rect.width * 0.08, y: rect.height * 0.68)
-        )
-        path.closeSubpath()
-        return path
-    }
-}
-
 struct BauhausStarburst: View {
     var color: Color = ClubhouseTheme.red
     var size: CGFloat = 38
 
     var body: some View {
         ZStack {
-            ForEach(0..<6, id: \.self) { index in
+            ForEach(0..<4, id: \.self) { index in
                 Capsule()
-                    .fill(color.opacity(index.isMultiple(of: 2) ? 1 : 0.72))
-                    .frame(width: size, height: max(1, size * 0.045))
-                    .rotationEffect(.degrees(Double(index) * 30))
+                    .fill(color)
+                    .frame(width: size, height: max(size * 0.05, 1.25))
+                    .rotationEffect(.degrees(Double(index) * 45))
             }
 
             Circle()
-                .fill(ClubhouseTheme.paperCard)
-                .frame(width: size * 0.18, height: size * 0.18)
-                .overlay { Circle().stroke(color, lineWidth: 1) }
+                .fill(color)
+                .frame(width: size * 0.22, height: size * 0.22)
         }
         .frame(width: size, height: size)
         .accessibilityHidden(true)
@@ -451,17 +456,14 @@ struct BauhausHalftone: View {
 
     var body: some View {
         Canvas { context, size in
-            var column = 0
             var x: CGFloat = 2
+            var column = 0
             while x < size.width {
-                var row = 0
-                var y: CGFloat = 2
+                var y: CGFloat = column.isMultiple(of: 2) ? 2 : spacing / 2
                 while y < size.height {
-                    let offset = CGFloat((column * 5 + row * 3) % 4)
-                    let diameter: CGFloat = offset == 0 ? 2.0 : 1.25
-                    let dot = Path(ellipseIn: CGRect(x: x, y: y, width: diameter, height: diameter))
-                    context.fill(dot, with: .color(color.opacity(offset == 0 ? 0.42 : 0.24)))
-                    row += 1
+                    let dotSize = max(spacing * 0.18, 1.25)
+                    let dot = Path(ellipseIn: CGRect(x: x, y: y, width: dotSize, height: dotSize))
+                    context.fill(dot, with: .color(color.opacity(0.34)))
                     y += spacing
                 }
                 column += 1
@@ -477,11 +479,11 @@ struct BauhausTargetArtwork: View {
 
     var body: some View {
         PipCountAssetArtwork(asset: .scoreEmblem)
-            .padding(4)
-            .shadow(color: ClubhouseTheme.paperShadow.opacity(0.42), radius: 10, y: 7)
             .overlay(alignment: .topTrailing) {
-                BauhausStarburst(color: accent, size: 26)
-                    .offset(x: -6, y: 2)
+                Circle()
+                    .fill(accent)
+                    .frame(width: 14, height: 14)
+                    .padding(8)
             }
     }
 }
@@ -492,11 +494,10 @@ struct BauhausBlocksArtwork: View {
     var body: some View {
         PipCountAssetArtwork(asset: .hero, contentMode: compact ? .fit : .fill)
             .clipped()
-            .shadow(color: ClubhouseTheme.paperShadow.opacity(0.38), radius: compact ? 6 : 12, y: compact ? 4 : 8)
     }
 }
 
-// MARK: - Screen artwork
+// MARK: - Screen artwork router
 
 enum PipCountArtworkScene {
     case home
@@ -517,322 +518,145 @@ enum PipCountArtworkScene {
 struct PipCountGeometricArtwork: View {
     let scene: PipCountArtworkScene
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var isVisible = false
+    @State private var isPresented = false
 
     var body: some View {
-        GeometryReader { proxy in
-            let scale = min(proxy.size.width / 260, proxy.size.height / 210)
+        ZStack {
+            PipCountAssetArtwork(asset: asset)
+                .scaleEffect(isPresented || reduceMotion ? 1 : 0.94)
+                .rotationEffect(.degrees(isPresented || reduceMotion ? restingRotation : enteringRotation))
+                .offset(y: isPresented || reduceMotion ? 0 : 8)
 
-            sceneArtwork
-                .frame(width: 260, height: 210)
-                .scaleEffect(scale)
-                .scaleEffect(isVisible || reduceMotion ? 1 : 0.94)
-                .rotationEffect(.degrees(isVisible || reduceMotion ? 0 : -1.5))
-                .opacity(isVisible ? 1 : 0)
-                .frame(width: proxy.size.width, height: proxy.size.height)
+            sceneAccent
         }
-        .onAppear {
-            withAnimation(reduceMotion ? AppMotion.fade : AppMotion.page) {
-                isVisible = true
-            }
-        }
+        .padding(scenePadding)
+        .animation(reduceMotion ? AppMotion.fade : AppMotion.celebration, value: isPresented)
+        .onAppear { isPresented = true }
         .accessibilityHidden(true)
     }
 
-    @ViewBuilder
-    private var sceneArtwork: some View {
+    private var asset: PipCountIllustrationAsset {
         switch scene {
         case .home:
-            EditorialAssetScene(asset: .hero, rotation: -1.4, accent: ClubhouseTheme.red)
+            return .hero
         case .homeEmpty:
-            EditorialAssetScene(asset: .emptyState, rotation: 1.2, accent: ClubhouseTheme.green)
+            return .emptyState
         case .gamePicker:
-            TabletopGamePickerArtwork()
+            return .hero
         case .playerSetup, .roster, .onboardingSetup:
-            EditorialAssetScene(asset: .crewEmblem, rotation: -1.2, accent: ClubhouseTheme.yellow)
-        case .gameSettings:
-            RulesDialArtwork()
-        case .handwriting:
-            HandwritingScoreArtwork()
-        case .scoring, .onboardingScore:
-            EditorialAssetScene(asset: .scoreEmblem, rotation: 1.1, accent: ClubhouseTheme.blue)
+            return .crewEmblem
+        case .gameSettings, .handwriting, .scoring, .onboardingScore:
+            return .scoreEmblem
         case .gameOver, .onboardingHistory:
-            EditorialAssetScene(asset: .celebrationEmblem, rotation: -1.0, accent: ClubhouseTheme.yellow)
+            return .celebrationEmblem
         case .paywall:
-            EditorialAssetScene(asset: .unlimitedEmblem, rotation: 1.0, accent: ClubhouseTheme.green)
-        }
-    }
-}
-
-private struct EditorialAssetScene: View {
-    let asset: PipCountIllustrationAsset
-    var rotation: Double = 0
-    var accent: Color = ClubhouseTheme.red
-
-    var body: some View {
-        ZStack {
-            SoftBlob()
-                .fill(accent.opacity(0.10))
-                .frame(width: 188, height: 154)
-                .rotationEffect(.degrees(-8))
-                .offset(x: -12, y: 8)
-
-            PipCountAssetArtwork(asset: asset)
-                .padding(8)
-                .rotationEffect(.degrees(rotation))
-                .shadow(color: ClubhouseTheme.paperShadow.opacity(0.44), radius: 12, y: 8)
-
-            BauhausStarburst(color: accent, size: 28)
-                .offset(x: 92, y: -72)
-
-            BauhausHalftone(color: ClubhouseTheme.inkMuted, spacing: 7)
-                .frame(width: 44, height: 58)
-                .offset(x: -100, y: 62)
-                .opacity(0.55)
-        }
-    }
-}
-
-private struct SoftBlob: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        path.move(to: CGPoint(x: rect.width * 0.16, y: rect.height * 0.34))
-        path.addCurve(
-            to: CGPoint(x: rect.width * 0.62, y: rect.height * 0.06),
-            control1: CGPoint(x: rect.width * 0.24, y: rect.height * 0.04),
-            control2: CGPoint(x: rect.width * 0.48, y: rect.height * 0.04)
-        )
-        path.addCurve(
-            to: CGPoint(x: rect.width * 0.94, y: rect.height * 0.58),
-            control1: CGPoint(x: rect.width * 0.88, y: rect.height * 0.10),
-            control2: CGPoint(x: rect.width * 0.99, y: rect.height * 0.34)
-        )
-        path.addCurve(
-            to: CGPoint(x: rect.width * 0.42, y: rect.height * 0.96),
-            control1: CGPoint(x: rect.width * 0.88, y: rect.height * 0.92),
-            control2: CGPoint(x: rect.width * 0.66, y: rect.height * 0.98)
-        )
-        path.addCurve(
-            to: CGPoint(x: rect.width * 0.16, y: rect.height * 0.34),
-            control1: CGPoint(x: rect.width * 0.08, y: rect.height * 0.98),
-            control2: CGPoint(x: rect.width * 0.02, y: rect.height * 0.58)
-        )
-        path.closeSubpath()
-        return path
-    }
-}
-
-private struct TabletopGamePickerArtwork: View {
-    var body: some View {
-        ZStack {
-            SoftBlob()
-                .fill(ClubhouseTheme.sky.opacity(0.48))
-                .frame(width: 210, height: 170)
-                .rotationEffect(.degrees(8))
-
-            miniCard(color: ClubhouseTheme.blue, icon: "pencil.and.list.clipboard", rotation: -9)
-                .offset(x: -62, y: 14)
-            miniCard(color: ClubhouseTheme.red, icon: "rectangle.stack.fill", rotation: 5)
-                .offset(x: 4, y: -18)
-            miniCard(color: ClubhouseTheme.yellow, icon: "fork.knife", rotation: 10)
-                .offset(x: 68, y: 18)
-
-            DicePairArtwork()
-                .frame(width: 74, height: 54)
-                .offset(x: 18, y: 72)
-
-            BauhausStarburst(color: ClubhouseTheme.green, size: 28)
-                .offset(x: -92, y: -68)
+            return .unlimitedEmblem
         }
     }
 
-    private func miniCard(color: Color, icon: String, rotation: Double) -> some View {
-        RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .fill(ClubhouseTheme.paperCard)
-            .frame(width: 92, height: 116)
-            .overlay {
-                VStack(spacing: 11) {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(color.opacity(0.16))
-                        .frame(width: 58, height: 58)
-                        .overlay {
-                            Image(systemName: icon)
-                                .font(.title2.weight(.semibold))
-                                .foregroundStyle(color)
-                        }
-                    Capsule()
-                        .fill(ClubhouseTheme.ruleStrong.opacity(0.48))
-                        .frame(width: 48, height: 4)
-                }
+    private var restingRotation: Double {
+        switch scene {
+        case .gamePicker: return -1.4
+        case .playerSetup, .roster: return 1.2
+        case .gameOver: return -0.8
+        default: return 0
+        }
+    }
+
+    private var enteringRotation: Double {
+        restingRotation + (restingRotation >= 0 ? 3.5 : -3.5)
+    }
+
+    private var scenePadding: CGFloat {
+        switch scene {
+        case .home, .homeEmpty: return 2
+        case .paywall: return 4
+        default: return 8
+        }
+    }
+
+    @ViewBuilder
+    private var sceneAccent: some View {
+        switch scene {
+        case .gamePicker:
+            HStack(spacing: 7) {
+                MiniGameCard(color: ClubhouseTheme.blue, symbol: "number")
+                MiniGameCard(color: ClubhouseTheme.lacquer, symbol: "dice.fill")
+                MiniGameCard(color: ClubhouseTheme.green, symbol: "fork.knife")
             }
-            .overlay {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
+            .scaleEffect(0.58)
+            .offset(x: 56, y: 65)
+        case .gameSettings:
+            VStack(spacing: 7) {
+                SettingTick(color: ClubhouseTheme.blue, value: 0.70)
+                SettingTick(color: ClubhouseTheme.lacquer, value: 0.45)
+                SettingTick(color: ClubhouseTheme.green, value: 0.82)
             }
-            .shadow(color: ClubhouseTheme.paperShadow.opacity(0.48), radius: 8, y: 6)
-            .rotationEffect(.degrees(rotation))
-    }
-}
-
-private struct DicePairArtwork: View {
-    var body: some View {
-        ZStack {
-            die(color: ClubhouseTheme.coral, pips: [0, 4])
-                .rotationEffect(.degrees(-10))
-                .offset(x: -18, y: 3)
-            die(color: ClubhouseTheme.blue, pips: [0, 2, 4])
-                .rotationEffect(.degrees(8))
-                .offset(x: 19, y: -2)
-        }
-    }
-
-    private func die(color: Color, pips: [Int]) -> some View {
-        RoundedRectangle(cornerRadius: 12, style: .continuous)
-            .fill(color)
-            .frame(width: 44, height: 44)
-            .overlay {
-                GeometryReader { proxy in
-                    ForEach(pips, id: \.self) { pip in
-                        Circle()
-                            .fill(Color.white.opacity(0.92))
-                            .frame(width: 6, height: 6)
-                            .position(position(for: pip, in: proxy.size))
-                    }
-                }
+            .frame(width: 92)
+            .offset(x: 60, y: 54)
+        case .handwriting:
+            Text("12")
+                .font(.system(size: 44, weight: .bold, design: .rounded))
+                .foregroundStyle(ClubhouseTheme.ink)
+                .rotationEffect(.degrees(-7))
+                .offset(x: 48, y: 26)
+        case .scoring:
+            HStack(spacing: 6) {
+                BauhausPlayerShape(colorIndex: 0, size: 22)
+                BauhausPlayerShape(colorIndex: 1, size: 22)
+                BauhausPlayerShape(colorIndex: 2, size: 22)
             }
+            .offset(x: -48, y: 72)
+        case .gameOver:
+            BauhausStarburst(color: ClubhouseTheme.blue, size: 30)
+                .offset(x: 77, y: -63)
+        case .paywall:
+            Image(systemName: "infinity")
+                .font(.system(size: 38, weight: .bold, design: .rounded))
+                .foregroundStyle(ClubhouseTheme.onPrimary)
+                .padding(14)
+                .background(ClubhouseTheme.blue, in: Circle())
+                .offset(x: 74, y: 64)
+        default:
+            EmptyView()
+        }
+    }
+}
+
+private struct MiniGameCard: View {
+    let color: Color
+    let symbol: String
+
+    var body: some View {
+        Image(systemName: symbol)
+            .font(.system(size: 20, weight: .bold))
+            .foregroundStyle(Color.white)
+            .frame(width: 54, height: 68)
+            .background(color, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.ink.opacity(0.28), lineWidth: 1)
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(ClubhouseTheme.ink.opacity(0.65), lineWidth: 2)
             }
-            .shadow(color: ClubhouseTheme.paperShadow.opacity(0.55), radius: 5, y: 4)
-    }
-
-    private func position(for pip: Int, in size: CGSize) -> CGPoint {
-        let points = [
-            CGPoint(x: size.width * 0.50, y: size.height * 0.50),
-            CGPoint(x: size.width * 0.28, y: size.height * 0.28),
-            CGPoint(x: size.width * 0.72, y: size.height * 0.28),
-            CGPoint(x: size.width * 0.28, y: size.height * 0.72),
-            CGPoint(x: size.width * 0.72, y: size.height * 0.72)
-        ]
-        return points[min(max(pip, 0), points.count - 1)]
+            .shadow(color: ClubhouseTheme.ink.opacity(0.12), radius: 4, y: 3)
     }
 }
 
-private struct RulesDialArtwork: View {
+private struct SettingTick: View {
+    let color: Color
+    let value: CGFloat
+
     var body: some View {
-        ZStack {
-            SoftBlob()
-                .fill(ClubhouseTheme.yellow.opacity(0.18))
-                .frame(width: 206, height: 166)
-                .rotationEffect(.degrees(-5))
-
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(ClubhouseTheme.paperCard)
-                .frame(width: 184, height: 136)
-                .overlay {
-                    HStack(spacing: 22) {
-                        dial(color: ClubhouseTheme.blue, value: -22)
-                        dial(color: ClubhouseTheme.red, value: 18)
-                        dial(color: ClubhouseTheme.green, value: -4)
-                    }
-                }
-                .overlay {
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
-                }
-                .shadow(color: ClubhouseTheme.paperShadow.opacity(0.45), radius: 10, y: 7)
-                .rotationEffect(.degrees(1.5))
-
-            BauhausStarburst(color: ClubhouseTheme.red, size: 26)
-                .offset(x: 98, y: -66)
+        GeometryReader { proxy in
+            ZStack(alignment: .leading) {
+                Capsule().fill(ClubhouseTheme.paperSunken)
+                Capsule().fill(color).frame(width: proxy.size.width * value)
+                Circle()
+                    .fill(ClubhouseTheme.paperCard)
+                    .overlay { Circle().stroke(ClubhouseTheme.ink.opacity(0.42), lineWidth: 1) }
+                    .frame(width: proxy.size.height, height: proxy.size.height)
+                    .offset(x: max(proxy.size.width * value - proxy.size.height, 0))
+            }
         }
-    }
-
-    private func dial(color: Color, value: CGFloat) -> some View {
-        ZStack {
-            Capsule()
-                .fill(ClubhouseTheme.rule)
-                .frame(width: 6, height: 88)
-            Circle()
-                .fill(color)
-                .frame(width: 30, height: 30)
-                .overlay { Circle().stroke(Color.white.opacity(0.58), lineWidth: 1) }
-                .offset(y: value)
-                .shadow(color: ClubhouseTheme.paperShadow.opacity(0.35), radius: 4, y: 2)
-        }
-    }
-}
-
-private struct HandwritingScoreArtwork: View {
-    var body: some View {
-        ZStack {
-            SoftBlob()
-                .fill(ClubhouseTheme.lilac.opacity(0.17))
-                .frame(width: 204, height: 168)
-                .rotationEffect(.degrees(6))
-
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(ClubhouseTheme.paperCard)
-                .frame(width: 176, height: 142)
-                .overlay {
-                    VStack(spacing: 22) {
-                        ForEach(0..<4, id: \.self) { _ in
-                            Rectangle()
-                                .fill(ClubhouseTheme.sky.opacity(0.82))
-                                .frame(height: 1)
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                }
-                .overlay {
-                    Text("12")
-                        .font(.system(size: 78, weight: .bold, design: .rounded))
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .rotationEffect(.degrees(-7))
-                }
-                .overlay(alignment: .bottomTrailing) {
-                    PencilArtwork()
-                        .frame(width: 118, height: 30)
-                        .rotationEffect(.degrees(-18))
-                        .offset(x: 26, y: 18)
-                }
-                .overlay {
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .strokeBorder(ClubhouseTheme.panelBorder, lineWidth: 1)
-                }
-                .shadow(color: ClubhouseTheme.paperShadow.opacity(0.48), radius: 10, y: 7)
-                .rotationEffect(.degrees(-1.8))
-        }
-    }
-}
-
-private struct PencilArtwork: View {
-    var body: some View {
-        HStack(spacing: 0) {
-            TriangleShape()
-                .fill(ClubhouseTheme.woodgrain)
-                .frame(width: 22, height: 22)
-                .rotationEffect(.degrees(-90))
-                .overlay(alignment: .leading) {
-                    Circle()
-                        .fill(ClubhouseTheme.ink)
-                        .frame(width: 5, height: 5)
-                        .offset(x: -1)
-                }
-            Rectangle()
-                .fill(ClubhouseTheme.yellow)
-                .frame(height: 22)
-            Rectangle()
-                .fill(ClubhouseTheme.red)
-                .frame(width: 15, height: 22)
-            Capsule()
-                .fill(ClubhouseTheme.coral.opacity(0.70))
-                .frame(width: 18, height: 22)
-                .offset(x: -4)
-        }
-        .clipShape(Capsule())
-        .overlay { Capsule().stroke(ClubhouseTheme.ink.opacity(0.32), lineWidth: 1) }
-        .shadow(color: ClubhouseTheme.paperShadow.opacity(0.35), radius: 3, y: 2)
+        .frame(height: 13)
     }
 }
