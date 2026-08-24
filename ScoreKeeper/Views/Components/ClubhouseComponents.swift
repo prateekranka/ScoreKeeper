@@ -871,27 +871,48 @@ private struct KineticBauhausComposition: View {
     }
 
     private var celebration: some View {
-        ZStack {
-            skyline(sparse: false)
-                .scaleEffect(0.88)
-                .offset(y: size.height * 0.06)
+    ZStack {
+        skyline(sparse: false)
+            .scaleEffect(0.88)
+            .offset(y: size.height * 0.06)
 
-            ForEach(0..<8, id: \.self) { index in
-                let x = size.width * (0.12 + CGFloat(index) * 0.105)
-                let y = size.height * (0.12 + CGFloat(index % 3) * 0.08)
-                let colors = [ClubhouseTheme.red, ClubhouseTheme.blue, ClubhouseTheme.yellow, ClubhouseTheme.green]
-
-                Rectangle()
-                    .fill(colors[index % colors.count])
-                    .frame(width: max(5, size.width * 0.018), height: max(12, size.height * 0.055))
-                    .rotationEffect(.degrees(Double(index * 24) + wave(phase: Double(index), amplitude: 8)))
-                    .position(x: x, y: y + wave(phase: Double(index) * 0.7, amplitude: 7))
-                    .artElement(active: active, index: index + 2, entry: CGSize(width: 0, height: -28), rotation: Double(index * 12), scale: 0.22)
-            }
+        ForEach(0..<8, id: \.self) { index in
+            celebrationConfetti(index: index)
         }
     }
+}
 
-    private var unlimited: some View {
+private func celebrationConfetti(index: Int) -> some View {
+    let colors: [Color] = [
+        ClubhouseTheme.red,
+        ClubhouseTheme.blue,
+        ClubhouseTheme.yellow,
+        ClubhouseTheme.green
+    ]
+    let xPosition = size.width * (0.12 + CGFloat(index) * 0.105)
+    let baseY = size.height * (0.12 + CGFloat(index % 3) * 0.08)
+    let yPosition = baseY + wave(phase: Double(index) * 0.7, amplitude: 7)
+    let pieceWidth = max(5, size.width * 0.018)
+    let pieceHeight = max(12, size.height * 0.055)
+    let pieceRotation = Double(index * 24) + wave(phase: Double(index), amplitude: 8)
+    let entryRotation = Double(index * 12)
+    let color = colors[index % colors.count]
+
+    return Rectangle()
+        .fill(color)
+        .frame(width: pieceWidth, height: pieceHeight)
+        .rotationEffect(.degrees(pieceRotation))
+        .position(x: xPosition, y: yPosition)
+        .artElement(
+            active: active,
+            index: index + 2,
+            entry: CGSize(width: 0, height: -28),
+            rotation: entryRotation,
+            scale: 0.22
+        )
+}
+
+private var unlimited: some View {
         ZStack {
             BauhausArcShape(start: 0.06, end: 0.94)
                 .stroke(ClubhouseTheme.blue, style: StrokeStyle(lineWidth: max(20, size.width * 0.075), lineCap: .butt))
