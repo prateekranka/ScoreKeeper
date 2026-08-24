@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="pad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFDF7"/><stop offset="1" stop-color="#F2E5D3"/></linearGradient>
+    <linearGradient id="pencil" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F5C74D"/><stop offset="1" stop-color="#E5A42D"/></linearGradient>
+  </defs>
+  <ellipse cx="508" cy="826" rx="330" ry="70" fill="#CDB89C" opacity=".32"/>
+  <g stroke="#29241F" stroke-width="19" stroke-linecap="round" stroke-linejoin="round">
+    <!-- tilted score pad -->
+    <g transform="rotate(-7 478 503)">
+      <rect x="198" y="152" width="560" height="704" rx="72" fill="#D5BFA2" opacity=".38" stroke="none" transform="translate(20 24)"/>
+      <rect x="198" y="152" width="560" height="704" rx="72" fill="url(#pad)"/>
+      <rect x="237" y="191" width="482" height="626" rx="45" fill="none" stroke="#D7C9B7" stroke-width="9"/>
+      <path d="M292 310h368M292 424h368M292 538h368M292 652h368" fill="none" stroke="#B8AC9D" stroke-width="10"/>
+      <path d="M358 233v526" fill="none" stroke="#E66A5A" stroke-width="9" opacity=".75"/>
+      <text x="393" y="385" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="84" font-weight="800" fill="#3158BD" stroke="none">24</text>
+      <text x="393" y="499" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="84" font-weight="800" fill="#29241F" stroke="none">18</text>
+      <text x="393" y="613" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="84" font-weight="800" fill="#D94D3E" stroke="none">31</text>
+      <path d="M589 339l20 22 43-53M589 453l20 22 43-53M589 567l20 22 43-53" fill="none" stroke="#729C7E" stroke-width="16"/>
+      <g fill="#E8AFC3" stroke="none"><circle cx="279" cy="212" r="13"/><circle cx="334" cy="212" r="13"/><circle cx="389" cy="212" r="13"/><circle cx="444" cy="212" r="13"/><circle cx="499" cy="212" r="13"/><circle cx="554" cy="212" r="13"/><circle cx="609" cy="212" r="13"/><circle cx="664" cy="212" r="13"/></g>
+    </g>
+    <!-- pencil across pad -->
+    <g transform="rotate(-42 682 627)">
+      <rect x="643" y="357" width="78" height="472" rx="30" fill="url(#pencil)"/>
+      <path d="M643 439h78" stroke="#E05B4A" stroke-width="34"/>
+      <path d="M643 395h78" stroke="#F5C6B0" stroke-width="42"/>
+      <path d="M643 829l39 99 39-99z" fill="#E7C79F"/>
+      <path d="M667 890l15 38 15-38z" fill="#29241F" stroke="none"/>
+    </g>
+    <!-- small die -->
+    <g transform="rotate(11 238 716)">
+      <rect x="148" y="626" width="180" height="180" rx="42" fill="#557AD2"/>
+      <g fill="#FFF8EC" stroke="none"><circle cx="192" cy="670" r="15"/><circle cx="284" cy="670" r="15"/><circle cx="238" cy="716" r="15"/><circle cx="192" cy="762" r="15"/><circle cx="284" cy="762" r="15"/></g>
+    </g>
+    <!-- score token -->
+    <circle cx="807" cy="243" r="73" fill="#F0B532"/>
+    <path d="M773 244l23 25 47-57" fill="none" stroke="#FFF8EC" stroke-width="17"/>
+  </g>
+  <g fill="none" stroke-linecap="round" stroke-width="14">
+    <path d="M154 256l-54-31M167 214l-17-58M127 301l-59 6" stroke="#E05B4A"/>
+    <path d="M841 424l47-28M830 380l18-57M856 469l57 6" stroke="#729C7E"/>
+  </g>
+</svg>
