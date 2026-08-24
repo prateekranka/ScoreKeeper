@@ -69,8 +69,8 @@ final class ScoreKeeperUITests: XCTestCase {
     func testCreatePhase10GameAndScore() throws {
         navigateToScoring(gameTileID: "game_tile_phase10", playerNames: ["Alice", "Bob"])
 
-        // Submit one round for Ten Phases
-        completeRound(playerNames: ["Alice", "Bob"])
+        // Submit one round for Ten Phases (submits directly, no deck)
+        completeRound(playerNames: ["Alice", "Bob"], gameType: "phase10")
 
         // End Game
         app.buttons["end_game_button"].tap()
@@ -284,7 +284,17 @@ final class ScoreKeeperUITests: XCTestCase {
 
         _ = waitForHittable(app.buttons["new_game_button"])
 
+        // Scroll to find the player stats entry
         let playerStatsButton = app.buttons["player_stats_Taylor"]
+        var found = false
+        for _ in 0..<6 {
+            if playerStatsButton.exists && playerStatsButton.isHittable {
+                found = true
+                break
+            }
+            app.swipeUp(velocity: .fast)
+        }
+        XCTAssertTrue(found || playerStatsButton.exists, "player_stats_Taylor not found after scrolling")
         tapButtonInSafeArea(playerStatsButton)
 
         XCTAssertTrue(app.navigationBars["Taylor"].waitForExistence(timeout: 3))
@@ -946,9 +956,14 @@ final class ScoreKeeperUITests: XCTestCase {
         }
     }
 
-    private func completeRound(playerNames: [String]) {
+    private func completeRound(playerNames: [String], gameType: String = "generic") {
         app.buttons["submit_round_button"].tap()
-        completeOpenDeck(playerNames: playerNames)
+        // Only generic scoring opens the deck; Phase 10 and WhatsForDinner submit directly
+        if gameType == "generic" {
+            completeOpenDeck(playerNames: playerNames)
+        } else {
+            _ = app.staticTexts["Rounds"].waitForExistence(timeout: 3)
+        }
     }
 
     private func completeGenericGame(playerNames: [String]) {
