@@ -11,9 +11,6 @@ on:
       - claude/show-claude-md-0Z8wn
       - app-dev/pipcount-bauhaus-motion
 
-permissions:
-  contents: write
-
 concurrency:
   group: pipcount-ios-${{ github.ref }}
   cancel-in-progress: true
@@ -27,85 +24,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Split the celebration artwork expression
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          path = Path("ScoreKeeper/Views/Components/ClubhouseComponents.swift")
-          source = path.read_text()
-          pattern = re.compile(
-              r"    private var celebration: some View \{\n.*?\n    private var unlimited: some View \{",
-              re.DOTALL,
-          )
-          match = pattern.search(source)
-          if match is None:
-              raise SystemExit("Could not locate the celebration artwork block")
-
-          replacement = '''    private var celebration: some View {
-              ZStack {
-                  skyline(sparse: false)
-                      .scaleEffect(0.88)
-                      .offset(y: size.height * 0.06)
-
-                  ForEach(0..<8, id: \.self) { index in
-                      celebrationConfetti(index: index)
-                  }
-              }
-          }
-
-          private func celebrationConfetti(index: Int) -> some View {
-              let colors: [Color] = [
-                  ClubhouseTheme.red,
-                  ClubhouseTheme.blue,
-                  ClubhouseTheme.yellow,
-                  ClubhouseTheme.green
-              ]
-              let xPosition = size.width * (0.12 + CGFloat(index) * 0.105)
-              let baseY = size.height * (0.12 + CGFloat(index % 3) * 0.08)
-              let yPosition = baseY + wave(phase: Double(index) * 0.7, amplitude: 7)
-              let pieceWidth = max(5, size.width * 0.018)
-              let pieceHeight = max(12, size.height * 0.055)
-              let pieceRotation = Double(index * 24) + wave(phase: Double(index), amplitude: 8)
-              let entryRotation = Double(index * 12)
-              let color = colors[index % colors.count]
-
-              return Rectangle()
-                  .fill(color)
-                  .frame(width: pieceWidth, height: pieceHeight)
-                  .rotationEffect(.degrees(pieceRotation))
-                  .position(x: xPosition, y: yPosition)
-                  .artElement(
-                      active: active,
-                      index: index + 2,
-                      entry: CGSize(width: 0, height: -28),
-                      rotation: entryRotation,
-                      scale: 0.22
-                  )
-          }
-
-          private var unlimited: some View {'''
-
-          if "private func celebrationConfetti" not in source:
-              path.write_text(source[:match.start()] + replacement + source[match.end():])
-          PY
-
-      - name: Commit compiler-friendly artwork
-        if: github.event_name == 'push'
-        run: |
-          if git diff --quiet -- ScoreKeeper/Views/Components/ClubhouseComponents.swift; then
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ScoreKeeper/Views/Components/ClubhouseComponents.swift
-          git commit -m "fix(art): split celebration composition for compiler"
-          git fetch origin app-dev/pipcount-bauhaus-motion
-          git rebase origin/app-dev/pipcount-bauhaus-motion
-          git push origin HEAD:app-dev/pipcount-bauhaus-motion
 
       - name: Show Xcode version
         run: xcodebuild -version
