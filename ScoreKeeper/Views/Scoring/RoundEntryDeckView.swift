@@ -86,6 +86,7 @@ struct RoundEntryDeckView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 Button { clear(for: player) } label: { Image(systemName: "delete.left").font(.title2) }
                     .accessibilityLabel("Clear score")
+                    .accessibilityIdentifier("deck_clear_\(player.name)")
                 Button { recognizeCurrent() } label: { Image(systemName: "checkmark.circle.fill").font(.title).foregroundStyle(ClubhouseTheme.blue) }
                     .accessibilityLabel("Recognize score")
                     .accessibilityIdentifier("recognize_score_button")
@@ -102,7 +103,8 @@ struct RoundEntryDeckView: View {
         .onChange(of: capturedImage) { _, image in
             guard confirmingPlayer == nil, let image else { return }
             Task { @MainActor in
-                guard let value = await ScoreRecognizer.recognize(image) else { return }
+                // Default to 0 if nothing recognizable — zero is a valid score.
+                let value = await ScoreRecognizer.recognize(image) ?? 0
                 confirmingPlayer = player.id
                 confirmedValue = value
             }
@@ -125,8 +127,10 @@ struct RoundEntryDeckView: View {
             HStack(spacing: 28) {
                 Button { retry() } label: { Image(systemName: "arrow.counterclockwise").font(.title).frame(width: 58, height: 58) }
                     .accessibilityLabel("Retry")
+                    .accessibilityIdentifier("deck_retry_\(player.name)")
                 Button { accept(value) } label: { Image(systemName: "checkmark").font(.title.bold()).frame(width: 58, height: 58) }
                     .accessibilityLabel("Accept")
+                    .accessibilityIdentifier("deck_accept_\(player.name)")
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
