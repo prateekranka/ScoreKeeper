@@ -52,7 +52,7 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Charlie"].exists)
 
         // Submit a round (all zeros is fine)
-        app.buttons["submit_round_button"].tap()
+        completeRound(playerNames: ["Alice", "Bob", "Charlie"])
 
         // End Game
         app.buttons["end_game_button"].tap()
@@ -70,7 +70,7 @@ final class ScoreKeeperUITests: XCTestCase {
         navigateToScoring(gameTileID: "game_tile_phase10", playerNames: ["Alice", "Bob"])
 
         // Submit one round for Ten Phases
-        app.buttons["submit_round_button"].tap()
+        completeRound(playerNames: ["Alice", "Bob"])
 
         // End Game
         app.buttons["end_game_button"].tap()
@@ -86,7 +86,7 @@ final class ScoreKeeperUITests: XCTestCase {
         navigateToGenericScoring(playerNames: ["Alice", "Bob"])
 
         // Submit one round
-        app.buttons["submit_round_button"].tap()
+        completeRound(playerNames: ["Alice", "Bob"])
 
         // End Game
         app.buttons["end_game_button"].tap()
@@ -113,7 +113,7 @@ final class ScoreKeeperUITests: XCTestCase {
     func testPlayAgain() throws {
         navigateToGenericScoring(playerNames: ["Alice", "Bob"])
 
-        app.buttons["submit_round_button"].tap()
+        completeRound(playerNames: ["Alice", "Bob"])
 
         // End Game
         app.buttons["end_game_button"].tap()
@@ -137,7 +137,7 @@ final class ScoreKeeperUITests: XCTestCase {
     func testGameHistory() throws {
         // Complete first game
         navigateToGenericScoring(playerNames: ["Alice", "Bob"])
-        app.buttons["submit_round_button"].tap()
+        completeRound(playerNames: ["Ada", "Ben"])
         app.buttons["end_game_button"].tap()
         app.alerts.buttons["End Game"].tap()
         app.swipeUp()
@@ -154,7 +154,7 @@ final class ScoreKeeperUITests: XCTestCase {
         fillPlayerNames(["Charlie", "Diana"])
         app.buttons["start_game_button"].tap()
         app.buttons["start_game_button"].tap()
-        app.buttons["submit_round_button"].tap()
+        completeRound(playerNames: ["Ada", "Ben"])
         app.buttons["end_game_button"].tap()
         app.alerts.buttons["End Game"].tap()
         app.swipeUp()
@@ -190,22 +190,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
     func testGenericScoreStepperUpdatesVisibleScore() throws {
         navigateToGenericScoring(playerNames: ["Alice", "Bob"])
-
-        // Open deck, accept 0 for Alice, swipe to Bob, accept 0, last card submits round
-        app.buttons["submit_round_button"].tap()
-        XCTAssertTrue(app.buttons["recognize_score_button"].waitForExistence(timeout: 3))
-        app.buttons["recognize_score_button"].tap()
-        if app.buttons["deck_accept_Alice"].waitForExistence(timeout: 3) {
-            app.buttons["deck_accept_Alice"].tap()
-            sleep(1)
-        }
-        // Now on Bob's card (last) — accepting submits round
-        app.buttons["recognize_score_button"].tap()
-        if app.buttons["deck_accept_Bob"].waitForExistence(timeout: 3) {
-            app.buttons["deck_accept_Bob"].tap()
-            sleep(2)
-        }
-
+        completeRound(playerNames: ["Alice", "Bob"])
         XCTAssertTrue(app.staticTexts["Round 2"].waitForExistence(timeout: 3))
     }
 
@@ -341,7 +326,7 @@ final class ScoreKeeperUITests: XCTestCase {
         relaunch(arguments: ["-in-memory-store", "-force-review-ask", "-force-light-theme"])
 
         navigateToGenericScoring(playerNames: ["Ada", "Ben"])
-        app.buttons["submit_round_button"].tap()
+        completeRound(playerNames: ["Ada", "Ben"])
         app.buttons["end_game_button"].tap()
         app.alerts.buttons["End Game"].tap()
 
@@ -390,14 +375,14 @@ final class ScoreKeeperUITests: XCTestCase {
         // Open deck, accept 5+0 for Alice and Bob — target score 5 triggers win for Alice
         // Since we can't draw, accept 0 for both; then end game manually
         app.buttons["submit_round_button"].tap()
-        _ = app.buttons["recognize_score_button"].waitForExistence(timeout: 3)
+        _ = app.buttons["Recognize score"].waitForExistence(timeout: 3)
         if app.buttons["Got it"].waitForExistence(timeout: 1) { app.buttons["Got it"].tap() }
-        app.buttons["recognize_score_button"].tap()
+        app.buttons["Recognize score"].tap()
         sleep(1)
         if app.buttons["deck_accept_Alice"].waitForExistence(timeout: 2) {
             app.buttons["deck_accept_Alice"].tap(); sleep(1)
         }
-        app.buttons["recognize_score_button"].tap()
+        app.buttons["Recognize score"].tap()
         sleep(1)
         if app.buttons["deck_accept_Bob"].waitForExistence(timeout: 2) {
             app.buttons["deck_accept_Bob"].tap(); sleep(2)
@@ -439,16 +424,16 @@ final class ScoreKeeperUITests: XCTestCase {
         relaunch(arguments: ["-in-memory-store", "-force-handwriting-entry"])
         navigateToGenericScoring(playerNames: ["Mina", "Omar"])
 
-        XCTAssertTrue(app.buttons["recognize_score_button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.buttons["Recognize score"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.buttons["accept_handwritten_score_button"].exists)
 
         // Open deck, accept 0 for Mina (auto-advances to Omar), accept 0 for Omar (submits)
-        app.buttons["recognize_score_button"].tap()
+        app.buttons["Recognize score"].tap()
         if app.buttons["deck_accept_Mina"].waitForExistence(timeout: 3) {
             app.buttons["deck_accept_Mina"].tap()
             sleep(1)
         }
-        app.buttons["recognize_score_button"].tap()
+        app.buttons["Recognize score"].tap()
         if app.buttons["deck_accept_Omar"].waitForExistence(timeout: 3) {
             app.buttons["deck_accept_Omar"].tap()
             sleep(2)
@@ -461,14 +446,13 @@ final class ScoreKeeperUITests: XCTestCase {
         navigateToGenericScoring(playerNames: ["Mina", "Omar"])
 
         // Open deck and submit round via accept on both cards
-        app.buttons["submit_round_button"].tap()
-        XCTAssertTrue(app.buttons["recognize_score_button"].waitForExistence(timeout: 3))
-        app.buttons["recognize_score_button"].tap()
+        completeRound(playerNames: ["Mina", "Omar"])
+        app.buttons["Recognize score"].tap()
         if app.buttons["deck_accept_Mina"].waitForExistence(timeout: 3) {
             app.buttons["deck_accept_Mina"].tap()
             sleep(1)
         }
-        app.buttons["recognize_score_button"].tap()
+        app.buttons["Recognize score"].tap()
         if app.buttons["deck_accept_Omar"].waitForExistence(timeout: 3) {
             app.buttons["deck_accept_Omar"].tap()
             sleep(2)
@@ -592,7 +576,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
         // Open the deck
         app.buttons["submit_round_button"].tap()
-        _ = app.buttons["recognize_score_button"].waitForExistence(timeout: 3)
+        _ = app.buttons["Recognize score"].waitForExistence(timeout: 3)
         snap("09-scoring-deck-mina")
 
         // Dismiss tutorial if shown
@@ -601,7 +585,7 @@ final class ScoreKeeperUITests: XCTestCase {
         }
 
         // Tap ✓ to recognize (empty canvas → no overlay, but exercises the flow)
-        app.buttons["recognize_score_button"].tap()
+        app.buttons["Recognize score"].tap()
         sleep(1)
 
         // Accept or retry — on empty canvas there may be no overlay, so check
@@ -617,8 +601,8 @@ final class ScoreKeeperUITests: XCTestCase {
         snap("09-scoring-deck-omar")
 
         // Omar's card — same flow
-        if app.buttons["recognize_score_button"].waitForExistence(timeout: 2) {
-            app.buttons["recognize_score_button"].tap()
+        if app.buttons["Recognize score"].waitForExistence(timeout: 2) {
+            app.buttons["Recognize score"].tap()
             sleep(1)
             if app.buttons["deck_accept_Omar"].waitForExistence(timeout: 2) {
                 app.buttons["deck_accept_Omar"].tap()
@@ -630,8 +614,8 @@ final class ScoreKeeperUITests: XCTestCase {
         }
 
         // Jules — last card; accepting submits round
-        if app.buttons["recognize_score_button"].waitForExistence(timeout: 2) {
-            app.buttons["recognize_score_button"].tap()
+        if app.buttons["Recognize score"].waitForExistence(timeout: 2) {
+            app.buttons["Recognize score"].tap()
             sleep(1)
             if app.buttons["deck_accept_Jules"].waitForExistence(timeout: 2) {
                 app.buttons["deck_accept_Jules"].tap()
@@ -678,7 +662,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
         relaunch(arguments: ["-in-memory-store", "-force-review-ask", "-force-light-theme"])
         navigateToGenericScoring(playerNames: ["Ada", "Ben"])
-        app.buttons["submit_round_button"].tap()
+        completeRound(playerNames: ["Ada", "Ben"])
         app.buttons["end_game_button"].tap()
         if app.alerts.buttons["End Game"].waitForExistence(timeout: 2) {
             app.alerts.buttons["End Game"].tap()
@@ -746,7 +730,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
         // Complete a game, snapping the end-game confirmation on the way
         navigateToGenericScoring(playerNames: ["Taylor", "Morgan"])
-        app.buttons["submit_round_button"].tap()
+        completeRound(playerNames: ["Ada", "Ben"])
         app.buttons["end_game_button"].tap()
         XCTAssertTrue(app.alerts.firstMatch.waitForExistence(timeout: 2))
         snap("19-end-game-confirm")
@@ -806,12 +790,12 @@ final class ScoreKeeperUITests: XCTestCase {
 
         navigateToGenericScoring(playerNames: ["Ada", "Ben"])
         app.buttons["submit_round_button"].tap()
-        _ = app.buttons["recognize_score_button"].waitForExistence(timeout: 3)
-        app.buttons["recognize_score_button"].tap()
+        _ = app.buttons["Recognize score"].waitForExistence(timeout: 3)
+        app.buttons["Recognize score"].tap()
         if app.buttons["deck_accept_Ada"].waitForExistence(timeout: 3) {
             app.buttons["deck_accept_Ada"].tap(); sleep(1)
         }
-        app.buttons["recognize_score_button"].tap()
+        app.buttons["Recognize score"].tap()
         if app.buttons["deck_accept_Ben"].waitForExistence(timeout: 3) {
             app.buttons["deck_accept_Ben"].tap(); sleep(2)
         }
@@ -962,22 +946,27 @@ final class ScoreKeeperUITests: XCTestCase {
         return element.exists && element.isHittable
     }
 
+    private func completeOpenDeck(playerNames: [String]) {
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
+        if app.buttons["Got it"].waitForExistence(timeout: 3) { app.buttons["Got it"].tap() }
+        XCTAssertTrue(app.buttons["Recognize score"].waitForExistence(timeout: 10))
+        for name in playerNames {
+            app.buttons["Recognize score"].tap()
+            let accept = app.buttons["Accept"]
+            XCTAssertTrue(accept.waitForExistence(timeout: 3))
+            accept.tap()
+            sleep(1)
+        }
+    }
+
+    private func completeRound(playerNames: [String]) {
+        app.buttons["submit_round_button"].tap()
+        completeOpenDeck(playerNames: playerNames)
+    }
+
     private func completeGenericGame(playerNames: [String]) {
         navigateToGenericScoring(playerNames: playerNames)
-        // Open deck and accept 0 for each player (last accept submits round)
-        app.buttons["submit_round_button"].tap()
-        _ = app.buttons["recognize_score_button"].waitForExistence(timeout: 3)
-        for name in playerNames {
-            if app.buttons["Got it"].waitForExistence(timeout: 1) { app.buttons["Got it"].tap() }
-            app.buttons["recognize_score_button"].tap()
-            sleep(1)
-            if app.buttons["deck_accept_\(name)"].waitForExistence(timeout: 2) {
-                app.buttons["deck_accept_\(name)"].tap()
-                sleep(1)
-            } else {
-                break
-            }
-        }
+        completeRound(playerNames: playerNames)
         app.buttons["end_game_button"].tap()
         app.alerts.buttons["End Game"].tap()
         let homeButton = app.buttons["home_button"]
