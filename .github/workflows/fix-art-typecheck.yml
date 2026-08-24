@@ -1,0 +1,93 @@
+name: Split kinetic art expression
+
+on:
+  push:
+    branches:
+      - app-dev/pipcount-bauhaus-motion
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pipcount-art-typecheck-fix
+  cancel-in-progress: true
+
+jobs:
+  split-expression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: app-dev/pipcount-bauhaus-motion
+
+      - name: Split celebration confetti into a small subview builder
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("ScoreKeeper/Views/Components/ClubhouseComponents.swift")
+          source = path.read_text()
+          pattern = re.compile(
+              r"    private var celebration: some View \{\n.*?\n    private var unlimited: some View \{",
+              re.DOTALL,
+          )
+          replacement = r'''    private var celebration: some View {
+        ZStack {
+            skyline(sparse: false)
+                .scaleEffect(0.88)
+                .offset(y: size.height * 0.06)
+
+            ForEach(0..<8, id: \.self) { index in
+                celebrationConfetti(index: index)
+            }
+        }
+    }
+
+    private func celebrationConfetti(index: Int) -> some View {
+        let colors: [Color] = [
+            ClubhouseTheme.red,
+            ClubhouseTheme.blue,
+            ClubhouseTheme.yellow,
+            ClubhouseTheme.green
+        ]
+        let xPosition = size.width * (0.12 + CGFloat(index) * 0.105)
+        let baseY = size.height * (0.12 + CGFloat(index % 3) * 0.08)
+        let yPosition = baseY + wave(phase: Double(index) * 0.7, amplitude: 7)
+        let pieceWidth = max(5, size.width * 0.018)
+        let pieceHeight = max(12, size.height * 0.055)
+        let pieceRotation = Double(index * 24) + wave(phase: Double(index), amplitude: 8)
+        let entryRotation = Double(index * 12)
+        let color = colors[index % colors.count]
+
+        return Rectangle()
+            .fill(color)
+            .frame(width: pieceWidth, height: pieceHeight)
+            .rotationEffect(.degrees(pieceRotation))
+            .position(x: xPosition, y: yPosition)
+            .artElement(
+                active: active,
+                index: index + 2,
+                entry: CGSize(width: 0, height: -28),
+                rotation: entryRotation,
+                scale: 0.22
+            )
+    }
+
+    private var unlimited: some View {'''
+
+          updated, count = pattern.subn(replacement, source, count=1)
+          if count != 1:
+              raise SystemExit("Could not locate the celebration artwork block")
+
+          path.write_text(updated)
+          PY
+
+      - name: Commit compiler-friendly artwork
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ScoreKeeper/Views/Components/ClubhouseComponents.swift
+          git commit -m "fix(art): split celebration composition for compiler"
+          git push origin HEAD:app-dev/pipcount-bauhaus-motion
