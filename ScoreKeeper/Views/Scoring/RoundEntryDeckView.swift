@@ -77,7 +77,8 @@ struct RoundEntryDeckView: View {
             .background(ClubhouseTheme.paperCard)
             .shadow(color: ClubhouseTheme.paperShadow, radius: 0, x: 4, y: 5)
             .contentShape(Rectangle())
-            .gesture(edgeSwipe)
+            .overlay(alignment: .leading) { Color.clear.frame(width: 56).contentShape(Rectangle()).gesture(edgeSwipe) }
+            .overlay(alignment: .trailing) { Color.clear.frame(width: 56).contentShape(Rectangle()).gesture(edgeSwipe) }
 
             HStack(spacing: AppTheme.spacingSmall) {
                 Text(scores[player.id].map(String.init) ?? "Draw your score")
