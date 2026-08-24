@@ -424,20 +424,10 @@ final class ScoreKeeperUITests: XCTestCase {
         relaunch(arguments: ["-in-memory-store", "-force-handwriting-entry"])
         navigateToGenericScoring(playerNames: ["Mina", "Omar"])
 
-        XCTAssertTrue(app.buttons["Recognize score"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.buttons["accept_handwritten_score_button"].exists)
 
-        // Open deck, accept 0 for Mina (auto-advances to Omar), accept 0 for Omar (submits)
-        app.buttons["Recognize score"].tap()
-        if app.buttons["Accept"].waitForExistence(timeout: 3) {
-            app.buttons["Accept"].tap()
-            sleep(1)
-        }
-        app.buttons["Recognize score"].tap()
-        if app.buttons["Accept"].waitForExistence(timeout: 3) {
-            app.buttons["Accept"].tap()
-            sleep(2)
-        }
+        // Open deck, accept 0 for both players (last accept submits)
+        completeRound(playerNames: ["Mina", "Omar"])
 
         XCTAssertTrue(app.staticTexts["Round 2"].waitForExistence(timeout: 3))
     }
@@ -447,16 +437,6 @@ final class ScoreKeeperUITests: XCTestCase {
 
         // Open deck and submit round via accept on both cards
         completeRound(playerNames: ["Mina", "Omar"])
-        app.buttons["Recognize score"].tap()
-        if app.buttons["Accept"].waitForExistence(timeout: 3) {
-            app.buttons["Accept"].tap()
-            sleep(1)
-        }
-        app.buttons["Recognize score"].tap()
-        if app.buttons["Accept"].waitForExistence(timeout: 3) {
-            app.buttons["Accept"].tap()
-            sleep(2)
-        }
 
         XCTAssertTrue(app.staticTexts["Round 2"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.staticTexts["Round 3"].waitForExistence(timeout: 1))
