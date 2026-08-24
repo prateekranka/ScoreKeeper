@@ -127,7 +127,7 @@ def validate_motion_engine() -> None:
 
     content_view = APP_ROOT / "App" / "ContentView.swift"
     root_source = content_view.read_text(encoding="utf-8")
-    if "isPageExiting" not in root_source or "AppMotion.artExit" not in root_source:
+    if "isPageExiting" not in root_source or "pipCountPageIsExiting" not in root_source:
         fail("Root navigation does not coordinate page exit choreography")
 
 
