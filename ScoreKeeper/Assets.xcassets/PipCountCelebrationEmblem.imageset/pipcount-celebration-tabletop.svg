@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="cup" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7D46F"/><stop offset="1" stop-color="#E5A82C"/></linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFDF7"/><stop offset="1" stop-color="#F2E5D3"/></linearGradient>
+  </defs>
+  <ellipse cx="512" cy="843" rx="324" ry="72" fill="#CDB89C" opacity=".34"/>
+  <g stroke="#29241F" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <!-- score card behind trophy -->
+    <g transform="rotate(-8 505 445)">
+      <rect x="239" y="160" width="532" height="522" rx="64" fill="#D5BFA2" opacity=".38" stroke="none" transform="translate(18 23)"/>
+      <rect x="239" y="160" width="532" height="522" rx="64" fill="url(#paper)"/>
+      <path d="M309 277h392M309 390h392M309 503h392" stroke="#B4A797" stroke-width="10"/>
+      <text x="335" y="360" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="86" font-weight="800" fill="#3158BD" stroke="none">184</text>
+      <text x="335" y="473" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="86" font-weight="800" fill="#29241F" stroke="none">172</text>
+      <text x="335" y="586" font-family="-apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="86" font-weight="800" fill="#D94D3E" stroke="none">160</text>
+      <path d="M628 315l23 25 49-59" stroke="#79A98A" stroke-width="17" fill="none"/>
+    </g>
+    <!-- trophy -->
+    <g>
+      <path d="M382 390h260v120c0 126-58 204-130 204s-130-78-130-204z" fill="url(#cup)"/>
+      <path d="M382 433h-74c-64 0-93 43-82 101 13 66 70 104 142 101" fill="none" stroke="#E5A82C" stroke-width="42"/>
+      <path d="M642 433h74c64 0 93 43 82 101-13 66-70 104-142 101" fill="none" stroke="#E5A82C" stroke-width="42"/>
+      <path d="M512 713v87M408 837h208" stroke="#29241F" stroke-width="28"/>
+      <rect x="385" y="794" width="254" height="92" rx="31" fill="#557AD2"/>
+      <path d="M444 842h136" stroke="#FFF8EC" stroke-width="14"/>
+      <path d="M512 438l26 53 59 9-43 42 10 59-52-28-52 28 10-59-43-42 59-9z" fill="#FFF8EC"/>
+    </g>
+    <!-- winner ribbon -->
+    <path d="M403 670l-64 181 90-39 48 83 55-181" fill="#E05B4A"/>
+    <path d="M621 670l64 181-90-39-48 83-55-181" fill="#79A98A"/>
+    <!-- dice confetti pieces -->
+    <g transform="rotate(-14 191 629)">
+      <rect x="129" y="567" width="124" height="124" rx="29" fill="#A68CC4"/>
+      <g fill="#FFF8EC" stroke="none"><circle cx="160" cy="598" r="10"/><circle cx="222" cy="598" r="10"/><circle cx="191" cy="629" r="10"/><circle cx="160" cy="660" r="10"/><circle cx="222" cy="660" r="10"/></g>
+    </g>
+    <circle cx="833" cy="650" r="55" fill="#9CBFE2"/>
+    <path d="M805 650h56M833 622v56" stroke="#FFF8EC" stroke-width="12"/>
+  </g>
+  <!-- confetti -->
+  <g fill="none" stroke-width="16" stroke-linecap="round">
+    <path d="M159 248l-52-43M195 221l-4-68M134 290l-67 3" stroke="#E05B4A"/>
+    <path d="M861 250l52-43M825 223l4-68M886 292l67 3" stroke="#3158BD"/>
+    <path d="M266 160l18-52M758 160l-18-52" stroke="#79A98A"/>
+  </g>
+  <g stroke="#29241F" stroke-width="10" stroke-linejoin="round">
+    <path d="M250 323l25-35 25 35-25 35z" fill="#F0B532"/>
+    <path d="M748 328l33-19 19 33-33 19z" fill="#E8AFC3"/>
+    <path d="M146 429l42 9-9 42-42-9z" fill="#79A98A"/>
+    <path d="M849 433l42-9 9 42-42 9z" fill="#F0B532"/>
+  </g>
+</svg>
