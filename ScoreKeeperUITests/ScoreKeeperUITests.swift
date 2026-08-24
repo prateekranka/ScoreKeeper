@@ -295,7 +295,8 @@ final class ScoreKeeperUITests: XCTestCase {
             app.swipeUp(velocity: .fast)
         }
         XCTAssertTrue(found || playerStatsButton.exists, "player_stats_Taylor not found after scrolling")
-        tapButtonInSafeArea(playerStatsButton)
+        XCTAssertTrue(playerStatsButton.waitForExistence(timeout: 3))
+        playerStatsButton.tap()
 
         XCTAssertTrue(app.navigationBars["Taylor"].waitForExistence(timeout: 3))
         XCTAssertTrue(app.staticTexts["Games Played"].exists)
