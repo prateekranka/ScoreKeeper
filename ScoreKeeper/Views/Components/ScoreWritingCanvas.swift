@@ -24,7 +24,7 @@ struct ScoreWritingCanvas: UIViewRepresentable {
             context.coordinator.lastClearTrigger = clearTrigger
         }
         if context.coordinator.lastCaptureTrigger != captureTrigger {
-            capturedImage = canvas.drawing.image(from: canvas.bounds, scale: UIScreen.main.scale)
+            capturedImage = canvas.drawing.image(from: canvas.bounds, scale: displayScale(for: canvas))
             context.coordinator.lastCaptureTrigger = captureTrigger
         }
     }
@@ -37,6 +37,16 @@ struct ScoreWritingCanvas: UIViewRepresentable {
     }
 
     static func captureImage(from canvas: PKCanvasView) -> UIImage {
-        canvas.drawing.image(from: canvas.bounds, scale: UIScreen.main.scale)
+        canvas.drawing.image(from: canvas.bounds, scale: displayScale(for: canvas))
+    }
+
+    private static func displayScale(for canvas: PKCanvasView) -> CGFloat {
+        let contextualScale = canvas.window?.windowScene?.screen.scale
+            ?? canvas.traitCollection.displayScale
+        return max(contextualScale, 1)
+    }
+
+    private func displayScale(for canvas: PKCanvasView) -> CGFloat {
+        Self.displayScale(for: canvas)
     }
 }
