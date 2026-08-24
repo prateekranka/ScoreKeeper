@@ -12,16 +12,16 @@ struct ScorecardSurface<Content: View>: View {
             .background {
                 ZStack {
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(ClubhouseTheme.paperShadow.opacity(isInteractive ? 0.78 : 0.44))
+                        .fill(ClubhouseTheme.paperShadow.opacity(isInteractive ? 0.74 : 0.42))
                         .offset(x: isInteractive ? 4 : 2, y: isInteractive ? 7 : 4)
 
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                         .fill(ClubhouseTheme.paperCard)
                         .shadow(
-                            color: ClubhouseTheme.ink.opacity(isInteractive ? 0.10 : 0.06),
-                            radius: isInteractive ? 18 : 12,
+                            color: ClubhouseTheme.ink.opacity(isInteractive ? 0.095 : 0.055),
+                            radius: isInteractive ? 18 : 11,
                             x: 0,
-                            y: isInteractive ? 9 : 6
+                            y: isInteractive ? 9 : 5
                         )
                 }
             }
@@ -29,10 +29,11 @@ struct ScorecardSurface<Content: View>: View {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .strokeBorder(ClubhouseTheme.ruleStrong.opacity(0.42), lineWidth: 1)
             }
-            .overlay {
+            .overlay(alignment: .topLeading) {
                 RoundedRectangle(cornerRadius: max(cornerRadius - 3, 0), style: .continuous)
-                    .inset(by: 3)
-                    .strokeBorder(Color.white.opacity(0.32), lineWidth: 1)
+                    .trim(from: 0.53, to: 0.78)
+                    .stroke(ClubhouseTheme.warmHighlight.opacity(0.64), lineWidth: 1)
+                    .padding(2)
                     .allowsHitTesting(false)
             }
     }
@@ -49,7 +50,7 @@ extension View {
     }
 }
 
-// MARK: - Score rows and game-night pieces
+// MARK: - Score rows and geometric player marks
 
 struct LedgerRow: View {
     let player: Player
@@ -75,7 +76,7 @@ struct LedgerRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Text(player.name)
-                        .font(AppFonts.body.weight(.medium))
+                        .font(AppFonts.body.weight(.semibold))
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
                         .layoutPriority(1)
@@ -147,10 +148,10 @@ struct StampBadge: View {
             .foregroundStyle(ClubhouseTheme.lacquer)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(ClubhouseTheme.lacquer.opacity(0.07), in: RoundedRectangle(cornerRadius: 9, style: .continuous))
+            .background(ClubhouseTheme.lacquer.opacity(0.055), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 9, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.lacquer.opacity(0.72), style: StrokeStyle(lineWidth: 1.5, dash: [5, 2]))
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(ClubhouseTheme.lacquer.opacity(0.78), lineWidth: 1.4)
             }
             .rotationEffect(.degrees(-3))
             .accessibilityLabel(text)
@@ -173,7 +174,7 @@ struct PaperChip<Content: View>: View {
 
     var body: some View {
         content
-            .font(AppFonts.caption)
+            .font(AppFonts.caption.weight(.semibold))
             .foregroundStyle(isSelected ? ClubhouseTheme.onFelt : ClubhouseTheme.ink)
             .padding(.horizontal, 12)
             .frame(minHeight: 38)
@@ -188,6 +189,8 @@ struct PaperChip<Content: View>: View {
             }
     }
 }
+
+// MARK: - Score controls
 
 struct PipStepper: View {
     @Binding var value: Int
@@ -238,7 +241,7 @@ struct PipStepper: View {
             apply(delta)
         } label: {
             Image(systemName: systemImage)
-                .font(.title3.weight(.semibold))
+                .font(.title3.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.ink)
                 .frame(width: 58, height: 58)
                 .background {
@@ -287,8 +290,10 @@ struct PipStepper: View {
     }
 }
 
-// MARK: - Illustrated asset family
+// MARK: - Compatibility asset family
 
+/// Existing call sites can keep the old API, but the implementation is now
+/// entirely native SwiftUI geometry. No raster illustration is required.
 enum PipCountIllustrationAsset: String {
     case hero = "PipCountHeroArtwork"
     case emptyState = "PipCountEmptyStateArtwork"
@@ -303,15 +308,24 @@ struct PipCountAssetArtwork: View {
     var contentMode: ContentMode = .fit
 
     var body: some View {
-        Image(asset.rawValue)
-            .resizable()
+        PipCountGeometricArtwork(scene: scene)
             .aspectRatio(contentMode: contentMode)
-            .accessibilityHidden(true)
+    }
+
+    private var scene: PipCountArtworkScene {
+        switch asset {
+        case .hero: return .home
+        case .emptyState: return .homeEmpty
+        case .scoreEmblem: return .scoring
+        case .crewEmblem: return .playerSetup
+        case .unlimitedEmblem: return .paywall
+        case .celebrationEmblem: return .gameOver
+        }
     }
 }
 
-// The original public type name remains for feature compatibility, but these
-// now read as friendly tabletop pieces rather than strict Bauhaus primitives.
+// MARK: - Foundational Bauhaus shapes
+
 struct BauhausPlayerShape: View {
     let colorIndex: Int
     var size: CGFloat
@@ -321,99 +335,33 @@ struct BauhausPlayerShape: View {
     }
 
     var body: some View {
-        ZStack {
-            switch colorIndex % 4 {
-            case 0:
-                PokerChipShape()
-                    .fill(color)
-                    .overlay {
-                        PokerChipShape()
-                            .stroke(ClubhouseTheme.ruleStrong.opacity(0.68), lineWidth: max(size * 0.045, 0.75))
-                    }
-                    .overlay {
-                        Circle()
-                            .stroke(Color.white.opacity(0.62), lineWidth: max(size * 0.075, 1))
-                            .padding(size * 0.22)
-                    }
-            case 1:
-                RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
-                    .fill(color)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: size * 0.28, style: .continuous)
-                            .stroke(ClubhouseTheme.ruleStrong.opacity(0.68), lineWidth: max(size * 0.045, 0.75))
-                    }
-                    .overlay {
-                        Circle()
-                            .fill(Color.white.opacity(0.82))
-                            .frame(width: size * 0.24, height: size * 0.24)
-                    }
-            case 2:
-                PawnPieceShape()
-                    .fill(color)
-                    .overlay {
-                        PawnPieceShape()
-                            .stroke(ClubhouseTheme.ruleStrong.opacity(0.68), lineWidth: max(size * 0.045, 0.75))
-                    }
-            default:
-                TicketPieceShape()
-                    .fill(color)
-                    .overlay {
-                        TicketPieceShape()
-                            .stroke(ClubhouseTheme.ruleStrong.opacity(0.68), lineWidth: max(size * 0.045, 0.75))
-                    }
-                    .rotationEffect(.degrees(-8))
-            }
+        shape
+            .frame(width: size, height: size)
+            .shadow(color: ClubhouseTheme.artShadow.opacity(0.32), radius: max(1, size * 0.06), y: max(1, size * 0.035))
+    }
+
+    @ViewBuilder
+    private var shape: some View {
+        switch colorIndex % 4 {
+        case 0:
+            Circle()
+                .fill(color)
+                .overlay { Circle().stroke(ClubhouseTheme.ink.opacity(0.42), lineWidth: 0.8) }
+        case 1:
+            Rectangle()
+                .fill(color)
+                .overlay { Rectangle().stroke(ClubhouseTheme.ink.opacity(0.42), lineWidth: 0.8) }
+        case 2:
+            TriangleShape()
+                .fill(color)
+                .overlay { TriangleShape().stroke(ClubhouseTheme.ink.opacity(0.42), lineWidth: 0.8) }
+        default:
+            Rectangle()
+                .fill(color)
+                .overlay { Rectangle().stroke(ClubhouseTheme.ink.opacity(0.42), lineWidth: 0.8) }
+                .rotationEffect(.degrees(45))
+                .scaleEffect(0.72)
         }
-        .frame(width: size, height: size)
-        .shadow(color: ClubhouseTheme.ink.opacity(0.10), radius: size * 0.08, y: size * 0.05)
-    }
-}
-
-private struct PokerChipShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        Path(ellipseIn: rect)
-    }
-}
-
-private struct PawnPieceShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let headRadius = rect.width * 0.23
-        path.addEllipse(in: CGRect(
-            x: rect.midX - headRadius,
-            y: rect.minY,
-            width: headRadius * 2,
-            height: headRadius * 2
-        ))
-        path.move(to: CGPoint(x: rect.midX - rect.width * 0.14, y: rect.minY + rect.height * 0.38))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.midX - rect.width * 0.34, y: rect.maxY * 0.82),
-            control: CGPoint(x: rect.midX - rect.width * 0.18, y: rect.maxY * 0.63)
-        )
-        path.addQuadCurve(
-            to: CGPoint(x: rect.midX, y: rect.maxY),
-            control: CGPoint(x: rect.midX - rect.width * 0.31, y: rect.maxY)
-        )
-        path.addQuadCurve(
-            to: CGPoint(x: rect.midX + rect.width * 0.34, y: rect.maxY * 0.82),
-            control: CGPoint(x: rect.midX + rect.width * 0.31, y: rect.maxY)
-        )
-        path.addQuadCurve(
-            to: CGPoint(x: rect.midX + rect.width * 0.14, y: rect.minY + rect.height * 0.38),
-            control: CGPoint(x: rect.midX + rect.width * 0.18, y: rect.maxY * 0.63)
-        )
-        path.closeSubpath()
-        return path
-    }
-}
-
-private struct TicketPieceShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path(roundedRect: rect, cornerRadius: rect.width * 0.24)
-        let notch = rect.width * 0.16
-        path.addEllipse(in: CGRect(x: rect.minX - notch / 2, y: rect.midY - notch / 2, width: notch, height: notch))
-        path.addEllipse(in: CGRect(x: rect.maxX - notch / 2, y: rect.midY - notch / 2, width: notch, height: notch))
-        return path
     }
 }
 
@@ -428,22 +376,33 @@ struct TriangleShape: Shape {
     }
 }
 
+private struct BauhausArcShape: Shape {
+    let start: CGFloat
+    let end: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        Path(ellipseIn: rect)
+            .trimmedPath(from: start, to: end)
+    }
+}
+
 struct BauhausStarburst: View {
     var color: Color = ClubhouseTheme.red
     var size: CGFloat = 38
 
     var body: some View {
         ZStack {
-            ForEach(0..<4, id: \.self) { index in
-                Capsule()
+            ForEach(0..<8, id: \.self) { index in
+                Rectangle()
                     .fill(color)
-                    .frame(width: size, height: max(size * 0.05, 1.25))
-                    .rotationEffect(.degrees(Double(index) * 45))
+                    .frame(width: size, height: max(size * 0.035, 1.1))
+                    .rotationEffect(.degrees(Double(index) * 22.5))
             }
 
             Circle()
-                .fill(color)
-                .frame(width: size * 0.22, height: size * 0.22)
+                .fill(ClubhouseTheme.paperCard)
+                .frame(width: size * 0.15, height: size * 0.15)
+                .overlay { Circle().stroke(color, lineWidth: max(1, size * 0.035)) }
         }
         .frame(width: size, height: size)
         .accessibilityHidden(true)
@@ -478,7 +437,7 @@ struct BauhausTargetArtwork: View {
     var accent: Color = ClubhouseTheme.red
 
     var body: some View {
-        PipCountAssetArtwork(asset: .scoreEmblem)
+        PipCountGeometricArtwork(scene: .scoring)
             .overlay(alignment: .topTrailing) {
                 Circle()
                     .fill(accent)
@@ -492,12 +451,11 @@ struct BauhausBlocksArtwork: View {
     var compact = false
 
     var body: some View {
-        PipCountAssetArtwork(asset: .hero, contentMode: compact ? .fit : .fill)
-            .clipped()
+        PipCountGeometricArtwork(scene: compact ? .homeEmpty : .home)
     }
 }
 
-// MARK: - Screen artwork router
+// MARK: - Kinetic screen artwork
 
 enum PipCountArtworkScene {
     case home
@@ -515,148 +473,511 @@ enum PipCountArtworkScene {
     case roster
 }
 
+private enum BauhausComposition {
+    case skyline
+    case sparseSkyline
+    case orbit
+    case hub
+    case calibration
+    case score
+    case celebration
+    case unlimited
+}
+
 struct PipCountGeometricArtwork: View {
     let scene: PipCountArtworkScene
+    var ambientMotion = true
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var isPresented = false
+    @Environment(\.pipCountPageIsExiting) private var pageIsExiting
+    @State private var appeared = false
 
     var body: some View {
-        ZStack {
-            PipCountAssetArtwork(asset: asset)
-                .scaleEffect(isPresented || reduceMotion ? 1 : 0.94)
-                .rotationEffect(.degrees(isPresented || reduceMotion ? restingRotation : enteringRotation))
-                .offset(y: isPresented || reduceMotion ? 0 : 8)
-
-            sceneAccent
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion || !ambientMotion)) { timeline in
+            GeometryReader { proxy in
+                KineticBauhausComposition(
+                    composition: composition,
+                    scene: scene,
+                    size: proxy.size,
+                    time: timeline.date.timeIntervalSinceReferenceDate,
+                    active: appeared && !pageIsExiting,
+                    reduceMotion: reduceMotion
+                )
+            }
         }
-        .padding(scenePadding)
-        .animation(reduceMotion ? AppMotion.fade : AppMotion.celebration, value: isPresented)
-        .onAppear { isPresented = true }
+        .onAppear {
+            if reduceMotion {
+                appeared = true
+            } else {
+                withAnimation(AppMotion.artEntrance) {
+                    appeared = true
+                }
+            }
+        }
+        .onDisappear {
+            appeared = false
+        }
         .accessibilityHidden(true)
     }
 
-    private var asset: PipCountIllustrationAsset {
+    private var composition: BauhausComposition {
         switch scene {
-        case .home:
-            return .hero
+        case .home, .onboardingHistory:
+            return .skyline
         case .homeEmpty:
-            return .emptyState
+            return .sparseSkyline
         case .gamePicker:
-            return .hero
+            return .orbit
         case .playerSetup, .roster, .onboardingSetup:
-            return .crewEmblem
-        case .gameSettings, .handwriting, .scoring, .onboardingScore:
-            return .scoreEmblem
-        case .gameOver, .onboardingHistory:
-            return .celebrationEmblem
+            return .hub
+        case .gameSettings:
+            return .calibration
+        case .handwriting, .scoring, .onboardingScore:
+            return .score
+        case .gameOver:
+            return .celebration
         case .paywall:
-            return .unlimitedEmblem
+            return .unlimited
         }
     }
+}
 
-    private var restingRotation: Double {
-        switch scene {
-        case .gamePicker: return -1.4
-        case .playerSetup, .roster: return 1.2
-        case .gameOver: return -0.8
-        default: return 0
+private struct KineticBauhausComposition: View {
+    let composition: BauhausComposition
+    let scene: PipCountArtworkScene
+    let size: CGSize
+    let time: TimeInterval
+    let active: Bool
+    let reduceMotion: Bool
+
+    var body: some View {
+        ZStack {
+            faintConstructionLines
+
+            switch composition {
+            case .skyline:
+                skyline(sparse: false)
+            case .sparseSkyline:
+                skyline(sparse: true)
+            case .orbit:
+                orbit
+            case .hub:
+                hub
+            case .calibration:
+                calibration
+            case .score:
+                score
+            case .celebration:
+                celebration
+            case .unlimited:
+                unlimited
+            }
         }
+        .frame(width: size.width, height: size.height)
+        .clipped()
+        .drawingGroup()
     }
 
-    private var enteringRotation: Double {
-        restingRotation + (restingRotation >= 0 ? 3.5 : -3.5)
-    }
+    private var faintConstructionLines: some View {
+        ZStack {
+            Circle()
+                .stroke(ClubhouseTheme.ink.opacity(0.18), lineWidth: 1)
+                .frame(width: min(size.width, size.height) * 0.74)
+                .position(x: size.width * 0.50, y: size.height * 0.52)
+                .artElement(active: active, index: 0, entry: CGSize(width: 0, height: 14), scale: 0.86)
 
-    private var scenePadding: CGFloat {
-        switch scene {
-        case .home, .homeEmpty: return 2
-        case .paywall: return 4
-        default: return 8
+            Path { path in
+                path.move(to: CGPoint(x: size.width * 0.08, y: size.height * 0.66))
+                path.addLine(to: CGPoint(x: size.width * 0.92, y: size.height * 0.66))
+                path.move(to: CGPoint(x: size.width * 0.51, y: size.height * 0.12))
+                path.addLine(to: CGPoint(x: size.width * 0.51, y: size.height * 0.90))
+            }
+            .stroke(ClubhouseTheme.ink.opacity(0.16), style: StrokeStyle(lineWidth: 1, dash: [2, 6]))
+            .artElement(active: active, index: 0, entry: CGSize(width: 0, height: 8), scale: 0.94)
         }
     }
 
     @ViewBuilder
-    private var sceneAccent: some View {
-        switch scene {
-        case .gamePicker:
-            HStack(spacing: 7) {
-                MiniGameCard(color: ClubhouseTheme.blue, symbol: "number")
-                MiniGameCard(color: ClubhouseTheme.lacquer, symbol: "dice.fill")
-                MiniGameCard(color: ClubhouseTheme.green, symbol: "fork.knife")
+    private func skyline(sparse: Bool) -> some View {
+        let drift = wave(phase: 0.2, amplitude: 4)
+
+        ZStack {
+            BauhausArcShape(start: 0.50, end: 0.83)
+                .stroke(ClubhouseTheme.blue, style: StrokeStyle(lineWidth: max(18, size.width * 0.075), lineCap: .butt))
+                .frame(width: size.width * 0.62, height: size.width * 0.62)
+                .position(x: size.width * 0.27, y: size.height * 0.72)
+                .rotationEffect(.degrees(-12))
+                .artElement(active: active, index: 1, entry: CGSize(width: -38, height: 25), rotation: -18, scale: 0.72)
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: size.width * (sparse ? 0.23 : 0.27))
+                .position(x: size.width * 0.62, y: size.height * 0.36 + drift)
+                .artElement(active: active, index: 2, entry: CGSize(width: 0, height: -34), scale: 0.54)
+
+            Rectangle()
+                .fill(ClubhouseTheme.blue)
+                .frame(width: size.width * 0.15, height: size.height * (sparse ? 0.36 : 0.53))
+                .position(x: size.width * 0.51, y: size.height * 0.61)
+                .artElement(active: active, index: 3, entry: CGSize(width: 0, height: 48), scale: 0.72)
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: size.width * 0.14, height: size.height * 0.29)
+                .position(x: size.width * 0.67, y: size.height * 0.71)
+                .artElement(active: active, index: 4, entry: CGSize(width: 0, height: 50), scale: 0.72)
+
+            if !sparse {
+                Rectangle()
+                    .fill(ClubhouseTheme.ink)
+                    .frame(width: size.width * 0.15, height: size.height * 0.43)
+                    .position(x: size.width * 0.80, y: size.height * 0.64)
+                    .artElement(active: active, index: 5, entry: CGSize(width: 0, height: 56), scale: 0.68)
             }
-            .scaleEffect(0.58)
-            .offset(x: 56, y: 65)
-        case .gameSettings:
-            VStack(spacing: 7) {
-                SettingTick(color: ClubhouseTheme.blue, value: 0.70)
-                SettingTick(color: ClubhouseTheme.lacquer, value: 0.45)
-                SettingTick(color: ClubhouseTheme.green, value: 0.82)
+
+            Rectangle()
+                .fill(ClubhouseTheme.green)
+                .frame(width: size.width * 0.10, height: size.width * 0.10)
+                .rotationEffect(.degrees(45 + wave(phase: 1.1, amplitude: 2)))
+                .position(x: size.width * 0.82, y: size.height * 0.78)
+                .artElement(active: active, index: 6, entry: CGSize(width: 28, height: 20), rotation: 24, scale: 0.42)
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: size.width * 0.58, height: max(8, size.height * 0.055))
+                .position(x: size.width * 0.67, y: size.height * 0.69)
+                .artElement(active: active, index: 7, entry: CGSize(width: 34, height: 0), scale: 0.60)
+
+            BauhausStarburst(color: ClubhouseTheme.blue, size: min(size.width, size.height) * 0.14)
+                .position(x: size.width * 0.30, y: size.height * 0.27)
+                .rotationEffect(.degrees(wave(phase: 0.8, amplitude: 8)))
+                .artElement(active: active, index: 8, entry: CGSize(width: -18, height: -18), rotation: -20, scale: 0.35)
+
+            if !sparse {
+                BauhausStarburst(color: ClubhouseTheme.red, size: min(size.width, size.height) * 0.13)
+                    .position(x: size.width * 0.83, y: size.height * 0.24)
+                    .rotationEffect(.degrees(-wave(phase: 2.1, amplitude: 8)))
+                    .artElement(active: active, index: 9, entry: CGSize(width: 22, height: -20), rotation: 20, scale: 0.35)
             }
-            .frame(width: 92)
-            .offset(x: 60, y: 54)
-        case .handwriting:
-            Text("12")
-                .font(.system(size: 44, weight: .bold, design: .rounded))
-                .foregroundStyle(ClubhouseTheme.ink)
-                .rotationEffect(.degrees(-7))
-                .offset(x: 48, y: 26)
-        case .scoring:
-            HStack(spacing: 6) {
-                BauhausPlayerShape(colorIndex: 0, size: 22)
-                BauhausPlayerShape(colorIndex: 1, size: 22)
-                BauhausPlayerShape(colorIndex: 2, size: 22)
-            }
-            .offset(x: -48, y: 72)
-        case .gameOver:
-            BauhausStarburst(color: ClubhouseTheme.blue, size: 30)
-                .offset(x: 77, y: -63)
-        case .paywall:
-            Image(systemName: "infinity")
-                .font(.system(size: 38, weight: .bold, design: .rounded))
-                .foregroundStyle(ClubhouseTheme.onPrimary)
-                .padding(14)
-                .background(ClubhouseTheme.blue, in: Circle())
-                .offset(x: 74, y: 64)
-        default:
-            EmptyView()
+
+            BauhausHalftone(color: ClubhouseTheme.ink, spacing: 9)
+                .frame(width: size.width * 0.20, height: size.height * 0.20)
+                .position(x: size.width * 0.27, y: size.height * 0.77)
+                .artElement(active: active, index: 9, entry: CGSize(width: -18, height: 8), scale: 0.70)
         }
     }
-}
 
-private struct MiniGameCard: View {
-    let color: Color
-    let symbol: String
+    private var orbit: some View {
+        ZStack {
+            BauhausArcShape(start: 0.12, end: 0.86)
+                .stroke(ClubhouseTheme.blue, style: StrokeStyle(lineWidth: max(22, size.width * 0.09), lineCap: .butt))
+                .frame(width: size.width * 0.58, height: size.width * 0.58)
+                .rotationEffect(.degrees(-24 + wave(phase: 0.1, amplitude: 4)))
+                .position(x: size.width * 0.44, y: size.height * 0.53)
+                .artElement(active: active, index: 1, entry: CGSize(width: -35, height: 0), rotation: -34, scale: 0.65)
 
-    var body: some View {
-        Image(systemName: symbol)
-            .font(.system(size: 20, weight: .bold))
-            .foregroundStyle(Color.white)
-            .frame(width: 54, height: 68)
-            .background(color, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .strokeBorder(ClubhouseTheme.ink.opacity(0.65), lineWidth: 2)
-            }
-            .shadow(color: ClubhouseTheme.ink.opacity(0.12), radius: 4, y: 3)
+            Rectangle()
+                .fill(ClubhouseTheme.ink)
+                .frame(width: max(10, size.width * 0.055), height: size.height * 0.58)
+                .rotationEffect(.degrees(-35 + wave(phase: 0.5, amplitude: 1.5)))
+                .position(x: size.width * 0.56, y: size.height * 0.48)
+                .artElement(active: active, index: 2, entry: CGSize(width: 0, height: -42), rotation: -18, scale: 0.62)
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: size.width * 0.24)
+                .position(x: size.width * 0.72, y: size.height * 0.31 + wave(phase: 0.9, amplitude: 5))
+                .artElement(active: active, index: 3, entry: CGSize(width: 30, height: -28), scale: 0.45)
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: size.width * 0.19, height: size.width * 0.19)
+                .rotationEffect(.degrees(45 + wave(phase: 1.6, amplitude: 3)))
+                .position(x: size.width * 0.70, y: size.height * 0.68)
+                .artElement(active: active, index: 4, entry: CGSize(width: 28, height: 26), rotation: 28, scale: 0.42)
+
+            Rectangle()
+                .fill(ClubhouseTheme.green)
+                .frame(width: size.width * 0.095, height: size.width * 0.095)
+                .rotationEffect(.degrees(45 - wave(phase: 2.3, amplitude: 4)))
+                .position(x: size.width * 0.38, y: size.height * 0.22)
+                .artElement(active: active, index: 5, entry: CGSize(width: -20, height: -24), rotation: -28, scale: 0.36)
+
+            BauhausStarburst(color: ClubhouseTheme.red, size: min(size.width, size.height) * 0.12)
+                .position(x: size.width * 0.29, y: size.height * 0.74)
+                .rotationEffect(.degrees(wave(phase: 1.3, amplitude: 8)))
+                .artElement(active: active, index: 6, entry: CGSize(width: -24, height: 18), rotation: -20, scale: 0.30)
+        }
     }
-}
 
-private struct SettingTick: View {
-    let color: Color
-    let value: CGFloat
+    private var hub: some View {
+        ZStack {
+            ForEach(0..<4, id: \.self) { index in
+                let angle = Double(index) * .pi / 2 - .pi / 4
+                let radiusX = size.width * 0.27
+                let radiusY = size.height * 0.27
+                let x = size.width * 0.50 + CGFloat(cos(angle)) * radiusX
+                let y = size.height * 0.51 + CGFloat(sin(angle)) * radiusY
 
-    var body: some View {
+                Path { path in
+                    path.move(to: CGPoint(x: size.width * 0.50, y: size.height * 0.51))
+                    path.addLine(to: CGPoint(x: x, y: y))
+                }
+                .stroke(index.isMultiple(of: 2) ? ClubhouseTheme.blue : ClubhouseTheme.red, lineWidth: max(4, size.width * 0.018))
+                .artElement(active: active, index: index + 1, entry: .zero, scale: 0.25)
+            }
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: size.width * 0.31)
+                .overlay {
+                    BauhausStarburst(color: ClubhouseTheme.paperCard, size: size.width * 0.18)
+                }
+                .overlay {
+                    Circle().stroke(ClubhouseTheme.ink, lineWidth: max(4, size.width * 0.018))
+                }
+                .position(x: size.width * 0.50, y: size.height * 0.51 + wave(phase: 0.4, amplitude: 3))
+                .artElement(active: active, index: 5, entry: CGSize(width: 0, height: 28), scale: 0.42)
+
+            Circle()
+                .fill(ClubhouseTheme.blue)
+                .frame(width: size.width * 0.15)
+                .position(x: size.width * 0.24, y: size.height * 0.25 + wave(phase: 0.8, amplitude: 4))
+                .artElement(active: active, index: 2, entry: CGSize(width: -28, height: -24), scale: 0.30)
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: size.width * 0.15, height: size.width * 0.15)
+                .position(x: size.width * 0.76, y: size.height * 0.25 + wave(phase: 1.4, amplitude: 4))
+                .artElement(active: active, index: 3, entry: CGSize(width: 28, height: -24), rotation: 12, scale: 0.30)
+
+            TriangleShape()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: size.width * 0.16, height: size.width * 0.15)
+                .position(x: size.width * 0.25, y: size.height * 0.76 + wave(phase: 2.0, amplitude: 4))
+                .artElement(active: active, index: 4, entry: CGSize(width: -26, height: 26), rotation: -10, scale: 0.30)
+
+            Rectangle()
+                .fill(ClubhouseTheme.green)
+                .frame(width: size.width * 0.12, height: size.width * 0.12)
+                .rotationEffect(.degrees(45 + wave(phase: 2.7, amplitude: 3)))
+                .position(x: size.width * 0.76, y: size.height * 0.76)
+                .artElement(active: active, index: 5, entry: CGSize(width: 26, height: 26), rotation: 24, scale: 0.30)
+        }
+    }
+
+    private var calibration: some View {
+        ZStack {
+            BauhausArcShape(start: 0.0, end: 0.52)
+                .stroke(ClubhouseTheme.blue, style: StrokeStyle(lineWidth: max(20, size.width * 0.085)))
+                .frame(width: size.width * 0.56, height: size.width * 0.56)
+                .rotationEffect(.degrees(92))
+                .position(x: size.width * 0.77, y: size.height * 0.24)
+                .artElement(active: active, index: 1, entry: CGSize(width: 32, height: -28), rotation: 28, scale: 0.54)
+
+            VStack(spacing: size.height * 0.085) {
+                calibrationLine(color: ClubhouseTheme.blue, value: 0.78, phase: 0.2)
+                calibrationLine(color: ClubhouseTheme.red, value: 0.52, phase: 1.1)
+                calibrationLine(color: ClubhouseTheme.green, value: 0.68, phase: 2.2)
+            }
+            .frame(width: size.width * 0.70)
+            .position(x: size.width * 0.46, y: size.height * 0.64)
+            .artElement(active: active, index: 2, entry: CGSize(width: -24, height: 24), scale: 0.76)
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: size.width * 0.21)
+                .position(x: size.width * 0.62, y: size.height * 0.29 + wave(phase: 0.7, amplitude: 4))
+                .artElement(active: active, index: 3, entry: CGSize(width: 0, height: -30), scale: 0.40)
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: size.width * 0.20, height: size.width * 0.20)
+                .rotationEffect(.degrees(wave(phase: 1.6, amplitude: 2)))
+                .position(x: size.width * 0.80, y: size.height * 0.24)
+                .artElement(active: active, index: 4, entry: CGSize(width: 24, height: -24), rotation: 12, scale: 0.38)
+
+            BauhausStarburst(color: ClubhouseTheme.red, size: min(size.width, size.height) * 0.12)
+                .position(x: size.width * 0.29, y: size.height * 0.23)
+                .artElement(active: active, index: 5, entry: CGSize(width: -22, height: -18), rotation: -16, scale: 0.32)
+        }
+    }
+
+    private func calibrationLine(color: Color, value: CGFloat, phase: Double) -> some View {
         GeometryReader { proxy in
             ZStack(alignment: .leading) {
-                Capsule().fill(ClubhouseTheme.paperSunken)
-                Capsule().fill(color).frame(width: proxy.size.width * value)
+                Rectangle()
+                    .fill(ClubhouseTheme.ink.opacity(0.17))
+                    .frame(height: 2)
+
+                Rectangle()
+                    .fill(color)
+                    .frame(width: proxy.size.width * value, height: 6)
+
                 Circle()
                     .fill(ClubhouseTheme.paperCard)
-                    .overlay { Circle().stroke(ClubhouseTheme.ink.opacity(0.42), lineWidth: 1) }
-                    .frame(width: proxy.size.height, height: proxy.size.height)
-                    .offset(x: max(proxy.size.width * value - proxy.size.height, 0))
+                    .overlay { Circle().stroke(ClubhouseTheme.ink, lineWidth: 2) }
+                    .frame(width: 22, height: 22)
+                    .offset(x: proxy.size.width * value - 11 + wave(phase: phase, amplitude: 2))
             }
         }
-        .frame(height: 13)
+        .frame(height: 24)
+    }
+
+    private var score: some View {
+        ZStack {
+            BauhausArcShape(start: 0.50, end: 0.76)
+                .stroke(ClubhouseTheme.blue, style: StrokeStyle(lineWidth: max(18, size.width * 0.072), lineCap: .butt))
+                .frame(width: size.width * 0.67, height: size.width * 0.67)
+                .position(x: size.width * 0.25, y: size.height * 0.68)
+                .rotationEffect(.degrees(-10))
+                .artElement(active: active, index: 1, entry: CGSize(width: -36, height: 20), rotation: -22, scale: 0.64)
+
+            HStack(alignment: .bottom, spacing: size.width * 0.035) {
+                scoreBar(color: ClubhouseTheme.blue, height: 0.37, index: 2)
+                scoreBar(color: ClubhouseTheme.red, height: 0.53, index: 3)
+                scoreBar(color: ClubhouseTheme.ink, height: 0.70, index: 4)
+                scoreBar(color: ClubhouseTheme.blue, height: 0.86, index: 5)
+                scoreBar(color: ClubhouseTheme.green, height: 0.61, index: 6)
+            }
+            .frame(width: size.width * 0.64, height: size.height * 0.68, alignment: .bottom)
+            .position(x: size.width * 0.60, y: size.height * 0.59)
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: size.width * 0.25)
+                .position(x: size.width * 0.35, y: size.height * 0.34 + wave(phase: 0.7, amplitude: 4))
+                .artElement(active: active, index: 2, entry: CGSize(width: -22, height: -28), scale: 0.42)
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: size.width * 0.68, height: max(8, size.height * 0.052))
+                .position(x: size.width * 0.59, y: size.height * 0.67)
+                .artElement(active: active, index: 7, entry: CGSize(width: 34, height: 0), scale: 0.62)
+
+            BauhausStarburst(color: ClubhouseTheme.blue, size: min(size.width, size.height) * 0.13)
+                .position(x: size.width * 0.27, y: size.height * 0.18)
+                .rotationEffect(.degrees(wave(phase: 1.1, amplitude: 8)))
+                .artElement(active: active, index: 8, entry: CGSize(width: -20, height: -18), rotation: -18, scale: 0.32)
+        }
+    }
+
+    private func scoreBar(color: Color, height: CGFloat, index: Int) -> some View {
+        Rectangle()
+            .fill(color)
+            .frame(maxWidth: .infinity)
+            .frame(height: size.height * height)
+            .artElement(active: active, index: index, entry: CGSize(width: 0, height: 52), scale: 0.54)
+    }
+
+    private var celebration: some View {
+        ZStack {
+            skyline(sparse: false)
+                .scaleEffect(0.88)
+                .offset(y: size.height * 0.06)
+
+            ForEach(0..<8, id: \.self) { index in
+                let x = size.width * (0.12 + CGFloat(index) * 0.105)
+                let y = size.height * (0.12 + CGFloat(index % 3) * 0.08)
+                let colors = [ClubhouseTheme.red, ClubhouseTheme.blue, ClubhouseTheme.yellow, ClubhouseTheme.green]
+
+                Rectangle()
+                    .fill(colors[index % colors.count])
+                    .frame(width: max(5, size.width * 0.018), height: max(12, size.height * 0.055))
+                    .rotationEffect(.degrees(Double(index * 24) + wave(phase: Double(index), amplitude: 8)))
+                    .position(x: x, y: y + wave(phase: Double(index) * 0.7, amplitude: 7))
+                    .artElement(active: active, index: index + 2, entry: CGSize(width: 0, height: -28), rotation: Double(index * 12), scale: 0.22)
+            }
+        }
+    }
+
+    private var unlimited: some View {
+        ZStack {
+            BauhausArcShape(start: 0.06, end: 0.94)
+                .stroke(ClubhouseTheme.blue, style: StrokeStyle(lineWidth: max(20, size.width * 0.075), lineCap: .butt))
+                .frame(width: size.width * 0.48, height: size.height * 0.50)
+                .rotationEffect(.degrees(-42 + wave(phase: 0.3, amplitude: 3)))
+                .position(x: size.width * 0.37, y: size.height * 0.51)
+                .artElement(active: active, index: 1, entry: CGSize(width: -32, height: 0), rotation: -30, scale: 0.56)
+
+            BauhausArcShape(start: 0.06, end: 0.94)
+                .stroke(ClubhouseTheme.red, style: StrokeStyle(lineWidth: max(20, size.width * 0.075), lineCap: .butt))
+                .frame(width: size.width * 0.48, height: size.height * 0.50)
+                .rotationEffect(.degrees(138 - wave(phase: 1.2, amplitude: 3)))
+                .position(x: size.width * 0.63, y: size.height * 0.51)
+                .artElement(active: active, index: 2, entry: CGSize(width: 32, height: 0), rotation: 30, scale: 0.56)
+
+            Rectangle()
+                .fill(ClubhouseTheme.ink)
+                .frame(width: size.width * 0.12, height: size.height * 0.58)
+                .position(x: size.width * 0.50, y: size.height * 0.51)
+                .artElement(active: active, index: 3, entry: CGSize(width: 0, height: 38), scale: 0.62)
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: size.width * 0.21)
+                .position(x: size.width * 0.72, y: size.height * 0.28 + wave(phase: 0.8, amplitude: 4))
+                .artElement(active: active, index: 4, entry: CGSize(width: 24, height: -24), scale: 0.36)
+
+            Rectangle()
+                .fill(ClubhouseTheme.green)
+                .frame(width: size.width * 0.10, height: size.width * 0.10)
+                .rotationEffect(.degrees(45 + wave(phase: 2.0, amplitude: 4)))
+                .position(x: size.width * 0.78, y: size.height * 0.76)
+                .artElement(active: active, index: 5, entry: CGSize(width: 24, height: 20), rotation: 25, scale: 0.32)
+
+            BauhausStarburst(color: ClubhouseTheme.paperCard, size: min(size.width, size.height) * 0.13)
+                .position(x: size.width * 0.50, y: size.height * 0.32)
+                .rotationEffect(.degrees(wave(phase: 1.7, amplitude: 9)))
+                .artElement(active: active, index: 6, entry: CGSize(width: 0, height: -18), rotation: -18, scale: 0.30)
+        }
+    }
+
+    private func wave(phase: Double, amplitude: CGFloat) -> CGFloat {
+        guard !reduceMotion else { return 0 }
+        return CGFloat(sin(time * 0.72 + phase)) * amplitude
+    }
+}
+
+private struct ArtElementModifier: ViewModifier {
+    let active: Bool
+    let index: Int
+    let entry: CGSize
+    let rotation: Double
+    let scale: CGFloat
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(active ? 1 : 0)
+            .offset(active ? .zero : entry)
+            .rotationEffect(.degrees(active ? 0 : rotation))
+            .scaleEffect(active ? 1 : scale)
+            .blur(radius: active ? 0 : 1.8)
+            .animation(
+                active
+                    ? AppMotion.artEntrance.delay(min(Double(index) * 0.045, 0.34))
+                    : AppMotion.artExit,
+                value: active
+            )
+    }
+}
+
+private extension View {
+    func artElement(
+        active: Bool,
+        index: Int,
+        entry: CGSize,
+        rotation: Double = 0,
+        scale: CGFloat = 0.76
+    ) -> some View {
+        modifier(
+            ArtElementModifier(
+                active: active,
+                index: index,
+                entry: entry,
+                rotation: rotation,
+                scale: scale
+            )
+        )
     }
 }
