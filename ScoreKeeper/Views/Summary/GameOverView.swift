@@ -5,17 +5,47 @@ struct GameOverView: View {
     let sessionID: PersistentIdentifier
 
     @Environment(NavigationRouter.self) private var router
+    @Environment(StoreManager.self) private var storeManager
+    @Environment(ReviewAskManager.self) private var reviewAskManager
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.modelContext) private var modelContext
+
+    @Query(filter: #Predicate<GameSession> { $0.isComplete })
+    private var completedGames: [GameSession]
+
     @State private var contentVisible = false
+    @State private var showPaywall = false
+    @State private var didEvaluateReviewAsk = false
+    @State private var saveError: String?
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
             gameOverContent(session)
+                .sheet(isPresented: $showPaywall) {
+                    PaywallView(onUnlocked: { playAgain(session) })
+                        .presentationDetents([.large])
+                }
+                .task(id: session.persistentModelID) {
+                    try? await Task.sleep(for: .milliseconds(750))
+                    evaluateReviewAskIfNeeded()
+                }
         }
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             contentVisible = true
+        }
+        .sensoryFeedback(.success, trigger: contentVisible)
+        .alert(
+            "Couldn’t save rematch",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "Please try again.")
         }
     }
 
@@ -134,7 +164,7 @@ struct GameOverView: View {
             title = "\(winner) wins"
             subtitle = "Tonight belongs to \(winner)."
         } else if winnerNames.count > 1 {
-            title = "It's a tie"
+            title = "It’s a tie"
             subtitle = winnerNames.joined(separator: " • ")
         } else {
             title = "No winner"
@@ -158,6 +188,7 @@ struct GameOverView: View {
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(2)
                         .minimumScaleFactor(0.72)
+                        .accessibilityIdentifier("winner_text")
 
                     Text(subtitle)
                         .font(AppFonts.body)
@@ -185,7 +216,7 @@ struct GameOverView: View {
         return VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Game Over")
+                    Text("Final Scores")
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
 
@@ -196,9 +227,7 @@ struct GameOverView: View {
 
                 Spacer()
 
-                Text(session.sortedRounds.count.quantityText("round"))
-                    .columnHeaderStyle()
-                    .foregroundStyle(ClubhouseTheme.blue)
+                StampBadge(text: "Final")
             }
             .padding(AppTheme.spacingMedium)
 
@@ -225,7 +254,7 @@ struct GameOverView: View {
     private func actionStack(_ session: GameSession) -> some View {
         VStack(spacing: AppTheme.spacingSmall) {
             AppActionButton(role: .primary(ClubhouseTheme.blue)) {
-                rematch(session)
+                playAgain(session)
             } label: {
                 Label("Play Again", systemImage: "arrow.clockwise.circle.fill")
             }
@@ -236,7 +265,7 @@ struct GameOverView: View {
             } label: {
                 Label("Back Home", systemImage: "house")
             }
-            .accessibilityIdentifier("back_home_button")
+            .accessibilityIdentifier("home_button")
         }
     }
 
@@ -361,9 +390,45 @@ struct GameOverView: View {
         return "\(minutes)m"
     }
 
-    private func rematch(_ session: GameSession) {
+    private func playAgain(_ session: GameSession) {
+        guard storeManager.canStartNewGame else {
+            showPaywall = true
+            return
+        }
+
+        let newSession = GameSession(gameType: session.gameType)
+        newSession.winCondition = session.winCondition
+        newSession.targetScore = session.targetScore
+        newSession.phase10SkipOnFail = session.phase10SkipOnFail
+        modelContext.insert(newSession)
+
+        for player in session.players {
+            let clonedPlayer = Player(name: player.name, colorIndex: player.colorIndex)
+            clonedPlayer.session = newSession
+            newSession.players.append(clonedPlayer)
+        }
+
+        do {
+            try modelContext.save()
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            saveError = message
+            return
+        }
+
+        storeManager.recordGameStarted()
         router.goHome()
-        router.push(.playerSetup(session.gameType))
+        router.push(.scoring(newSession.persistentModelID))
+    }
+
+    private func evaluateReviewAskIfNeeded() {
+        guard !didEvaluateReviewAsk else { return }
+        didEvaluateReviewAsk = true
+        reviewAskManager.considerReviewAsk(
+            completedGameCount: completedGames.count,
+            paywallPresentedThisSession: storeManager.paywallPresentedThisSession
+        )
     }
 
     private func shareText(_ session: GameSession) -> String {
