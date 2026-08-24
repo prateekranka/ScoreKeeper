@@ -150,4 +150,11 @@ extension View {
     func pipCountPageContent(maxWidth: CGFloat? = nil) -> some View {
         modifier(PipCountPageContentModifier(requestedMaxWidth: maxWidth))
     }
+
+    /// Compatibility alias retained for production screens built during the
+    /// responsive redesign. It uses the same single source of truth as the
+    /// newer `pipCountPageContent` API.
+    func responsiveContentWidth(maxWidth: CGFloat? = nil) -> some View {
+        pipCountPageContent(maxWidth: maxWidth)
+    }
 }
