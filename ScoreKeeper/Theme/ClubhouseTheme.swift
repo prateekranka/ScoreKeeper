@@ -1,50 +1,52 @@
 import SwiftUI
 
 struct ClubhouseTheme {
-    // Paper Bauhaus. A warm printed-paper field (light) and a near-black studio
-    // paper (dark) carry a hard-edged ink grid; ultramarine is the single accent
-    // and Bauhaus primaries are reserved for player identity and status.
-    static let paper = Color(light: 0xF0F0E4, dark: 0x121218)
-    static let paperCard = Color(light: 0xFCF6F0, dark: 0x1A1F26)
-    static let paperSunken = Color(light: 0xE9E5D8, dark: 0x14171C)
-    static let ink = Color(light: 0x171712, dark: 0xF0F0E4)
-    static let inkMuted = Color(light: 0x7C766A, dark: 0xA2A296)
+    // A warm, tactile tabletop palette. The UI should feel like stationery and
+    // game pieces arranged for a real evening with friends rather than a rigid
+    // poster grid.
+    static let paper = Color(light: 0xF4F0E7, dark: 0x121316)
+    static let paperCard = Color(light: 0xFFFBF4, dark: 0x1B1C20)
+    static let paperSunken = Color(light: 0xEAE4D8, dark: 0x16181C)
+    static let ink = Color(light: 0x24211E, dark: 0xF5F1E8)
+    static let inkMuted = Color(light: 0x776F65, dark: 0xAAA39A)
 
-    // PipCount's Bauhaus primaries. These are also used by player identities,
-    // illustration blocks, selection states, and celebratory motion.
-    // Final primary interaction token. Keep ultramarine distinct from player blue.
-    static let blue = Color(light: 0x0036A8, dark: 0x6E9BFF)
-    static let blueDeep = Color(light: 0x002A78, dark: 0x4B78E8)
-    static let red = Color(light: 0xDE181E, dark: 0xFC5A60)
-    static let yellow = Color(light: 0xFCB412, dark: 0xFCD248)
-    static let green = Color(light: 0x008A42, dark: 0x3CCC78)
-    static let sky = Color(light: 0xCCDEEA, dark: 0x1D2F52)
+    // Friendly editorial accents inspired by printed game boxes, pencils,
+    // score sheets, and ceramic snack bowls.
+    static let blue = Color(light: 0x315BA8, dark: 0x82A8FF)
+    static let blueDeep = Color(light: 0x20427C, dark: 0x5F84D9)
+    static let red = Color(light: 0xD95B45, dark: 0xFF806C)
+    static let yellow = Color(light: 0xE5A83D, dark: 0xF4C568)
+    static let green = Color(light: 0x4C7B63, dark: 0x79B595)
+    static let sky = Color(light: 0xC9DCDF, dark: 0x243746)
+    static let coral = Color(light: 0xEF8F72, dark: 0xFFAA92)
+    static let lilac = Color(light: 0xA69BC7, dark: 0xC5B9EA)
 
-    // Legacy semantic names remain so feature code does not need to know the
-    // visual palette. Their values now map into the PipCount system.
+    // Existing semantic names remain stable for feature code.
     static let felt = blue
     static let feltDeep = blueDeep
     static let lacquer = red
-    // Darker than the illustration yellow so gold text and score labels remain
-    // readable on cream stock; bright gold on the dark paper.
-    static let brass = Color(light: 0x8A6200, dark: 0xFCD248)
-    static let onFelt = Color(light: 0xFFFFFF, dark: 0x07152B)
+    static let brass = Color(light: 0x9A6A12, dark: 0xF4C568)
+    static let onFelt = Color(light: 0xFFFFFF, dark: 0x11151F)
     static let primaryFill = blue
-    static let onPrimary = Color(light: 0xFFFFFF, dark: 0x07152B)
-    static let panelBorder = Color(light: 0xE4DED2, dark: 0x2A3038)
-    static let woodgrain = Color(light: 0xD8D2C2, dark: 0x3A3F47)
-    static let danger = lacquer
+    static let onPrimary = Color(light: 0xFFFFFF, dark: 0x101521)
+    static let panelBorder = Color(light: 0xD9D0C1, dark: 0x35363C)
+    static let woodgrain = Color(light: 0xCDBAA0, dark: 0x40372F)
+    static let danger = red
 
     static var rule: Color {
-        ink.opacity(0.22)
+        ink.opacity(0.12)
     }
 
     static var ruleStrong: Color {
-        ink.opacity(0.72)
+        ink.opacity(0.42)
     }
 
     static var paperShadow: Color {
-        ink.opacity(0.14)
+        Color(light: 0x5A4534, dark: 0x000000).opacity(0.16)
+    }
+
+    static var warmHighlight: Color {
+        Color(light: 0xFFFFFF, dark: 0xFFFFFF).opacity(0.64)
     }
 }
 
