@@ -379,13 +379,13 @@ final class ScoreKeeperUITests: XCTestCase {
         if app.buttons["Got it"].waitForExistence(timeout: 1) { app.buttons["Got it"].tap() }
         app.buttons["Recognize score"].tap()
         sleep(1)
-        if app.buttons["deck_accept_Alice"].waitForExistence(timeout: 2) {
-            app.buttons["deck_accept_Alice"].tap(); sleep(1)
+        if app.buttons["Accept"].waitForExistence(timeout: 2) {
+            app.buttons["Accept"].tap(); sleep(1)
         }
         app.buttons["Recognize score"].tap()
         sleep(1)
-        if app.buttons["deck_accept_Bob"].waitForExistence(timeout: 2) {
-            app.buttons["deck_accept_Bob"].tap(); sleep(2)
+        if app.buttons["Accept"].waitForExistence(timeout: 2) {
+            app.buttons["Accept"].tap(); sleep(2)
         }
 
         // Target not met (all zeros) — end game manually
@@ -429,13 +429,13 @@ final class ScoreKeeperUITests: XCTestCase {
 
         // Open deck, accept 0 for Mina (auto-advances to Omar), accept 0 for Omar (submits)
         app.buttons["Recognize score"].tap()
-        if app.buttons["deck_accept_Mina"].waitForExistence(timeout: 3) {
-            app.buttons["deck_accept_Mina"].tap()
+        if app.buttons["Accept"].waitForExistence(timeout: 3) {
+            app.buttons["Accept"].tap()
             sleep(1)
         }
         app.buttons["Recognize score"].tap()
-        if app.buttons["deck_accept_Omar"].waitForExistence(timeout: 3) {
-            app.buttons["deck_accept_Omar"].tap()
+        if app.buttons["Accept"].waitForExistence(timeout: 3) {
+            app.buttons["Accept"].tap()
             sleep(2)
         }
 
@@ -448,13 +448,13 @@ final class ScoreKeeperUITests: XCTestCase {
         // Open deck and submit round via accept on both cards
         completeRound(playerNames: ["Mina", "Omar"])
         app.buttons["Recognize score"].tap()
-        if app.buttons["deck_accept_Mina"].waitForExistence(timeout: 3) {
-            app.buttons["deck_accept_Mina"].tap()
+        if app.buttons["Accept"].waitForExistence(timeout: 3) {
+            app.buttons["Accept"].tap()
             sleep(1)
         }
         app.buttons["Recognize score"].tap()
-        if app.buttons["deck_accept_Omar"].waitForExistence(timeout: 3) {
-            app.buttons["deck_accept_Omar"].tap()
+        if app.buttons["Accept"].waitForExistence(timeout: 3) {
+            app.buttons["Accept"].tap()
             sleep(2)
         }
 
@@ -589,9 +589,9 @@ final class ScoreKeeperUITests: XCTestCase {
         sleep(1)
 
         // Accept or retry — on empty canvas there may be no overlay, so check
-        if app.buttons["deck_accept_Mina"].waitForExistence(timeout: 2) {
+        if app.buttons["Accept"].waitForExistence(timeout: 2) {
             snap("09-scoring-confirm-mina")
-            app.buttons["deck_accept_Mina"].tap()
+            app.buttons["Accept"].tap()
             sleep(1)
         } else {
             // No overlay appeared (empty canvas). Clear and move on via swipe.
@@ -604,8 +604,8 @@ final class ScoreKeeperUITests: XCTestCase {
         if app.buttons["Recognize score"].waitForExistence(timeout: 2) {
             app.buttons["Recognize score"].tap()
             sleep(1)
-            if app.buttons["deck_accept_Omar"].waitForExistence(timeout: 2) {
-                app.buttons["deck_accept_Omar"].tap()
+            if app.buttons["Accept"].waitForExistence(timeout: 2) {
+                app.buttons["Accept"].tap()
                 sleep(1)
             } else {
                 app.swipeLeft()
@@ -617,8 +617,8 @@ final class ScoreKeeperUITests: XCTestCase {
         if app.buttons["Recognize score"].waitForExistence(timeout: 2) {
             app.buttons["Recognize score"].tap()
             sleep(1)
-            if app.buttons["deck_accept_Jules"].waitForExistence(timeout: 2) {
-                app.buttons["deck_accept_Jules"].tap()
+            if app.buttons["Accept"].waitForExistence(timeout: 2) {
+                app.buttons["Accept"].tap()
                 sleep(2) // deck closes + round submits
             } else {
                 // Cancel deck without scoring, then use submit directly
@@ -792,12 +792,12 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["submit_round_button"].tap()
         _ = app.buttons["Recognize score"].waitForExistence(timeout: 3)
         app.buttons["Recognize score"].tap()
-        if app.buttons["deck_accept_Ada"].waitForExistence(timeout: 3) {
-            app.buttons["deck_accept_Ada"].tap(); sleep(1)
+        if app.buttons["Accept"].waitForExistence(timeout: 3) {
+            app.buttons["Accept"].tap(); sleep(1)
         }
         app.buttons["Recognize score"].tap()
-        if app.buttons["deck_accept_Ben"].waitForExistence(timeout: 3) {
-            app.buttons["deck_accept_Ben"].tap(); sleep(2)
+        if app.buttons["Accept"].waitForExistence(timeout: 3) {
+            app.buttons["Accept"].tap(); sleep(2)
         }
         sleep(1); snap("25-scoring-dark")
 
@@ -949,13 +949,20 @@ final class ScoreKeeperUITests: XCTestCase {
     private func completeOpenDeck(playerNames: [String]) {
         XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
         if app.buttons["Got it"].waitForExistence(timeout: 3) { app.buttons["Got it"].tap() }
-        XCTAssertTrue(app.buttons["Recognize score"].waitForExistence(timeout: 10))
-        for name in playerNames {
-            app.buttons["Recognize score"].tap()
+        else if app.buttons["Skip"].waitForExistence(timeout: 1) { app.buttons["Skip"].tap() }
+
+        let recognize = app.buttons["Recognize score"]
+        XCTAssertTrue(recognize.waitForExistence(timeout: 10))
+        for (index, _) in playerNames.enumerated() {
+            XCTAssertTrue(recognize.waitForExistence(timeout: 10))
+            recognize.tap()
             let accept = app.buttons["Accept"]
-            XCTAssertTrue(accept.waitForExistence(timeout: 3))
+            XCTAssertTrue(accept.waitForExistence(timeout: 10),
+                          "Score confirmation did not appear")
             accept.tap()
-            sleep(1)
+            if index < playerNames.count - 1 {
+                XCTAssertTrue(recognize.waitForExistence(timeout: 10))
+            }
         }
     }
 

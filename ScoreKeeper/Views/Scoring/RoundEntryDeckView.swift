@@ -29,6 +29,7 @@ struct RoundEntryDeckView: View {
             }
             if showTutorial { tutorial }
         }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("round_entry_deck")
     }
 
@@ -157,6 +158,8 @@ struct RoundEntryDeckView: View {
     }
     private func clear(for player: Player) { clearTriggers[player.id, default: 0] += 1; scores[player.id] = nil; confirmingPlayer = nil; confirmedValue = nil }
     private func recognizeCurrent() {
+        confirmingPlayer = player.id
+        confirmedValue = 0
         captureTrigger &+= 1
     }
     private func retry() { clear(for: player) }
