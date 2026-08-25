@@ -312,6 +312,7 @@ struct RoundEntryDeckView: View {
                 .contentShape(Rectangle())
                 .gesture(edgeSwipe)
         }
+        .accessibilityElement(children: .contain)
         .accessibilityLabel("Drawing area for \(player.name)'s score")
     }
 

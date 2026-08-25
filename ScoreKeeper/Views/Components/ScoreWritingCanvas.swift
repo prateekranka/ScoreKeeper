@@ -24,8 +24,17 @@ struct ScoreWritingCanvas: UIViewRepresentable {
             context.coordinator.lastClearTrigger = clearTrigger
         }
         if context.coordinator.lastCaptureTrigger != captureTrigger {
-            capturedImage = canvas.drawing.image(from: canvas.bounds, scale: displayScale(for: canvas))
             context.coordinator.lastCaptureTrigger = captureTrigger
+            // Capture OUTSIDE the view-update transaction: assigning a state
+            // binding synchronously inside updateUIView gets coalesced by
+            // SwiftUI and onChange(of:) never observes the new value, leaving
+            // recognition stuck on its progress overlay.
+            let targetBounds = canvas.bounds
+            let scale = max(Self.displayScale(for: canvas), 1)
+            let imageBinding = $capturedImage
+            Task { @MainActor in
+                imageBinding.wrappedValue = canvas.drawing.image(from: targetBounds, scale: scale)
+            }
         }
     }
 
