@@ -55,8 +55,7 @@ final class ScoreKeeperUITests: XCTestCase {
         completeRound(playerNames: ["Alice", "Bob", "Charlie"])
 
         // End Game
-        app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        endGameViaAlert()
 
         // Game Over: verify winner text
         let winnerText = app.staticTexts["winner_text"]
@@ -73,8 +72,7 @@ final class ScoreKeeperUITests: XCTestCase {
         completeRound(playerNames: ["Alice", "Bob"], gameType: "phase10")
 
         // End Game
-        app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        endGameViaAlert()
 
         // Game Over: verify
         XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 2))
@@ -89,8 +87,7 @@ final class ScoreKeeperUITests: XCTestCase {
         completeRound(playerNames: ["Alice", "Bob"])
 
         // End Game
-        app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        endGameViaAlert()
 
         // Verify GameOver screen appears
         XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 3))
@@ -116,8 +113,7 @@ final class ScoreKeeperUITests: XCTestCase {
         completeRound(playerNames: ["Alice", "Bob"])
 
         // End Game
-        app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        endGameViaAlert()
 
         // Swipe up to reveal buttons at bottom
         app.swipeUp()
@@ -138,8 +134,7 @@ final class ScoreKeeperUITests: XCTestCase {
         // Complete first game
         navigateToGenericScoring(playerNames: ["Alice", "Bob"])
         completeRound(playerNames: ["Ada", "Ben"])
-        app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        endGameViaAlert()
         app.swipeUp()
         let homeButton = app.buttons["home_button"]
         XCTAssertTrue(homeButton.waitForExistence(timeout: 3))
@@ -155,8 +150,7 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["start_game_button"].tap()
         app.buttons["start_game_button"].tap()
         completeRound(playerNames: ["Ada", "Ben"])
-        app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        endGameViaAlert()
         app.swipeUp()
         let homeButton2 = app.buttons["home_button"]
         XCTAssertTrue(homeButton2.waitForExistence(timeout: 3))
@@ -341,8 +335,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
         navigateToGenericScoring(playerNames: ["Ada", "Ben"])
         completeRound(playerNames: ["Ada", "Ben"])
-        app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        endGameViaAlert()
 
         XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["review_ask_rate_button"].waitForExistence(timeout: 2))
@@ -985,10 +978,31 @@ final class ScoreKeeperUITests: XCTestCase {
     private func completeGenericGame(playerNames: [String]) {
         navigateToGenericScoring(playerNames: playerNames)
         completeRound(playerNames: playerNames)
-        app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        endGameViaAlert()
         let homeButton = app.buttons["home_button"]
         XCTAssertTrue(homeButton.waitForExistence(timeout: 5))
         homeButton.tap()
+    }
+
+    /// Taps End Game and confirms the system alert, retrying once if the
+    /// deck's exit animation races the tap (a late submit can re-open the
+    /// deck over the scoring screen).
+    private func endGameViaAlert() {
+        let confirm = app.alerts.buttons["End Game"]
+        for _ in 0..<3 {
+            guard !confirm.waitForExistence(timeout: 2) else {
+                confirm.tap()
+                if confirm.waitForExistence(timeout: 1) { continue }
+                return
+            }
+            // Alert not up yet: either the tap was swallowed by a transition
+            // or the deck re-opened. Dismiss it if present, then retry.
+            if app.descendants(matching: .any)["round_entry_deck"].exists {
+                app.buttons["round_deck_cancel_button"].tap()
+            }
+            _ = app.buttons["end_game_button"].waitForExistence(timeout: 3)
+            app.buttons["end_game_button"].tap()
+        }
+        XCTFail("End Game confirmation never appeared")
     }
 }
