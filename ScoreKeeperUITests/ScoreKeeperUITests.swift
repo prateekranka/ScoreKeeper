@@ -273,7 +273,11 @@ final class ScoreKeeperUITests: XCTestCase {
         seeAllButton.tap()
 
         XCTAssertTrue(app.navigationBars["Game History"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.descendants(matching: .any)["history_card_0"].waitForExistence(timeout: 3))
+        let firstCard = app.descendants(matching: .any)["history_card_0"]
+        if !firstCard.exists || !firstCard.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(firstCard.waitForExistence(timeout: 3))
     }
 
     // MARK: - Test 12: Player stats navigation
@@ -298,7 +302,7 @@ final class ScoreKeeperUITests: XCTestCase {
         playerStatsButton.tap()
 
         XCTAssertTrue(app.navigationBars["Taylor"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["Games Played"].exists)
+        XCTAssertTrue(app.staticTexts["Games"].exists)
         XCTAssertTrue(app.staticTexts["Wins"].exists)
     }
 
@@ -739,7 +743,10 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Game History"].waitForExistence(timeout: 3))
         sleep(1); snap("20-game-history")
 
-        app.descendants(matching: .any)["history_card_0"].firstMatch.tap()
+        let firstCard = app.descendants(matching: .any)["history_card_0"]
+        if !firstCard.exists || !firstCard.isHittable { app.swipeUp() }
+        XCTAssertTrue(firstCard.waitForExistence(timeout: 3))
+        firstCard.tap()
         sleep(1); snap("21-game-detail")
         app.navigationBars.buttons.firstMatch.tap()
         sleep(1)
