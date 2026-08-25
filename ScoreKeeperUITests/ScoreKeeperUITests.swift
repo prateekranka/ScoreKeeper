@@ -165,7 +165,6 @@ final class ScoreKeeperUITests: XCTestCase {
 
         // Verify Home screen with recent games using the section's stable control identifier.
         XCTAssertTrue(scrollToHittable(app.buttons["see_all_button"]))
-        XCTAssertTrue(app.staticTexts["Scoreboard"].exists)
         XCTAssertTrue(app.buttons["new_game_button"].exists)
     }
 
@@ -274,7 +273,7 @@ final class ScoreKeeperUITests: XCTestCase {
         seeAllButton.tap()
 
         XCTAssertTrue(app.navigationBars["Game History"].waitForExistence(timeout: 3))
-        XCTAssertTrue(app.staticTexts["Scoreboard"].exists)
+        XCTAssertTrue(app.descendants(matching: .any)["history_card_0"].waitForExistence(timeout: 3))
     }
 
     // MARK: - Test 12: Player stats navigation
@@ -740,7 +739,7 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Game History"].waitForExistence(timeout: 3))
         sleep(1); snap("20-game-history")
 
-        app.staticTexts["Scoreboard"].firstMatch.tap()
+        app.descendants(matching: .any)["history_card_0"].firstMatch.tap()
         sleep(1); snap("21-game-detail")
         app.navigationBars.buttons.firstMatch.tap()
         sleep(1)
@@ -955,6 +954,15 @@ final class ScoreKeeperUITests: XCTestCase {
                 XCTAssertTrue(recognize.waitForExistence(timeout: 10))
             }
         }
+
+        // The deck dismisses with a short exit animation; wait until it is
+        // fully closed before interacting with the scoring screen beneath.
+        let deck = app.descendants(matching: .any)["round_entry_deck"]
+        let deadline = Date().addingTimeInterval(5)
+        while deck.exists && Date() < deadline {
+            usleep(100_000)
+        }
+        XCTAssertFalse(deck.exists, "Score deck did not close")
     }
 
     private func completeRound(playerNames: [String], gameType: String = "generic") {

@@ -121,8 +121,9 @@ struct GameHistoryListView: View {
         let columns = Array(repeating: GridItem(.flexible(), spacing: AppTheme.spacingMedium), count: columnCount)
 
         return LazyVGrid(columns: columns, spacing: AppTheme.spacingMedium) {
-            ForEach(completedSessions) { session in
+            ForEach(Array(completedSessions.enumerated()), id: \.element.id) { index, session in
                 gameCard(session)
+                    .accessibilityIdentifier("history_card_\(index)")
             }
         }
     }
