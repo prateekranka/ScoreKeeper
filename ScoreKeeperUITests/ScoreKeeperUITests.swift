@@ -241,35 +241,49 @@ final class ScoreKeeperUITests: XCTestCase {
         let headToHeadButton = app.buttons["head_to_head_button"]
         XCTAssertTrue(headToHeadButton.waitForExistence(timeout: 5))
 
-        // Home content scrolls UNDER the floating dock. A tap on an element
-        // whose frame intersects the dock band hits the dock instead (observed:
-        // the Players tab fired). Only tap when the frame clears the dock.
+        // Returning from Game Over restores Home's old scroll offset, which
+        // can leave the Stats row under the floating dock; taps then hit the
+        // dock (proven: the Players tab fired). Scroll back toward the top,
+        // then tap by explicit coordinates inside the dock-free band.
+        for _ in 0..<3 {
+            app.swipeDown(velocity: .fast)
+            usleep(250_000)
+        }
+
         var pushed = false
-        var scrollDown = false
         for _ in 0..<6 {
-            let dockBand = app.frame.height - 130
-            if headToHeadButton.exists,
-               headToHeadButton.isHittable,
-               headToHeadButton.frame.maxY <= dockBand {
-                // Tap through tapButtonInSafeArea: XCUI's own tap resolves a
-                // stale/overlapped frame and can hit the dock underneath.
-                tapButtonInSafeArea(headToHeadButton)
-                if app.navigationBars["Head to Head"].waitForExistence(timeout: 2) {
-                    pushed = true
-                    break
-                }
-                // Navigation swallowed; return to the Home root and retry.
-                if app.buttons["tab_home"].exists {
-                    app.buttons["tab_home"].tap()
-                    usleep(500_000)
+            let dockTop = app.frame.height - 130
+            let safeTop: CGFloat = 80
+            if headToHeadButton.waitForExistence(timeout: 2) {
+                let frame = headToHeadButton.frame
+                let visibleTop = max(frame.minY, safeTop)
+                let visibleBottom = min(frame.maxY, dockTop)
+                if headToHeadButton.isHittable, visibleBottom - visibleTop >= 40 {
+                    let point = CGPoint(x: frame.midX, y: (visibleTop + visibleBottom) / 2)
+                    let normalized = CGVector(
+                        dx: point.x / app.frame.width,
+                        dy: point.y / app.frame.height
+                    )
+                    app.coordinate(withNormalizedOffset: normalized).tap()
+                    if app.navigationBars["Head to Head"].waitForExistence(timeout: 2) {
+                        pushed = true
+                        break
+                    }
+                    // Swallowed; return to the Home root and re-top the scroll.
+                    if app.buttons["tab_home"].exists {
+                        app.buttons["tab_home"].tap()
+                        usleep(500_000)
+                        for _ in 0..<2 {
+                            app.swipeDown(velocity: .fast)
+                            usleep(200_000)
+                        }
+                    }
+                } else {
+                    app.swipeDown(velocity: .default)
+                    usleep(300_000)
                 }
             } else {
-                if scrollDown {
-                    app.swipeDown(velocity: .default)
-                } else {
-                    app.swipeUp(velocity: .default)
-                }
-                scrollDown.toggle()
+                app.swipeDown(velocity: .default)
                 usleep(300_000)
             }
         }
