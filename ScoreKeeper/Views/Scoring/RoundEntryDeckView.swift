@@ -16,6 +16,7 @@ struct RoundEntryDeckView: View {
     @State private var confirmedValue: Int?
     @State private var invalidPlayer: UUID?
     @State private var noInkPlayer: UUID?
+    @State private var manualEntry = "0"
     @State private var showTutorial = !UserDefaults.standard.bool(forKey: "hasSeenScoreDeckTutorial")
     @State private var captureTrigger = 0
     @State private var captureEvent = 0
@@ -297,6 +298,9 @@ struct RoundEntryDeckView: View {
             if confirmingPlayer == player.id, let confirmedValue {
                 confirmation(value: confirmedValue)
                     .transition(.opacity.combined(with: .scale(scale: 0.97)))
+            } else if invalidPlayer == player.id {
+                rejectionCard
+                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
             } else if isRecognizing {
                 recognizingOverlay
                     .transition(.opacity)
@@ -441,6 +445,76 @@ struct RoundEntryDeckView: View {
         .background(ClubhouseTheme.paper.opacity(0.97))
     }
 
+    private var rejectionCard: some View {
+        VStack(spacing: AppTheme.spacingLarge) {
+            VStack(spacing: 4) {
+                Text("Couldn't read that")
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Text("Try again or type the score.")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+
+            HStack(spacing: AppTheme.spacingSmall) {
+                Button {
+                    retry()
+                } label: {
+                    Label("Retry", systemImage: "arrow.counterclockwise")
+                        .labelStyle(.iconOnly)
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(ClubhouseTheme.blue)
+                        .frame(width: 56, height: 56)
+                        .background(ClubhouseTheme.paperCard, in: Circle())
+                        .overlay {
+                            Circle().strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                        }
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityLabel("Retry")
+                .accessibilityIdentifier("deck_retry_\(player.name)")
+
+                TextField("0", text: $manualEntry)
+                    .keyboardType(.numberPad)
+                    .font(AppFonts.scoreSmall)
+                    .monospacedDigit()
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .frame(width: 72, height: 56)
+                    .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                            .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                    }
+                    .accessibilityLabel("Enter score manually")
+                    .accessibilityIdentifier("deck_manual_value")
+
+                Button {
+                    accept(manualScore)
+                } label: {
+                    Text("Use")
+                        .font(AppFonts.headline)
+                        .foregroundStyle(ClubhouseTheme.onPrimary)
+                        .padding(.horizontal, AppTheme.spacingMedium)
+                        .frame(height: 56)
+                        .background(ClubhouseTheme.blue, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityLabel("Use typed score")
+                .accessibilityIdentifier("deck_manual_use_\(player.name)")
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(ClubhouseTheme.paper.opacity(0.97))
+        .accessibilityIdentifier("deck_invalid_value")
+    }
+
+    private var manualScore: Int {
+        let digits = manualEntry.filter { ("0"..."9").contains($0) }
+        return min(9999, Int(digits) ?? 0)
+    }
+
     private var progress: some View {
         HStack(spacing: 8) {
             ForEach(session.players.indices, id: \.self) { index in
@@ -547,6 +621,7 @@ struct RoundEntryDeckView: View {
                 noInkPlayer = targetPlayerID
                 warningFeedbackTrigger &+= 1
             case .unreadable, .error:
+                manualEntry = "0"
                 invalidPlayer = targetPlayerID
                 warningFeedbackTrigger &+= 1
             }
@@ -585,7 +660,9 @@ struct RoundEntryDeckView: View {
     }
 
     private func retry() {
-        clear(for: player)
+        confirmingPlayer = nil
+        confirmedValue = nil
+        recognizeCurrent()
     }
 
     private func accept(_ value: Int) {
