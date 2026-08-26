@@ -251,7 +251,9 @@ final class ScoreKeeperUITests: XCTestCase {
             if headToHeadButton.exists,
                headToHeadButton.isHittable,
                headToHeadButton.frame.maxY <= dockBand {
-                headToHeadButton.tap()
+                // Tap through tapButtonInSafeArea: XCUI's own tap resolves a
+                // stale/overlapped frame and can hit the dock underneath.
+                tapButtonInSafeArea(headToHeadButton)
                 if app.navigationBars["Head to Head"].waitForExistence(timeout: 2) {
                     pushed = true
                     break
