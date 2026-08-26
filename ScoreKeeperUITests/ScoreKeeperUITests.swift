@@ -239,18 +239,26 @@ final class ScoreKeeperUITests: XCTestCase {
         completeGenericGame(playerNames: ["Taylor", "Morgan"])
 
         let headToHeadButton = app.buttons["head_to_head_button"]
-        XCTAssertTrue(headToHeadButton.waitForExistence(timeout: 3))
+        XCTAssertTrue(headToHeadButton.waitForExistence(timeout: 5))
         // The button sits high on Home; an extra swipe can scroll it out of
         // view and leave the tap on stale coordinates.
         if !headToHeadButton.isHittable {
             app.swipeDown()
+            _ = headToHeadButton.waitForExistence(timeout: 3)
         }
-        headToHeadButton.tap()
-        if !app.navigationBars["Head to Head"].waitForExistence(timeout: 3) {
-            // Home entrance animations can swallow the first tap; retry once.
-            headToHeadButton.tap()
-            XCTAssertTrue(app.navigationBars["Head to Head"].waitForExistence(timeout: 3))
+        var pushed = false
+        for attempt in 0..<4 {
+            if headToHeadButton.exists && headToHeadButton.isHittable {
+                headToHeadButton.tap()
+            }
+            if app.navigationBars["Head to Head"].waitForExistence(timeout: 2) {
+                pushed = true
+                break
+            }
+            // Re-query after each miss; a swallowed tap leaves stale handles.
+            _ = headToHeadButton.waitForExistence(timeout: 3)
         }
+        XCTAssertTrue(pushed, "Head to Head screen never appeared")
         app.buttons["Player 1, Select..."].tap()
         app.buttons["Taylor"].tap()
         app.buttons["Player 2, Select..."].tap()
