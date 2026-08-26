@@ -457,27 +457,17 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["start_game_button"].tap()
         XCTAssertTrue(app.buttons["submit_round_button"].waitForExistence(timeout: 3))
 
-        // Open deck, accept 5+0 for Alice and Bob — target score 5 triggers win for Alice
-        // Since we can't draw, accept 0 for both; then end game manually
+        // Open deck, then cancel: a blank canvas no longer yields a phantom
+        // zero to accept (the inline no-ink hint replaces it), so no round is
+        // submitted and the game is ended manually.
         app.buttons["submit_round_button"].tap()
-        _ = app.buttons["Recognize score"].waitForExistence(timeout: 3)
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 3))
         if app.buttons["Got it"].waitForExistence(timeout: 1) { app.buttons["Got it"].tap() }
-        app.buttons["Recognize score"].tap()
-        sleep(1)
-        if app.buttons["Accept"].waitForExistence(timeout: 2) {
-            app.buttons["Accept"].tap(); sleep(1)
-        }
-        app.buttons["Recognize score"].tap()
-        sleep(1)
-        if app.buttons["Accept"].waitForExistence(timeout: 2) {
-            app.buttons["Accept"].tap(); sleep(2)
-        }
+        app.buttons["round_deck_cancel_button"].tap()
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
 
-        // Target not met (all zeros) — end game manually
-        app.buttons["end_game_button"].tap()
-        if app.alerts.buttons["End Game"].waitForExistence(timeout: 2) {
-            app.alerts.buttons["End Game"].tap()
-        }
+        // Target not met (no round submitted) — end game manually
+        endGameViaAlert()
 
         XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 4))
     }
@@ -641,7 +631,7 @@ final class ScoreKeeperUITests: XCTestCase {
 
         // Open the deck
         app.buttons["submit_round_button"].tap()
-        _ = app.buttons["Recognize score"].waitForExistence(timeout: 3)
+        _ = app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 3)
         snap("09-scoring-deck-mina")
 
         // Dismiss tutorial if shown
@@ -649,50 +639,29 @@ final class ScoreKeeperUITests: XCTestCase {
             app.buttons["Got it"].tap()
         }
 
-        // Tap ✓ to recognize (empty canvas → no overlay, but exercises the flow)
-        app.buttons["Recognize score"].tap()
-        sleep(1)
-
-        // Accept or retry — on empty canvas there may be no overlay, so check
-        if app.buttons["Accept"].waitForExistence(timeout: 2) {
+        // Mina: draw a zero and recognize so the confirmation card is real
+        // (a blank canvas now shows the inline no-ink hint instead).
+        ScoreDeckUITestSupport.drawEllipseZero(in: app)
+        app.buttons["recognize_score_button"].tap()
+        let confirmation = ScoreDeckUITestSupport.acceptButton(in: app)
+        if confirmation.waitForExistence(timeout: 15) {
             snap("09-scoring-confirm-mina")
-            app.buttons["Accept"].tap()
+            confirmation.tap()
+            sleep(1)
+        } else if ScoreDeckUITestSupport.rejectionCard(in: app).exists {
+            ScoreDeckUITestSupport.useManualValue("0", in: app)
             sleep(1)
         } else {
-            // No overlay appeared (empty canvas). Clear and move on via swipe.
-            app.swipeLeft()
-            sleep(1)
+            ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
         }
         snap("09-scoring-deck-omar")
 
-        // Omar's card — same flow
-        if app.buttons["Recognize score"].waitForExistence(timeout: 2) {
-            app.buttons["Recognize score"].tap()
-            sleep(1)
-            if app.buttons["Accept"].waitForExistence(timeout: 2) {
-                app.buttons["Accept"].tap()
-                sleep(1)
-            } else {
-                app.swipeLeft()
-                sleep(1)
-            }
-        }
-
-        // Jules — last card; accepting submits round
-        if app.buttons["Recognize score"].waitForExistence(timeout: 2) {
-            app.buttons["Recognize score"].tap()
-            sleep(1)
-            if app.buttons["Accept"].waitForExistence(timeout: 2) {
-                app.buttons["Accept"].tap()
-                sleep(2) // deck closes + round submits
-            } else {
-                // Cancel deck without scoring, then use submit directly
-                app.buttons["round_deck_cancel_button"].tap()
-                sleep(1)
-                app.buttons["submit_round_button"].tap()
-                sleep(1)
-            }
-        }
+        // Omar and Jules — same flow; accepting Jules submits the round.
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        sleep(1)
+        snap("09-scoring-deck-jules")
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        sleep(2) // deck closes + round submits
 
         snap("09-scoring-round2")
 
@@ -858,15 +827,11 @@ final class ScoreKeeperUITests: XCTestCase {
 
         navigateToGenericScoring(playerNames: ["Ada", "Ben"])
         app.buttons["submit_round_button"].tap()
-        _ = app.buttons["Recognize score"].waitForExistence(timeout: 3)
-        app.buttons["Recognize score"].tap()
-        if app.buttons["Accept"].waitForExistence(timeout: 3) {
-            app.buttons["Accept"].tap(); sleep(1)
-        }
-        app.buttons["Recognize score"].tap()
-        if app.buttons["Accept"].waitForExistence(timeout: 3) {
-            app.buttons["Accept"].tap(); sleep(2)
-        }
+        _ = app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 3)
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
         sleep(1); snap("25-scoring-dark")
 
         app.buttons["end_game_button"].tap()
@@ -1019,28 +984,17 @@ final class ScoreKeeperUITests: XCTestCase {
         if app.buttons["Got it"].waitForExistence(timeout: 3) { app.buttons["Got it"].tap() }
         else if app.buttons["Skip"].waitForExistence(timeout: 1) { app.buttons["Skip"].tap() }
 
-        let recognize = app.buttons["Recognize score"]
-        XCTAssertTrue(recognize.waitForExistence(timeout: 10))
-        for (index, _) in playerNames.enumerated() {
-            XCTAssertTrue(recognize.waitForExistence(timeout: 10))
-            recognize.tap()
-            let accept = app.buttons["Accept"]
-            XCTAssertTrue(accept.waitForExistence(timeout: 10),
-                          "Score confirmation did not appear")
-            accept.tap()
-            if index < playerNames.count - 1 {
-                XCTAssertTrue(recognize.waitForExistence(timeout: 10))
-            }
+        // A blank canvas no longer yields a phantom zero to accept; the
+        // recognizer answers with the inline no-ink hint. Draw a zero on each
+        // card and commit it, falling back to manual entry when the ink is
+        // rejected.
+        for _ in playerNames {
+            ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
         }
 
         // The deck dismisses with a short exit animation; wait until it is
         // fully closed before interacting with the scoring screen beneath.
-        let deck = app.descendants(matching: .any)["round_entry_deck"]
-        let deadline = Date().addingTimeInterval(5)
-        while deck.exists && Date() < deadline {
-            usleep(100_000)
-        }
-        XCTAssertFalse(deck.exists, "Score deck did not close")
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
     }
 
     private func completeRound(playerNames: [String], gameType: String = "generic") {
