@@ -234,6 +234,10 @@ struct RoundEntryDeckView: View {
             writingSurface
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
+            if noInkPlayer == player.id {
+                noInkHint
+            }
+
             scoreActions
         }
         .padding(AppTheme.spacingMedium)
@@ -243,6 +247,7 @@ struct RoundEntryDeckView: View {
                 .strokeBorder(ClubhouseTheme.ink.opacity(0.72), lineWidth: 1.5)
         }
         .shadow(color: ClubhouseTheme.paperShadow, radius: 18, y: 10)
+        .animation(reduceMotion ? AppMotion.fade : AppMotion.state, value: noInkPlayer)
         .id(player.id)
         .transition(.asymmetric(
             insertion: .opacity.combined(with: .offset(x: 24)),
@@ -374,6 +379,15 @@ struct RoundEntryDeckView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(ClubhouseTheme.paper.opacity(0.94))
         .accessibilityLabel("Reading score")
+    }
+
+    private var noInkHint: some View {
+        Text("Draw the score first")
+            .font(AppFonts.caption.weight(.semibold))
+            .foregroundStyle(ClubhouseTheme.inkMuted)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .transition(.opacity)
+            .accessibilityIdentifier("deck_no_ink_hint")
     }
 
     private func confirmation(value: Int) -> some View {
