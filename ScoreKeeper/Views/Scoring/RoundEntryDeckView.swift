@@ -573,11 +573,11 @@ struct RoundEntryDeckView: View {
             return
         }
 
+        // Animate the deck out, but tear down the presenting cover FIRST.
+        // Dismissing from inside a deferred Task used to leave an empty
+        // full-screen presentation window installed above the app, which then
+        // swallowed every subsequent touch on the underlying screen.
         isExiting = true
-        exitTask = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(230))
-            guard !Task.isCancelled else { return }
-            completion()
-        }
+        completion()
     }
 }
