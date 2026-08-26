@@ -88,6 +88,9 @@ struct PipCountPaperBackground: View {
                 .blendMode(colorScheme == .light ? .multiply : .screen)
                 .opacity(colorScheme == .light ? 0.22 : 0.08)
         }
+        // Decorative layer only: never intercept touches or expose AX nodes.
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 
