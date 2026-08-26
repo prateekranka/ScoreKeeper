@@ -5,6 +5,7 @@ struct ScoreWritingCanvas: UIViewRepresentable {
     @Binding var clearTrigger: Int
     @Binding var captureTrigger: Int
     @Binding var capturedImage: UIImage?
+    @Binding var captureEvent: Int
     var accessibilityIdentifier: String = "score_writing_canvas"
 
     func makeUIView(context: Context) -> PKCanvasView {
@@ -29,11 +30,17 @@ struct ScoreWritingCanvas: UIViewRepresentable {
             // binding synchronously inside updateUIView gets coalesced by
             // SwiftUI and onChange(of:) never observes the new value, leaving
             // recognition stuck on its progress overlay.
-            let targetBounds = canvas.bounds
+            let canvasSize = canvas.bounds.size
             let scale = max(Self.displayScale(for: canvas), 1)
             let imageBinding = $capturedImage
+            let eventBinding = $captureEvent
             Task { @MainActor in
-                imageBinding.wrappedValue = canvas.drawing.image(from: targetBounds, scale: scale)
+                imageBinding.wrappedValue = Self.normalizedImage(
+                    for: canvas.drawing,
+                    canvasSize: canvasSize,
+                    scale: scale
+                )
+                eventBinding.wrappedValue += 1
             }
         }
     }
