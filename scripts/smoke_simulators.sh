@@ -28,7 +28,7 @@ def key(item):
 print(max(runtimes, key=key)["identifier"])
 ')"
 
-readarray -t DEVICE_TYPES < <(xcrun simctl list devicetypes -j | python3 -c '
+TYPES_LINE="$(xcrun simctl list devicetypes -j | python3 -c '
 import json, re, sys
 items = [d for d in json.load(sys.stdin).get("devicetypes", []) if d.get("identifier")]
 
@@ -50,10 +50,12 @@ print(choose(
     ["iPad Pro 13-inch (M4)", "iPad Pro (13-inch) (M4)", "iPad Pro 12.9-inch (6th generation)", "iPad Air 13-inch (M2)"],
     r"^iPad"
 ))
-')
+')"
 
-IPHONE_TYPE="${DEVICE_TYPES[0]}"
-IPAD_TYPE="${DEVICE_TYPES[1]}"
+# bash 3.2 (macOS/GitHub runners) has no readarray; parse a single line instead.
+DEVICE_TYPES=($TYPES_LINE)
+IPHONE_TYPE="${DEVICE_TYPES[0]:-}"
+IPAD_TYPE="${DEVICE_TYPES[1]:-}"
 IPHONE_UDID=""
 IPAD_UDID=""
 
