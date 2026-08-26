@@ -240,35 +240,36 @@ final class ScoreKeeperUITests: XCTestCase {
 
         let headToHeadButton = app.buttons["head_to_head_button"]
         XCTAssertTrue(headToHeadButton.waitForExistence(timeout: 5))
-        // The button sits high on Home; an extra swipe can scroll it out of
-        // view and leave the tap on stale coordinates.
-        if !headToHeadButton.isHittable {
-            app.swipeDown()
-            _ = headToHeadButton.waitForExistence(timeout: 3)
-        }
+
+        // Home content scrolls UNDER the floating dock. A tap on an element
+        // whose frame intersects the dock band hits the dock instead (observed:
+        // the Players tab fired). Only tap when the frame clears the dock.
         var pushed = false
-        for attempt in 0..<4 {
-            // The dock's tab handlers PUSH (Players/Games/More) on top of the
-            // current page, so an extra tap anywhere can leave us on another
-            // screen. Reset to Home root first, then retry the button.
-            if !headToHeadButton.exists {
+        var scrollDown = false
+        for _ in 0..<6 {
+            let dockBand = app.frame.height - 130
+            if headToHeadButton.exists,
+               headToHeadButton.isHittable,
+               headToHeadButton.frame.maxY <= dockBand {
+                headToHeadButton.tap()
+                if app.navigationBars["Head to Head"].waitForExistence(timeout: 2) {
+                    pushed = true
+                    break
+                }
+                // Navigation swallowed; return to the Home root and retry.
                 if app.buttons["tab_home"].exists {
                     app.buttons["tab_home"].tap()
-                    usleep(600_000)
-                } else {
-                    app.buttons["scoring_home_button"].tap()
-                    usleep(600_000)
+                    usleep(500_000)
                 }
+            } else {
+                if scrollDown {
+                    app.swipeDown(velocity: .default)
+                } else {
+                    app.swipeUp(velocity: .default)
+                }
+                scrollDown.toggle()
+                usleep(300_000)
             }
-            if headToHeadButton.exists && headToHeadButton.isHittable {
-                headToHeadButton.tap()
-            }
-            if app.navigationBars["Head to Head"].waitForExistence(timeout: 2) {
-                pushed = true
-                break
-            }
-            // Re-query after each miss; a swallowed tap leaves stale handles.
-            _ = headToHeadButton.waitForExistence(timeout: 3)
         }
         XCTAssertTrue(pushed, "Head to Head screen never appeared")
         app.buttons["Player 1, Select..."].tap()
