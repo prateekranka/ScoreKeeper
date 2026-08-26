@@ -599,72 +599,341 @@ private struct KineticBauhausComposition: View {
 
     @ViewBuilder
     private func skyline(sparse: Bool) -> some View {
-        let drift = wave(phase: 0.2, amplitude: 4)
+        let w = size.width
+        let h = size.height
+        let center = CGPoint(x: w * 0.44, y: h * 0.50)
+        let radius = min(w, h) * 0.34
 
         ZStack {
-            BauhausArcShape(start: 0.50, end: 0.83)
-                .stroke(ClubhouseTheme.blue, style: StrokeStyle(lineWidth: max(18, size.width * 0.075), lineCap: .butt))
-                .frame(width: size.width * 0.62, height: size.width * 0.62)
-                .position(x: size.width * 0.27, y: size.height * 0.72)
-                .rotationEffect(.degrees(-12))
-                .artElement(active: active, index: 1, entry: CGSize(width: -38, height: 25), rotation: -18, scale: 0.72)
+            colorPlanes(sparse: sparse)
+            trajectoryFan(sparse: sparse)
+            if !sparse {
+                technicalGrid
+            }
+            orbitalSystem(center: center, radius: radius)
+            anchorDisc(center: center, radius: radius)
+            launchBeam()
+            satelliteNodes(sparse: sparse)
+        }
+    }
+
+    // MARK: Kinetic hero — black-disc reference system (2026-08-26)
+
+    private func colorPlanes(sparse: Bool) -> some View {
+        let w = size.width
+        let h = size.height
+        let m = min(w, h)
+
+        return ZStack {
+            if !sparse {
+                plane(ClubhouseTheme.red, opacity: 0.16,
+                      center: CGPoint(x: w * 0.79, y: h * 0.33),
+                      planeSize: CGSize(width: w * 0.30, height: h * 0.55),
+                      rotation: -18, phase: 0.2,
+                      index: 1, entry: CGSize(width: 26, height: -22))
+            }
+
+            plane(ClubhouseTheme.red, opacity: 0.92,
+                  center: CGPoint(x: w * 0.72, y: h * 0.29),
+                  planeSize: CGSize(width: w * 0.26, height: h * 0.52),
+                  rotation: -18, phase: 1.1,
+                  index: 1, entry: CGSize(width: 30, height: -26))
+
+            if !sparse {
+                plane(ClubhouseTheme.green, opacity: 0.85,
+                      center: CGPoint(x: w * 0.585, y: h * 0.635),
+                      planeSize: CGSize(width: m * 0.12, height: m * 0.12),
+                      rotation: -38, phase: 2.0,
+                      index: 2, entry: CGSize(width: 20, height: 18))
+            }
+
+            plane(ClubhouseTheme.blueDeep, opacity: 0.90,
+                  center: CGPoint(x: w * 0.63, y: h * 0.76),
+                  planeSize: CGSize(width: w * 0.36, height: h * 0.30),
+                  rotation: -30, phase: 2.6,
+                  index: 3, entry: CGSize(width: 0, height: 34))
+
+            if !sparse {
+                plane(ClubhouseTheme.blue, opacity: 0.28,
+                      center: CGPoint(x: w * 0.60, y: h * 0.73),
+                      planeSize: CGSize(width: w * 0.34, height: h * 0.28),
+                      rotation: -30, phase: 3.1,
+                      index: 3, entry: CGSize(width: -6, height: 28))
+            }
+
+            plane(ClubhouseTheme.yellow, opacity: 0.92,
+                  center: CGPoint(x: w * 0.79, y: h * 0.84),
+                  planeSize: CGSize(width: w * 0.28, height: h * 0.26),
+                  rotation: -22, phase: 3.7,
+                  index: 4, entry: CGSize(width: 24, height: 26))
+        }
+    }
+
+    private func plane(
+        _ color: Color,
+        opacity: Double,
+        center: CGPoint,
+        planeSize: CGSize,
+        rotation: Double,
+        phase: Double,
+        index: Int,
+        entry: CGSize
+    ) -> some View {
+        Rectangle()
+            .fill(color.opacity(opacity))
+            .frame(width: planeSize.width, height: planeSize.height)
+            .rotationEffect(.degrees(rotation))
+            .offset(x: wave(phase: phase, amplitude: 3), y: wave(phase: phase + 1.6, amplitude: 2))
+            .position(x: center.x, y: center.y)
+            .artElement(active: active, index: index, entry: entry, scale: 0.68)
+    }
+
+    private func trajectoryFan(sparse: Bool) -> some View {
+        let w = size.width
+        let h = size.height
+        let m = min(w, h)
+        let angle = -46.0 * Double.pi / 180.0
+        let dx = CGFloat(cos(angle))
+        let dy = CGFloat(sin(angle))
+        let px = -dy
+        let py = dx
+        let reach = hypot(w, h)
+        let gap = max(7, m * 0.032)
+        let origin = CGPoint(x: w * 0.05, y: h * 0.97)
+
+        let specs: [(color: Color, alpha: Double, reachFraction: CGFloat, dashed: Bool, dot: Bool)] = sparse
+            ? [
+                (ClubhouseTheme.ink, 0.6, 0.55, false, false),
+                (ClubhouseTheme.red, 0.7, 0.42, false, true),
+                (ClubhouseTheme.blue, 0.6, 0.62, true, false),
+            ]
+            : [
+                (ClubhouseTheme.ink, 0.7, 0.58, false, false),
+                (ClubhouseTheme.red, 0.8, 0.46, false, true),
+                (ClubhouseTheme.blue, 0.7, 0.66, true, false),
+                (ClubhouseTheme.yellow, 0.9, 0.38, false, false),
+                (ClubhouseTheme.green, 0.65, 0.31, false, true),
+                (ClubhouseTheme.ink, 0.4, 0.72, true, false),
+                (ClubhouseTheme.coral, 0.75, 0.51, false, false),
+            ]
+
+        return ZStack {
+            ForEach(Array(specs.enumerated()), id: \.offset) { index, spec in
+                let startX = origin.x + CGFloat(index) * px * gap
+                let startY = origin.y + CGFloat(index) * py * gap
+                let endX = startX + dx * reach * spec.reachFraction
+                let endY = startY + dy * reach * spec.reachFraction
+                let driftX = dx * wave(phase: Double(index) * 0.85, amplitude: 5)
+                let driftY = dy * wave(phase: Double(index) * 0.85, amplitude: 5)
+
+                Path { path in
+                    path.move(to: CGPoint(x: startX, y: startY))
+                    path.addLine(to: CGPoint(x: endX, y: endY))
+                }
+                .stroke(
+                    spec.color.opacity(spec.alpha),
+                    style: StrokeStyle(lineWidth: 1.3, lineCap: .round, dash: spec.dashed ? [2, 6] : [])
+                )
+                .offset(x: driftX, y: driftY)
+                .artElement(active: active, index: 5, entry: CGSize(width: -dx * 26, height: -dy * 26), scale: 0.66)
+
+                if spec.dot {
+                    Circle()
+                        .fill(spec.color)
+                        .frame(width: 4, height: 4)
+                        .position(x: endX + driftX, y: endY + driftY)
+                        .opacity(reduceMotion ? 0.7 : 0.5 + 0.3 * sin(time * 2.0 + Double(index)))
+                }
+            }
+        }
+    }
+
+    private var technicalGrid: some View {
+        let w = size.width
+        let h = size.height
+        let pulse = reduceMotion ? 0.6 : 0.5 + 0.25 * sin(time * 1.4)
+
+        return ZStack {
+            hairline(from: CGPoint(x: w * 0.70, y: h * 0.34), to: CGPoint(x: w * 0.97, y: h * 0.34),
+                     color: ClubhouseTheme.ink, opacity: 0.30)
+            hairline(from: CGPoint(x: w * 0.72, y: h * 0.42), to: CGPoint(x: w * 0.99, y: h * 0.42),
+                     color: ClubhouseTheme.ink, opacity: 0.20, dash: [1, 4])
+            hairline(from: CGPoint(x: w * 0.68, y: h * 0.58), to: CGPoint(x: w * 0.96, y: h * 0.58),
+                     color: ClubhouseTheme.blue, opacity: 0.35)
+            hairline(from: CGPoint(x: w * 0.71, y: h * 0.66), to: CGPoint(x: w * 0.98, y: h * 0.66),
+                     color: ClubhouseTheme.ink, opacity: 0.22)
+            hairline(from: CGPoint(x: w * 0.86, y: h * 0.30), to: CGPoint(x: w * 0.86, y: h * 0.72),
+                     color: ClubhouseTheme.ink, opacity: 0.22)
+            hairline(from: CGPoint(x: w * 0.935, y: h * 0.38), to: CGPoint(x: w * 0.935, y: h * 0.80),
+                     color: ClubhouseTheme.ink, opacity: 0.16, dash: [2, 5])
+
+            endPointDot(x: w * 0.97, y: h * 0.34, opacity: pulse)
+            endPointDot(x: w * 0.96, y: h * 0.58, opacity: pulse)
+            endPointDot(x: w * 0.86, y: h * 0.72, opacity: pulse)
+        }
+        .artElement(active: active, index: 5, entry: CGSize(width: 18, height: 0), scale: 0.7)
+    }
+
+    private func hairline(
+        from: CGPoint,
+        to: CGPoint,
+        color: Color,
+        opacity: Double,
+        dash: [CGFloat] = []
+    ) -> some View {
+        Path { path in
+            path.move(to: from)
+            path.addLine(to: to)
+        }
+        .stroke(color.opacity(opacity), style: StrokeStyle(lineWidth: 1.2, lineCap: .round, dash: dash))
+    }
+
+    private func endPointDot(x: CGFloat, y: CGFloat, opacity: Double) -> some View {
+        Circle()
+            .fill(ClubhouseTheme.ink.opacity(opacity))
+            .frame(width: 3.5, height: 3.5)
+            .position(x: x, y: y)
+    }
+
+    private func orbitalSystem(center: CGPoint, radius: CGFloat) -> some View {
+        let m = min(size.width, size.height)
+        let orbitRadius = radius * 1.38
+        let baseAngle = Double.pi * 0.82
+        let theta = reduceMotion
+            ? baseAngle
+            : baseAngle + (time * 0.16).truncatingRemainder(dividingBy: 2 * .pi)
+        let nodeX = center.x + CGFloat(cos(theta)) * orbitRadius
+        let nodeY = center.y - CGFloat(sin(theta)) * orbitRadius
+        let tailAngle = theta + 0.11
+        let tailX = center.x + CGFloat(cos(tailAngle)) * orbitRadius
+        let tailY = center.y - CGFloat(sin(tailAngle)) * orbitRadius
+        let nodeDiameter = max(8, m * 0.062)
+
+        return ZStack {
+            Circle()
+                .trim(from: 0.50, to: 0.80)
+                .stroke(ClubhouseTheme.yellow, style: StrokeStyle(lineWidth: max(1.6, m * 0.009), lineCap: .round))
+                .frame(width: orbitRadius * 2, height: orbitRadius * 2)
+                .position(x: center.x, y: center.y)
+                .artElement(active: active, index: 6, entry: CGSize(width: -22, height: -18), scale: 0.6)
+
+            Circle()
+                .trim(from: 0.80, to: 0.90)
+                .stroke(ClubhouseTheme.yellow.opacity(0.5),
+                        style: StrokeStyle(lineWidth: max(1.3, m * 0.007), lineCap: .round, dash: [2, 5]))
+                .frame(width: orbitRadius * 2, height: orbitRadius * 2)
+                .rotationEffect(.degrees(wave(phase: 3.3, amplitude: 1.6)))
+                .position(x: center.x, y: center.y)
+                .artElement(active: active, index: 6, entry: CGSize(width: -18, height: -14), scale: 0.6)
+
+            Circle()
+                .trim(from: 0.53, to: 0.71)
+                .stroke(ClubhouseTheme.ink, style: StrokeStyle(lineWidth: max(3, m * 0.016), lineCap: .round))
+                .frame(width: radius * 2.14, height: radius * 2.14)
+                .rotationEffect(.degrees(wave(phase: 0.4, amplitude: 1)))
+                .position(x: center.x, y: center.y)
+                .artElement(active: active, index: 6, entry: CGSize(width: 0, height: -16), scale: 0.7)
+
+            Circle()
+                .fill(ClubhouseTheme.yellow.opacity(0.55))
+                .frame(width: nodeDiameter * 0.45, height: nodeDiameter * 0.45)
+                .position(x: tailX, y: tailY)
 
             Circle()
                 .fill(ClubhouseTheme.yellow)
-                .frame(width: size.width * (sparse ? 0.23 : 0.27))
-                .position(x: size.width * 0.62, y: size.height * 0.36 + drift)
-                .artElement(active: active, index: 2, entry: CGSize(width: 0, height: -34), scale: 0.54)
-
-            Rectangle()
-                .fill(ClubhouseTheme.blue)
-                .frame(width: size.width * 0.15, height: size.height * (sparse ? 0.36 : 0.53))
-                .position(x: size.width * 0.51, y: size.height * 0.61)
-                .artElement(active: active, index: 3, entry: CGSize(width: 0, height: 48), scale: 0.72)
-
-            Rectangle()
-                .fill(ClubhouseTheme.red)
-                .frame(width: size.width * 0.14, height: size.height * 0.29)
-                .position(x: size.width * 0.67, y: size.height * 0.71)
-                .artElement(active: active, index: 4, entry: CGSize(width: 0, height: 50), scale: 0.72)
-
-            if !sparse {
-                Rectangle()
-                    .fill(ClubhouseTheme.ink)
-                    .frame(width: size.width * 0.15, height: size.height * 0.43)
-                    .position(x: size.width * 0.80, y: size.height * 0.64)
-                    .artElement(active: active, index: 5, entry: CGSize(width: 0, height: 56), scale: 0.68)
-            }
-
-            Rectangle()
-                .fill(ClubhouseTheme.green)
-                .frame(width: size.width * 0.10, height: size.width * 0.10)
-                .rotationEffect(.degrees(45 + wave(phase: 1.1, amplitude: 2)))
-                .position(x: size.width * 0.82, y: size.height * 0.78)
-                .artElement(active: active, index: 6, entry: CGSize(width: 28, height: 20), rotation: 24, scale: 0.42)
-
-            Rectangle()
-                .fill(ClubhouseTheme.red)
-                .frame(width: size.width * 0.58, height: max(8, size.height * 0.055))
-                .position(x: size.width * 0.67, y: size.height * 0.69)
-                .artElement(active: active, index: 7, entry: CGSize(width: 34, height: 0), scale: 0.60)
-
-            BauhausStarburst(color: ClubhouseTheme.blue, size: min(size.width, size.height) * 0.14)
-                .position(x: size.width * 0.30, y: size.height * 0.27)
-                .rotationEffect(.degrees(wave(phase: 0.8, amplitude: 8)))
-                .artElement(active: active, index: 8, entry: CGSize(width: -18, height: -18), rotation: -20, scale: 0.35)
-
-            if !sparse {
-                BauhausStarburst(color: ClubhouseTheme.red, size: min(size.width, size.height) * 0.13)
-                    .position(x: size.width * 0.83, y: size.height * 0.24)
-                    .rotationEffect(.degrees(-wave(phase: 2.1, amplitude: 8)))
-                    .artElement(active: active, index: 9, entry: CGSize(width: 22, height: -20), rotation: 20, scale: 0.35)
-            }
-
-            BauhausHalftone(color: ClubhouseTheme.ink, spacing: 9)
-                .frame(width: size.width * 0.20, height: size.height * 0.20)
-                .position(x: size.width * 0.27, y: size.height * 0.77)
-                .artElement(active: active, index: 9, entry: CGSize(width: -18, height: 8), scale: 0.70)
+                .frame(width: nodeDiameter, height: nodeDiameter)
+                .position(x: nodeX, y: nodeY)
+                .artElement(active: active, index: 6, entry: CGSize(width: 0, height: -10), scale: 0.3)
         }
+    }
+
+    private func anchorDisc(center: CGPoint, radius: CGFloat) -> some View {
+        let breathe = reduceMotion ? 0 : sin(time * 0.5) * 0.006
+
+        return Circle()
+            .fill(ClubhouseTheme.ink)
+            .frame(width: radius * 2, height: radius * 2)
+            .scaleEffect(1 + breathe)
+            .shadow(color: ClubhouseTheme.artShadow.opacity(0.25), radius: radius * 0.10, y: radius * 0.04)
+            .position(x: center.x, y: center.y)
+            .artElement(active: active, index: 7, entry: CGSize(width: 0, height: 26), scale: 0.55)
+    }
+
+    private func launchBeam() -> some View {
+        let w = size.width
+        let h = size.height
+        let m = min(w, h)
+        let angle = -46.0 * Double.pi / 180.0
+        let dx = CGFloat(cos(angle))
+        let dy = CGFloat(sin(angle))
+        let perp = CGVector(dx: -dy, dy: dx)
+        let pivot = CGPoint(x: w * 0.47, y: h * 0.47)
+        let thickness = max(7, m * 0.055)
+        let length = hypot(w, h) * 1.04
+        let shimmer = wave(phase: 2.2, amplitude: thickness * 0.10)
+
+        return ZStack {
+            beamBar(pivot: pivot, perp: perp, offset: -thickness * 1.6,
+                    width: thickness * 0.8, length: length,
+                    color: ClubhouseTheme.ink, opacity: 0.12)
+            beamBar(pivot: pivot, perp: perp, offset: thickness * 1.75,
+                    width: thickness * 0.65, length: length,
+                    color: ClubhouseTheme.ink, opacity: 0.08)
+            beamBar(pivot: pivot, perp: perp, offset: 0,
+                    width: thickness, length: length,
+                    color: ClubhouseTheme.ink, opacity: 0.96)
+            beamBar(pivot: pivot, perp: perp, offset: thickness * 0.62 + shimmer,
+                    width: max(1.5, thickness * 0.2), length: length * 0.98,
+                    color: ClubhouseTheme.paperCard, opacity: 0.95)
+        }
+        .artElement(active: active, index: 8, entry: CGSize(width: -30, height: 24), scale: 0.62)
+    }
+
+    private func beamBar(
+        pivot: CGPoint,
+        perp: CGVector,
+        offset: CGFloat,
+        width: CGFloat,
+        length: CGFloat,
+        color: Color,
+        opacity: Double
+    ) -> some View {
+        Rectangle()
+            .fill(color.opacity(opacity))
+            .frame(width: length, height: width)
+            .rotationEffect(.degrees(-46))
+            .position(x: pivot.x + perp.dx * offset, y: pivot.y + perp.dy * offset)
+    }
+
+    private func satelliteNodes(sparse: Bool) -> some View {
+        let w = size.width
+        let h = size.height
+        let m = min(w, h)
+        let nodeSize = max(8, m * 0.075)
+
+        return ZStack {
+            if !sparse {
+                Circle()
+                    .stroke(ClubhouseTheme.red.opacity(0.25), lineWidth: 1.5)
+                    .frame(width: nodeSize * 1.5, height: nodeSize * 1.5)
+                    .position(x: w * 0.655, y: h * 0.115)
+            }
+
+            node(ClubhouseTheme.red, diameter: nodeSize * 0.95,
+                 x: w * (sparse ? 0.70 : 0.63), y: h * 0.10 + wave(phase: 0.6, amplitude: 3), index: 9)
+            node(ClubhouseTheme.green, diameter: nodeSize * 0.9,
+                 x: w * 0.87, y: h * 0.46 + wave(phase: 1.9, amplitude: 3), index: 10)
+            node(ClubhouseTheme.blue, diameter: nodeSize,
+                 x: w * 0.115, y: h * 0.90 + wave(phase: 2.8, amplitude: 3), index: 11)
+        }
+    }
+
+    private func node(_ color: Color, diameter: CGFloat, x: CGFloat, y: CGFloat, index: Int) -> some View {
+        Circle()
+            .fill(color)
+            .frame(width: diameter, height: diameter)
+            .position(x: x, y: y)
+            .artElement(active: active, index: index, entry: CGSize(width: 12, height: -12), scale: 0.3)
     }
 
     private var orbit: some View {

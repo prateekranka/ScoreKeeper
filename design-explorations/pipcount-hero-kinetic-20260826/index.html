@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PipCount hero — kinetic reference system</title>
+<style>
+ :root { color-scheme: dark; }
+ body { margin:0; padding:28px 30px 60px; background:#141414; color:#eaeaea;
+        font-family:-apple-system,"SF Pro Text","Segoe UI",system-ui,sans-serif; }
+ h1 { font-size:19px; margin:0 0 4px; }
+ .sub { color:#9a9a9a; font-size:12.5px; margin:0 0 22px; line-height:1.55; max-width:820px; }
+ .bar { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+ button { background:#222; color:#ddd; border:1px solid #3a3a3a; border-radius:8px;
+          padding:7px 13px; font-size:12px; cursor:pointer; font-family:inherit; }
+ button.on { background:#0d47d9; border-color:#0d47d9; color:#fff; }
+ .stage-label { font-size:11px; color:#888; margin:22px 0 6px; letter-spacing:.4px; text-transform:uppercase; }
+ .canvas { position:relative; overflow:hidden; border-radius:14px; border:1px solid #2c2c2c;
+           background:#F6F2E8; }
+ #phone { width:min(402px, 100%); height:248px; }
+ #square { width:340px; height:340px; }
+</style></head><body>
+<h1>PipCount hero kinetic artwork — new direction</h1>
+<p class="sub">Live replica of the SwiftUI <code>KineticBauhausComposition.skyline</code> rewrite.
+Same geometry, same timing. Matte-black anchor disc · −46° launch beam with ivory split-stripe ·
+orbiting yellow node on a partial track · drifting translucent planes · trajectory fan with
+pulsing endpoints · hairline technical grid.</p>
+<div class="bar">
+ <button id="b-motion" class="on">Motion: on</button>
+ <button id="b-sparse">Sparse (empty state)</button>
+ <button id="b-replay">Replay entrance</button>
+</div>
+<div class="stage-label">iPhone hero · 402 × 248</div>
+<div class="canvas" id="phone"></div>
+<div class="stage-label">Catalog square · 340 × 340</div>
+<div class="canvas" id="square"></div>
+<script>
+const C = { paper:'#F6F2E8', card:'#FFFDF7', ink:'#0B0B0B', blue:'#0D47D9', blueDeep:'#07349F',
+            red:'#EF3340', yellow:'#FFB512', green:'#0A8F4B', coral:'#FF775E' };
+const DEG = Math.PI/180;
+
+function build(root, opts){
+  const W = () => root.clientWidth, H = () => root.clientHeight;
+  root.innerHTML = '';
+  const S = document.createElement('div');
+  S.style.cssText = 'position:absolute;inset:0;';
+  root.appendChild(S);
+  const el = (tag, css) => { const n=document.createElement(tag); Object.assign(n.style,css); S.appendChild(n); return n; };
+
+  const st = { root, els:{}, opts, entered:false, enterT0:null };
+
+  // construction guides
+  const guide1 = el('div', {position:'absolute', border:`1px dashed ${C.ink}2b`, borderRadius:'50%',
+    width:'74%', paddingBottom:'74%', left:'13%', top:'15%'});
+  const guide2 = el('div', {position:'absolute', left:'8%', right:'8%', top:'66%',
+    borderTop:`1px dashed ${C.ink}29`});
+  const guide3 = el('div', {position:'absolute', top:'12%', bottom:'10%', left:'51%',
+    borderLeft:`1px dashed ${C.ink}29`});
+  st.els.guides=[guide1,guide2,guide3];
+
+  // color planes (behind everything else)
+  function plane(color, op, cx, cy, pw, ph, rot, phase, key){
+    const p = el('div', {position:'absolute', background:color,
+      width:'100px', height:'100px', left:0, top:0, borderRadius:'1px'});
+    p.dataset.cx=cx; p.dataset.cy=cy; p.dataset.pw=String(pw); p.dataset.ph=String(ph);
+    p.dataset.rot=rot; p.dataset.phase=phase; p.dataset.key=key; p.dataset.baseOp=op; return p;
+  }
+  const planes=[];
+  if(!opts.sparse){
+    planes.push(plane(C.red,.16,.79,.33,.30,.55,-18,.20,'p1'));
+  }
+  planes.push(plane(C.red,.92,.72,.29,.26,.52,-18,1.10,'p2'));
+  if(!opts.sparse){
+    planes.push(plane(C.green,.85,.585,.635,null,null,-38,2.00,'p3'));
+  }
+  planes.push(plane(C.blueDeep,.90,.63,.76,.36,.30,-30,2.60,'p4'));
+  if(!opts.sparse){
+    planes.push(plane(C.blue,.28,.60,.73,.34,.28,-30,3.10,'p5'));
+  }
+  planes.push(plane(C.yellow,.92,.79,.84,.28,.26,-22,3.70,'p6'));
+  planes.forEach(p=>st.els[p.dataset.key]=p);
+  st.planes=planes;
+
+  // trajectory fan
+  st.fanLines=[]; st.fanDots=[];
+  {
+    const specs = opts.sparse
+      ? [[C.ink,.60,.55,0,0],[C.red,.70,.42,0,1],[C.blue,.60,.62,1,0]]
+      : [[C.ink,.70,.58,0,0],[C.red,.80,.46,0,1],[C.blue,.70,.66,1,0],
+         [C.yellow,.90,.38,0,0],[C.green,.65,.31,0,1],[C.ink,.40,.72,1,0],[C.coral,.75,.51,0,0]];
+    specs.forEach((s,i)=>{
+      const ln = el('div',{position:'absolute',height:'1.3px',background:s[0],opacity:s[1],left:0,top:0,
+        transformOrigin:'0 50%'});
+      if(s[3]){ ln.style.background='repeating-linear-gradient(90deg,'+s[0]+' 0 2px,transparent 2px 8px)';
+                ln.style.opacity=s[1]; }
+      st.fanLines.push({n:ln,i,reach:s[2]});
+      if(s[4]){
+        const d = el('div',{position:'absolute',width:'4px',height:'4px',borderRadius:'50%',background:s[0]});
+        st.fanDots.push({n:d,i,reach:s[2]});
+      }
+    });
+  }
+
+  // technical grid (right side)
+  st.grid=[];
+  if(!opts.sparse){
+    const gl = (x1,y1,x2,y2,color,op,dash)=>{
+      const g = el('div',{position:'absolute',height:dash?'0px':'1.2px',left:0,top:0,
+        borderTop:dash?`1.2px dashed ${color}`:'none', background:dash?'transparent':color, opacity:op});
+      st.grid.push({n:g,x1,y1,x2,y2}); };
+    gl(.70,.34,.97,.34,C.ink,.30,0); gl(.72,.42,.99,.42,C.ink,.20,1);
+    gl(.68,.58,.96,.58,C.blue,.35,0); gl(.71,.66,.98,.66,C.ink,.22,0);
+    gl(.86,.30,.86,.72,C.ink,.22,0); gl(.935,.38,.935,.80,C.ink,.16,1);
+    st.gridDots=[.97,.34,.96,.58,.86,.72].length/2;
+    st.gridDotEls=[0,1,2].map(()=>el('div',{position:'absolute',width:'3.5px',height:'3.5px',
+      borderRadius:'50%',background:C.ink}));
+  }
+
+  // orbital arcs
+  st.svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  st.svg.setAttribute('style','position:absolute;inset:0;width:100%;height:100%;overflow:visible');
+  S.appendChild(st.svg);
+  const mk=(tag,attrs)=>{const n=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for(const k in attrs)n.setAttribute(k,attrs[k]); st.svg.appendChild(n); return n;};
+  st.arcOrbit = mk('circle',{fill:'none',stroke:C.yellow,'stroke-linecap':'round'});
+  st.arcDash  = mk('circle',{fill:'none',stroke:C.yellow,opacity:.5,'stroke-linecap':'round'});
+  st.arcInk   = mk('circle',{fill:'none',stroke:C.ink,'stroke-linecap':'round'});
+  st.nodeTail = el('div',{position:'absolute',width:'5px',height:'5px',borderRadius:'50%',
+    background:C.yellow,opacity:.55});
+  st.node     = el('div',{position:'absolute',borderRadius:'50%',background:C.yellow});
+
+  // anchor disc
+  st.disc = el('div',{position:'absolute',borderRadius:'50%',background:C.ink,left:0,top:0});
+
+  // beam
+  st.beamEchoA = el('div',{position:'absolute',background:C.ink,opacity:.12,left:0,top:0,borderRadius:'99px'});
+  st.beamEchoB = el('div',{position:'absolute',background:C.ink,opacity:.08,left:0,top:0,borderRadius:'99px'});
+  st.beamMain  = el('div',{position:'absolute',background:C.ink,opacity:.96,left:0,top:0,borderRadius:'99px'});
+  st.beamStripe= el('div',{position:'absolute',background:C.card,opacity:.95,left:0,top:0,borderRadius:'99px'});
+
+  // satellites
+  st.satRing = null;
+  if(!opts.sparse){
+    st.satRing = el('div',{position:'absolute',borderRadius:'50%',border:`1.5px solid ${C.red}40`});
+  }
+  st.satRed   = el('div',{position:'absolute',borderRadius:'50%',background:C.red});
+  st.satGreen = el('div',{position:'absolute',borderRadius:'50%',background:C.green});
+  st.satBlue  = el('div',{position:'absolute',borderRadius:'50%',background:C.blue});
+
+  layout(st);
+  return st;
+}
+
+function layout(st){
+  const W=st.root.clientWidth, H=st.root.clientHeight, m=Math.min(W,H);
+  st.W=W; st.H=H; st.m=m;
+  st.cx=W*.44; st.cy=H*.50; st.r=m*.34;
+
+  // planes
+  st.planes.forEach(p=>{
+    let pw,pphh;
+    const d=p.dataset;
+    const pwf = d.pw ? parseFloat(d.pw)*W : parseFloat(d.pw)||null;
+    const phf = d.ph ? parseFloat(d.ph)*H : parseFloat(d.ph)||null;
+    let w,h;
+    if(d.pw==='null'||!d.pw){ w=m*.12; h=m*.12; } else { w=pwf; h=phf; }
+    p.style.width=w+'px'; p.style.height=h+'px';
+    p.dataset.w=w; p.dataset.h=h;
+  });
+
+  // orbit radii
+  st.R1 = st.r*1.38;   // yellow orbit
+  st.R2 = st.r*1.07;   // ink hug arc
+
+  // disc
+  st.disc.style.width = st.r*2+'px';
+  st.disc.style.height = st.r*2+'px';
+
+  // satellites
+  const ns = Math.max(8, m*.075);
+  st.ns=ns;
+}
+
+function frame(st, t, reduce){
+  const W=st.W,H=st.H,m=st.m;
+  const wave=(ph,a)=> reduce?0:Math.sin(t*.72+ph)*a;
+
+  // entrance progress 0..1
+  let ent = 1;
+  if(!reduce && st.enterT0!=null){ ent=Math.min(1,(t-st.enterT0)/.9); }
+  if(reduce){ ent=1; st.enterT0=null; }
+  const ease=x=>1-Math.pow(1-x,3);
+
+  // guides
+  st.els.guides.forEach((g,i)=>{
+    const e=ease(clamp(ent-i*.06));
+    g.style.opacity=e; g.style.transform=`translateY(${(1-e)*10}px)`;
+  });
+
+  // planes
+  st.planes.forEach(p=>{
+    const d=p.dataset;
+    const e=ease(clamp(ent-.12));
+    const dx=wave(parseFloat(d.phase)+1.6,2), dy=wave(parseFloat(d.phase),3);
+    p.style.transform=`translate(${parseFloat(d.cx)*W - parseFloat(d.w)/2 + dx}px,`+
+                      `${parseFloat(d.cy)*H - parseFloat(d.h)/2 + dy}px) rotate(${d.rot}deg) `+
+                      `scale(${.68+.32*e})`;
+    p.style.opacity = parseFloat(d.baseOp) * e;
+  });
+
+  // fan
+  const ang=-46*DEG, dx=Math.cos(ang), dy=Math.sin(ang), px=-dy, py=dx;
+  const reach=Math.hypot(W,H), gap=Math.max(7,m*.032);
+  const ox=W*.05, oy=H*.97;
+  const fe=ease(clamp(ent-.18));
+  st.fanLines.forEach(f=>{
+    const i=f.i;
+    const sx=ox+i*px*gap, sy=oy+i*py*gap;
+    const ex=sx+dx*reach*f.reach, ey=sy+dy*reach*f.reach;
+    const len=Math.hypot(ex-sx,ey-sy)*fe;
+    const driftX=dx*wave(i*.85,5)*fe, driftY=dy*wave(i*.85,5)*fe;
+    f.n.style.width=len+'px';
+    f.n.style.transform=`translate(${sx+driftX}px,${sy+driftY}px) rotate(${-46}deg)`;
+  });
+  st.fanDots.forEach(f=>{
+    const i=f.i;
+    const sx=ox+i*px*gap, sy=oy+i*py*gap;
+    const ex=sx+dx*reach*f.reach, ey=sy+dy*reach*f.reach;
+    const pulse = reduce?.7:(.5+.3*Math.sin(t*2+i));
+    f.n.style.opacity=pulse*fe;
+    f.n.style.transform=`translate(${ex-2}px,${ey-2}px)`;
+  });
+
+  // grid
+  if(st.grid.length){
+    const ge=ease(clamp(ent-.18));
+    st.grid.forEach(g=>{
+      const x1=g.x1*W,y1=g.y1*H,x2=g.x2*W,y2=g.y2*H;
+      const len=Math.hypot(x2-x1,y2-y1)*ge;
+      g.n.style.width=len+'px';
+      g.n.style.transform=`translate(${x1}px,${y1}px) rotate(${Math.atan2(y2-y1,x2-x1)/DEG}deg)`;
+      g.n.style.opacity=g.n.dataset.op||g.n.style.opacity;
+    });
+    const gp = reduce?.6:(.5+.25*Math.sin(t*1.4));
+    st.gridDotEls.forEach((d,i)=>{
+      const pts=[[.97,.34],[.96,.58],[.86,.72]][i];
+      d.style.opacity=gp*ge;
+      d.style.transform=`translate(${pts[0]*W-1.75}px,${pts[1]*H-1.75}px)`;
+    });
+  }
+
+  // orbits
+  const oe=ease(clamp(ent-.24));
+  st.svg.style.opacity=oe;
+  const R1=st.R1,R2=st.R2;
+  st.arcOrbit.setAttribute('cx',st.cx); st.arcOrbit.setAttribute('cy',st.cy);
+  st.arcOrbit.setAttribute('r',R1);
+  st.arcOrbit.setAttribute('stroke-width',Math.max(1.6,m*.009));
+  st.arcOrbit.setAttribute('stroke-dasharray',`${R1*2*Math.PI*0.30} ${R1*2*Math.PI}`);
+  st.arcOrbit.setAttribute('transform',`rotate(${-54+(reduce?0:wave(3.3,1.6))} ${st.cx} ${st.cy})`);
+  st.arcDash.setAttribute('cx',st.cx); st.arcDash.setAttribute('cy',st.cy);
+  st.arcDash.setAttribute('r',R1);
+  st.arcDash.setAttribute('stroke-width',Math.max(1.3,m*.007));
+  st.arcDash.setAttribute('stroke-dasharray',`${R1*2*Math.PI*0.10} ${R1*2*Math.PI}`);
+  st.arcDash.setAttribute('transform',`rotate(${126} ${st.cx} ${st.cy})`);
+  st.arcInk.setAttribute('cx',st.cx); st.arcInk.setAttribute('cy',st.cy);
+  st.arcInk.setAttribute('r',R2);
+  st.arcInk.setAttribute('stroke-width',Math.max(3,m*.016));
+  st.arcInk.setAttribute('stroke-dasharray',`${R2*(0.18*2*Math.PI)} ${R2*2*Math.PI}`);
+  st.arcInk.setAttribute('transform',`rotate(${-190+(reduce?0:wave(.4,1))} ${st.cx} ${st.cy})`);
+
+  // orbit node
+  const base=Math.PI*.82;
+  const theta = reduce? base : base + (t*.16)%(2*Math.PI);
+  const nx=st.cx+Math.cos(theta)*R1, ny=st.cy-Math.sin(theta)*R1;
+  const ta=theta+.11;
+  const tx=st.cx+Math.cos(ta)*R1, ty=st.cy-Math.sin(ta)*R1;
+  const nd=Math.max(8,m*.062);
+  st.node.style.width=nd+'px'; st.node.style.height=nd+'px';
+  st.node.style.transform=`translate(${nx-nd/2}px,${ny-nd/2}px)`;
+  st.nodeTail.style.transform=`translate(${tx-2.5}px,${ty-2.5}px)`;
+
+  // disc
+  const de=ease(clamp(ent-.30));
+  const breathe = reduce?0:1+Math.sin(t*.5)*.006;
+  st.disc.style.transform=`translate(${st.cx-st.r}px,${st.cy-st.r}px) scale(${de*breathe})`;
+  st.disc.style.boxShadow=`0 ${st.r*.04}px ${st.r*.10}px rgba(43,36,29,.25)`;
+
+  // beam
+  const be=ease(clamp(ent-.36));
+  const pvx=W*.47, pvy=H*.47;
+  const th=Math.max(7,m*.055), L=Math.hypot(W,H)*1.04;
+  const sh=wave(2.2,th*.10);
+  const bx=(off)=>pvx+(-dy)*off, by=(off)=>pvy+(dx)*off;
+  const setBar=(el2,off,w,l)=>{ el2.style.width=l*be+'px'; el2.style.height=w+'px';
+    el2.style.transform=`translate(${bx(off)-l*be/2}px,${by(off)-w/2}px) rotate(-46deg)`; };
+  setBar(st.beamMain,0,th,L);
+  setBar(st.beamStripe,th*.62+sh,Math.max(1.5,th*.2),L*.98);
+  setBar(st.beamEchoA,-th*1.6,th*.8,L);
+  setBar(st.beamEchoB, th*1.75,th*.65,L);
+
+  // satellites
+  const se=ease(clamp(ent-.42));
+  const ns=st.ns;
+  const sat=(el2,color,x,y,dia,ph)=>{
+    el2.style.width=dia+'px'; el2.style.height=dia+'px';
+    el2.style.opacity=se;
+    el2.style.transform=`translate(${x-dia/2+(se<1?12*(1-se):0)}px,`+
+                        `${y-dia/2-(se<1?12*(1-se):0)+(reduce?0:wave(ph,3))}px) scale(${.3+.7*se})`; };
+  sat(st.satRed,C.red,W*(st.opts.sparse?.70:.63),H*.10,ns*.95,.6);
+  sat(st.satGreen,C.green,W*.87,H*.46,ns*.9,1.9);
+  sat(st.satBlue,C.blue,W*.115,H*.90,ns,2.8);
+  if(st.satRing){
+    st.satRing.style.width=ns*1.42+'px'; st.satRing.style.height=ns*1.42+'px';
+    st.satRing.style.opacity=.8*se;
+    st.satRing.style.transform=`translate(${W*.655-ns*.71}px,${H*.115-ns*.71}px)`;
+  }
+}
+const clamp=x=>Math.max(0,Math.min(1,x));
+
+let scenes=[], motion=true, t0=performance.now();
+function rebuild(){
+  scenes=[
+    build(document.getElementById('phone'),{sparse:sparse}),
+    build(document.getElementById('square'),{sparse:sparse}),
+  ];
+  replay();
+}
+let sparse=false;
+function replay(){ scenes.forEach(s=>s.enterT0=(performance.now()-t0)/1000+.05); }
+requestAnimationFrame(function loop(now){
+  const t=(now-t0)/1000;
+  scenes.forEach(s=>frame(s,t,!motion));
+  requestAnimationFrame(loop);
+});
+
+const bm=document.getElementById('b-motion'), bs=document.getElementById('b-sparse'),
+      br=document.getElementById('b-replay');
+bm.onclick=()=>{ motion=!motion; bm.classList.toggle('on',motion); bm.textContent='Motion: '+(motion?'on':'off'); };
+bs.onclick=()=>{ sparse=!sparse; bs.classList.toggle('on',sparse); bs.textContent=sparse?'Sparse: on':'Sparse (empty state)'; rebuild(); };
+br.onclick=replay;
+window.addEventListener('resize',()=>{ scenes.forEach(layout); });
+rebuild();
+</script>
+</body></html>
