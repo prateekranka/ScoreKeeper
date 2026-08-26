@@ -248,6 +248,18 @@ final class ScoreKeeperUITests: XCTestCase {
         }
         var pushed = false
         for attempt in 0..<4 {
+            // The dock's tab handlers PUSH (Players/Games/More) on top of the
+            // current page, so an extra tap anywhere can leave us on another
+            // screen. Reset to Home root first, then retry the button.
+            if !headToHeadButton.exists {
+                if app.buttons["tab_home"].exists {
+                    app.buttons["tab_home"].tap()
+                    usleep(600_000)
+                } else {
+                    app.buttons["scoring_home_button"].tap()
+                    usleep(600_000)
+                }
+            }
             if headToHeadButton.exists && headToHeadButton.isHittable {
                 headToHeadButton.tap()
             }
