@@ -238,64 +238,97 @@ final class ScoreKeeperUITests: XCTestCase {
 
         completeGenericGame(playerNames: ["Taylor", "Morgan"])
 
+        // The floating PipCountDock covers the bottom ~130pt of the screen and
+        // Home content scrolls under it. Returning from Game Over can leave the
+        // Stats row (head_to_head_button) below the fold / behind the dock, and
+        // a tap aimed at its frame then lands on the dock (observed: the
+        // Players tab fired). Reset to the Home root, then scroll the Home
+        // scroll view itself — not the app — until the button's frame sits
+        // fully inside the dock-free band, then tap by normalized coordinates.
+        if app.buttons["tab_home"].exists {
+            app.buttons["tab_home"].tap()
+            usleep(400_000)
+        }
+
         let headToHeadButton = app.buttons["head_to_head_button"]
         XCTAssertTrue(headToHeadButton.waitForExistence(timeout: 5))
 
-        // Returning from Game Over restores Home's old scroll offset, which
-        // can leave the Stats row under the floating dock; taps then hit the
-        // dock (proven: the Players tab fired). Scroll back toward the top,
-        // then tap by explicit coordinates inside the dock-free band.
-        for _ in 0..<3 {
-            app.swipeDown(velocity: .fast)
-            usleep(250_000)
-        }
+        // The vertical Home scroll view that contains the Stats row (the
+        // player-chips list is a nested horizontal ScrollView, so scope the
+        // query to the button's own container).
+        let homeScrollView = app.scrollViews
+            .containing(.button, identifier: "head_to_head_button")
+            .firstMatch
+        let dockTop = app.frame.height - 130
+        let safeTop: CGFloat = 80
 
         var pushed = false
-        for _ in 0..<6 {
-            let dockTop = app.frame.height - 130
-            let safeTop: CGFloat = 80
-            if headToHeadButton.waitForExistence(timeout: 2) {
-                let frame = headToHeadButton.frame
-                let visibleTop = max(frame.minY, safeTop)
-                let visibleBottom = min(frame.maxY, dockTop)
-                if headToHeadButton.isHittable, visibleBottom - visibleTop >= 40 {
-                    let point = CGPoint(x: frame.midX, y: (visibleTop + visibleBottom) / 2)
-                    let normalized = CGVector(
-                        dx: point.x / app.frame.width,
-                        dy: point.y / app.frame.height
-                    )
-                    app.coordinate(withNormalizedOffset: normalized).tap()
+        for _ in 0..<12 {
+            let frame = headToHeadButton.frame
+            let visibleTop = max(frame.minY, safeTop)
+            let visibleBottom = min(frame.maxY, dockTop)
+            let visibleHeight = visibleBottom - visibleTop
+            // The button's AX frame is only ~34pt tall (QuietLinkRow label +
+            // padding), so a 40/44pt clearance threshold could never be met
+            // even when the button was fully visible. Require ~2/3 of it.
+            if headToHeadButton.isHittable, visibleHeight >= 24 {
+                // Native tap first — XCUI resolves the hit point itself and
+                // this is what worked before the dock was added.
+                headToHeadButton.tap()
+                if app.navigationBars["Head to Head"].waitForExistence(timeout: 2) {
+                    pushed = true
+                    break
+                }
+                // Fallback 1: tap the visible label text (fresh query, own hit area).
+                let rowLabel = app.staticTexts["Head to Head"]
+                if rowLabel.exists && rowLabel.isHittable {
+                    rowLabel.tap()
                     if app.navigationBars["Head to Head"].waitForExistence(timeout: 2) {
                         pushed = true
                         break
                     }
-                    // Swallowed; return to the Home root and re-top the scroll.
-                    if app.buttons["tab_home"].exists {
-                        app.buttons["tab_home"].tap()
-                        usleep(500_000)
-                        for _ in 0..<2 {
-                            app.swipeDown(velocity: .fast)
-                            usleep(200_000)
-                        }
-                    }
-                } else {
-                    app.swipeDown(velocity: .default)
-                    usleep(300_000)
                 }
+                // Fallback 2: explicit coordinate inside the visible band.
+                let point = CGPoint(x: frame.midX, y: (visibleTop + visibleBottom) / 2)
+                let normalized = CGVector(
+                    dx: point.x / app.frame.width,
+                    dy: point.y / app.frame.height
+                )
+                app.coordinate(withNormalizedOffset: normalized).tap()
+                if app.navigationBars["Head to Head"].waitForExistence(timeout: 2) {
+                    pushed = true
+                    break
+                }
+                // Swallowed — the tap likely landed on the dock. Re-root and retry.
+                if app.buttons["tab_home"].exists {
+                    app.buttons["tab_home"].tap()
+                    usleep(400_000)
+                }
+            } else if frame.minY < safeTop {
+                // Overshot past the top of the screen: ease back down.
+                homeScrollView.swipeDown(velocity: .fast)
+                usleep(300_000)
             } else {
-                app.swipeDown(velocity: .default)
+                // Below the fold or behind the dock: scroll the Home scroll
+                // view (not the app) so the Stats row rises above the dock.
+                homeScrollView.swipeUp(velocity: .fast)
                 usleep(300_000)
             }
         }
         XCTAssertTrue(pushed, "Head to Head screen never appeared")
-        app.buttons["Player 1, Select..."].tap()
-        app.buttons["Taylor"].tap()
-        app.buttons["Player 2, Select..."].tap()
-        app.buttons["Morgan"].tap()
+        // The redesigned picker's menu button carries the full label
+        // "Player One, Select a player" / "Player Two, Select a player".
+        let playerOnePicker = app.buttons["Player One, Select a player"]
+        XCTAssertTrue(playerOnePicker.waitForExistence(timeout: 3))
+        playerOnePicker.tap()
+        app.buttons["Taylor"].firstMatch.tap()
+        let playerTwoPicker = app.buttons["Player Two, Select a player"]
+        XCTAssertTrue(playerTwoPicker.waitForExistence(timeout: 3))
+        playerTwoPicker.tap()
+        app.buttons["Morgan"].firstMatch.tap()
 
         XCTAssertTrue(app.staticTexts["1 game together"].waitForExistence(timeout: 2))
-        XCTAssertTrue(app.buttons["Taylor"].exists)
-        XCTAssertTrue(app.buttons["Morgan"].exists)
+        XCTAssertTrue(app.staticTexts["1 game together"].exists)
     }
 
     // MARK: - Test 11: History is reachable with one completed game
