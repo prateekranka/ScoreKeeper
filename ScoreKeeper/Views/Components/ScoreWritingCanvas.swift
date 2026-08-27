@@ -71,24 +71,49 @@ struct ScoreWritingCanvas: UIViewRepresentable {
         let renderScale = max(scale, 1)
         let inkImage = drawing.image(from: inkBounds, scale: renderScale)
         guard let inkMask = inkImage.cgImage else { return nil }
-        let inkRectInCapture = CGRect(
-            x: inkBounds.minX - captureRect.minX,
-            y: inkBounds.minY - captureRect.minY,
-            width: inkImage.size.width,
-            height: inkImage.size.height
+
+        // Vision is more reliable when a tightly cropped digit is presented on a
+        // predictable, landscape recognition canvas. Preserve the padded crop's
+        // aspect ratio, fit it into the target, and upscale small handwriting.
+        let recognitionSize = CGSize(width: 512, height: 256)
+        let recognitionContentRect = CGRect(
+            x: 16,
+            y: 16,
+            width: recognitionSize.width - 32,
+            height: recognitionSize.height - 32
         )
+        let fitScale = min(
+            recognitionContentRect.width / captureRect.width,
+            recognitionContentRect.height / captureRect.height
+        )
+        guard fitScale.isFinite, fitScale > 0 else { return nil }
+        let fittedCaptureSize = CGSize(
+            width: captureRect.width * fitScale,
+            height: captureRect.height * fitScale
+        )
+        let fittedCaptureOrigin = CGPoint(
+            x: recognitionContentRect.midX - fittedCaptureSize.width / 2,
+            y: recognitionContentRect.midY - fittedCaptureSize.height / 2
+        )
+        let fittedInkRect = CGRect(
+            x: fittedCaptureOrigin.x + (inkBounds.minX - captureRect.minX) * fitScale,
+            y: fittedCaptureOrigin.y + (inkBounds.minY - captureRect.minY) * fitScale,
+            width: inkImage.size.width * fitScale,
+            height: inkImage.size.height * fitScale
+        )
+
         let format = UIGraphicsImageRendererFormat()
         format.scale = renderScale
         format.opaque = true
-        let renderer = UIGraphicsImageRenderer(size: captureRect.size, format: format)
+        let renderer = UIGraphicsImageRenderer(size: recognitionSize, format: format)
         return renderer.image { rendererContext in
             let context = rendererContext.cgContext
             context.setFillColor(UIColor.white.cgColor)
-            context.fill(CGRect(origin: .zero, size: captureRect.size))
+            context.fill(CGRect(origin: .zero, size: recognitionSize))
             context.saveGState()
-            context.clip(to: inkRectInCapture, mask: inkMask)
+            context.clip(to: fittedInkRect, mask: inkMask)
             context.setFillColor(UIColor.black.cgColor)
-            context.fill(inkRectInCapture)
+            context.fill(fittedInkRect)
             context.restoreGState()
         }
     }
