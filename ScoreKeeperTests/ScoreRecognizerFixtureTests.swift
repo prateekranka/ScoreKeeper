@@ -94,19 +94,36 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
     }
 
     func testDumpVisionCandidatesForInvestigation() throws {
-        for fixture in ScoreRecognitionFixtures.allFixtures() where fixture.name.hasPrefix("digits-") {
-            guard let cgImage = fixture.image.cgImage else { continue }
-            let request = VNRecognizeTextRequest { request, error in
-                let observations = request.results as? [VNRecognizedTextObservation] ?? []
-                print("VISION fixture=\(fixture.name) error=\(String(describing: error)) observations=\(observations.count)")
-                for (index, observation) in observations.enumerated() {
-                    let candidates = observation.topCandidates(3).map { "\($0.string):\($0.confidence)" }.joined(separator: " | ")
-                    print("VISION fixture=\(fixture.name) observation=\(index) box=\(observation.boundingBox) candidates=\(candidates)")
+        for fixture in ScoreRecognitionFixtures.allFixtures() where fixture.name.hasPrefix("digits-") || fixture.name == "negative-3" {
+            for (variant, image) in [("crop", fixture.image), ("wide", wideImage(fixture.image))] {
+                guard let cgImage = image.cgImage else { continue }
+                let request = VNRecognizeTextRequest { request, error in
+                    let observations = request.results as? [VNRecognizedTextObservation] ?? []
+                    print("VISION fixture=\(fixture.name) variant=\(variant) error=\(String(describing: error)) observations=\(observations.count)")
+                    for (index, observation) in observations.enumerated() {
+                        let candidates = observation.topCandidates(3).map { "\($0.string):\($0.confidence)" }.joined(separator: " | ")
+                        print("VISION fixture=\(fixture.name) variant=\(variant) observation=\(index) box=\(observation.boundingBox) candidates=\(candidates)")
+                    }
                 }
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = false
+                try VNImageRequestHandler(cgImage: cgImage, options: [:]).perform([request])
             }
-            request.recognitionLevel = .accurate
-            request.usesLanguageCorrection = false
-            try VNImageRequestHandler(cgImage: cgImage, options: [:]).perform([request])
+        }
+    }
+
+    private func wideImage(_ image: UIImage) -> UIImage {
+        let size = CGSize(width: 512, height: 256)
+        let scale = max(image.size.width > 0 ? min(size.width / image.size.width, size.height / image.size.height) : 1, 1)
+        let fitted = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        let origin = CGPoint(x: (size.width - fitted.width) / 2, y: (size.height - fitted.height) / 2)
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 2
+        format.opaque = true
+        return UIGraphicsImageRenderer(size: size, format: format).image { _ in
+            UIColor.white.setFill()
+            UIRectFill(CGRect(origin: .zero, size: size))
+            image.draw(in: CGRect(origin: origin, size: fitted))
         }
     }
 
