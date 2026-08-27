@@ -69,14 +69,27 @@ struct ScoreWritingCanvas: UIViewRepresentable {
         let captureRect = inkBounds.insetBy(dx: -padding, dy: -padding).intersection(canvasRect)
         guard !captureRect.isNull, captureRect.width >= 0.5, captureRect.height >= 0.5 else { return nil }
         let renderScale = max(scale, 1)
+        let inkImage = drawing.image(from: inkBounds, scale: renderScale)
+        guard let inkMask = inkImage.cgImage else { return nil }
+        let inkRectInCapture = CGRect(
+            x: inkBounds.minX - captureRect.minX,
+            y: inkBounds.minY - captureRect.minY,
+            width: inkImage.size.width,
+            height: inkImage.size.height
+        )
         let format = UIGraphicsImageRendererFormat()
         format.scale = renderScale
         format.opaque = true
         let renderer = UIGraphicsImageRenderer(size: captureRect.size, format: format)
-        return renderer.image { _ in
-            UIColor.white.setFill()
-            UIRectFill(CGRect(origin: .zero, size: captureRect.size))
-            drawing.image(from: captureRect, scale: renderScale).draw(at: .zero)
+        return renderer.image { rendererContext in
+            let context = rendererContext.cgContext
+            context.setFillColor(UIColor.white.cgColor)
+            context.fill(CGRect(origin: .zero, size: captureRect.size))
+            context.saveGState()
+            context.clip(to: inkRectInCapture, mask: inkMask)
+            context.setFillColor(UIColor.black.cgColor)
+            context.fill(inkRectInCapture)
+            context.restoreGState()
         }
     }
 
