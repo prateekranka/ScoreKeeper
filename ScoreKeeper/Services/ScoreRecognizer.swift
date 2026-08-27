@@ -33,7 +33,18 @@ enum ScoreRecognizer {
                     return
                 }
                 let observations = (request.results as? [VNRecognizedTextObservation]) ?? []
-                continuation.resume(returning: interpret(fragments: extractFragments(from: observations)))
+                if observations.contains(where: { observation in
+                    observation.topCandidates(3).contains {
+                        containsNegativeMarker(in: $0.string)
+                    }
+                }) {
+                    // A minus may be returned as a separate observation from its
+                    // digits. Reject the complete reading instead of allowing the
+                    // remaining positive digits to become a score.
+                    continuation.resume(returning: .unreadable)
+                } else {
+                    continuation.resume(returning: interpret(fragments: extractFragments(from: observations)))
+                }
             }
             request.recognitionLevel = recognitionLevel
             request.usesLanguageCorrection = false
@@ -45,6 +56,10 @@ enum ScoreRecognizer {
                 continuation.resume(returning: .error)
             }
         }
+    }
+
+    private static func containsNegativeMarker(in text: String) -> Bool {
+        text.contains("-") || text.contains("−")
     }
 
     /// Reduces Vision observations to clean, minus-free digit fragments.
