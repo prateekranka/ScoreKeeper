@@ -110,16 +110,22 @@ struct ScoreWritingCanvas: UIViewRepresentable {
             let context = rendererContext.cgContext
             let canvasRect = CGRect(origin: .zero, size: recognitionSize)
 
-            // PKDrawing.image renders white ink with alpha. Remove the ink-shaped
-            // pixels from an opaque white surface, then place black behind those
-            // transparent holes. UIImage.draw preserves PencilKit's orientation.
+            // PKDrawing.image renders white ink with alpha. Draw it into a
+            // transparent bitmap first, then use that alpha as a mask for black
+            // ink on an opaque white surface. UIImage.draw preserves orientation.
+            let maskFormat = UIGraphicsImageRendererFormat()
+            maskFormat.scale = renderScale
+            maskFormat.opaque = false
+            let maskRenderer = UIGraphicsImageRenderer(size: recognitionSize, format: maskFormat)
+            let maskImage = maskRenderer.image { _ in
+                inkImage.draw(in: fittedInkRect)
+            }
             context.setFillColor(UIColor.white.cgColor)
             context.fill(canvasRect)
             context.saveGState()
-            inkImage.draw(in: fittedInkRect, blendMode: .destinationOut, alpha: 1)
-            context.setBlendMode(.destinationOver)
+            context.clip(to: canvasRect, mask: maskImage.cgImage!)
             context.setFillColor(UIColor.black.cgColor)
-            context.fill(fittedInkRect)
+            context.fill(canvasRect)
             context.restoreGState()
         }
     }
