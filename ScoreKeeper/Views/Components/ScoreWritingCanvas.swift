@@ -70,7 +70,7 @@ struct ScoreWritingCanvas: UIViewRepresentable {
         guard !captureRect.isNull, captureRect.width >= 0.5, captureRect.height >= 0.5 else { return nil }
         let renderScale = max(scale, 1)
         let inkImage = drawing.image(from: inkBounds, scale: renderScale)
-        guard let inkMask = inkImage.cgImage else { return nil }
+        guard inkImage.cgImage != nil else { return nil }
 
         // Vision is more reliable when a tightly cropped digit is presented on a
         // predictable, landscape recognition canvas. Preserve the padded crop's
@@ -108,10 +108,16 @@ struct ScoreWritingCanvas: UIViewRepresentable {
         let renderer = UIGraphicsImageRenderer(size: recognitionSize, format: format)
         return renderer.image { rendererContext in
             let context = rendererContext.cgContext
+            let canvasRect = CGRect(origin: .zero, size: recognitionSize)
+
+            // PKDrawing.image renders white ink with alpha. Remove the ink-shaped
+            // pixels from an opaque white surface, then place black behind those
+            // transparent holes. UIImage.draw preserves PencilKit's orientation.
             context.setFillColor(UIColor.white.cgColor)
-            context.fill(CGRect(origin: .zero, size: recognitionSize))
+            context.fill(canvasRect)
             context.saveGState()
-            context.clip(to: fittedInkRect, mask: inkMask)
+            inkImage.draw(in: fittedInkRect, blendMode: .destinationOut, alpha: 1)
+            context.setBlendMode(.destinationOver)
             context.setFillColor(UIColor.black.cgColor)
             context.fill(fittedInkRect)
             context.restoreGState()
