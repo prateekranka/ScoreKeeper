@@ -18,6 +18,12 @@ enum ScoreRecognitionFixtures {
         image(for: drawing(for: digits))
     }
 
+    static func rawDigitsImageForInvestigation(_ digits: String) -> UIImage {
+        let source = drawing(for: digits)
+        print("fixture \(digits) strokes=\(source.strokes.count) bounds=\(source.bounds)")
+        return source.image(from: source.bounds, scale: renderScale)
+    }
+
     static func drawDigits(_ digits: String, scale: CGFloat, offset: CGPoint) -> UIImage {
         image(for: drawing(for: digits, glyphScale: scale, offset: offset))
     }

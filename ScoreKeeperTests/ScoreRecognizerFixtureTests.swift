@@ -91,6 +91,11 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
         for fixture in ScoreRecognitionFixtures.allFixtures() {
             try fixture.image.pngData()?.write(to: root.appendingPathComponent("\(fixture.name).png"))
         }
+        for digits in ["0", "7", "25", "105"] {
+            try ScoreRecognitionFixtures.rawDigitsImageForInvestigation(digits)
+                .pngData()?
+                .write(to: root.appendingPathComponent("raw-\(digits).png"))
+        }
     }
 
     private var recognitionLevels: [VNRequestTextRecognitionLevel] {
