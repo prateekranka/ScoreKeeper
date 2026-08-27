@@ -48,7 +48,10 @@ enum ScoreRecognizer {
             }
             request.recognitionLevel = recognitionLevel
             request.usesLanguageCorrection = false
-            request.customWords = []
+            request.automaticallyDetectsLanguage = false
+            request.recognitionLanguages = ["en-US"]
+            request.minimumTextHeight = 0
+            request.customWords = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
             do {
                 try VNImageRequestHandler(cgImage: cgImage, options: [:]).perform([request])
