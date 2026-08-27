@@ -85,6 +85,14 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
         }
     }
 
+    func testDumpCurrentFixtureImages() throws {
+        let root = URL(fileURLWithPath: "/Users/prateekranka/Cowork/ScoreKeeper-worktrees/app-dev-pipcount/.score-recognition-evidence/current-dumps")
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        for fixture in ScoreRecognitionFixtures.allFixtures() {
+            try fixture.image.pngData()?.write(to: root.appendingPathComponent("\(fixture.name).png"))
+        }
+    }
+
     private var recognitionLevels: [VNRequestTextRecognitionLevel] {
         [.accurate, .fast]
     }
