@@ -217,7 +217,7 @@ enum ScoreRecognitionFixtures {
     }
 
     private static func drawing(strokes: [[CGPoint]]) -> PKDrawing {
-        let ink = PKInk(inkType: .pen, color: .black)
+        let ink = PKInk(.pen, color: .black)
         let pkStrokes = strokes.map { points in
             let controlPoints = points.enumerated().map { index, point in
                 PKStrokePoint(
@@ -236,7 +236,7 @@ enum ScoreRecognitionFixtures {
             )
             return PKStroke(
                 ink: ink,
-                strokePath: path,
+                path: path,
                 transform: .identity,
                 mask: nil
             )
