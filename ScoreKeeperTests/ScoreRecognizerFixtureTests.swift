@@ -93,6 +93,23 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
         }
     }
 
+    func testDumpVisionCandidatesForInvestigation() throws {
+        for fixture in ScoreRecognitionFixtures.allFixtures() where fixture.name.hasPrefix("digits-") {
+            guard let cgImage = fixture.image.cgImage else { continue }
+            let request = VNRecognizeTextRequest { request, error in
+                let observations = request.results as? [VNRecognizedTextObservation] ?? []
+                print("VISION fixture=\(fixture.name) error=\(String(describing: error)) observations=\(observations.count)")
+                for (index, observation) in observations.enumerated() {
+                    let candidates = observation.topCandidates(3).map { "\($0.string):\($0.confidence)" }.joined(separator: " | ")
+                    print("VISION fixture=\(fixture.name) observation=\(index) box=\(observation.boundingBox) candidates=\(candidates)")
+                }
+            }
+            request.recognitionLevel = .accurate
+            request.usesLanguageCorrection = false
+            try VNImageRequestHandler(cgImage: cgImage, options: [:]).perform([request])
+        }
+    }
+
     private var recognitionLevels: [VNRequestTextRecognitionLevel] {
         [.accurate, .fast]
     }
