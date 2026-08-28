@@ -152,6 +152,18 @@ final class ScoreRecognizerTests: XCTestCase {
         XCTAssertEqual(ScoreRecognizer.defaultConfidenceThreshold, 0.35, accuracy: 0.0001)
     }
 
+    func testVisionLowercaseOAliasParsesAsZero() {
+        XCTAssertEqual(ScoreRecognizer.normalizedDigits(from: "o"), "0")
+    }
+
+    func testVisionUppercaseIAliasParsesAsOne() {
+        XCTAssertEqual(ScoreRecognizer.normalizedDigits(from: "I"), "1")
+    }
+
+    func testUnrelatedLettersAreNotSilentlyConvertedToDigits() {
+        XCTAssertNil(ScoreRecognizer.normalizedDigits(from: "score"))
+    }
+
     private func fragment(
         _ digits: String,
         minX: CGFloat = 0,

@@ -10,6 +10,50 @@ enum ScoreDeckUITestSupport {
         }
     }
 
+    static func tapButtonInSafeArea(
+        _ element: XCUIElement,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let sidebarNewGame = app.buttons["sidebar_new_game_button"]
+        let target = element.identifier == "new_game_button" && sidebarNewGame.exists
+            ? sidebarNewGame
+            : element
+
+        guard target.waitForExistence(timeout: 3) else {
+            XCTFail("Button did not exist: \(target)", file: file, line: line)
+            return
+        }
+
+        let appFrame = app.frame
+        let safeTop: CGFloat = 80
+        let safeBottom = appFrame.height - 120
+        var safeTapPoint: CGPoint?
+
+        for _ in 0..<6 {
+            let frame = target.frame
+            let visibleTop = max(frame.minY, safeTop)
+            let visibleBottom = min(frame.maxY, safeBottom)
+            if target.exists && visibleBottom - visibleTop >= 44 {
+                safeTapPoint = CGPoint(x: frame.midX, y: (visibleTop + visibleBottom) / 2)
+                break
+            }
+            app.swipeUp(velocity: .fast)
+        }
+
+        guard let safeTapPoint else {
+            XCTFail("Button never exposed a safe 44-point tap area: \(target)", file: file, line: line)
+            return
+        }
+
+        let normalizedPoint = CGVector(
+            dx: (safeTapPoint.x - appFrame.minX) / appFrame.width,
+            dy: (safeTapPoint.y - appFrame.minY) / appFrame.height
+        )
+        app.coordinate(withNormalizedOffset: normalizedPoint).tap()
+    }
+
     static func canvas(in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any)["score_writing_canvas"]
     }
@@ -104,6 +148,12 @@ enum ScoreDeckUITestSupport {
             .firstMatch
     }
 
+    static func retryButton(in app: XCUIApplication) -> XCUIElement {
+        app.buttons
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'deck_retry_'"))
+            .firstMatch
+    }
+
     static func rejectionCard(in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any)["deck_invalid_value"]
     }
@@ -137,7 +187,21 @@ enum ScoreDeckUITestSupport {
             return
         }
         field.tap()
-        field.typeText(value)
+        field.press(forDuration: 1)
+        if app.menuItems["Select All"].waitForExistence(timeout: 1) {
+            app.menuItems["Select All"].tap()
+        } else {
+            field.tap(withNumberOfTaps: 3, numberOfTouches: 1)
+            app.typeText(XCUIKeyboardKey.delete.rawValue)
+        }
+        app.typeText(value)
+        XCTAssertEqual(
+            field.value as? String,
+            value,
+            "Manual score field did not contain the requested value",
+            file: file,
+            line: line
+        )
         let use = manualUseButton(in: app)
         guard use.waitForExistence(timeout: 5) else {
             XCTFail("deck_manual_use button missing", file: file, line: line)
@@ -202,6 +266,29 @@ enum ScoreDeckUITestSupport {
         }
         XCTAssertFalse(deck.exists, "Score deck did not close", file: file, line: line)
     }
+
+    static func playerPosition(_ position: Int, of total: Int, in app: XCUIApplication) -> XCUIElement {
+        app.staticTexts["\(position) / \(total)"]
+    }
+}
+
+@MainActor
+private extension XCTestCase {
+    func assertExistsWithDiagnostics(
+        _ element: XCUIElement,
+        timeout: TimeInterval,
+        message: String,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let exists = element.waitForExistence(timeout: timeout)
+        if !exists {
+            add(XCTAttachment(screenshot: app.screenshot()))
+            add(XCTAttachment(string: app.debugDescription))
+        }
+        XCTAssertTrue(exists, message, file: file, line: line)
+    }
 }
 
 @MainActor
@@ -227,13 +314,21 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         ScoreDeckUITestSupport.drawEllipseZero(in: app)
         app.buttons["recognize_score_button"].tap()
 
-        let accept = app.buttons["deck_accept_Alice"]
-        XCTAssertTrue(accept.waitForExistence(timeout: 20), "Confirmation card did not appear for handwritten zero")
+        let accept = ScoreDeckUITestSupport.acceptButton(in: app)
+        assertExistsWithDiagnostics(
+            accept,
+            timeout: 20,
+            message: "Confirmation card did not appear for handwritten zero",
+            in: app
+        )
         XCTAssertTrue(app.staticTexts["Is this right?"].exists)
         XCTAssertTrue(app.staticTexts["0"].exists, "Confirmed value was not exactly 0")
 
         accept.tap()
-        XCTAssertTrue(app.staticTexts["Player 2 of 2"].waitForExistence(timeout: 10), "Deck did not advance to player 2")
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Deck did not advance to player 2"
+        )
     }
 
     func testRecognizeHandwrittenSeven() {
@@ -243,13 +338,21 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         ScoreDeckUITestSupport.drawSeven(in: app)
         app.buttons["recognize_score_button"].tap()
 
-        let accept = app.buttons["deck_accept_Alice"]
-        XCTAssertTrue(accept.waitForExistence(timeout: 20), "Confirmation card did not appear for handwritten seven")
+        let accept = ScoreDeckUITestSupport.acceptButton(in: app)
+        assertExistsWithDiagnostics(
+            accept,
+            timeout: 20,
+            message: "Confirmation card did not appear for handwritten seven",
+            in: app
+        )
         XCTAssertTrue(app.staticTexts["Is this right?"].exists)
         XCTAssertTrue(app.staticTexts["7"].exists, "Confirmed value was not exactly 7")
 
         accept.tap()
-        XCTAssertTrue(app.staticTexts["Player 2 of 2"].waitForExistence(timeout: 10), "Deck did not advance to player 2")
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Deck did not advance to player 2"
+        )
     }
 
     func testBlankCanvasShowsInlineHintWithNoOverlay() {
@@ -282,19 +385,24 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         XCTAssertTrue(rejection.waitForExistence(timeout: 20), "Rejection card did not appear for scribbled ink")
         XCTAssertTrue(app.staticTexts["Couldn't read that"].exists)
 
-        let manualField = app.textFields["deck_manual_value"]
-        XCTAssertTrue(manualField.waitForExistence(timeout: 5))
-        manualField.tap()
-        manualField.typeText("25")
-        app.buttons["deck_manual_use_Alice"].tap()
+        ScoreDeckUITestSupport.useManualValue("25", in: app)
 
-        XCTAssertTrue(app.staticTexts["Player 2 of 2"].waitForExistence(timeout: 10), "Deck did not advance to player 2")
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Deck did not advance to player 2"
+        )
 
         ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
         ScoreDeckUITestSupport.waitForDeckToClose(in: app)
 
         XCTAssertTrue(app.staticTexts["Round 2"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["25"].exists, "Committed score 25 is not visible on the scoring screen")
+        let committedScore = app.staticTexts["25"]
+        assertExistsWithDiagnostics(
+            committedScore,
+            timeout: 5,
+            message: "Committed score 25 is not visible on the scoring screen",
+            in: app
+        )
     }
 
     func testRetryKeepsStrokesOnUnreadable() {
@@ -307,7 +415,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         let rejection = ScoreDeckUITestSupport.rejectionCard(in: app)
         XCTAssertTrue(rejection.waitForExistence(timeout: 20), "Rejection card did not appear for scribbled ink")
 
-        app.buttons["deck_retry_Alice"].tap()
+        ScoreDeckUITestSupport.retryButton(in: app).tap()
 
         // A retry re-captures the same strokes. If the canvas had been
         // cleared, the nil capture would surface the no-ink hint instead of
@@ -320,11 +428,11 @@ final class ScoreRecognitionE2ETests: XCTestCase {
     private func startTwoPlayerGame(first: String = "Alice", second: String = "Bob") {
         let newGame = app.buttons["new_game_button"]
         XCTAssertTrue(newGame.waitForExistence(timeout: 5))
-        newGame.tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(newGame, in: app)
 
         let tile = app.buttons["game_tile_generic"]
         XCTAssertTrue(tile.waitForExistence(timeout: 5))
-        tile.tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(tile, in: app)
 
         let firstField = app.textFields["player_name_field_0"]
         XCTAssertTrue(firstField.waitForExistence(timeout: 5))

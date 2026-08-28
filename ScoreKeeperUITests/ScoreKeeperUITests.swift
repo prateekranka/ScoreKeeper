@@ -144,7 +144,7 @@ final class ScoreKeeperUITests: XCTestCase {
         // Complete second game
         let newGameButton = app.buttons["new_game_button"]
         XCTAssertTrue(newGameButton.waitForExistence(timeout: 3))
-        newGameButton.tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(newGameButton, in: app)
         tapGameTile("game_tile_generic")
         fillPlayerNames(["Charlie", "Diana"])
         app.buttons["start_game_button"].tap()
@@ -165,7 +165,7 @@ final class ScoreKeeperUITests: XCTestCase {
     // MARK: - Test 6: Cautious user fixes invalid setup
 
     func testPlayerSetupValidatesDuplicateNames() throws {
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         tapGameTile("game_tile_generic")
 
         fillPlayerNames(["Alex", "Alex"])
@@ -213,7 +213,7 @@ final class ScoreKeeperUITests: XCTestCase {
         completeGenericGame(playerNames: ["Riley", "Sam"])
 
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         tapGameTile("game_tile_phase10")
         app.buttons["roster_button"].tap()
 
@@ -383,7 +383,7 @@ final class ScoreKeeperUITests: XCTestCase {
     func testFreeGamesExhaustedShowsPaywallWhenStartingNewGame() throws {
         relaunch(arguments: ["-in-memory-store", "-free-games-exhausted", "-force-light-theme"])
 
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         tapGameTile("game_tile_whatsForDinner")
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
@@ -397,7 +397,7 @@ final class ScoreKeeperUITests: XCTestCase {
     func testUnlockedProDoesNotShowPaywallWhenStartingNewGame() throws {
         relaunch(arguments: ["-in-memory-store", "-unlock-pro"])
 
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         tapGameTile("game_tile_whatsForDinner")
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
@@ -444,7 +444,7 @@ final class ScoreKeeperUITests: XCTestCase {
     // MARK: - Test 17: Target score completes after a qualifying submitted round
 
     func testTargetScoreConfigurationCompletesGenericGame() throws {
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         tapGameTile("game_tile_generic")
         fillPlayerNames(["Alice", "Bob"])
         app.buttons["start_game_button"].tap()
@@ -477,7 +477,7 @@ final class ScoreKeeperUITests: XCTestCase {
     func testSavedRosterDeletionRequiresConfirmation() throws {
         completeGenericGame(playerNames: ["Alice", "Bob"])
 
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         tapGameTile("game_tile_generic")
         app.buttons["roster_button"].tap()
 
@@ -543,7 +543,7 @@ final class ScoreKeeperUITests: XCTestCase {
     private func navigateToGenericScoring(playerNames: [String]) {
         let newGame = app.buttons["new_game_button"]
         XCTAssertTrue(newGame.waitForExistence(timeout: 3))
-        tapButtonInSafeArea(newGame)
+        ScoreDeckUITestSupport.tapButtonInSafeArea(newGame, in: app)
         tapGameTile("game_tile_generic")
         fillPlayerNames(playerNames)
         app.buttons["start_game_button"].tap()
@@ -553,7 +553,7 @@ final class ScoreKeeperUITests: XCTestCase {
     }
 
     private func navigateToScoring(gameTileID: String, playerNames: [String]) {
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         tapGameTile(gameTileID)
         fillPlayerNames(playerNames)
 
@@ -570,12 +570,15 @@ final class ScoreKeeperUITests: XCTestCase {
     private func tapGameTile(_ identifier: String) {
         let tile = app.buttons[identifier]
         XCTAssertTrue(tile.waitForExistence(timeout: 3))
-        tapButtonInSafeArea(tile)
+        ScoreDeckUITestSupport.tapButtonInSafeArea(tile, in: app)
     }
 
     private func fillPlayerNames(_ names: [String]) {
         for (index, name) in names.enumerated() {
             if index >= 2 {
+                if app.keyboards.firstMatch.exists {
+                    app.keyboards.buttons["Return"].tap()
+                }
                 app.buttons["add_player_button"].tap()
             }
             let fieldIdentifier = "player_name_field_\(index)"
@@ -613,7 +616,7 @@ final class ScoreKeeperUITests: XCTestCase {
         _ = app.buttons["new_game_button"].waitForExistence(timeout: 3)
         snap("04-home-empty")
 
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         _ = app.buttons["game_tile_generic"].waitForExistence(timeout: 2)
         snap("05-game-picker")
 
@@ -687,7 +690,7 @@ final class ScoreKeeperUITests: XCTestCase {
         }
 
         relaunch(arguments: ["-in-memory-store", "-free-games-exhausted", "-force-light-theme"])
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         tapGameTile("game_tile_whatsForDinner")
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
@@ -742,22 +745,22 @@ final class ScoreKeeperUITests: XCTestCase {
         // Tool sheets from Home
         let timerTool = app.buttons["Open game timer"]
         XCTAssertTrue(timerTool.waitForExistence(timeout: 3))
-        tapButtonInSafeArea(timerTool)
+        ScoreDeckUITestSupport.tapButtonInSafeArea(timerTool, in: app)
         sleep(1); snap("15-tool-timer")
         dismissToolSheet(named: "Timer")
         assertHome()
 
-        tapButtonInSafeArea(app.buttons["Roll dice"])
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["Roll dice"], in: app)
         sleep(1); snap("16-tool-dice")
         dismissToolSheet(named: "Dice")
         assertHome()
 
-        tapButtonInSafeArea(app.buttons["Pick a random starter"])
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["Pick a random starter"], in: app)
         sleep(1); snap("17-tool-starter")
         dismissToolSheet(named: "Starter")
         assertHome()
 
-        tapButtonInSafeArea(app.buttons["Learn about undo"])
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["Learn about undo"], in: app)
         sleep(1); snap("18-tool-undo")
         dismissToolSheet(named: "Undo")
         assertHome()
@@ -924,40 +927,6 @@ final class ScoreKeeperUITests: XCTestCase {
         }
 
         XCTFail("Text field never exposed a safe 44-point focus area: \(identifier)")
-    }
-
-    private func tapButtonInSafeArea(_ element: XCUIElement) {
-        guard element.waitForExistence(timeout: 3) else {
-            XCTFail("Button did not exist: \(element)")
-            return
-        }
-
-        let appFrame = app.frame
-        let safeTop: CGFloat = 80
-        let safeBottom = appFrame.height - 120
-        var safeTapPoint: CGPoint?
-
-        for _ in 0..<6 {
-            let frame = element.frame
-            let visibleTop = max(frame.minY, safeTop)
-            let visibleBottom = min(frame.maxY, safeBottom)
-            if element.exists && visibleBottom - visibleTop >= 44 {
-                safeTapPoint = CGPoint(x: frame.midX, y: (visibleTop + visibleBottom) / 2)
-                break
-            }
-            app.swipeUp(velocity: .fast)
-        }
-
-        guard let safeTapPoint else {
-            XCTFail("Button never exposed a safe 44-point tap area: \(element)")
-            return
-        }
-
-        let normalizedPoint = CGVector(
-            dx: (safeTapPoint.x - appFrame.minX) / appFrame.width,
-            dy: (safeTapPoint.y - appFrame.minY) / appFrame.height
-        )
-        app.coordinate(withNormalizedOffset: normalizedPoint).tap()
     }
 
     private func waitForHittable(_ element: XCUIElement, timeout: TimeInterval = 3) -> Bool {

@@ -8,16 +8,62 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
         await verifyDigitFixture("0", expected: 0)
     }
 
+    func testSegmentedThinZeroIsRecognizedExactly() async {
+        let result = await ScoreRecognizer.recognize(ScoreRecognitionFixtures.drawSegmentedThinZero())
+        guard case let .success(value, confidence) = result else {
+            XCTFail("segmented thin zero expected success, got \(result)")
+            return
+        }
+        XCTAssertEqual(value, 0)
+        XCTAssertGreaterThan(confidence, 0)
+    }
+
+    func testDrawnOneIsRecognizedExactly() async {
+        await verifyDigitFixture("1", expected: 1)
+    }
+
+    func testDrawnTwoIsRecognizedExactly() async {
+        await verifyDigitFixture("2", expected: 2)
+    }
+
     func testDrawnSevenIsRecognizedExactly() async {
         await verifyDigitFixture("7", expected: 7)
+    }
+
+    func testDrawnEightIsRecognizedExactly() async {
+        await verifyDigitFixture("8", expected: 8)
+    }
+
+    func testDrawnTwelveIsRecognizedExactly() async {
+        await verifyDigitFixture("12", expected: 12)
     }
 
     func testDrawnTwentyFiveIsRecognizedExactly() async {
         await verifyDigitFixture("25", expected: 25)
     }
 
+    func testDrawnFiftyIsRecognizedExactly() async {
+        await verifyDigitFixture("50", expected: 50)
+    }
+
+    func testDrawnNinetyNineIsRecognizedExactly() async {
+        await verifyDigitFixture("99", expected: 99)
+    }
+
     func testDrawnOneHundredFiveIsRecognizedExactly() async {
         await verifyDigitFixture("105", expected: 105)
+    }
+
+    func testDrawnTwoHundredFiftyIsRecognizedExactly() async {
+        await verifyDigitFixture("250", expected: 250)
+    }
+
+    func testSmallOffsetOneHundredFiveIsRecognizedExactly() async {
+        await verifyDigitFixture("105", expected: 105, scale: 0.64, offset: CGPoint(x: -112, y: 16))
+    }
+
+    func testLargeOffsetTwentyFiveIsRecognizedExactly() async {
+        await verifyDigitFixture("25", expected: 25, scale: 1.18, offset: CGPoint(x: 76, y: -10))
     }
 
     func testBlankFixtureNeverSucceeds() async {
@@ -85,6 +131,37 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
         }
     }
 
+    func testLeadingMinusDetectorFindsUnsupportedNegativeScore() {
+        XCTAssertTrue(ScoreRecognizer.containsLeadingMinus(in: ScoreRecognitionFixtures.drawNegative("3")))
+    }
+
+    func testLeadingMinusDetectorFindsShortUnsupportedNegativeScore() {
+        XCTAssertTrue(ScoreRecognizer.containsLeadingMinus(in: ScoreRecognitionFixtures.drawShortNegative("3")))
+    }
+
+    func testLeadingMinusDetectorAllowsPositiveDigitCorpus() {
+        for fixture in ScoreRecognitionFixtures.allFixtures() where fixture.name.hasPrefix("digits-") {
+            XCTAssertFalse(
+                ScoreRecognizer.containsLeadingMinus(in: fixture.image),
+                "positive fixture \(fixture.name) looked like a negative score"
+            )
+        }
+    }
+
+    func testClosedZeroDetectorAcceptsSegmentedThinZero() {
+        XCTAssertTrue(ScoreRecognizer.looksLikeClosedZero(in: ScoreRecognitionFixtures.drawSegmentedThinZero()))
+    }
+
+    func testClosedZeroDetectorRejectsNonzeroDigitCorpus() {
+        for fixture in ScoreRecognitionFixtures.allFixtures()
+            where fixture.name.hasPrefix("digits-") && !fixture.allowsSuccessZero {
+            XCTAssertFalse(
+                ScoreRecognizer.looksLikeClosedZero(in: fixture.image),
+                "nonzero fixture \(fixture.name) looked like zero"
+            )
+        }
+    }
+
     private var recognitionLevels: [VNRequestTextRecognitionLevel] {
         [.accurate, .fast]
     }
@@ -92,21 +169,20 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
     private func verifyDigitFixture(
         _ digits: String,
         expected: Int,
+        scale: CGFloat = 1,
+        offset: CGPoint = .zero,
         file: StaticString = #filePath,
         line: UInt = #line
     ) async {
-        let image = ScoreRecognitionFixtures.drawDigits(digits)
+        let image = ScoreRecognitionFixtures.drawDigits(digits, scale: scale, offset: offset)
 
-        let accurate = await ScoreRecognizer.recognize(image, recognitionLevel: .accurate)
-        guard case let .success(value, confidence) = accurate else {
-            XCTFail("drawDigits(\"\(digits)\") at .accurate expected success, got \(accurate)", file: file, line: line)
+        let result = await ScoreRecognizer.recognize(image)
+        guard case let .success(value, confidence) = result else {
+            XCTFail("drawDigits(\"\(digits)\") expected success, got \(result)", file: file, line: line)
             return
         }
-        XCTAssertEqual(value, expected, "drawDigits(\"\(digits)\") misread at .accurate", file: file, line: line)
+        XCTAssertEqual(value, expected, "drawDigits(\"\(digits)\") misread", file: file, line: line)
         XCTAssertGreaterThan(confidence, 0, "drawDigits(\"\(digits)\") carried no confidence", file: file, line: line)
-
-        let fast = await ScoreRecognizer.recognize(image, recognitionLevel: .fast)
-        print("ScoreRecognizerFixtureTests: .fast outcome for \"\(digits)\" -> \(fast)")
     }
 
     private func assertFailedRecognition(

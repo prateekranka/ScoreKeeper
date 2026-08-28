@@ -22,6 +22,15 @@ enum ScoreRecognitionFixtures {
         image(for: drawing(for: digits, glyphScale: scale, offset: offset))
     }
 
+    /// Mirrors XCUITest's physical zero gesture: twelve short PencilKit
+    /// strokes form a thin polygonal loop instead of one smoothed oval path.
+    static func drawSegmentedThinZero() -> UIImage {
+        let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
+        let points = oval(center: center, radius: CGSize(width: 68, height: 108), count: 12)
+        let segments = (0..<12).map { [points[$0], points[$0 + 1]] }
+        return image(for: drawing(strokes: segments, strokeWidth: 3))
+    }
+
     static func drawBlank() -> UIImage {
         let format = UIGraphicsImageRendererFormat()
         format.scale = renderScale
@@ -37,7 +46,30 @@ enum ScoreRecognitionFixtures {
     }
 
     static func drawNegative(_ digits: String) -> UIImage {
-        image(for: drawing(for: digits, includeLeadingMinus: true))
+        image(for: drawing(for: digits, leadingMinusLength: 0.30))
+    }
+
+    static func drawShortNegative(_ digits: String) -> UIImage {
+        image(for: drawing(for: digits, leadingMinusLength: 0.16))
+    }
+
+    static func drawDetachedCrossbarFour() -> UIImage {
+        let glyphWidth: CGFloat = 72
+        let glyphHeight: CGFloat = 154
+        let origin = CGPoint(
+            x: (canvasSize.width - glyphWidth) / 2,
+            y: (canvasSize.height - glyphHeight) / 2
+        )
+        let normalizedStrokes: [[CGPoint]] = [
+            [CGPoint(x: 0.70, y: 0.06), CGPoint(x: 0.50, y: 0.50), CGPoint(x: 0.62, y: 0.94)],
+            [CGPoint(x: 0.12, y: 0.56), CGPoint(x: 0.45, y: 0.56)],
+        ]
+        let strokes = normalizedStrokes.map { stroke in
+            stroke.map { point in
+                CGPoint(x: origin.x + point.x * glyphWidth, y: origin.y + point.y * glyphHeight)
+            }
+        }
+        return image(for: drawing(strokes: strokes))
     }
 
     static func drawJunk() -> UIImage {
@@ -60,10 +92,17 @@ enum ScoreRecognitionFixtures {
     static func allFixtures() -> [Fixture] {
         [
             Fixture(name: "digits-0", image: drawDigits("0"), allowsSuccessZero: true),
+            Fixture(name: "digits-0-segmented-thin", image: drawSegmentedThinZero(), allowsSuccessZero: true),
             Fixture(name: "digits-1", image: drawDigits("1"), allowsSuccessZero: false),
             Fixture(name: "digits-2", image: drawDigits("2"), allowsSuccessZero: false),
+            Fixture(name: "digits-3", image: drawDigits("3"), allowsSuccessZero: false),
+            Fixture(name: "digits-4", image: drawDigits("4"), allowsSuccessZero: false),
+            Fixture(name: "digits-4-detached-crossbar", image: drawDetachedCrossbarFour(), allowsSuccessZero: false),
+            Fixture(name: "digits-5", image: drawDigits("5"), allowsSuccessZero: false),
+            Fixture(name: "digits-6", image: drawDigits("6"), allowsSuccessZero: false),
             Fixture(name: "digits-7", image: drawDigits("7"), allowsSuccessZero: false),
             Fixture(name: "digits-8", image: drawDigits("8"), allowsSuccessZero: false),
+            Fixture(name: "digits-9", image: drawDigits("9"), allowsSuccessZero: false),
             Fixture(name: "digits-12", image: drawDigits("12"), allowsSuccessZero: false),
             Fixture(name: "digits-25", image: drawDigits("25"), allowsSuccessZero: false),
             Fixture(name: "digits-50", image: drawDigits("50"), allowsSuccessZero: false),
@@ -94,7 +133,7 @@ enum ScoreRecognitionFixtures {
         for digits: String,
         glyphScale: CGFloat = 1,
         offset: CGPoint = .zero,
-        includeLeadingMinus: Bool = false
+        leadingMinusLength: CGFloat? = nil
     ) -> PKDrawing {
         let glyphWidth: CGFloat = 72 * glyphScale
         let glyphHeight: CGFloat = 154 * glyphScale
@@ -107,12 +146,12 @@ enum ScoreRecognitionFixtures {
         )
 
         var strokes: [[CGPoint]] = []
-        if includeLeadingMinus {
+        if let leadingMinusLength {
             let minusY = origin.y + glyphHeight * 0.52
             let minusStart = origin.x - glyphWidth * 0.48
             strokes.append([
                 CGPoint(x: minusStart, y: minusY),
-                CGPoint(x: minusStart + glyphWidth * 0.30, y: minusY),
+                CGPoint(x: minusStart + glyphWidth * leadingMinusLength, y: minusY),
             ])
         }
 
@@ -217,14 +256,14 @@ enum ScoreRecognitionFixtures {
         ]
     }
 
-    private static func drawing(strokes: [[CGPoint]]) -> PKDrawing {
-        let ink = PKInkingTool(.pen, color: .black, width: 10).ink
+    private static func drawing(strokes: [[CGPoint]], strokeWidth: CGFloat = 10) -> PKDrawing {
+        let ink = PKInkingTool(.pen, color: .black, width: strokeWidth).ink
         let pkStrokes = strokes.map { points in
             let controlPoints = points.enumerated().map { index, point in
                 PKStrokePoint(
                     location: point,
                     timeOffset: TimeInterval(index) * 0.01,
-                    size: CGSize(width: 10, height: 10),
+                    size: CGSize(width: strokeWidth, height: strokeWidth),
                     opacity: 1,
                     force: 1,
                     azimuth: 0,

@@ -53,6 +53,7 @@ struct RoundEntryDeckView: View {
         .overlay {
             if showTutorial {
                 tutorial
+                    .allowsHitTesting(showTutorial)
                     .transition(.opacity.combined(with: .scale(scale: 0.96)))
             }
         }
@@ -451,6 +452,7 @@ struct RoundEntryDeckView: View {
                 Text("Couldn't read that")
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
+                    .accessibilityIdentifier("deck_invalid_value")
 
                 Text("Try again or type the score.")
                     .font(AppFonts.caption)
@@ -507,7 +509,6 @@ struct RoundEntryDeckView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(ClubhouseTheme.paper.opacity(0.97))
-        .accessibilityIdentifier("deck_invalid_value")
     }
 
     private var manualScore: Int {
