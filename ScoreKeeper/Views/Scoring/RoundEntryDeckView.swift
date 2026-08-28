@@ -1,6 +1,14 @@
 import PencilKit
 import SwiftUI
 
+private enum ScoreEntryState: Equatable {
+    case drawing
+    case recognizing(requestID: Int)
+    case confirming(value: Int)
+    case manual
+    case noInk
+}
+
 struct RoundEntryDeckView: View {
     let session: GameSession
     let onSubmit: ([UUID: Int]) -> Void
@@ -12,25 +20,47 @@ struct RoundEntryDeckView: View {
     @State private var currentIndex = 0
     @State private var scores: [UUID: Int] = [:]
     @State private var clearTriggers: [UUID: Int] = [:]
-    @State private var confirmingPlayer: UUID?
-    @State private var confirmedValue: Int?
-    @State private var invalidPlayer: UUID?
-    @State private var noInkPlayer: UUID?
-    @State private var manualEntry = "0"
+    @State private var entryState: ScoreEntryState = .drawing
+    @State private var manualEntry = ""
     @State private var showTutorial = !UserDefaults.standard.bool(forKey: "hasSeenScoreDeckTutorial")
     @State private var captureTrigger = 0
     @State private var captureEvent = 0
     @State private var capturedImage: UIImage?
-    @State private var isRecognizing = false
+    @State private var sourceImage: UIImage?
     @State private var isPresented = false
     @State private var isExiting = false
     @State private var feedbackTrigger = 0
     @State private var warningFeedbackTrigger = 0
     @State private var recognitionRequestID = 0
-    @State private var exitTask: Task<Void, Never>?
 
     private var player: Player {
         session.players[currentIndex]
+    }
+
+    private var isRecognizing: Bool {
+        if case .recognizing(_) = entryState { return true }
+        return false
+    }
+
+    private var canRecognize: Bool {
+        switch entryState {
+        case .drawing, .noInk:
+            return true
+        case .recognizing(_), .confirming(_), .manual:
+            return false
+        }
+    }
+
+    private var canClear: Bool {
+        !isRecognizing && !isExiting
+    }
+
+    private var canSwitchPlayer: Bool {
+        canClear
+    }
+
+    private var showsDrawingActions: Bool {
+        canRecognize
     }
 
     var body: some View {
@@ -65,11 +95,10 @@ struct RoundEntryDeckView: View {
             isPresented = true
         }
         .onDisappear {
-            exitTask?.cancel()
             invalidateRecognition()
         }
-        .onChange(of: captureEvent) { _, _ in
-            handleCaptureEvent()
+        .onChange(of: captureEvent) { _, eventID in
+            handleCaptureEvent(eventID)
         }
     }
 
@@ -128,10 +157,6 @@ struct RoundEntryDeckView: View {
                     Text("Draw the score")
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
-
-                    Text("Player \(currentIndex + 1) of \(session.players.count)")
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
                 Spacer()
@@ -144,9 +169,6 @@ struct RoundEntryDeckView: View {
             playerCard
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.bottom, 4)
-
-            progress
-                .padding(.bottom, AppTheme.spacingSmall)
         }
         .padding(.top, AppTheme.spacingSmall)
     }
@@ -220,7 +242,7 @@ struct RoundEntryDeckView: View {
                 .padding(.vertical, 7)
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    guard index != currentIndex, !isRecognizing else { return }
+                    guard index != currentIndex, canSwitchPlayer else { return }
                     switchPlayer(to: index)
                 }
             }
@@ -236,11 +258,13 @@ struct RoundEntryDeckView: View {
             writingSurface
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            if noInkPlayer == player.id {
+            if case .noInk = entryState {
                 noInkHint
             }
 
-            scoreActions
+            if showsDrawingActions {
+                scoreActions
+            }
         }
         .padding(AppTheme.spacingMedium)
         .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous))
@@ -249,7 +273,7 @@ struct RoundEntryDeckView: View {
                 .strokeBorder(ClubhouseTheme.ink.opacity(0.72), lineWidth: 1.5)
         }
         .shadow(color: ClubhouseTheme.paperShadow, radius: 18, y: 10)
-        .animation(reduceMotion ? AppMotion.fade : AppMotion.state, value: noInkPlayer)
+        .animation(reduceMotion ? AppMotion.fade : AppMotion.state, value: entryState)
         .id(player.id)
         .transition(.asymmetric(
             insertion: .opacity.combined(with: .offset(x: 24)),
@@ -296,16 +320,7 @@ struct RoundEntryDeckView: View {
                 .strokeBorder(ClubhouseTheme.ink.opacity(0.72), lineWidth: 1.5)
                 .allowsHitTesting(false)
 
-            if confirmingPlayer == player.id, let confirmedValue {
-                confirmation(value: confirmedValue)
-                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
-            } else if invalidPlayer == player.id {
-                rejectionCard
-                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
-            } else if isRecognizing {
-                recognizingOverlay
-                    .transition(.opacity)
-            }
+            entryOverlay
         }
         .background(ClubhouseTheme.paperCard)
         .shadow(color: ClubhouseTheme.paperShadow, radius: 0, x: 4, y: 5)
@@ -328,17 +343,10 @@ struct RoundEntryDeckView: View {
 
     private var scoreActions: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text(scores[player.id].map(String.init) ?? "Draw your score")
-                    .font(AppFonts.scoreMedium)
-                    .monospacedDigit()
-                    .foregroundStyle(ClubhouseTheme.ink)
-
-                Text("Tap the blue check when finished")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            Text("Tap the blue check when finished")
+                .font(AppFonts.caption)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             Button {
                 clear(for: player)
@@ -350,7 +358,7 @@ struct RoundEntryDeckView: View {
                     .background(ClubhouseTheme.paperSunken, in: Circle())
             }
             .buttonStyle(PressableButtonStyle())
-            .disabled(isRecognizing)
+            .disabled(!canClear)
             .accessibilityLabel("Clear score")
             .accessibilityIdentifier("deck_clear_\(player.name)")
 
@@ -365,9 +373,26 @@ struct RoundEntryDeckView: View {
                     .shadow(color: ClubhouseTheme.blue.opacity(0.22), radius: 8, y: 5)
             }
             .buttonStyle(PressableButtonStyle())
-            .disabled(isRecognizing)
+            .disabled(!canRecognize)
             .accessibilityLabel("Recognize score")
             .accessibilityIdentifier("recognize_score_button")
+        }
+    }
+
+    @ViewBuilder
+    private var entryOverlay: some View {
+        switch entryState {
+        case .drawing, .noInk:
+            EmptyView()
+        case .recognizing(_):
+            recognizingOverlay
+                .transition(.opacity)
+        case .confirming(let value):
+            confirmation(value: value, image: sourceImage)
+                .transition(.opacity.combined(with: .scale(scale: 0.97)))
+        case .manual:
+            rejectionCard
+                .transition(.opacity.combined(with: .scale(scale: 0.97)))
         }
     }
 
@@ -395,8 +420,23 @@ struct RoundEntryDeckView: View {
             .accessibilityIdentifier("deck_no_ink_hint")
     }
 
-    private func confirmation(value: Int) -> some View {
+    private func confirmation(value: Int, image: UIImage?) -> some View {
         VStack(spacing: AppTheme.spacingLarge) {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(maxWidth: 220, maxHeight: 108)
+                    .padding(8)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                            .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                    }
+                    .accessibilityLabel("Source drawing")
+                    .accessibilityIdentifier("deck_source_thumbnail")
+            }
+
             VStack(spacing: 4) {
                 Text("\(value)")
                     .font(AppFonts.scoreDisplay)
@@ -409,36 +449,41 @@ struct RoundEntryDeckView: View {
                     .foregroundStyle(ClubhouseTheme.ink)
             }
 
-            HStack(spacing: AppTheme.spacingLarge) {
+            HStack(spacing: AppTheme.spacingSmall) {
                 Button {
-                    retry()
+                    redraw()
                 } label: {
-                    Label("Try again", systemImage: "arrow.counterclockwise")
-                        .labelStyle(.iconOnly)
-                        .font(.title2.weight(.semibold))
+                    Label("Redraw", systemImage: "arrow.counterclockwise")
+                        .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.blue)
-                        .frame(width: 62, height: 62)
-                        .background(ClubhouseTheme.paperCard, in: Circle())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .padding(.horizontal, AppTheme.spacingSmall)
+                        .frame(maxWidth: .infinity, minHeight: 56)
+                        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
                         .overlay {
-                            Circle().strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
                         }
                 }
                 .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel("Retry")
+                .accessibilityLabel("Redraw score")
                 .accessibilityIdentifier("deck_retry_\(player.name)")
 
                 Button {
                     accept(value)
                 } label: {
-                    Label("Accept", systemImage: "checkmark")
-                        .labelStyle(.iconOnly)
-                        .font(.title2.weight(.black))
+                    Label("Use \(value)", systemImage: "checkmark")
+                        .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.onPrimary)
-                        .frame(width: 66, height: 66)
-                        .background(ClubhouseTheme.blue, in: Circle())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .padding(.horizontal, AppTheme.spacingSmall)
+                        .frame(maxWidth: .infinity, minHeight: 56)
+                        .background(ClubhouseTheme.blue, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
                 }
                 .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel("Accept")
+                .accessibilityLabel("Use \(value)")
                 .accessibilityIdentifier("deck_accept_\(player.name)")
             }
         }
@@ -454,30 +499,33 @@ struct RoundEntryDeckView: View {
                     .foregroundStyle(ClubhouseTheme.ink)
                     .accessibilityIdentifier("deck_invalid_value")
 
-                Text("Try again or type the score.")
+                Text("Redraw or type the score.")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
             HStack(spacing: AppTheme.spacingSmall) {
                 Button {
-                    retry()
+                    redraw()
                 } label: {
-                    Label("Retry", systemImage: "arrow.counterclockwise")
-                        .labelStyle(.iconOnly)
-                        .font(.title2.weight(.semibold))
+                    Label("Redraw", systemImage: "arrow.counterclockwise")
+                        .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.blue)
-                        .frame(width: 56, height: 56)
-                        .background(ClubhouseTheme.paperCard, in: Circle())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .padding(.horizontal, AppTheme.spacingSmall)
+                        .frame(minHeight: 56)
+                        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
                         .overlay {
-                            Circle().strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
                         }
                 }
                 .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel("Retry")
+                .accessibilityLabel("Redraw score")
                 .accessibilityIdentifier("deck_retry_\(player.name)")
 
-                TextField("0", text: $manualEntry)
+                TextField("Score", text: $manualEntry)
                     .keyboardType(.numberPad)
                     .font(AppFonts.scoreSmall)
                     .monospacedDigit()
@@ -493,9 +541,10 @@ struct RoundEntryDeckView: View {
                     .accessibilityIdentifier("deck_manual_value")
 
                 Button {
+                    guard let manualScore else { return }
                     accept(manualScore)
                 } label: {
-                    Text("Use")
+                    Text(manualScore.map { "Use \($0)" } ?? "Use")
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.onPrimary)
                         .padding(.horizontal, AppTheme.spacingMedium)
@@ -503,7 +552,9 @@ struct RoundEntryDeckView: View {
                         .background(ClubhouseTheme.blue, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
                 }
                 .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel("Use typed score")
+                .disabled(manualScore == nil || isExiting)
+                .opacity(manualScore == nil || isExiting ? 0.45 : 1)
+                .accessibilityLabel(manualScore.map { "Use \($0)" } ?? "Enter a valid score")
                 .accessibilityIdentifier("deck_manual_use_\(player.name)")
             }
         }
@@ -511,22 +562,16 @@ struct RoundEntryDeckView: View {
         .background(ClubhouseTheme.paper.opacity(0.97))
     }
 
-    private var manualScore: Int {
-        let digits = manualEntry.filter { ("0"..."9").contains($0) }
-        return min(9999, Int(digits) ?? 0)
-    }
-
-    private var progress: some View {
-        HStack(spacing: 8) {
-            ForEach(session.players.indices, id: \.self) { index in
-                Capsule()
-                    .fill(index == currentIndex ? ClubhouseTheme.blue : ClubhouseTheme.ink.opacity(0.22))
-                    .frame(width: index == currentIndex ? 24 : 8, height: 8)
-                    .animation(reduceMotion ? AppMotion.fade : AppMotion.state, value: currentIndex)
-                    .accessibilityHidden(true)
-            }
+    private var manualScore: Int? {
+        guard !manualEntry.isEmpty,
+              manualEntry.count <= 2,
+              manualEntry.allSatisfy({ ("0"..."9").contains($0) }),
+              let value = Int(manualEntry),
+              (0...99).contains(value)
+        else {
+            return nil
         }
-        .accessibilityLabel("Player \(currentIndex + 1) of \(session.players.count)")
+        return value
     }
 
     private var tutorial: some View {
@@ -587,43 +632,46 @@ struct RoundEntryDeckView: View {
         )
     }
 
-    private func handleCaptureEvent() {
-        guard isRecognizing, !isExiting else { return }
+    private func handleCaptureEvent(_ eventID: Int) {
+        guard !isExiting,
+              case .recognizing(let activeRequestID) = entryState,
+              activeRequestID == eventID,
+              eventID == recognitionRequestID
+        else { return }
 
         guard let image = capturedImage else {
-            isRecognizing = false
-            noInkPlayer = player.id
+            entryState = .noInk
             warningFeedbackTrigger &+= 1
             return
         }
 
         let targetPlayerID = player.id
         let targetIndex = currentIndex
-        let requestID = recognitionRequestID
+        let requestID = eventID
 
         Task { @MainActor in
             let result = await ScoreRecognizer.recognize(image)
 
-            guard isRecognizing,
-                  !isExiting,
+            guard !isExiting,
                   requestID == recognitionRequestID,
                   targetPlayerID == player.id,
-                  targetIndex == currentIndex
+                  targetIndex == currentIndex,
+                  case .recognizing(let activeRequestID) = entryState,
+                  activeRequestID == requestID
             else { return }
-
-            isRecognizing = false
 
             switch result {
             case .success(let value, _):
-                confirmedValue = value
-                confirmingPlayer = targetPlayerID
+                sourceImage = image
+                entryState = .confirming(value: value)
                 feedbackTrigger &+= 1
             case .noInk:
-                noInkPlayer = targetPlayerID
+                entryState = .noInk
                 warningFeedbackTrigger &+= 1
             case .unreadable, .error:
-                manualEntry = "0"
-                invalidPlayer = targetPlayerID
+                sourceImage = nil
+                manualEntry = ""
+                entryState = .manual
                 warningFeedbackTrigger &+= 1
             }
         }
@@ -631,47 +679,60 @@ struct RoundEntryDeckView: View {
 
     private func invalidateRecognition() {
         recognitionRequestID &+= 1
-        isRecognizing = false
-        invalidPlayer = nil
-        noInkPlayer = nil
+        if isRecognizing {
+            entryState = .drawing
+        }
     }
 
     private func clear(for player: Player) {
-        recognitionRequestID &+= 1
+        guard !isExiting else { return }
+        invalidateRecognition()
         clearTriggers[player.id, default: 0] += 1
         scores[player.id] = nil
-        confirmingPlayer = nil
-        confirmedValue = nil
-        invalidPlayer = nil
-        noInkPlayer = nil
         capturedImage = nil
-        isRecognizing = false
+        sourceImage = nil
+        manualEntry = ""
+        entryState = .drawing
     }
 
     private func recognizeCurrent() {
-        guard !isRecognizing, !isExiting, confirmingPlayer == nil else { return }
+        guard canRecognize, !isExiting else { return }
+
         recognitionRequestID &+= 1
+        let requestID = recognitionRequestID
         capturedImage = nil
-        confirmedValue = nil
-        confirmingPlayer = nil
-        invalidPlayer = nil
-        noInkPlayer = nil
-        isRecognizing = true
-        captureTrigger &+= 1
+        sourceImage = nil
+        manualEntry = ""
+        entryState = .recognizing(requestID: requestID)
+        captureTrigger = requestID
     }
 
-    private func retry() {
-        confirmingPlayer = nil
-        confirmedValue = nil
-        recognizeCurrent()
+    private func redraw() {
+        guard !isExiting else { return }
+        recognitionRequestID &+= 1
+        clearTriggers[player.id, default: 0] += 1
+        capturedImage = nil
+        sourceImage = nil
+        manualEntry = ""
+        entryState = .drawing
     }
 
     private func accept(_ value: Int) {
+        switch entryState {
+        case .confirming(let confirmedValue):
+            guard confirmedValue == value else { return }
+        case .manual:
+            guard let manualScore, manualScore == value else { return }
+        case .drawing, .recognizing(_), .noInk:
+            return
+        }
+
         scores[player.id] = value
-        confirmingPlayer = nil
-        confirmedValue = nil
-        invalidPlayer = nil
-        noInkPlayer = nil
+        recognitionRequestID &+= 1
+        capturedImage = nil
+        sourceImage = nil
+        manualEntry = ""
+        entryState = .drawing
         feedbackTrigger &+= 1
 
         if currentIndex == session.players.count - 1 {
@@ -684,15 +745,16 @@ struct RoundEntryDeckView: View {
     }
 
     private func switchPlayer(to index: Int) {
-        guard session.players.indices.contains(index), index != currentIndex else { return }
+        guard session.players.indices.contains(index),
+              index != currentIndex,
+              !isExiting
+        else { return }
 
-        recognitionRequestID &+= 1
-        confirmingPlayer = nil
-        confirmedValue = nil
-        invalidPlayer = nil
-        noInkPlayer = nil
+        invalidateRecognition()
         capturedImage = nil
-        isRecognizing = false
+        sourceImage = nil
+        manualEntry = ""
+        entryState = .drawing
 
         if reduceMotion {
             currentIndex = index
@@ -706,7 +768,7 @@ struct RoundEntryDeckView: View {
     private var edgeSwipe: some Gesture {
         DragGesture(minimumDistance: 44)
             .onEnded { value in
-                guard !isRecognizing else { return }
+                guard canSwitchPlayer else { return }
                 guard abs(value.translation.width) > abs(value.translation.height) * 1.4 else { return }
 
                 if value.translation.width < 0, currentIndex < session.players.count - 1 {
@@ -719,7 +781,7 @@ struct RoundEntryDeckView: View {
 
     private func performExit(_ completion: @escaping () -> Void) {
         guard !isExiting else { return }
-        exitTask?.cancel()
+        invalidateRecognition()
 
         if reduceMotion {
             completion()

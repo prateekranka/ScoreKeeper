@@ -1,3 +1,4 @@
+import Foundation
 import PencilKit
 import UIKit
 @testable import ScoreKeeper
@@ -12,6 +13,13 @@ enum ScoreRecognitionFixtures {
         let name: String
         let image: UIImage
         let allowsSuccessZero: Bool
+    }
+
+    struct ApprovedFixture {
+        let name: String
+        let expected: String
+        let kind: String
+        let image: UIImage
     }
 
     static func drawDigits(_ digits: String) -> UIImage {
@@ -29,6 +37,49 @@ enum ScoreRecognitionFixtures {
         let points = oval(center: center, radius: CGSize(width: 68, height: 108), count: 12)
         let segments = (0..<12).map { [points[$0], points[$0 + 1]] }
         return image(for: drawing(strokes: segments, strokeWidth: 3))
+    }
+
+    static func drawCrossedSeven() -> UIImage {
+        let glyphWidth: CGFloat = 72
+        let glyphHeight: CGFloat = 154
+        let origin = CGPoint(
+            x: (canvasSize.width - glyphWidth) / 2,
+            y: (canvasSize.height - glyphHeight) / 2
+        )
+        var strokes = glyphStrokes(for: "7").map { stroke in
+            stroke.map { point in
+                CGPoint(
+                    x: origin.x + point.x * glyphWidth,
+                    y: origin.y + point.y * glyphHeight
+                )
+            }
+        }
+        strokes.append([
+            CGPoint(x: origin.x + glyphWidth * 0.30, y: origin.y + glyphHeight * 0.30),
+            CGPoint(x: origin.x + glyphWidth * 0.67, y: origin.y + glyphHeight * 0.70),
+        ])
+        return image(for: drawing(strokes: strokes))
+    }
+
+    static func drawTouchingDigits() -> UIImage {
+        let firstCenter = CGPoint(x: 190, y: canvasSize.height / 2)
+        let secondCenter = CGPoint(x: 290, y: canvasSize.height / 2)
+        return image(for: drawing(strokes: [
+            oval(center: firstCenter, radius: CGSize(width: 65, height: 80)),
+            oval(center: secondCenter, radius: CGSize(width: 65, height: 80)),
+        ]))
+    }
+
+    static func drawTinyNoise() -> UIImage {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = renderScale
+        format.opaque = true
+        return UIGraphicsImageRenderer(size: canvasSize, format: format).image { _ in
+            UIColor.white.setFill()
+            UIRectFill(CGRect(origin: .zero, size: canvasSize))
+            UIColor.black.setFill()
+            UIRectFill(CGRect(x: canvasSize.width / 2, y: canvasSize.height / 2, width: 2, height: 2))
+        }
     }
 
     static func drawBlank() -> UIImage {
@@ -118,6 +169,38 @@ enum ScoreRecognitionFixtures {
         ]
     }
 
+    static func recordingSingleFixtures() -> [ApprovedFixture] {
+        approvedRecordingFixtures().filter { $0.kind == "recording-single" }
+    }
+
+    static func recordingDoubleFixtures() -> [ApprovedFixture] {
+        approvedRecordingFixtures().filter { $0.kind == "recording-double" }
+    }
+
+    static func approvedRecordingFixtures() -> [ApprovedFixture] {
+        approvedRecordingSpecs.map { spec in
+            ApprovedFixture(
+                name: spec.name,
+                expected: spec.expected,
+                kind: spec.kind,
+                image: bundledImage(named: spec.name)
+            )
+        }
+    }
+
+    static func recordingFixture(named name: String) -> UIImage {
+        bundledImage(named: name)
+    }
+
+    static func approvedFixtureManifestData() -> Data {
+        let url = fixtureURL(named: "manifest", extension: "json")
+        do {
+            return try Data(contentsOf: url)
+        } catch {
+            preconditionFailure("Unable to read ScoreRecognition fixture manifest: \(error)")
+        }
+    }
+
     private static func image(for drawing: PKDrawing) -> UIImage {
         guard let image = ScoreWritingCanvas.normalizedImage(
             for: drawing,
@@ -133,13 +216,14 @@ enum ScoreRecognitionFixtures {
         for digits: String,
         glyphScale: CGFloat = 1,
         offset: CGPoint = .zero,
-        leadingMinusLength: CGFloat? = nil
+        leadingMinusLength: CGFloat? = nil,
+        spacing: CGFloat? = nil
     ) -> PKDrawing {
         let glyphWidth: CGFloat = 72 * glyphScale
         let glyphHeight: CGFloat = 154 * glyphScale
-        let spacing: CGFloat = 20 * glyphScale
+        let glyphSpacing = spacing ?? 20 * glyphScale
         let digitCount = CGFloat(digits.count)
-        let totalWidth = digitCount * glyphWidth + max(digitCount - 1, 0) * spacing
+        let totalWidth = digitCount * glyphWidth + max(digitCount - 1, 0) * glyphSpacing
         let origin = CGPoint(
             x: (canvasSize.width - totalWidth) / 2 + offset.x,
             y: (canvasSize.height - glyphHeight) / 2 + offset.y
@@ -157,7 +241,7 @@ enum ScoreRecognitionFixtures {
 
         for (index, digit) in digits.enumerated() {
             let glyphOrigin = CGPoint(
-                x: origin.x + CGFloat(index) * (glyphWidth + spacing),
+                x: origin.x + CGFloat(index) * (glyphWidth + glyphSpacing),
                 y: origin.y
             )
             for stroke in glyphStrokes(for: digit) {
@@ -283,7 +367,54 @@ enum ScoreRecognitionFixtures {
         }
         return PKDrawing(strokes: pkStrokes)
     }
+
+    private static let approvedRecordingSpecs: [ApprovedFixtureSpec] = [
+        ApprovedFixtureSpec(name: "recording-3", expected: "3", kind: "recording-single"),
+        ApprovedFixtureSpec(name: "recording-crossed-7", expected: "7", kind: "recording-single"),
+        ApprovedFixtureSpec(name: "recording-9", expected: "9", kind: "recording-single"),
+        ApprovedFixtureSpec(name: "recording-1", expected: "1", kind: "recording-single"),
+        ApprovedFixtureSpec(name: "recording-2", expected: "2", kind: "recording-single"),
+        ApprovedFixtureSpec(name: "recording-12", expected: "12", kind: "recording-double"),
+        ApprovedFixtureSpec(name: "recording-21", expected: "21", kind: "recording-double"),
+        ApprovedFixtureSpec(name: "recording-37", expected: "37", kind: "recording-double"),
+        ApprovedFixtureSpec(name: "recording-73", expected: "73", kind: "recording-double"),
+        ApprovedFixtureSpec(name: "recording-29", expected: "29", kind: "recording-double"),
+        ApprovedFixtureSpec(name: "recording-92", expected: "92", kind: "recording-double"),
+        ApprovedFixtureSpec(name: "recording-19", expected: "19", kind: "recording-double"),
+        ApprovedFixtureSpec(name: "recording-91", expected: "91", kind: "recording-double"),
+        ApprovedFixtureSpec(name: "recording-72", expected: "72", kind: "recording-double"),
+        ApprovedFixtureSpec(name: "recording-27", expected: "27", kind: "recording-double"),
+    ]
+
+    private static func bundledImage(named name: String) -> UIImage {
+        let url = fixtureURL(named: name, extension: "png")
+        guard let image = UIImage(contentsOfFile: url.path) else {
+            preconditionFailure("Unable to decode ScoreRecognition fixture image: \(name).png")
+        }
+        return image
+    }
+
+    private static func fixtureURL(named name: String, extension fileExtension: String) -> URL {
+        let bundle = Bundle(for: ScoreRecognitionFixtureBundleToken.self)
+        let url = bundle.url(
+            forResource: name,
+            withExtension: fileExtension,
+            subdirectory: "Fixtures/ScoreRecognition"
+        ) ?? bundle.url(forResource: name, withExtension: fileExtension)
+        guard let url else {
+            preconditionFailure("Missing ScoreRecognition fixture: \(name).\(fileExtension)")
+        }
+        return url
+    }
+
+    private struct ApprovedFixtureSpec {
+        let name: String
+        let expected: String
+        let kind: String
+    }
 }
+
+private final class ScoreRecognitionFixtureBundleToken: NSObject {}
 
 private extension CGFloat {
     static var pi: CGFloat { CGFloat(Double.pi) }

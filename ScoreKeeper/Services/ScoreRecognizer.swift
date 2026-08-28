@@ -16,10 +16,95 @@ struct ScoreRecognitionFragment: Equatable {
     let confidence: Double
 }
 
+/// Calibrated acceptance gates supplied by the model-training workstream.
+/// There is intentionally no production default until a PipCount model has
+/// passed the writer-disjoint recognition gate.
+struct ScoreDigitAcceptancePolicy: Equatable, Sendable {
+    let minimumProbability: Double
+    let minimumMargin: Double
+
+    var isValid: Bool {
+        minimumProbability.isFinite
+            && minimumMargin.isFinite
+            && (0...1).contains(minimumProbability)
+            && (0...1).contains(minimumMargin)
+    }
+}
+
 /// Recognizes handwritten round scores from a captured canvas image.
 enum ScoreRecognizer {
     static let defaultConfidenceThreshold = 0.35
 
+    /// Runs the opt-in digit pipeline with an already segmented image.
+    ///
+    /// The existing Vision recognizer remains the default entry point until an
+    /// accepted PipCount model and calibrated policy are available. Supplying
+    /// segments explicitly keeps this boundary independent from Task 2's
+    /// segmenter implementation and makes it possible to test without a model.
+    static func recognize(
+        segments: [ScoreDigitInput],
+        classifier: any ScoreDigitClassifying,
+        acceptance: ScoreDigitAcceptancePolicy
+    ) async -> ScoreRecognitionResult {
+        guard acceptance.isValid else { return .error }
+        guard !segments.isEmpty else { return .noInk }
+        guard segments.count <= 2 else { return .unreadable }
+
+        var digits = ""
+        var probabilities: [Double] = []
+        probabilities.reserveCapacity(segments.count)
+
+        for segment in segments {
+            let prediction: ScoreDigitPrediction
+            do {
+                prediction = try await classifier.classify(segment)
+            } catch {
+                return .error
+            }
+
+            guard accepts(prediction, using: acceptance) else { return .unreadable }
+            digits.append(String(prediction.digit))
+            probabilities.append(prediction.probability)
+        }
+
+        guard let value = Int(digits), (0...99).contains(value) else {
+            return .unreadable
+        }
+
+        return .success(value: value, confidence: probabilities.min() ?? 0)
+    }
+
+    /// Runs the opt-in digit pipeline after validating the original capture.
+    /// The segmenter is injected so Task 2 can provide its deterministic
+    /// implementation without coupling this workstream to a guessed API.
+    static func recognize(
+        _ image: UIImage,
+        segmenter: @Sendable (CGImage) -> [ScoreDigitInput]?,
+        classifier: any ScoreDigitClassifying,
+        acceptance: ScoreDigitAcceptancePolicy
+    ) async -> ScoreRecognitionResult {
+        guard acceptance.isValid else { return .error }
+        guard let cgImage = image.cgImage,
+              let analysis = inkAnalysis(from: cgImage)
+        else {
+            return .error
+        }
+
+        guard !significantInkComponents(in: analysis).isEmpty else { return .noInk }
+        guard !containsLeadingMinus(in: analysis) else { return .unreadable }
+        guard let segments = segmenter(cgImage), !segments.isEmpty else {
+            return .unreadable
+        }
+
+        return await recognize(
+            segments: segments,
+            classifier: classifier,
+            acceptance: acceptance
+        )
+    }
+
+    /// Legacy Vision fallback kept until an accepted PipCount model is bundled
+    /// and wired to the explicit classifier pipeline above.
     static func recognize(
         _ image: UIImage,
         recognitionLevel: VNRequestTextRecognitionLevel = .accurate
@@ -64,6 +149,23 @@ enum ScoreRecognizer {
             : .unreadable
     }
 
+    private static func accepts(
+        _ prediction: ScoreDigitPrediction,
+        using acceptance: ScoreDigitAcceptancePolicy
+    ) -> Bool {
+        guard (0...9).contains(prediction.digit),
+              prediction.probability.isFinite,
+              prediction.runnerUpProbability.isFinite,
+              (0...1).contains(prediction.probability),
+              (0...1).contains(prediction.runnerUpProbability)
+        else {
+            return false
+        }
+
+        return prediction.probability >= acceptance.minimumProbability
+            && prediction.margin >= acceptance.minimumMargin
+    }
+
     private static func recognizeText(
         _ cgImage: CGImage,
         recognitionLevel: VNRequestTextRecognitionLevel
@@ -100,11 +202,11 @@ enum ScoreRecognizer {
         text.contains("-") || text.contains("−")
     }
 
-    /// Converts a Vision candidate to deliberate score syntax.
+    /// Converts a legacy Vision candidate to deliberate score syntax.
     ///
-    /// OCR commonly labels an isolated handwritten zero as `o` and a one as
-    /// `I`. Those two observed aliases are accepted; all unrelated characters
-    /// are rejected rather than silently stripped from the candidate.
+    /// This remains only for the live fallback path while the accepted
+    /// PipCount classifier is unavailable. It accepts ASCII digits and
+    /// whitespace only; letters and punctuation never become plausible scores.
     static func normalizedDigits(from text: String) -> String? {
         guard !containsNegativeMarker(in: text) else { return nil }
 
@@ -112,10 +214,6 @@ enum ScoreRecognizer {
         for character in text {
             if character.isASCIIDigit {
                 digits.append(character)
-            } else if character == "o" || character == "O" {
-                digits.append("0")
-            } else if character == "I" || character == "l" || character == "|" {
-                digits.append("1")
             } else if character.isWhitespace {
                 continue
             } else {
@@ -148,7 +246,7 @@ enum ScoreRecognizer {
     ///
     /// Fragments containing a minus are rejected outright. Remaining fragments
     /// are stripped to ASCII digits, gated on confidence, ordered left-to-right,
-    /// and joined. The result is capped at 9999.
+    /// and joined. Only one- and two-digit scores in `0...99` are accepted.
     static func interpret(fragments: [ScoreRecognitionFragment]) -> ScoreRecognitionResult {
         let accepted = fragments
             .filter { !$0.digits.contains("-") }
@@ -161,9 +259,12 @@ enum ScoreRecognizer {
             .sorted { $0.minX < $1.minX }
 
         let joined = accepted.map(\.digits).joined()
-        guard !joined.isEmpty else { return .unreadable }
+        guard (1...2).contains(joined.count),
+              let value = Int(joined),
+              (0...99).contains(value) else {
+            return .unreadable
+        }
 
-        let value = min(Int(joined) ?? 9999, 9999)
         let confidence = accepted.map(\.confidence).reduce(0, +) / Double(accepted.count)
         return .success(value: value, confidence: confidence)
     }

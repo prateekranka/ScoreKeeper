@@ -15,9 +15,8 @@ final class ScoreRecognizerTests: XCTestCase {
             ScoreRecognizer.interpret(fragments: [
                 fragment("5", minX: 0.8),
                 fragment("1", minX: 0.1),
-                fragment("0", minX: 0.4),
             ]),
-            value: 105,
+            value: 15,
             confidence: 0.9
         )
     }
@@ -26,22 +25,20 @@ final class ScoreRecognizerTests: XCTestCase {
         assertSuccess(
             ScoreRecognizer.interpret(fragments: [
                 fragment("1", minX: 0.1),
-                fragment("0", minX: 0.4),
-                fragment("5", minX: 0.8),
+                fragment("5", minX: 0.4),
             ]),
-            value: 105,
+            value: 15,
             confidence: 0.9
         )
     }
 
-    func testMultiCharacterFragmentStaysWhole() {
-        assertSuccess(
+    func testCombinedFragmentsAbove99AreUnreadable() {
+        XCTAssertEqual(
             ScoreRecognizer.interpret(fragments: [
                 fragment("12", minX: 0.1),
                 fragment("4", minX: 0.6),
             ]),
-            value: 124,
-            confidence: 0.9
+            .unreadable
         )
     }
 
@@ -103,19 +100,17 @@ final class ScoreRecognizerTests: XCTestCase {
         )
     }
 
-    func testValueIsCappedAt9999() {
-        assertSuccess(
+    func testValueAbove99IsUnreadable() {
+        XCTAssertEqual(
             ScoreRecognizer.interpret(fragments: [fragment("99999")]),
-            value: 9999,
-            confidence: 0.9
+            .unreadable
         )
     }
 
-    func testOverflowingDigitStringIsCappedAt9999() {
-        assertSuccess(
+    func testOverflowingDigitStringIsUnreadable() {
+        XCTAssertEqual(
             ScoreRecognizer.interpret(fragments: [fragment(String(repeating: "9", count: 30))]),
-            value: 9999,
-            confidence: 0.9
+            .unreadable
         )
     }
 
@@ -152,12 +147,14 @@ final class ScoreRecognizerTests: XCTestCase {
         XCTAssertEqual(ScoreRecognizer.defaultConfidenceThreshold, 0.35, accuracy: 0.0001)
     }
 
-    func testVisionLowercaseOAliasParsesAsZero() {
-        XCTAssertEqual(ScoreRecognizer.normalizedDigits(from: "o"), "0")
+    func testVisionLowercaseOIsNotConvertedToZero() {
+        XCTAssertNil(ScoreRecognizer.normalizedDigits(from: "o"))
     }
 
-    func testVisionUppercaseIAliasParsesAsOne() {
-        XCTAssertEqual(ScoreRecognizer.normalizedDigits(from: "I"), "1")
+    func testVisionOneLikeLettersAndPunctuationAreNotConvertedToOne() {
+        for candidate in ["I", "l", "|"] {
+            XCTAssertNil(ScoreRecognizer.normalizedDigits(from: candidate))
+        }
     }
 
     func testUnrelatedLettersAreNotSilentlyConvertedToDigits() {

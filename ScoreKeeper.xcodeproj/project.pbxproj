@@ -69,14 +69,34 @@
 		AA0000000000000001000403 /* LegalSupportAndReviewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000408 /* LegalSupportAndReviewUITests.swift */; };
 		AA0000000000000001000404 /* GameAllowanceStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000406 /* GameAllowanceStorage.swift */; };
 		AA000000000000000100040B /* TargetScoreEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100040A /* TargetScoreEngineTests.swift */; };
+		AA000000000000000100041B /* ScoreDigitClassifierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100041C /* ScoreDigitClassifierTests.swift */; };
 		AA0000000000000001000413 /* ScoreRecognizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000414 /* ScoreRecognizerTests.swift */; };
 		AA0000000000000001000415 /* ScoreRecognitionFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000416 /* ScoreRecognitionFixtures.swift */; };
 		AA0000000000000001000417 /* ScoreRecognizerFixtureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000418 /* ScoreRecognizerFixtureTests.swift */; };
 		AA0000000000000001000419 /* ScoreRecognitionE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100041A /* ScoreRecognitionE2ETests.swift */; };
 		AA0000000000000001000352 /* VT323-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000350 /* VT323-Regular.ttf */; };
 		AA0000000000000001000501 /* ScoreRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000502 /* ScoreRecognizer.swift */; };
+		AA0000000000000001000507 /* ScoreDigitClassifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000508 /* ScoreDigitClassifier.swift */; };
 		AA0000000000000001000503 /* ScoreWritingCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000504 /* ScoreWritingCanvas.swift */; };
 		AA0000000000000001000505 /* RoundEntryDeckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000506 /* RoundEntryDeckView.swift */; };
+		AA0000000000000001000701 /* ScoreDigitSegmenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000601 /* ScoreDigitSegmenter.swift */; };
+		AA0000000000000001000702 /* ScoreDigitSegmenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000602 /* ScoreDigitSegmenterTests.swift */; };
+		AA0000000000000001000710 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000605 /* manifest.json */; };
+		AA0000000000000001000711 /* recording-3.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000610 /* recording-3.png */; };
+		AA0000000000000001000712 /* recording-crossed-7.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000611 /* recording-crossed-7.png */; };
+		AA0000000000000001000713 /* recording-9.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000612 /* recording-9.png */; };
+		AA0000000000000001000714 /* recording-1.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000613 /* recording-1.png */; };
+		AA0000000000000001000715 /* recording-2.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000614 /* recording-2.png */; };
+		AA0000000000000001000716 /* recording-12.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000615 /* recording-12.png */; };
+		AA0000000000000001000717 /* recording-21.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000616 /* recording-21.png */; };
+		AA0000000000000001000718 /* recording-37.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000617 /* recording-37.png */; };
+		AA0000000000000001000719 /* recording-73.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000618 /* recording-73.png */; };
+		AA000000000000000100071A /* recording-29.png in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000619 /* recording-29.png */; };
+		AA000000000000000100071B /* recording-92.png in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100061A /* recording-92.png */; };
+		AA000000000000000100071C /* recording-19.png in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100061B /* recording-19.png */; };
+		AA000000000000000100071D /* recording-91.png in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100061C /* recording-91.png */; };
+		AA000000000000000100071E /* recording-72.png in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100061D /* recording-72.png */; };
+		AA000000000000000100071F /* recording-27.png in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100061E /* recording-27.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -163,13 +183,33 @@
 		AA0000000000000001000407 /* LegalSupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalSupportView.swift; sourceTree = "<group>"; };
 		AA0000000000000001000408 /* LegalSupportAndReviewUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalSupportAndReviewUITests.swift; sourceTree = "<group>"; };
 		AA000000000000000100040A /* TargetScoreEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetScoreEngineTests.swift; sourceTree = "<group>"; };
+		AA000000000000000100041C /* ScoreDigitClassifierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreDigitClassifierTests.swift; sourceTree = "<group>"; };
 		AA0000000000000001000414 /* ScoreRecognizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognizerTests.swift; sourceTree = "<group>"; };
 		AA0000000000000001000416 /* ScoreRecognitionFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognitionFixtures.swift; sourceTree = "<group>"; };
 		AA0000000000000001000418 /* ScoreRecognizerFixtureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognizerFixtureTests.swift; sourceTree = "<group>"; };
 		AA000000000000000100041A /* ScoreRecognitionE2ETests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognitionE2ETests.swift; sourceTree = "<group>"; };
 		AA0000000000000001000502 /* ScoreRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognizer.swift; sourceTree = "<group>"; };
+		AA0000000000000001000508 /* ScoreDigitClassifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreDigitClassifier.swift; sourceTree = "<group>"; };
 		AA0000000000000001000504 /* ScoreWritingCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreWritingCanvas.swift; sourceTree = "<group>"; };
 		AA0000000000000001000506 /* RoundEntryDeckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundEntryDeckView.swift; sourceTree = "<group>"; };
+		AA0000000000000001000601 /* ScoreDigitSegmenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreDigitSegmenter.swift; sourceTree = "<group>"; };
+		AA0000000000000001000602 /* ScoreDigitSegmenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreDigitSegmenterTests.swift; sourceTree = "<group>"; };
+		AA0000000000000001000605 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		AA0000000000000001000610 /* recording-3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-3.png; sourceTree = "<group>"; };
+		AA0000000000000001000611 /* recording-crossed-7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "recording-crossed-7.png"; sourceTree = "<group>"; };
+		AA0000000000000001000612 /* recording-9.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-9.png; sourceTree = "<group>"; };
+		AA0000000000000001000613 /* recording-1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-1.png; sourceTree = "<group>"; };
+		AA0000000000000001000614 /* recording-2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-2.png; sourceTree = "<group>"; };
+		AA0000000000000001000615 /* recording-12.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-12.png; sourceTree = "<group>"; };
+		AA0000000000000001000616 /* recording-21.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-21.png; sourceTree = "<group>"; };
+		AA0000000000000001000617 /* recording-37.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-37.png; sourceTree = "<group>"; };
+		AA0000000000000001000618 /* recording-73.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-73.png; sourceTree = "<group>"; };
+		AA0000000000000001000619 /* recording-29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-29.png; sourceTree = "<group>"; };
+		AA000000000000000100061A /* recording-92.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-92.png; sourceTree = "<group>"; };
+		AA000000000000000100061B /* recording-19.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-19.png; sourceTree = "<group>"; };
+		AA000000000000000100061C /* recording-91.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-91.png; sourceTree = "<group>"; };
+		AA000000000000000100061D /* recording-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-72.png; sourceTree = "<group>"; };
+		AA000000000000000100061E /* recording-27.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-27.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -391,17 +431,53 @@
 			children = (
 				AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */,
 				AA000000000000000100040A /* TargetScoreEngineTests.swift */,
+				AA000000000000000100041C /* ScoreDigitClassifierTests.swift */,
 				AA0000000000000001000414 /* ScoreRecognizerTests.swift */,
 				AA0000000000000001000416 /* ScoreRecognitionFixtures.swift */,
 				AA0000000000000001000418 /* ScoreRecognizerFixtureTests.swift */,
+				AA0000000000000001000602 /* ScoreDigitSegmenterTests.swift */,
+				AA0000000000000001000603 /* Fixtures */,
 			);
 			path = ScoreKeeperTests;
+			sourceTree = "<group>";
+		};
+		AA0000000000000001000603 /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000604 /* ScoreRecognition */,
+			);
+			path = Fixtures;
+			sourceTree = "<group>";
+		};
+		AA0000000000000001000604 /* ScoreRecognition */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000001000605 /* manifest.json */,
+				AA0000000000000001000610 /* recording-3.png */,
+				AA0000000000000001000611 /* recording-crossed-7.png */,
+				AA0000000000000001000612 /* recording-9.png */,
+				AA0000000000000001000613 /* recording-1.png */,
+				AA0000000000000001000614 /* recording-2.png */,
+				AA0000000000000001000615 /* recording-12.png */,
+				AA0000000000000001000616 /* recording-21.png */,
+				AA0000000000000001000617 /* recording-37.png */,
+				AA0000000000000001000618 /* recording-73.png */,
+				AA0000000000000001000619 /* recording-29.png */,
+				AA000000000000000100061A /* recording-92.png */,
+				AA000000000000000100061B /* recording-19.png */,
+				AA000000000000000100061C /* recording-91.png */,
+				AA000000000000000100061D /* recording-72.png */,
+				AA000000000000000100061E /* recording-27.png */,
+			);
+			path = ScoreRecognition;
 			sourceTree = "<group>";
 		};
 		AA0000000000000001000328 /* Services */ = {
 			isa = PBXGroup;
 			children = (
 				AA0000000000000001000502 /* ScoreRecognizer.swift */,
+				AA0000000000000001000508 /* ScoreDigitClassifier.swift */,
+				AA0000000000000001000601 /* ScoreDigitSegmenter.swift */,
 				AA0000000000000001000322 /* StatsCalculator.swift */,
 				AA0000000000000001000340 /* StoreManager.swift */,
 				AA0000000000000001000342 /* ReviewAskManager.swift */,
@@ -567,6 +643,22 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0000000000000001000710 /* manifest.json in Resources */,
+				AA0000000000000001000711 /* recording-3.png in Resources */,
+				AA0000000000000001000712 /* recording-crossed-7.png in Resources */,
+				AA0000000000000001000713 /* recording-9.png in Resources */,
+				AA0000000000000001000714 /* recording-1.png in Resources */,
+				AA0000000000000001000715 /* recording-2.png in Resources */,
+				AA0000000000000001000716 /* recording-12.png in Resources */,
+				AA0000000000000001000717 /* recording-21.png in Resources */,
+				AA0000000000000001000718 /* recording-37.png in Resources */,
+				AA0000000000000001000719 /* recording-73.png in Resources */,
+				AA000000000000000100071A /* recording-29.png in Resources */,
+				AA000000000000000100071B /* recording-92.png in Resources */,
+				AA000000000000000100071C /* recording-19.png in Resources */,
+				AA000000000000000100071D /* recording-91.png in Resources */,
+				AA000000000000000100071E /* recording-72.png in Resources */,
+				AA000000000000000100071F /* recording-27.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -596,6 +688,8 @@
 				AA0000000000000000000211 /* ScoringView.swift in Sources */,
 				AA0000000000000000000212 /* GenericScoringView.swift in Sources */,
 				AA0000000000000001000501 /* ScoreRecognizer.swift in Sources */,
+				AA0000000000000001000507 /* ScoreDigitClassifier.swift in Sources */,
+				AA0000000000000001000701 /* ScoreDigitSegmenter.swift in Sources */,
 				AA0000000000000001000503 /* ScoreWritingCanvas.swift in Sources */,
 				AA0000000000000001000505 /* RoundEntryDeckView.swift in Sources */,
 				AA0000000000000000000213 /* Phase10ScoringView.swift in Sources */,
@@ -653,8 +747,10 @@
 				AA0000000000000001000354 /* StoreManagerStoreKitTests.swift in Sources */,
 				AA000000000000000100040B /* TargetScoreEngineTests.swift in Sources */,
 				AA0000000000000001000413 /* ScoreRecognizerTests.swift in Sources */,
+				AA000000000000000100041B /* ScoreDigitClassifierTests.swift in Sources */,
 				AA0000000000000001000415 /* ScoreRecognitionFixtures.swift in Sources */,
 				AA0000000000000001000417 /* ScoreRecognizerFixtureTests.swift in Sources */,
+				AA0000000000000001000702 /* ScoreDigitSegmenterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

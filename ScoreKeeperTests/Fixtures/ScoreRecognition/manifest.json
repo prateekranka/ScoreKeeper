@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "artifact_type": "approved handwritten score regression fixtures",
+  "provenance": {
+    "spike": "001-mnist-score-recognition",
+    "generator": "src/prepare_corpus.py",
+    "source_artifacts": "inputs/video-single-*.png and inputs/video-composed-double-*.png",
+    "recording_single_frames": {
+      "3": "frame-005",
+      "7": "frame-024",
+      "9": "frame-035",
+      "1": "frame-046",
+      "2": "frame-056"
+    },
+    "crop_rule": "Threshold source artifact at gray < 110 to compute the meaningful-ink bounding box, add 4 pixels of neutral padding on each side, then crop the original grayscale source so antialiasing is preserved.",
+    "encoding": "Opaque 8-bit grayscale PNG with image metadata stripped.",
+    "privacy": "Only derived handwritten ink crops are stored here; raw recordings, personal metadata, and device metadata remain outside Git."
+  },
+  "fixtures": [
+    {
+      "name": "recording-3",
+      "file": "recording-3.png",
+      "kind": "recording-single",
+      "expected": "3",
+      "source_artifact": "inputs/video-single-3.png",
+      "source_sha256": "a187f299d4a5b8c0362286b4f752feab0658515f1e5c286a8211b8f3442e09b1",
+      "crop_bounds": { "x": 173, "y": 28, "width": 133, "height": 184 },
+      "sha256": "1139ced8069b2ea8f122d0f675ca1d1bd7a25d28616a51583bca4fc6b159cfba"
+    },
+    {
+      "name": "recording-crossed-7",
+      "file": "recording-crossed-7.png",
+      "kind": "recording-single",
+      "expected": "7",
+      "source_artifact": "inputs/video-single-7.png",
+      "source_sha256": "e54871c0d1c94127b0dcfa94e397debd3a8cfb9a1bdc7f34f8cf4f8af86ce170",
+      "crop_bounds": { "x": 172, "y": 28, "width": 136, "height": 184 },
+      "sha256": "edc456bffdb8a4ffdac9327b2a2fcaf71db82713bb6c9a1d2e6d59b3b252cc33"
+    },
+    {
+      "name": "recording-9",
+      "file": "recording-9.png",
+      "kind": "recording-single",
+      "expected": "9",
+      "source_artifact": "inputs/video-single-9.png",
+      "source_sha256": "0d61c18d7bbc98a6382be80a5c8ef8d55f44ecf771a10435f1344e9797ad84f4",
+      "crop_bounds": { "x": 201, "y": 28, "width": 77, "height": 184 },
+      "sha256": "0a01ea3ca8029c225399fa1e053dd63a8d38ddaec8b4cd8112beb03fc6412dfc"
+    },
+    {
+      "name": "recording-1",
+      "file": "recording-1.png",
+      "kind": "recording-single",
+      "expected": "1",
+      "source_artifact": "inputs/video-single-1.png",
+      "source_sha256": "d6095f9a7dba3118083d0245798de322168e99b17a4605dabd4e6b7f2dd28c39",
+      "crop_bounds": { "x": 229, "y": 28, "width": 20, "height": 184 },
+      "sha256": "7bce1a403e8470fe0902847c2ac49fd25ca4e4602d3a4f57425d2f490e37af2c"
+    },
+    {
+      "name": "recording-2",
+      "file": "recording-2.png",
+      "kind": "recording-single",
+      "expected": "2",
+      "source_artifact": "inputs/video-single-2.png",
+      "source_sha256": "cedc6150e45608b3cd612cb96193f141c01b976fe03e2b6857ad1e204723a0a3",
+      "crop_bounds": { "x": 166, "y": 28, "width": 147, "height": 183 },
+      "sha256": "e6890f60ed1b7715b74bd9908caf66ba8a72120fec49d2b0e27cd6a23390b478"
+    },
+    {
+      "name": "recording-12",
+      "file": "recording-12.png",
+      "kind": "recording-double",
+      "expected": "12",
+      "source_artifact": "inputs/video-composed-double-12.png",
+      "source_sha256": "f1d1073d30ae324360a8b674288a3ce82709a3a8c55da9cc333dff68d4848d10",
+      "crop_bounds": { "x": 154, "y": 37, "width": 172, "height": 166 },
+      "sha256": "a5878b6077ade9973eaaf7dee2b3fe3b7d71d967ce299a959a28264f357b9cb7"
+    },
+    {
+      "name": "recording-21",
+      "file": "recording-21.png",
+      "kind": "recording-double",
+      "expected": "21",
+      "source_artifact": "inputs/video-composed-double-21.png",
+      "source_sha256": "e765d00206ee25b1e1d4322d2fb286a804de839e7cc655aaae5cc3d3b4d94321",
+      "crop_bounds": { "x": 154, "y": 37, "width": 172, "height": 166 },
+      "sha256": "76fbd06f9ab9933167218574a791c759a48764524c2b3aaeaafb9b62b3d0725a"
+    },
+    {
+      "name": "recording-37",
+      "file": "recording-37.png",
+      "kind": "recording-double",
+      "expected": "37",
+      "source_artifact": "inputs/video-composed-double-37.png",
+      "source_sha256": "7b84ff1582bfe0d56d0680559c753e86be198be2eee0dd003bb724a344fab24d",
+      "crop_bounds": { "x": 108, "y": 37, "width": 263, "height": 166 },
+      "sha256": "c263e50e5f91482b8e093633d17316fff18f89a59df2d4dfbdec4d96705b4008"
+    },
+    {
+      "name": "recording-73",
+      "file": "recording-73.png",
+      "kind": "recording-double",
+      "expected": "73",
+      "source_artifact": "inputs/video-composed-double-73.png",
+      "source_sha256": "29a35244e858ac6353e767d940ac9cd88cffbc3168faaec1995a90f6a9caa881",
+      "crop_bounds": { "x": 108, "y": 37, "width": 263, "height": 166 },
+      "sha256": "c451cfb596b8727c9ec687b5f0849338bdb770124caf9f60110144c4b6735d99"
+    },
+    {
+      "name": "recording-29",
+      "file": "recording-29.png",
+      "kind": "recording-double",
+      "expected": "29",
+      "source_artifact": "inputs/video-composed-double-29.png",
+      "source_sha256": "ae19d7a14d763bad36a762f4298fa0da2a37e78e8dabcffa4d2dd3465d13609f",
+      "crop_bounds": { "x": 129, "y": 37, "width": 222, "height": 166 },
+      "sha256": "f3ec17da25a4d6480920fb79da2144e316235a0c1b8bec4978d5f59c74c6a02a"
+    },
+    {
+      "name": "recording-92",
+      "file": "recording-92.png",
+      "kind": "recording-double",
+      "expected": "92",
+      "source_artifact": "inputs/video-composed-double-92.png",
+      "source_sha256": "bffbb3271943b950a31fce28b7cde23233f662446ce11805a008f2af8203a65e",
+      "crop_bounds": { "x": 129, "y": 37, "width": 222, "height": 166 },
+      "sha256": "ba5b83a6797c1fb610340af964049773585d2f568cae41dbb00715c61dcaea50"
+    },
+    {
+      "name": "recording-19",
+      "file": "recording-19.png",
+      "kind": "recording-double",
+      "expected": "19",
+      "source_artifact": "inputs/video-composed-double-19.png",
+      "source_sha256": "4164cfc5f79b9156dab6defc10159c37baf1b2838260319834f542ea174a00dd",
+      "crop_bounds": { "x": 186, "y": 37, "width": 108, "height": 166 },
+      "sha256": "2a115d04ddc679ab1ed31b0b40da124c3eb7029242cd1ccd8703dd73d18cd985"
+    },
+    {
+      "name": "recording-91",
+      "file": "recording-91.png",
+      "kind": "recording-double",
+      "expected": "91",
+      "source_artifact": "inputs/video-composed-double-91.png",
+      "source_sha256": "cae04b28f8b02ac3a14c4bab65e0705c02c0c89f09cb857cddf9a9c1c31ce6ba",
+      "crop_bounds": { "x": 186, "y": 37, "width": 108, "height": 166 },
+      "sha256": "ade4f3b82f31c97b90510e0fc0b5d82a14bdbbfbe4a61019b9ee3c49566486cf"
+    },
+    {
+      "name": "recording-72",
+      "file": "recording-72.png",
+      "kind": "recording-double",
+      "expected": "72",
+      "source_artifact": "inputs/video-composed-double-72.png",
+      "source_sha256": "95e6bd94bd9901f142ff66ef9957d0bccaa574caf134661aeb7342216beaf03e",
+      "crop_bounds": { "x": 102, "y": 37, "width": 276, "height": 166 },
+      "sha256": "186e8df7c795917e8eeb76fa3cd9b03962436c8272b59d4f35b22fac33f95667"
+    },
+    {
+      "name": "recording-27",
+      "file": "recording-27.png",
+      "kind": "recording-double",
+      "expected": "27",
+      "source_artifact": "inputs/video-composed-double-27.png",
+      "source_sha256": "9c3b89d0c1ca20508371754dbd29c80863a55fe70c31593eb4190766e781d8ed",
+      "crop_bounds": { "x": 102, "y": 37, "width": 276, "height": 166 },
+      "sha256": "7aa8a96e83bbc6165043247755e6f03bfe235fb1cfda5b4622c840a3e83236cc"
+    }
+  ]
+}

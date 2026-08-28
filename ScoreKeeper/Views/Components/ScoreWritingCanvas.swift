@@ -30,26 +30,39 @@ struct ScoreWritingCanvas: UIViewRepresentable {
             // binding synchronously inside updateUIView gets coalesced by
             // SwiftUI and onChange(of:) never observes the new value, leaving
             // recognition stuck on its progress overlay.
+            let drawing = canvas.drawing
             let canvasSize = canvas.bounds.size
             let scale = max(Self.displayScale(for: canvas), 1)
+            let captureID = captureTrigger
             let imageBinding = $capturedImage
             let eventBinding = $captureEvent
             Task { @MainActor in
+                // A replaced card can finish an older capture after a newer
+                // one. Do not let that stale image overwrite the current
+                // capture or move the event counter backwards.
+                guard captureID > eventBinding.wrappedValue else { return }
                 imageBinding.wrappedValue = Self.normalizedImage(
-                    for: canvas.drawing,
+                    for: drawing,
                     canvasSize: canvasSize,
                     scale: scale
                 )
-                eventBinding.wrappedValue += 1
+                eventBinding.wrappedValue = captureID
             }
         }
     }
 
-    func makeCoordinator() -> Coordinator { Coordinator() }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(lastCaptureTrigger: captureTrigger)
+    }
 
     final class Coordinator {
         var lastClearTrigger = 0
-        var lastCaptureTrigger = 0
+
+        var lastCaptureTrigger: Int
+
+        init(lastCaptureTrigger: Int) {
+            self.lastCaptureTrigger = lastCaptureTrigger
+        }
     }
 
     static func captureImage(from canvas: PKCanvasView) -> UIImage? {

@@ -207,6 +207,14 @@ enum ScoreDeckUITestSupport {
             XCTFail("deck_manual_use button missing", file: file, line: line)
             return
         }
+        XCTAssertTrue(use.isEnabled, "Use button stayed disabled for a valid score", file: file, line: line)
+        XCTAssertEqual(
+            use.label,
+            "Use \(value)",
+            "Use button did not identify the score it will submit",
+            file: file,
+            line: line
+        )
         use.tap()
     }
 
@@ -323,6 +331,13 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         )
         XCTAssertTrue(app.staticTexts["Is this right?"].exists)
         XCTAssertTrue(app.staticTexts["0"].exists, "Confirmed value was not exactly 0")
+        XCTAssertEqual(accept.label, "Use 0")
+        XCTAssertEqual(ScoreDeckUITestSupport.retryButton(in: app).label, "Redraw score")
+        XCTAssertTrue(
+            app.descendants(matching: .any)["deck_source_thumbnail"].waitForExistence(timeout: 5),
+            "Confirmation did not keep the source drawing visible"
+        )
+        attachEvidenceScreenshot(named: "iphone-confirmation-use-zero")
 
         accept.tap()
         XCTAssertTrue(
@@ -347,6 +362,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         )
         XCTAssertTrue(app.staticTexts["Is this right?"].exists)
         XCTAssertTrue(app.staticTexts["7"].exists, "Confirmed value was not exactly 7")
+        XCTAssertEqual(accept.label, "Use 7")
 
         accept.tap()
         XCTAssertTrue(
@@ -384,6 +400,16 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         let rejection = ScoreDeckUITestSupport.rejectionCard(in: app)
         XCTAssertTrue(rejection.waitForExistence(timeout: 20), "Rejection card did not appear for scribbled ink")
         XCTAssertTrue(app.staticTexts["Couldn't read that"].exists)
+        let use = ScoreDeckUITestSupport.manualUseButton(in: app)
+        XCTAssertTrue(use.waitForExistence(timeout: 5), "Manual Use button missing")
+        XCTAssertFalse(use.isEnabled, "Use button was enabled before a score was entered")
+        XCTAssertEqual(ScoreDeckUITestSupport.retryButton(in: app).label, "Redraw score")
+        attachEvidenceScreenshot(named: "iphone-manual-entry-empty")
+
+        let manualField = app.textFields["deck_manual_value"]
+        manualField.tap()
+        manualField.typeText("100")
+        XCTAssertFalse(use.isEnabled, "Use button was enabled for an out-of-range three-digit score")
 
         ScoreDeckUITestSupport.useManualValue("25", in: app)
 
@@ -405,7 +431,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         )
     }
 
-    func testRetryKeepsStrokesOnUnreadable() {
+    func testRedrawClearsStrokesOnUnreadable() {
         startTwoPlayerGame()
         openScoreDeck()
 
@@ -417,12 +443,14 @@ final class ScoreRecognitionE2ETests: XCTestCase {
 
         ScoreDeckUITestSupport.retryButton(in: app).tap()
 
-        // A retry re-captures the same strokes. If the canvas had been
-        // cleared, the nil capture would surface the no-ink hint instead of
-        // the rejection card, so the card returning proves strokes survived.
-        XCTAssertTrue(rejection.waitForExistence(timeout: 20), "Rejection card did not re-appear after retry")
-        XCTAssertTrue(app.staticTexts["Couldn't read that"].exists)
-        XCTAssertFalse(ScoreDeckUITestSupport.noInkHint(in: app).exists, "Retry cleared the canvas ink")
+        // Recognizing immediately after Redraw proves positively that the old
+        // scribble was cleared rather than relying on a timed absence check.
+        app.buttons["recognize_score_button"].tap()
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.noInkHint(in: app).waitForExistence(timeout: 15),
+            "Redraw did not clear the canvas ink"
+        )
+        attachEvidenceScreenshot(named: "iphone-redraw-cleared")
     }
 
     private func startTwoPlayerGame(first: String = "Alice", second: String = "Bob") {
@@ -457,5 +485,12 @@ final class ScoreRecognitionE2ETests: XCTestCase {
             "Round entry deck did not open"
         )
         ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+    }
+
+    private func attachEvidenceScreenshot(named name: String) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }
