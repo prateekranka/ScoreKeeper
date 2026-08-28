@@ -1,0 +1,19 @@
+You are the IMPLEMENTER in a design-redesign loop for ScoreKeeper (PipCount), an iOS game-night scorekeeping app. Your job: build a fully interactive, AAA-quality HTML/CSS/JS prototype of the entire app in the ROOT of this directory (index.html at ./index.html).
+
+READ FIRST, in order:
+1. context/screen-map.md — the complete screen inventory and rules. Every screen listed must exist, be reachable, and be fully wired. No dead ends.
+2. context/brand-spec.md — the Paper Bauhaus design system. Follow its tokens, typography, and layout posture exactly (light + dark themes).
+3. context/product.md — product principles.
+4. context/emil/*.md — Emil Kowalski's animation and design-engineering skills. Apply them to EVERY transition, sheet, press state, and state change. Short, purposeful, physical motion; interruptible; reduced-motion fallback.
+
+REQUIREMENTS:
+- Zero build step. index.html + css/js files only. Must work served statically.
+- Render as an iPhone app: a centered 393×852 device frame on a neutral page background; inside it, the full app.
+- Real state machine in vanilla JS: add players → choose game → settings → score rounds (steppers work, undo works, leader highlights) → end game → winner + final ledger → rematch/new game → history/roster/stats/head-to-head all populated from real state.
+- Timer tool works: set minutes, start/pause/reset, visible countdown, completion moment.
+- Demo seed: after first launch, allow seeding one finished demo game so history/stats screens show real content (or generate it via playing a game quickly — your choice, but secondary screens must never be empty dead ends; empty states must exist too where the screen map says so).
+- Light/dark toggle wired.
+- Every button, row, tab, sheet, and dialog must DO something real. A reviewer will click everything.
+- Motion: screen transitions, sheet slides, press feedback, score-change ticks, winner stamp entrance — all per the Emil skills. Honor prefers-reduced-motion.
+
+Ship a polished, complete, clickable prototype. Do not stop until every screen in screen-map.md works. Write the files now.

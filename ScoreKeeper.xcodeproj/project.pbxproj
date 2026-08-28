@@ -69,7 +69,14 @@
 		AA0000000000000001000403 /* LegalSupportAndReviewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000408 /* LegalSupportAndReviewUITests.swift */; };
 		AA0000000000000001000404 /* GameAllowanceStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000406 /* GameAllowanceStorage.swift */; };
 		AA000000000000000100040B /* TargetScoreEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100040A /* TargetScoreEngineTests.swift */; };
+		AA0000000000000001000413 /* ScoreRecognizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000414 /* ScoreRecognizerTests.swift */; };
+		AA0000000000000001000415 /* ScoreRecognitionFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000416 /* ScoreRecognitionFixtures.swift */; };
+		AA0000000000000001000417 /* ScoreRecognizerFixtureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000418 /* ScoreRecognizerFixtureTests.swift */; };
+		AA0000000000000001000419 /* ScoreRecognitionE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100041A /* ScoreRecognitionE2ETests.swift */; };
 		AA0000000000000001000352 /* VT323-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000350 /* VT323-Regular.ttf */; };
+		AA0000000000000001000501 /* ScoreRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000502 /* ScoreRecognizer.swift */; };
+		AA0000000000000001000503 /* ScoreWritingCanvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000504 /* ScoreWritingCanvas.swift */; };
+		AA0000000000000001000505 /* RoundEntryDeckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000506 /* RoundEntryDeckView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -156,6 +163,13 @@
 		AA0000000000000001000407 /* LegalSupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalSupportView.swift; sourceTree = "<group>"; };
 		AA0000000000000001000408 /* LegalSupportAndReviewUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalSupportAndReviewUITests.swift; sourceTree = "<group>"; };
 		AA000000000000000100040A /* TargetScoreEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TargetScoreEngineTests.swift; sourceTree = "<group>"; };
+		AA0000000000000001000414 /* ScoreRecognizerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognizerTests.swift; sourceTree = "<group>"; };
+		AA0000000000000001000416 /* ScoreRecognitionFixtures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognitionFixtures.swift; sourceTree = "<group>"; };
+		AA0000000000000001000418 /* ScoreRecognizerFixtureTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognizerFixtureTests.swift; sourceTree = "<group>"; };
+		AA000000000000000100041A /* ScoreRecognitionE2ETests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognitionE2ETests.swift; sourceTree = "<group>"; };
+		AA0000000000000001000502 /* ScoreRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreRecognizer.swift; sourceTree = "<group>"; };
+		AA0000000000000001000504 /* ScoreWritingCanvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreWritingCanvas.swift; sourceTree = "<group>"; };
+		AA0000000000000001000506 /* RoundEntryDeckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundEntryDeckView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -295,6 +309,7 @@
 		AA0000000000000000000017 /* Scoring */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000001000506 /* RoundEntryDeckView.swift */,
 				AA0000000000000000000111 /* ScoringView.swift */,
 				AA0000000000000000000112 /* GenericScoringView.swift */,
 				AA0000000000000000000113 /* Phase10ScoringView.swift */,
@@ -315,6 +330,7 @@
 		AA0000000000000000000019 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000001000504 /* ScoreWritingCanvas.swift */,
 				AA0000000000000000000117 /* PlayerBadge.swift */,
 				AA0000000000000000000118 /* ScoreCard.swift */,
 				AA0000000000000000000119 /* RoundTracker.swift */,
@@ -365,6 +381,7 @@
 				AA0000000000000001000301 /* ScoreKeeperUITests.swift */,
 				AA0000000000000001000302 /* ScoreKeeperUITestsLaunchTests.swift */,
 				AA0000000000000001000408 /* LegalSupportAndReviewUITests.swift */,
+				AA000000000000000100041A /* ScoreRecognitionE2ETests.swift */,
 			);
 			path = ScoreKeeperUITests;
 			sourceTree = "<group>";
@@ -374,6 +391,9 @@
 			children = (
 				AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */,
 				AA000000000000000100040A /* TargetScoreEngineTests.swift */,
+				AA0000000000000001000414 /* ScoreRecognizerTests.swift */,
+				AA0000000000000001000416 /* ScoreRecognitionFixtures.swift */,
+				AA0000000000000001000418 /* ScoreRecognizerFixtureTests.swift */,
 			);
 			path = ScoreKeeperTests;
 			sourceTree = "<group>";
@@ -381,6 +401,7 @@
 		AA0000000000000001000328 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AA0000000000000001000502 /* ScoreRecognizer.swift */,
 				AA0000000000000001000322 /* StatsCalculator.swift */,
 				AA0000000000000001000340 /* StoreManager.swift */,
 				AA0000000000000001000342 /* ReviewAskManager.swift */,
@@ -574,6 +595,9 @@
 				AA0000000000000000000210 /* GameConfigView.swift in Sources */,
 				AA0000000000000000000211 /* ScoringView.swift in Sources */,
 				AA0000000000000000000212 /* GenericScoringView.swift in Sources */,
+				AA0000000000000001000501 /* ScoreRecognizer.swift in Sources */,
+				AA0000000000000001000503 /* ScoreWritingCanvas.swift in Sources */,
+				AA0000000000000001000505 /* RoundEntryDeckView.swift in Sources */,
 				AA0000000000000000000213 /* Phase10ScoringView.swift in Sources */,
 				AA0000000000000000000214 /* WhatsForDinnerScoringView.swift in Sources */,
 				AA0000000000000000000215 /* GameOverView.swift in Sources */,
@@ -618,6 +642,7 @@
 				AA0000000000000001000303 /* ScoreKeeperUITests.swift in Sources */,
 				AA0000000000000001000304 /* ScoreKeeperUITestsLaunchTests.swift in Sources */,
 				AA0000000000000001000403 /* LegalSupportAndReviewUITests.swift in Sources */,
+				AA0000000000000001000419 /* ScoreRecognitionE2ETests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -627,6 +652,9 @@
 			files = (
 				AA0000000000000001000354 /* StoreManagerStoreKitTests.swift in Sources */,
 				AA000000000000000100040B /* TargetScoreEngineTests.swift in Sources */,
+				AA0000000000000001000413 /* ScoreRecognizerTests.swift in Sources */,
+				AA0000000000000001000415 /* ScoreRecognitionFixtures.swift in Sources */,
+				AA0000000000000001000417 /* ScoreRecognizerFixtureTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,7 +805,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
@@ -802,7 +830,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -813,7 +841,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
@@ -838,7 +866,7 @@
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -854,7 +882,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = ScoreKeeper;
 			};
 			name = Debug;
@@ -871,7 +899,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = ScoreKeeper;
 			};
 			name = Release;
@@ -888,7 +916,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = ScoreKeeper;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ScoreKeeper.app/ScoreKeeper";
 				TEST_HOST = "$(BUNDLE_LOADER)";
@@ -907,7 +935,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = ScoreKeeper;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/ScoreKeeper.app/ScoreKeeper";
 				TEST_HOST = "$(BUNDLE_LOADER)";

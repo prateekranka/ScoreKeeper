@@ -23,12 +23,12 @@ struct PlayerRosterSheet: View {
                     )
                 } else {
                     ScrollView {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 140))], spacing: AppTheme.spacingSmall) {
+                        LazyVStack(spacing: 0) {
                             ForEach(savedPlayers) { player in
                                 rosterRow(player)
                             }
                         }
-                        .padding(AppTheme.spacingMedium)
+                        .padding(.horizontal, AppTheme.spacingMedium)
                     }
                 }
             }
@@ -81,21 +81,34 @@ struct PlayerRosterSheet: View {
                     selectedNames.insert(player.name)
                 }
             } label: {
-                VStack(spacing: AppTheme.spacingSmall) {
-                    PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small)
-                    Text("\(player.gamesPlayed) games")
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                HStack(spacing: AppTheme.spacingSmall) {
+                    PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small, showName: false)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(player.name)
+                            .font(AppFonts.body.weight(.semibold))
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(1)
+                        Text("\(player.gamesPlayed) games")
+                            .font(AppFonts.caption)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                    }
+                    Spacer(minLength: 0)
+                    Image(systemName: selectedNames.contains(player.name) ? "checkmark.circle.fill" : "circle")
+                        .foregroundStyle(selectedNames.contains(player.name) ? ClubhouseTheme.blue : ClubhouseTheme.inkMuted)
+                        .font(.title3)
+                        .accessibilityHidden(true)
                 }
-                .padding(AppTheme.spacingSmall)
+                .padding(.vertical, 10)
                 .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
                 .background(
                     selectedNames.contains(player.name)
-                        ? PlayerColors.lightColor(for: player.colorIndex)
-                        : Color.clear,
-                    in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                        ? PlayerColors.lightColor(for: player.colorIndex).opacity(0.35)
+                        : Color.clear
                 )
-                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+                .overlay(alignment: .bottom) {
+                    Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
+                }
             }
             .buttonStyle(PressableButtonStyle())
             .accessibilityLabel("\(player.name), \(player.gamesPlayed) games played")

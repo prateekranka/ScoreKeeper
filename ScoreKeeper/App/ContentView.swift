@@ -1,22 +1,67 @@
 import SwiftUI
 import SwiftData
 import StoreKit
+import Observation
 
 @MainActor @Observable
 class NavigationRouter {
     var path = NavigationPath()
+    var isPageExiting = false
+
+    @ObservationIgnored private var reduceMotion = false
+    @ObservationIgnored private var pendingMutations: [() -> Void] = []
+    @ObservationIgnored private var transitionTask: Task<Void, Never>?
+
+    func configure(reduceMotion: Bool) {
+        self.reduceMotion = reduceMotion
+    }
 
     func goHome() {
-        path = NavigationPath()
+        transition {
+            self.path = NavigationPath()
+        }
     }
 
     func push(_ destination: AppDestination) {
-        path.append(destination)
+        transition {
+            self.path.append(destination)
+        }
     }
 
     func pop() {
-        if !path.isEmpty {
-            path.removeLast()
+        guard !path.isEmpty else { return }
+        transition {
+            if !self.path.isEmpty {
+                self.path.removeLast()
+            }
+        }
+    }
+
+    /// Allows multiple navigation operations issued by a single tap (for
+    /// example go home, then open Players) to share one graceful art exit.
+    private func transition(_ mutation: @escaping () -> Void) {
+        if reduceMotion {
+            mutation()
+            return
+        }
+
+        pendingMutations.append(mutation)
+        guard transitionTask == nil else { return }
+
+        isPageExiting = true
+        transitionTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(175))
+            guard !Task.isCancelled, let self else { return }
+
+            let mutations = self.pendingMutations
+            self.pendingMutations.removeAll()
+
+            withAnimation(AppMotion.page) {
+                mutations.forEach { $0() }
+            }
+
+            self.isPageExiting = false
+            self.transitionTask = nil
         }
     }
 }
@@ -38,6 +83,7 @@ enum AppDestination: Hashable {
 struct ContentView: View {
     @Environment(ReviewAskManager.self) private var reviewAskManager
     @Environment(\.requestReview) private var requestReview
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var router = NavigationRouter()
     @State private var didApplyOnboardingReset = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
@@ -73,17 +119,25 @@ struct ContentView: View {
                 }
         }
         .environment(router)
+        .environment(\.pipCountPageIsExiting, router.isPageExiting)
         .fullScreenCover(isPresented: onboardingBinding) {
             OnboardingView {
                 hasCompletedOnboarding = true
             }
+            .environment(\.pipCountPageIsExiting, false)
         }
         .onChange(of: reviewAskManager.reviewRequestPending) { _, isPending in
             guard isPending else { return }
             reviewAskManager.consumeReviewRequest()
             requestReview()
         }
-        .onAppear(perform: resetOnboardingIfRequested)
+        .onChange(of: reduceMotion) { _, newValue in
+            router.configure(reduceMotion: newValue)
+        }
+        .onAppear {
+            router.configure(reduceMotion: reduceMotion)
+            resetOnboardingIfRequested()
+        }
     }
 
     private var onboardingBinding: Binding<Bool> {
@@ -114,6 +168,8 @@ struct ContentView: View {
     }
 }
 
+// MARK: - Onboarding
+
 private struct OnboardingView: View {
     let finish: () -> Void
     @State private var selectedPage = 0
@@ -123,17 +179,18 @@ private struct OnboardingView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack {
+            HStack(spacing: 8) {
                 Text("PipCount")
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                BauhausStarburst(color: ClubhouseTheme.blue, size: 18)
+                BauhausStarburst(color: ClubhouseTheme.blue, size: 19)
 
                 Spacer()
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
+            .pipCountPageContent()
 
             TabView(selection: $selectedPage) {
                 ForEach(Array(pages.enumerated()), id: \.element.id) { index, page in
@@ -147,8 +204,10 @@ private struct OnboardingView: View {
                 OnboardingPageDots(count: pages.count, selectedPage: selectedPage)
 
                 AppActionButton(role: .primary(ClubhouseTheme.felt), action: primaryAction) {
-                    Label(selectedPage == pages.count - 1 ? "Start keeping score" : "Continue",
-                          systemImage: "arrow.right.circle.fill")
+                    Label(
+                        selectedPage == pages.count - 1 ? "Start keeping score" : "Continue",
+                        systemImage: "arrow.right.circle.fill"
+                    )
                 }
                 .accessibilityIdentifier("onboarding_primary_button")
 
@@ -162,6 +221,7 @@ private struct OnboardingView: View {
             .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.bottom, AppTheme.spacingSmall)
+            .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
         }
         .appBackground()
     }
@@ -181,68 +241,95 @@ private struct OnboardingView: View {
 private struct OnboardingPageView: View {
     let page: OnboardingPage
     let highlightsVisible: Bool
+
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                    Text(page.title)
-                        .font(AppFonts.hero)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .multilineTextAlignment(.leading)
-                        .accessibilityIdentifier("onboarding_page_title")
-                        .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 0.82 : 1)
+            Group {
+                if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+                    HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
+                        onboardingCopy
+                            .frame(maxWidth: 360, alignment: .leading)
 
-                    Text(page.message)
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
+                        OnboardingArtwork(page: page, isVisible: highlightsVisible)
+                            .frame(minHeight: 500)
+                    }
+                    .padding(.top, AppTheme.spacingLarge)
+                } else {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
+                        onboardingCopy
 
-                    Rectangle()
-                        .fill(page.tint)
-                        .frame(width: 78, height: 4)
+                        OnboardingArtwork(page: page, isVisible: highlightsVisible)
+                            .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 390 : 430)
+                    }
                 }
-
-                OnboardingArtwork(page: page, isVisible: highlightsVisible)
-                    .padding(.top, 4)
             }
             .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.top, AppTheme.spacingMedium)
             .padding(.bottom, 132)
+            .pipCountPageContent()
         }
         .accessibilityElement(children: .contain)
+    }
+
+    private var onboardingCopy: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text(page.title)
+                .font(AppFonts.hero)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .multilineTextAlignment(.leading)
+                .accessibilityIdentifier("onboarding_page_title")
+                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 0.78 : 1)
+
+            Text(page.message)
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Rectangle()
+                .fill(page.tint)
+                .frame(width: 82, height: 4)
+                .padding(.top, 4)
+        }
     }
 }
 
 private struct OnboardingArtwork: View {
     let page: OnboardingPage
     let isVisible: Bool
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var scoreInput = 12
 
     var body: some View {
-        ZStack {
-            artworkBackdrop
+        GeometryReader { proxy in
+            ZStack {
+                artworkBackdrop
+                    .frame(width: proxy.size.width, height: proxy.size.height)
 
-            artworkContent
-                .padding(AppTheme.spacingMedium)
-                .background {
-                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge)
-                        .fill(ClubhouseTheme.paperCard)
-                        .shadow(color: ClubhouseTheme.ink.opacity(0.18), radius: 0, x: 5, y: 6)
-                }
-                .overlay {
-                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge)
-                        .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1.25)
-                }
-                .padding(.horizontal, 22)
-                .rotationEffect(.degrees(page == .setupFast ? 2 : page == .toolsAndHistory ? -1.5 : 0))
+                artworkContent
+                    .padding(AppTheme.spacingMedium)
+                    .frame(maxWidth: min(proxy.size.width * 0.86, 470))
+                    .background {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
+                            .fill(ClubhouseTheme.paperCard.opacity(0.96))
+                            .shadow(color: ClubhouseTheme.artShadow, radius: 18, y: 12)
+                    }
+                    .overlay {
+                        RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
+                            .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                    }
+                    .rotationEffect(.degrees(page == .setupFast ? 1.4 : page == .toolsAndHistory ? -1.2 : 0))
+                    .offset(y: proxy.size.height * 0.11)
+            }
         }
-        .frame(maxWidth: .infinity, minHeight: 322)
-        .scaleEffect(isVisible || reduceMotion ? 1 : 0.97)
+        .frame(maxWidth: .infinity)
+        .scaleEffect(isVisible || reduceMotion ? 1 : 0.965)
         .opacity(isVisible ? 1 : 0)
-        .animation(reduceMotion ? AppMotion.fade : AppMotion.criticallyDamped, value: isVisible)
+        .animation(reduceMotion ? AppMotion.fade : AppMotion.artEntrance, value: isVisible)
         .accessibilityHidden(true)
     }
 
@@ -250,38 +337,11 @@ private struct OnboardingArtwork: View {
     private var artworkBackdrop: some View {
         switch page {
         case .scoreFast:
-            ZStack {
-                BauhausTargetArtwork(accent: ClubhouseTheme.red)
-                    .frame(width: 230, height: 230)
-                    .offset(x: 92, y: -34)
-                BauhausHalftone(color: ClubhouseTheme.blue)
-                    .frame(width: 108, height: 118)
-                    .offset(x: -130, y: 92)
-                BauhausStarburst(color: ClubhouseTheme.blue, size: 38)
-                    .offset(x: -138, y: -110)
-            }
+            PipCountGeometricArtwork(scene: .onboardingScore)
         case .setupFast:
-            ZStack {
-                BauhausBlocksArtwork()
-                    .frame(height: 250)
-                    .offset(y: 40)
-                BauhausStarburst(color: ClubhouseTheme.red, size: 40)
-                    .offset(x: 132, y: -116)
-            }
+            PipCountGeometricArtwork(scene: .onboardingSetup)
         case .toolsAndHistory:
-            ZStack {
-                Circle()
-                    .fill(ClubhouseTheme.red)
-                    .frame(width: 180, height: 180)
-                    .offset(x: 104, y: -58)
-                Circle()
-                    .fill(ClubhouseTheme.blue)
-                    .frame(width: 126, height: 126)
-                    .offset(x: -136, y: 88)
-                BauhausHalftone(color: ClubhouseTheme.ink)
-                    .frame(width: 90, height: 130)
-                    .offset(x: 142, y: 84)
-            }
+            PipCountGeometricArtwork(scene: .onboardingHistory)
         }
     }
 
@@ -296,6 +356,7 @@ private struct OnboardingArtwork: View {
                     Spacer()
                     Text("Live")
                         .columnHeaderStyle()
+                        .foregroundStyle(ClubhouseTheme.red)
                 }
 
                 VStack(spacing: 0) {
@@ -372,7 +433,8 @@ private struct OnboardingGameCover: View {
     var body: some View {
         VStack(spacing: 5) {
             GameTypeArtwork(gameType: gameType)
-                .frame(height: 36)
+                .frame(height: 42)
+
             Text(gameType.displayName)
                 .font(AppFonts.caption)
                 .foregroundStyle(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.ink)
@@ -380,11 +442,11 @@ private struct OnboardingGameCover: View {
                 .minimumScaleFactor(0.62)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 76)
+        .frame(height: 82)
         .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                .strokeBorder(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.rule, lineWidth: 1)
+                .strokeBorder(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.rule, lineWidth: isSelected ? 2 : 1)
         }
     }
 }
@@ -397,7 +459,7 @@ private struct OnboardingRosterLine: View {
         HStack(spacing: AppTheme.spacingSmall) {
             PlayerColorPip(colorIndex: colorIndex)
             Text(name)
-                .font(AppFonts.body)
+                .font(AppFonts.body.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
             Spacer()
@@ -420,7 +482,13 @@ private struct OnboardingPegStrip: View {
         HStack(spacing: 6) {
             ForEach(1...10, id: \.self) { phase in
                 Circle()
-                    .fill(phase < currentPhase ? ClubhouseTheme.felt : phase == currentPhase ? ClubhouseTheme.brass : ClubhouseTheme.paperSunken)
+                    .fill(
+                        phase < currentPhase
+                            ? ClubhouseTheme.felt
+                            : phase == currentPhase
+                                ? ClubhouseTheme.brass
+                                : ClubhouseTheme.paperSunken
+                    )
                     .frame(width: 13, height: 13)
                     .overlay {
                         Circle()
@@ -455,30 +523,6 @@ private struct OnboardingStatsLine: View {
     }
 }
 
-private struct OnboardingHighlightRow: View {
-    let highlight: String
-    let tint: Color
-
-    var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(ClubhouseTheme.felt)
-                .accessibilityHidden(true)
-            Text(highlight)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .fixedSize(horizontal: false, vertical: true)
-            Spacer(minLength: AppTheme.spacingSmall)
-        }
-        .padding(AppTheme.spacingSmall)
-        .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-        }
-    }
-}
-
 private struct OnboardingPageDots: View {
     let count: Int
     let selectedPage: Int
@@ -487,10 +531,9 @@ private struct OnboardingPageDots: View {
     var body: some View {
         HStack(spacing: 7) {
             ForEach(0..<count, id: \.self) { index in
-                Circle()
+                Capsule()
                     .fill(index == selectedPage ? ClubhouseTheme.felt : ClubhouseTheme.ink.opacity(0.28))
-                    .frame(width: 8, height: 8)
-                    .scaleEffect(index == selectedPage && !reduceMotion ? 1.25 : 1)
+                    .frame(width: index == selectedPage ? 24 : 8, height: 8)
                     .opacity(index == selectedPage ? 1 : 0.55)
                     .animation(reduceMotion ? AppMotion.fade : AppMotion.state, value: selectedPage)
             }
@@ -524,29 +567,18 @@ private enum OnboardingPage: CaseIterable, Identifiable {
         case .setupFast:
             return "Pick a game, add your crew once, reuse them every night."
         case .toolsAndHistory:
-            return "Final scores, stats, and rematches - saved automatically."
-        }
-    }
-
-    var highlights: [String] {
-        switch self {
-        case .scoreFast:
-            return ["Live ledger totals", "Large score controls", "Undo for scoring mistakes"]
-        case .setupFast:
-            return ["Scoreboard, Ten Phases, and What's for Dinner", "Reusable player roster", "Game-specific setup"]
-        case .toolsAndHistory:
-            return ["Final standings archive", "Player stats and head-to-heads", "Rematches with the same crew"]
+            return "Final scores, stats, and rematches — saved automatically."
         }
     }
 
     var tint: Color {
         switch self {
         case .scoreFast:
-            return PlayerColors.palette[0]
+            return ClubhouseTheme.blue
         case .setupFast:
-            return PlayerColors.palette[1]
+            return ClubhouseTheme.red
         case .toolsAndHistory:
-            return PlayerColors.palette[3]
+            return ClubhouseTheme.green
         }
     }
 }

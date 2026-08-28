@@ -7,55 +7,63 @@ struct GameTypeTile: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: AppTheme.spacingMedium) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(gameType.displayName)
-                        .font(AppFonts.tileTitle)
+            VStack(alignment: .leading, spacing: 18) {
+                HStack(spacing: 10) {
+                    Text(gameType.displayName == "Scoreboard" ? "PIPCOUNT / SCOREBOARD" : "PIPCOUNT / \(gameType.displayName.uppercased())")
+                        .font(AppFonts.columnHeader)
+                        .tracking(1.05)
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.75)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
 
-                    Text(gameType.subtitle)
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .multilineTextAlignment(.leading)
+                    Spacer(minLength: AppTheme.spacingSmall)
 
-                    HStack(spacing: 6) {
-                        Circle()
-                            .stroke(gameType.color, lineWidth: 2)
-                            .frame(width: 24, height: 24)
-                            .overlay {
-                                Circle()
-                                    .fill(gameType.color)
-                                    .frame(width: 12, height: 12)
-                            }
-
-                    }
-                    .padding(.top, 8)
+                    Text("\(gameType.minPlayers)–\(gameType.maxPlayers)")
+                        .font(AppFonts.columnHeader)
+                        .monospacedDigit()
+                        .foregroundStyle(ClubhouseTheme.ink)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
 
                 GameTypeArtwork(gameType: gameType)
-                    .frame(width: 154, height: 142)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 184)
+
+                HStack(alignment: .bottom, spacing: 14) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(gameType.displayName)
+                            .font(AppFonts.tileTitle)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.78)
+
+                        Text(gameType.subtitle)
+                            .font(AppFonts.body)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 14, weight: .black))
+                        .foregroundStyle(ClubhouseTheme.onPrimary)
+                        .frame(width: 44, height: 44)
+                        .background(gameType.color, in: Circle())
+                        .shadow(color: ClubhouseTheme.artShadow.opacity(0.42), radius: 7, y: 4)
+                }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, AppTheme.spacingMedium)
-            .padding(.vertical, 18)
+            .padding(20)
             .background {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
                     .fill(ClubhouseTheme.paperCard)
-                    .shadow(color: ClubhouseTheme.paperShadow, radius: 0, x: 3, y: 4)
             }
-            .overlay {
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge, style: .continuous)
-                    .strokeBorder(gameType.color, lineWidth: 2)
+            .overlay(alignment: .top) {
+                Rectangle()
+                    .fill(gameType.color)
+                    .frame(height: 4)
             }
-            .overlay {
-                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusLarge - 4, style: .continuous)
-                    .inset(by: 4)
-                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.75)
-            }
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(accessibilityID ?? "")
@@ -65,174 +73,227 @@ struct GameTypeTile: View {
 
 struct GameTypeArtwork: View {
     let gameType: GameType
-    @Environment(\.colorScheme) private var colorScheme
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.pipCountPageIsExiting) private var pageIsExiting
+    @State private var appeared = false
 
     var body: some View {
-        GeometryReader { proxy in
-            let scale = min(proxy.size.width / 150, proxy.size.height / 132)
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion)) { timeline in
+            GeometryReader { proxy in
+                let time = timeline.date.timeIntervalSinceReferenceDate
 
-            artwork
-                .frame(width: 150, height: 132)
-                .scaleEffect(scale)
+                ZStack {
+                    constructionGrid
+
+                    switch gameType {
+                    case .generic:
+                        scoreboardComposition(size: proxy.size, time: time)
+                    case .phase10:
+                        phaseComposition(size: proxy.size, time: time)
+                    case .whatsForDinner:
+                        decisionComposition(size: proxy.size, time: time)
+                    }
+                }
                 .frame(width: proxy.size.width, height: proxy.size.height)
+                .clipped()
+            }
         }
+        .onAppear {
+            if reduceMotion {
+                appeared = true
+            } else {
+                withAnimation(AppMotion.artEntrance) {
+                    appeared = true
+                }
+            }
+        }
+        .onDisappear { appeared = false }
         .accessibilityHidden(true)
     }
 
+    private var isActive: Bool {
+        appeared && !pageIsExiting
+    }
+
+    private var constructionGrid: some View {
+        GeometryReader { proxy in
+            ZStack {
+                Path { path in
+                    path.move(to: CGPoint(x: proxy.size.width * 0.12, y: proxy.size.height * 0.52))
+                    path.addLine(to: CGPoint(x: proxy.size.width * 0.88, y: proxy.size.height * 0.52))
+                    path.move(to: CGPoint(x: proxy.size.width * 0.50, y: proxy.size.height * 0.10))
+                    path.addLine(to: CGPoint(x: proxy.size.width * 0.50, y: proxy.size.height * 0.90))
+                }
+                .stroke(ClubhouseTheme.ink.opacity(0.15), style: StrokeStyle(lineWidth: 1, dash: [2, 6]))
+
+                Circle()
+                    .stroke(ClubhouseTheme.ink.opacity(0.17), lineWidth: 1)
+                    .frame(width: min(proxy.size.width, proxy.size.height) * 0.72)
+            }
+        }
+        .opacity(isActive ? 1 : 0)
+        .animation(AppMotion.fade, value: isActive)
+    }
+
     @ViewBuilder
-    private var artwork: some View {
-        if colorScheme == .light {
-            PipCountAssetArtwork(asset: illustrationAsset)
-        } else {
-            legacyArtwork
+    private func scoreboardComposition(size: CGSize, time: TimeInterval) -> some View {
+        ZStack {
+            Rectangle()
+                .fill(ClubhouseTheme.blue)
+                .frame(width: size.width * 0.38, height: size.height * 0.72)
+                .position(x: size.width * 0.46, y: size.height * 0.50)
+                .tileArtMotion(active: isActive, index: 1, entry: CGSize(width: 0, height: 34), scale: 0.60)
+
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: min(size.width, size.height) * 0.42)
+                .position(x: size.width * 0.62, y: size.height * 0.62 + wave(time, phase: 0.5, amplitude: 4))
+                .tileArtMotion(active: isActive, index: 2, entry: CGSize(width: 24, height: 24), scale: 0.42)
+
+            Rectangle()
+                .fill(ClubhouseTheme.ink)
+                .frame(width: max(10, size.width * 0.045), height: size.height * 0.88)
+                .rotationEffect(.degrees(43 + wave(time, phase: 1.2, amplitude: 1.6)))
+                .position(x: size.width * 0.52, y: size.height * 0.49)
+                .tileArtMotion(active: isActive, index: 3, entry: CGSize(width: 0, height: -36), rotation: 18, scale: 0.62)
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: size.width * 0.48, height: max(7, size.height * 0.055))
+                .position(x: size.width * 0.55, y: size.height * 0.31)
+                .tileArtMotion(active: isActive, index: 4, entry: CGSize(width: -32, height: 0), scale: 0.58)
+
+            BauhausStarburst(color: ClubhouseTheme.paperCard, size: min(size.width, size.height) * 0.20)
+                .position(x: size.width * 0.40, y: size.height * 0.35)
+                .rotationEffect(.degrees(wave(time, phase: 2.0, amplitude: 8)))
+                .tileArtMotion(active: isActive, index: 5, entry: CGSize(width: -18, height: -18), rotation: -20, scale: 0.28)
         }
     }
 
-    private var illustrationAsset: PipCountIllustrationAsset {
-        switch gameType {
-        case .generic:
-            return .scoreEmblem
-        case .phase10:
-            return .crewEmblem
-        case .whatsForDinner:
-            return .celebrationEmblem
+    @ViewBuilder
+    private func phaseComposition(size: CGSize, time: TimeInterval) -> some View {
+        ZStack {
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: size.width * 0.55, height: size.height * 0.72)
+                .position(x: size.width * 0.50, y: size.height * 0.51)
+                .tileArtMotion(active: isActive, index: 1, entry: CGSize(width: 0, height: 34), scale: 0.56)
+
+            HStack(spacing: size.width * 0.025) {
+                ForEach(0..<5, id: \.self) { index in
+                    Rectangle()
+                        .fill(index < 2 ? ClubhouseTheme.yellow : ClubhouseTheme.paperCard)
+                        .frame(width: size.width * 0.07, height: size.width * 0.07)
+                        .tileArtMotion(active: isActive, index: index + 2, entry: CGSize(width: 0, height: 24), scale: 0.24)
+                }
+            }
+            .position(x: size.width * 0.50, y: size.height * 0.51)
+
+            Text("10")
+                .font(.system(size: min(size.width, size.height) * 0.34, weight: .black, design: .default))
+                .monospacedDigit()
+                .foregroundStyle(ClubhouseTheme.ink)
+                .position(x: size.width * 0.50, y: size.height * 0.51 + wave(time, phase: 0.7, amplitude: 3))
+                .tileArtMotion(active: isActive, index: 4, entry: CGSize(width: 0, height: -24), scale: 0.44)
+
+            Rectangle()
+                .fill(ClubhouseTheme.ink)
+                .frame(width: max(9, size.width * 0.038), height: size.height * 0.82)
+                .rotationEffect(.degrees(-44 + wave(time, phase: 1.5, amplitude: 1.5)))
+                .position(x: size.width * 0.50, y: size.height * 0.50)
+                .tileArtMotion(active: isActive, index: 6, entry: CGSize(width: 0, height: -34), rotation: -18, scale: 0.64)
+
+            Circle()
+                .fill(ClubhouseTheme.blue)
+                .frame(width: min(size.width, size.height) * 0.20)
+                .position(x: size.width * 0.29, y: size.height * 0.24 + wave(time, phase: 2.1, amplitude: 4))
+                .tileArtMotion(active: isActive, index: 7, entry: CGSize(width: -22, height: -20), scale: 0.30)
         }
     }
 
     @ViewBuilder
-    private var legacyArtwork: some View {
-        switch gameType {
-        case .generic:
-            ZStack {
-                Circle()
-                    .fill(ClubhouseTheme.blue)
-                    .frame(width: 108, height: 108)
-                Circle()
-                    .fill(ClubhouseTheme.yellow)
-                    .frame(width: 76, height: 76)
-                    .offset(x: 24, y: 22)
-                Circle()
-                    .fill(ClubhouseTheme.paperCard)
-                    .frame(width: 46, height: 46)
-                Rectangle()
-                    .fill(ClubhouseTheme.ruleStrong)
-                    .frame(width: 1, height: 132)
-                Rectangle()
-                    .fill(ClubhouseTheme.ruleStrong)
-                    .frame(width: 132, height: 1)
-            }
-        case .phase10:
-            ZStack {
-                Circle()
-                    .trim(from: 0, to: 0.25)
-                    .stroke(ClubhouseTheme.yellow, lineWidth: 30)
-                Circle()
-                    .trim(from: 0.25, to: 0.5)
-                    .stroke(ClubhouseTheme.green, lineWidth: 30)
-                Circle()
-                    .trim(from: 0.5, to: 0.75)
-                    .stroke(ClubhouseTheme.blue, lineWidth: 30)
-                Circle()
-                    .trim(from: 0.75, to: 1)
-                    .stroke(ClubhouseTheme.red, lineWidth: 30)
-                Text("10")
-                    .font(AppFonts.scoreMedium)
-                    .foregroundStyle(ClubhouseTheme.ink)
-            }
-            .padding(22)
-        case .whatsForDinner:
-            ZStack {
-                Circle()
-                    .fill(ClubhouseTheme.blue)
-                    .frame(width: 82, height: 82)
-                    .offset(x: -18, y: -20)
-                Circle()
-                    .fill(ClubhouseTheme.yellow)
-                    .frame(width: 92, height: 92)
-                    .offset(x: -36, y: 38)
-                Rectangle()
-                    .fill(ClubhouseTheme.ink)
-                    .frame(width: 96, height: 48)
-                    .offset(x: 24, y: 37)
-                TriangleShape()
-                    .fill(ClubhouseTheme.green)
-                    .frame(width: 44, height: 62)
-                    .rotationEffect(.degrees(50))
-                    .offset(x: 48, y: -24)
-            }
+    private func decisionComposition(size: CGSize, time: TimeInterval) -> some View {
+        ZStack {
+            Circle()
+                .fill(ClubhouseTheme.yellow)
+                .frame(width: min(size.width, size.height) * 0.52)
+                .position(x: size.width * 0.48, y: size.height * 0.48 + wave(time, phase: 0.2, amplitude: 4))
+                .tileArtMotion(active: isActive, index: 1, entry: CGSize(width: 0, height: 30), scale: 0.46)
+
+            Circle()
+                .fill(ClubhouseTheme.blue)
+                .frame(width: min(size.width, size.height) * 0.31)
+                .position(x: size.width * 0.34, y: size.height * 0.32 + wave(time, phase: 1.0, amplitude: 4))
+                .tileArtMotion(active: isActive, index: 2, entry: CGSize(width: -26, height: -24), scale: 0.34)
+
+            TriangleShape()
+                .fill(ClubhouseTheme.green)
+                .frame(width: size.width * 0.28, height: size.height * 0.36)
+                .position(x: size.width * 0.63, y: size.height * 0.66)
+                .tileArtMotion(active: isActive, index: 3, entry: CGSize(width: 24, height: 26), rotation: 14, scale: 0.38)
+
+            Rectangle()
+                .fill(ClubhouseTheme.ink)
+                .frame(width: max(10, size.width * 0.045), height: size.height * 0.82)
+                .rotationEffect(.degrees(32 + wave(time, phase: 1.8, amplitude: 1.5)))
+                .position(x: size.width * 0.53, y: size.height * 0.49)
+                .tileArtMotion(active: isActive, index: 4, entry: CGSize(width: 0, height: -34), rotation: 18, scale: 0.60)
+
+            Rectangle()
+                .fill(ClubhouseTheme.red)
+                .frame(width: size.width * 0.18, height: size.width * 0.18)
+                .rotationEffect(.degrees(45 + wave(time, phase: 2.6, amplitude: 3)))
+                .position(x: size.width * 0.72, y: size.height * 0.30)
+                .tileArtMotion(active: isActive, index: 5, entry: CGSize(width: 24, height: -22), rotation: 22, scale: 0.32)
         }
+    }
+
+    private func wave(_ time: TimeInterval, phase: Double, amplitude: CGFloat) -> CGFloat {
+        guard !reduceMotion else { return 0 }
+        return CGFloat(sin(time * 0.72 + phase)) * amplitude
     }
 }
 
-private struct ScoreSheetArtwork: View {
-    let gameType: GameType
+private struct TileArtMotionModifier: ViewModifier {
+    let active: Bool
+    let index: Int
+    let entry: CGSize
+    let rotation: Double
+    let scale: CGFloat
 
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                .fill(ClubhouseTheme.paperCard)
-                .overlay {
-                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-                }
-
-            sheetContent
-                .padding(7)
-        }
-        .frame(width: 62, height: 46)
+    func body(content: Content) -> some View {
+        content
+            .opacity(active ? 1 : 0)
+            .offset(active ? .zero : entry)
+            .rotationEffect(.degrees(active ? 0 : rotation))
+            .scaleEffect(active ? 1 : scale)
+            .blur(radius: active ? 0 : 1.5)
+            .animation(
+                active
+                    ? AppMotion.artEntrance.delay(min(Double(index) * 0.045, 0.28))
+                    : AppMotion.artExit,
+                value: active
+            )
     }
+}
 
-    @ViewBuilder
-    private var sheetContent: some View {
-        switch gameType {
-        case .generic:
-            VStack(spacing: 5) {
-                ledgerLine(colorIndex: 0, score: "12")
-                ledgerLine(colorIndex: 1, score: "7")
-                ledgerLine(colorIndex: 2, score: "24")
-            }
-        case .whatsForDinner:
-            HStack(spacing: 6) {
-                Image(systemName: "fork.knife")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(gameType.color)
-                VStack(spacing: 5) {
-                    ledgerLine(colorIndex: 3, score: "3")
-                    ledgerLine(colorIndex: 4, score: "9")
-                }
-            }
-        case .phase10:
-            VStack(spacing: 4) {
-                ForEach(0..<2, id: \.self) { row in
-                    HStack(spacing: 4) {
-                        ForEach(0..<5, id: \.self) { column in
-                            RoundedRectangle(cornerRadius: 1.5)
-                                .fill(row * 5 + column < 3 ? gameType.color : ClubhouseTheme.paperSunken)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 1.5)
-                                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 0.75)
-                                }
-                                .frame(width: 8, height: 8)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private func ledgerLine(colorIndex: Int, score: String) -> some View {
-        HStack(spacing: 4) {
-            Circle()
-                .fill(PlayerColors.color(for: colorIndex))
-                .frame(width: 5, height: 5)
-
-            Rectangle()
-                .fill(ClubhouseTheme.rule)
-                .frame(height: 1)
-
-            Text(score)
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.ink)
-        }
+private extension View {
+    func tileArtMotion(
+        active: Bool,
+        index: Int,
+        entry: CGSize,
+        rotation: Double = 0,
+        scale: CGFloat = 0.72
+    ) -> some View {
+        modifier(
+            TileArtMotionModifier(
+                active: active,
+                index: index,
+                entry: entry,
+                rotation: rotation,
+                scale: scale
+            )
+        )
     }
 }

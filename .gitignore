@@ -18,6 +18,23 @@ DerivedData/
 node_modules/
 .playwright-cli/
 
+# Local agent and visual review output
+.argent/
+redesign-loop/logs/
+redesign-loop/emil-skills/
+redesign-loop/STATUS
+redesign-loop/app/.context/
+redesign-loop/reports/iter-*/
+design-explorations/mascot-rive/bridge-out/
+design-explorations/mascot-rive/create-noz.json
+design-explorations/mascot-rive/pip-hero-on-paper.png
+design/opendesign-pipcount-bauhaus-handoff/MANIFEST.sha256
+design/opendesign-pipcount-bauhaus-handoff/opendesign-output/file-history/
+design/opendesign-pipcount-bauhaus-handoff/opendesign-output/*.artifact.json
+design/opendesign-pipcount-bauhaus-handoff/references/desktop-inspiration/
+design/opendesign-pipcount-bauhaus-handoff/references/static-prototype-a417a5d/
+design/opendesign-pipcount-bauhaus-handoff/swift/
+
 # Swift Package Manager
 .build/
 Packages/

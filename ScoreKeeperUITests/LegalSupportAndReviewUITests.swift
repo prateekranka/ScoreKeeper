@@ -23,11 +23,14 @@ final class LegalSupportAndReviewUITests: XCTestCase {
     }
 
     func testLegalSupportLinksAreReachable() throws {
-        let legalSupportButton = app.buttons["legal_support_button"]
+        let sidebarLegalSupportButton = app.buttons["sidebar_legal_support_button"]
+        let legalSupportButton = sidebarLegalSupportButton.waitForExistence(timeout: 1)
+            ? sidebarLegalSupportButton
+            : app.buttons["legal_support_button"]
         XCTAssertTrue(legalSupportButton.waitForExistence(timeout: 3))
         legalSupportButton.tap()
 
-        XCTAssertTrue(app.navigationBars["Legal & Support"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.navigationBars["More"].waitForExistence(timeout: 6))
 
         let privacyLink = app.descendants(matching: .any)["privacy_policy_link"]
         let supportLink = app.descendants(matching: .any)["support_link"]
@@ -54,7 +57,7 @@ final class LegalSupportAndReviewUITests: XCTestCase {
         }
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
 
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         app.buttons["game_tile_generic"].tap()
         fillPlayerNames(["Ada", "Ben"])
         app.buttons["start_game_button"].tap()
@@ -63,6 +66,10 @@ final class LegalSupportAndReviewUITests: XCTestCase {
         XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 3))
 
         app.buttons["submit_round_button"].tap()
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
         app.buttons["end_game_button"].tap()
         app.alerts.buttons["End Game"].tap()
 

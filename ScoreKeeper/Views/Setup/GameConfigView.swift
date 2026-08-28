@@ -8,12 +8,15 @@ struct GameConfigView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
     @Environment(StoreManager.self) private var storeManager
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var winCondition: WinCondition = .highestScore
     @State private var phase10SkipOnFail = false
     @State private var targetScoreText = ""
     @State private var showPaywall = false
     @State private var saveError: String?
+    @State private var contentVisible = false
 
     private var targetScoreError: String? {
         guard gameType == .generic else { return nil }
@@ -31,13 +34,19 @@ struct GameConfigView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
-                headerSection
-                configSection
+                GameConfigHero(gameType: gameType)
+                    .staggeredEntrance(visible: contentVisible, index: 0)
+
+                responsiveConfiguration
             }
-            .padding(AppTheme.spacingMedium)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.top, AppTheme.spacingSmall)
+            .padding(.bottom, 112)
+            .pipCountPageContent(maxWidth: 980)
         }
         .appBackground()
         .navigationTitle("Game Settings")
+        .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
             startButton
                 .padding(.vertical, AppTheme.spacingSmall)
@@ -45,9 +54,11 @@ struct GameConfigView: View {
                 .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.bottom, AppTheme.spacingSmall)
+                .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
         }
         .onAppear {
             winCondition = gameType.defaultWinCondition
+            contentVisible = true
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView(onUnlocked: startConfiguredGame)
@@ -66,32 +77,65 @@ struct GameConfigView: View {
         }
     }
 
-    private var headerSection: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: gameType.icon)
-                .font(.title2)
-                .foregroundStyle(gameType.color)
-            Text(gameType.displayName)
-                .font(AppFonts.title)
-                .foregroundStyle(ClubhouseTheme.ink)
+    @ViewBuilder
+    private var responsiveConfiguration: some View {
+        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+            HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
+                configSection
+                    .frame(maxWidth: .infinity)
+                    .staggeredEntrance(visible: contentVisible, index: 1)
+
+                lineupSection
+                    .frame(width: 320)
+                    .staggeredEntrance(visible: contentVisible, index: 2)
+            }
+        } else {
+            VStack(spacing: AppTheme.spacingMedium) {
+                configSection
+                    .staggeredEntrance(visible: contentVisible, index: 1)
+                lineupSection
+                    .staggeredEntrance(visible: contentVisible, index: 2)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private var configSection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            if gameType == .generic {
-                Text("How to win?")
-                    .columnHeaderStyle()
+        VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Rules for Tonight")
+                        .font(AppFonts.title)
+                        .foregroundStyle(ClubhouseTheme.ink)
 
-                Picker("Win Condition", selection: $winCondition) {
-                    Text("Highest Score Wins").tag(WinCondition.highestScore)
-                    Text("Lowest Score Wins").tag(WinCondition.lowestScore)
+                    Text("Set this once. PipCount handles the rest.")
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
-                .pickerStyle(.segmented)
-                .accessibilityIdentifier("win_condition_picker")
+
+                Spacer()
+
+                Rectangle()
+                    .fill(gameType.color)
+                    .frame(width: 18, height: 18)
+                    .rotationEffect(.degrees(45))
+            }
+
+            if gameType == .generic {
+                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                    Text("How to win?")
+                        .columnHeaderStyle()
+
+                    Picker("Win Condition", selection: $winCondition) {
+                        Text("Highest Score Wins").tag(WinCondition.highestScore)
+                        Text("Lowest Score Wins").tag(WinCondition.lowestScore)
+                    }
+                    .pickerStyle(.segmented)
+                    .accessibilityIdentifier("win_condition_picker")
+                }
+
+                Rectangle()
+                    .fill(ClubhouseTheme.rule)
+                    .frame(height: 1)
 
                 targetScoreSection
             }
@@ -99,34 +143,85 @@ struct GameConfigView: View {
             if gameType == .phase10 {
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                     Toggle("No repeat rounds", isOn: $phase10SkipOnFail)
-                        .font(AppFonts.body)
+                        .font(AppFonts.body.weight(.semibold))
                         .tint(ClubhouseTheme.felt)
 
                     Text("Players advance to the next stage every round, even when they do not complete the current stage.")
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
-        .padding(AppTheme.spacingMedium)
+        .padding(AppTheme.spacingLarge)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+    }
+
+    private var lineupSection: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Tonight's Lineup")
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Text(playerNames.count.quantityText("player"))
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+
+            VStack(spacing: 0) {
+                ForEach(Array(playerNames.enumerated()), id: \.offset) { index, name in
+                    HStack(spacing: AppTheme.spacingSmall) {
+                        PlayerColorPip(colorIndex: index, size: 18)
+                        Text(name)
+                            .font(AppFonts.body.weight(.semibold))
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(1)
+                        Spacer()
+                        Text("\(index + 1)")
+                            .columnHeaderStyle()
+                            .monospacedDigit()
+                    }
+                    .padding(.vertical, 12)
+                    .overlay(alignment: .bottom) {
+                        Rectangle()
+                            .fill(ClubhouseTheme.rule)
+                            .frame(height: 1)
+                    }
+                }
+            }
+
+            HStack(spacing: 7) {
+                Rectangle()
+                    .fill(ClubhouseTheme.green)
+                    .frame(width: 8, height: 8)
+                    .rotationEffect(.degrees(45))
+
+                Text("Ready to score")
+                    .font(AppFonts.caption.weight(.bold))
+                    .foregroundStyle(ClubhouseTheme.green)
+            }
+        }
+        .padding(AppTheme.spacingLarge)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private var targetScoreSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             Text("Target score (optional)")
-                .font(AppFonts.body)
+                .font(AppFonts.body.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.ink)
 
             TextField("Manual end only", text: $targetScoreText)
                 .font(AppFonts.body)
                 .keyboardType(.numberPad)
                 .textFieldStyle(.plain)
-                .padding(.vertical, AppTheme.spacingSmall)
-                .overlay(alignment: .bottom) {
-                    Rectangle()
-                        .fill(ClubhouseTheme.ruleStrong)
-                        .frame(height: 1)
+                .padding(.horizontal, AppTheme.spacingMedium)
+                .frame(minHeight: 56)
+                .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                        .strokeBorder(targetScoreError == nil ? ClubhouseTheme.rule : ClubhouseTheme.red, lineWidth: 1)
                 }
                 .accessibilityLabel("Target score, optional")
                 .accessibilityHint("Leave blank to end the game manually")
@@ -134,13 +229,15 @@ struct GameConfigView: View {
 
             if let targetScoreError {
                 Text(targetScoreError)
-                    .font(AppFonts.caption)
+                    .font(AppFonts.caption.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.lacquer)
                     .accessibilityIdentifier("target_score_error")
             } else if let targetScore {
-                Text(winCondition == .highestScore
-                     ? "The first player to reach \(targetScore) after a submitted round ends the game; highest total wins."
-                     : "When any player reaches \(targetScore) after a submitted round, the game ends; lowest total wins.")
+                Text(
+                    winCondition == .highestScore
+                        ? "The first player to reach \(targetScore) after a submitted round ends the game; highest total wins."
+                        : "When any player reaches \(targetScore) after a submitted round, the game ends; lowest total wins."
+                )
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
             } else {
@@ -149,7 +246,6 @@ struct GameConfigView: View {
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
-        .padding(.top, AppTheme.spacingSmall)
     }
 
     private var startButton: some View {
@@ -210,6 +306,59 @@ struct GameConfigView: View {
                 saved.gamesPlayed = 1
                 modelContext.insert(saved)
             }
+        }
+    }
+}
+
+private struct GameConfigHero: View {
+    let gameType: GameType
+
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        Group {
+            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+                HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
+                    copy
+                        .frame(maxWidth: 390, alignment: .leading)
+
+                    PipCountGeometricArtwork(scene: .gameSettings)
+                        .frame(maxWidth: 500)
+                        .frame(height: 290)
+                }
+            } else {
+                HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
+                    copy
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        PipCountGeometricArtwork(scene: .gameSettings)
+                            .frame(width: 168, height: 170)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var copy: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text(gameType.displayName)
+                .font(AppFonts.hero)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .lineLimit(2)
+                .minimumScaleFactor(0.78)
+
+            Text("Calibrate the rules for tonight.")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Rectangle()
+                .fill(gameType.color)
+                .frame(width: 82, height: 4)
+                .padding(.top, 4)
         }
     }
 }

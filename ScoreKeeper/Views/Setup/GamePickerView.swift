@@ -2,32 +2,32 @@ import SwiftUI
 
 struct GamePickerView: View {
     @Environment(NavigationRouter.self) private var router
-    @State private var sectionsVisible = false
-
-    private let columns = [
-        GridItem(.flexible(), spacing: AppTheme.spacingSmall)
-    ]
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var contentVisible = false
 
     private let gameTypes: [GameType] = [.generic, .phase10, .whatsForDinner]
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
                 GamePickerHero()
-                    .staggeredEntrance(visible: sectionsVisible, index: 0)
+                    .staggeredEntrance(visible: contentVisible, index: 0)
 
-                LazyVGrid(columns: columns, spacing: AppTheme.spacingMedium) {
+                LazyVGrid(columns: gridColumns, spacing: AppTheme.spacingLarge) {
                     ForEach(Array(gameTypes.enumerated()), id: \.element.id) { index, gameType in
-                        GameTypeTile(gameType: gameType, action: {
-                            router.push(.playerSetup(gameType))
-                        }, accessibilityID: "game_tile_\(gameType.rawValue)")
-                        .staggeredEntrance(visible: sectionsVisible, index: index + 1)
+                        GameTypeTile(
+                            gameType: gameType,
+                            action: { router.push(.playerSetup(gameType)) },
+                            accessibilityID: "game_tile_\(gameType.rawValue)"
+                        )
+                        .staggeredEntrance(visible: contentVisible, index: index + 1)
                     }
                 }
             }
             .padding(.horizontal, AppTheme.spacingMedium)
-            .padding(.top, 6)
-            .padding(.bottom, 92)
+            .padding(.top, AppTheme.spacingSmall)
+            .padding(.bottom, 112)
+            .pipCountPageContent()
         }
         .appBackground()
         .navigationTitle("")
@@ -35,9 +35,18 @@ struct GamePickerView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             PipCountDock(selected: .games, onSelect: selectTab)
         }
-        .onAppear {
-            sectionsVisible = true
+        .onAppear { contentVisible = true }
+    }
+
+    private var gridColumns: [GridItem] {
+        if horizontalSizeClass == .regular {
+            return [
+                GridItem(.flexible(), spacing: AppTheme.spacingLarge, alignment: .top),
+                GridItem(.flexible(), spacing: AppTheme.spacingLarge, alignment: .top)
+            ]
         }
+
+        return [GridItem(.flexible(), alignment: .top)]
     }
 
     private func selectTab(_ tab: PipCountTab) {
@@ -57,137 +66,49 @@ struct GamePickerView: View {
 
 private struct GamePickerHero: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
-        let layout = dynamicTypeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
-            : AnyLayout(HStackLayout(alignment: .bottom, spacing: AppTheme.spacingMedium))
+        Group {
+            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+                HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
+                    copy
+                        .frame(maxWidth: 360, alignment: .leading)
 
-        layout {
-            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                Text("Choose\na Game")
-                    .font(AppFonts.hero)
-                    .foregroundStyle(ClubhouseTheme.ink)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text("Pick your format for tonight.")
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            if !dynamicTypeSize.isAccessibilitySize {
-                ZStack {
-                    BauhausBlocksArtwork(compact: true)
-                        .frame(width: 176, height: 166)
-                    BauhausStarburst(color: ClubhouseTheme.red, size: 34)
-                        .offset(x: 54, y: -58)
+                    PipCountGeometricArtwork(scene: .gamePicker)
+                        .frame(maxWidth: 520)
+                        .frame(height: AppTheme.regularHeroArtHeight)
                 }
-                .frame(width: 176, height: 166)
+            } else {
+                VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                    copy
+
+                    PipCountGeometricArtwork(scene: .gamePicker)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: dynamicTypeSize.isAccessibilitySize ? 205 : AppTheme.heroArtHeight)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 2)
     }
-}
 
-private struct SetupFeature: Identifiable {
-    let title: String
-    let systemImage: String
-    let tint: Color
-    var id: String { title }
-}
-
-private struct SetupFeatureStrip: View {
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
-    private let features = [
-        SetupFeature(title: "Smart defaults", systemImage: "wand.and.stars", tint: PlayerColors.palette[2]),
-        SetupFeature(title: "Saved crews", systemImage: "person.2.fill", tint: PlayerColors.palette[1]),
-        SetupFeature(title: "Fast rematch", systemImage: "arrow.counterclockwise", tint: PlayerColors.palette[0])
-    ]
-
-    var body: some View {
-        let layout = dynamicTypeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
-            : AnyLayout(HStackLayout(spacing: AppTheme.spacingSmall))
-
-        layout {
-            ForEach(features) { feature in
-                SetupFeatureChip(
-                    title: feature.title,
-                    systemImage: feature.systemImage,
-                    tint: feature.tint
-                )
-            }
-        }
-    }
-}
-
-private struct SetupFeatureChip: View {
-    let title: String
-    let systemImage: String
-    let tint: Color
-
-    var body: some View {
-        HStack(spacing: 6) {
-            Image(systemName: systemImage)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(tint)
-                .accessibilityHidden(true)
-
-            Text(title)
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(2)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(minHeight: 44)
-        .accessibilityElement(children: .combine)
-    }
-}
-
-private struct SmartSetupPreview: View {
-    var body: some View {
+    private var copy: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(
-                title: "What gets set up",
-                subtitle: "Each mode keeps only the choices that matter.",
-                systemImage: "checklist"
-            )
+            Text("Choose\na Game")
+                .font(AppFonts.hero)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
 
-            FeatureRow(systemImage: "plus.forwardslash.minus", title: "Scoreboard", detail: "Highest or lowest score, target score, any game")
-            FeatureRow(systemImage: "10.circle.fill", title: "Ten Phases", detail: "ten-stage card-game scoring")
-            FeatureRow(systemImage: "fork.knife.circle.fill", title: "Dinner", detail: "Caller, card values, lowest total wins")
-        }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-    }
-}
+            Text("Pick your format for tonight.")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .fixedSize(horizontal: false, vertical: true)
 
-private struct FeatureRow: View {
-    let systemImage: String
-    let title: String
-    let detail: String
-
-    var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: systemImage)
-                .foregroundStyle(PlayerColors.palette[3])
-                .frame(width: 28)
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.ink)
-                Text(detail)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .lineLimit(2)
-            }
-
-            Spacer()
+            Rectangle()
+                .fill(ClubhouseTheme.blue)
+                .frame(width: 82, height: 4)
+                .padding(.top, 4)
         }
     }
 }

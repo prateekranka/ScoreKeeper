@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ScoreKeeper · Paper Bauhaus</title>
+<style>
+  /* ─── tokens ─────────────────────────────────────────────────────────── */
+  :root {
+    --bg: oklch(95.2% 0.016 106.7);   /* paper field   #f0f0e4 */
+    --surface: oklch(97.6% 0.010 67.7);/* cream slips  #fcf6f0 */
+    --fg: oklch(20.3% 0.010 107.2);   /* ink           #171712 */
+    --muted: oklch(56.8% 0.019 84.6); /* soft grey     #7c766a */
+    --border: oklch(90.2% 0.017 84.6);/* hairline      #e4ded2 */
+    --accent: oklch(39.2% 0.189 262.5);/* ultramarine  #0036a8 */
+    --accent-press: oklch(31.9% 0.140 261.3);           /* #002a78 */
+    --yellow: oklch(81.7% 0.167 79.1);/* #fcb412 */
+    --red: oklch(57.3% 0.224 27.4);   /* #de181e */
+    --green: oklch(55.4% 0.149 151.1);/* #008a42 */
+    --sky: oklch(89.1% 0.025 236.9);  /* #ccdeea */
+    --gold-ink: color-mix(in oklch, var(--yellow) 72%, var(--fg));
+    --accent-soft: color-mix(in oklch, var(--accent) 12%, transparent);
+    --fg-soft: color-mix(in oklch, var(--fg) 6%, transparent);
+
+    --font-display: "Futura", "Century Gothic", "Avant Garde", "Trebuchet MS", system-ui, sans-serif;
+    --font-body: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+    --ink-strong: var(--fg);
+    --slip-shadow: 0 1px 0 var(--border), 0 8px 24px oklch(20% 0.02 100 / 0.06);
+  }
+  :root[data-theme="dark"] {
+    --bg: oklch(18.5% 0.012 285.2);   /* near-black paper #121218 */
+    --surface: oklch(23.7% 0.015 256.8);/* coal slips    #1a1f26 */
+    --fg: oklch(95.2% 0.016 106.7);   /* warm white ink #f0f0e4 */
+    --muted: oklch(70.9% 0.017 106.8);/* #a2a296 */
+    --border: oklch(30.7% 0.017 255.6);/* #2a3038 */
+    --accent: oklch(60.8% 0.165 261.8);/* ultramarine   #487ee4 */
+    --accent-press: oklch(52% 0.17 262);/* #3262c8 */
+    --yellow: oklch(87.7% 0.156 91.5); /* #fcd248 */
+    --red: oklch(68.5% 0.197 21.9);    /* #fc5a60 */
+    --green: oklch(75.0% 0.171 153.1); /* #3ccc78 */
+    --sky: oklch(42% 0.09 262);        /* #1d2f52 */
+    --gold-ink: color-mix(in oklch, var(--yellow) 55%, var(--fg));
+    --accent-soft: color-mix(in oklch, var(--accent) 22%, transparent);
+    --slip-shadow: 0 1px 0 var(--border), 0 10px 28px oklch(0% 0 0 / 0.4);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  button { font: inherit; cursor: pointer; color: inherit; background: none; border: 0; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  /* ─── prototype chrome (outside the phone) ──────────────────────────── */
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    padding: 28px 20px 48px;
+  }
+  .stage-top {
+    width: 100%;
+    max-width: 560px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .stage-wordmark { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; font-size: 17px; }
+  .theme-switch {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .switch {
+    position: relative; width: 46px; height: 26px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface);
+  }
+  .switch::after {
+    content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--accent); transition: transform 0.18s ease;
+  }
+  :root[data-theme="dark"] .switch::after { transform: translateX(20px); }
+
+  .screen-nav {
+    display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+    max-width: 560px;
+  }
+  .screen-nav button {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 7px 12px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .screen-nav button:hover { color: var(--fg); border-color: var(--fg); }
+  .screen-nav button.active { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+
+  /* ─── phone frame ───────────────────────────────────────────────────── */
+  .phone {
+    width: 402px; max-width: 92vw;
+    height: 874px; max-height: 88vh;
+    border-radius: 46px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    box-shadow: 0 30px 70px oklch(0% 0 0 / 0.28);
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .dynamic-island {
+    position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+    width: 118px; height: 34px; border-radius: 999px; background: oklch(6% 0 0 / 0.92); z-index: 5;
+  }
+  .screen {
+    flex: 1; overflow-y: auto; overflow-x: hidden;
+    padding-top: 58px;
+    display: flex; flex-direction: column;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* ─── shared app chrome ─────────────────────────────────────────────── */
+  .app-top {
+    padding: 6px 20px 14px;
+  }
+  .app-title {
+    font-family: var(--font-display); font-weight: 700; font-size: 30px; letter-spacing: -0.01em; margin: 0;
+  }
+  .app-rule { border: 0; border-top: 2px solid var(--fg); margin: 10px 0 0; width: 44px; }
+  .app-kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+
+  .content { position: relative; display: flex; flex-direction: column; gap: 14px; padding: 0 20px 24px; }
+
+  .slip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--slip-shadow);
+    padding: 16px;
+  }
+  .slip-rule { border: 0; border-top: 1px dashed var(--border); margin: 12px 0; }
+
+  .ruler { display: flex; align-items: baseline; justify-content: space-between; }
+  .ruler h2, .ruler h3 { font-family: var(--font-display); font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+  .ruler h3 { font-size: 17px; }
+  .ruler .meta { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 20px; border-radius: 10px;
+    font-weight: 600; font-size: 15px; letter-spacing: -0.005em;
+    transition: background 0.11s ease, border-color 0.11s ease, transform 0.05s ease;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--accent); color: var(--surface); }
+  .btn-primary:hover { background: var(--accent-press); }
+  .btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--fg); }
+  .btn-secondary:hover { border-color: var(--fg); }
+  .btn-block { width: 100%; }
+
+  .pip { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 auto; box-shadow: inset 0 0 0 2px color-mix(in oklch, var(--bg) 22%, transparent); }
+  .pip-blue   { background: var(--accent); }
+  .pip-yellow { background: var(--yellow); }
+  .pip-red    { background: var(--red); }
+  .pip-green  { background: var(--green); }
+
+  .stamp {
+    display: inline-flex; align-items: center;
+    font-family: var(--font-mono); font-weight: 700; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 4px 9px; border: 2px solid currentColor; border-radius: 5px;
+    transform: rotate(-4deg);
+  }
+  .stamp-blue { color: var(--accent); }
+  .stamp-gold { color: var(--gold-ink); }
+  .stamp-red { color: var(--red); }
+
+  /* ─── Home ──────────────────────────────────────────────────────────── */
+  .hero-slip {
+    border-top: 3px solid var(--accent);
+    padding: 18px;
+  }
+  .hero-slip .game-name { font-family: var(--font-display); font-weight: 700; font-size: 22px; margin: 0; }
+  .live-rows { margin-top: 12px; }
+  .live-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+  }
+  .live-row:last-child { border-bottom: 0; }
+  .live-row .sum { margin-left: auto; font-family: var(--font-mono); font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums; }
+
+  .recent-title { margin: 6px 0 0; }
+  .recent-slips { display: flex; flex-direction: column; gap: 10px; }
+  .recent-slip {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 13px 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .recent-slip:nth-child(odd) { transform: rotate(-0.6deg); }
+  .recent-slip:nth-child(even) { transform: rotate(0.6deg); }
+  .recent-slip .winner { font-family: var(--font-mono); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; color: var(--gold-ink); }
+  .recent-slip .date { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+
+  .tool-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tool-chip {
+    flex: 1; min-width: 84px; min-height: 44px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 13px; font-weight: 500; color: var(--muted);
+  }
+  .tool-chip:hover { color: var(--fg); border-color: var(--fg); }
+
+  /* ─── Game picker ───────────────────────────────────────────────────── */
+  .cover {
+    background: var(--surface); border: 1px solid var(--fg); border-radius: 12px;
+    padding: 18px; position: relative; text-align: left;
+    box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--border);
+    transition: box-shadow 0.15s ease, transform 0.05s ease;
+  }
+  .cover:hover { box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--accent); }
+  .cover:active { transform: scale(0.99); }
+  .cover .cover-name { font-family: var(--font-display); font-weight: 700; font-size: 20px; margin: 10px 0 4px; }
+  .cover .cover-desc { font-size: 13px; color: var(--muted); margin: 0; }
+  .cover .cover-mark { width: 40px; height: 40px; border-radius: 8px; display: grid; place-items: center; }
+  .mark-blue { background: var(--accent); color: var(--surface); }
+  .mark-yellow { background: var(--yellow); color: var(--fg); }
+  .mark-red { background: var(--red); color: var(--surface); }
+
+  /* ─── Player setup ──────────────────────────────────────────────────── */
+  .roster-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+  }
+  .roster-row:last-of-type { border-bottom: 0; }
+  .roster-row .add-rm {
+    margin-left: auto; width: 32px; height: 32px; border-radius: 8px;
+    border: 1px solid var(--border); color: var(--muted); font-size: 16px; line-height: 1;
+  }
+  .roster-row .add-rm:hover { color: var(--red); border-color: var(--red); }
+  .name-field {
+    flex: 1; background: transparent; border: 0; border-bottom: 1px solid var(--fg);
+    padding: 6px 0; font-size: 16px; color: var(--fg);
+  }
+  .name-field::placeholder { color: var(--muted); }
+  .name-field:focus { outline: none; border-bottom-color: var(--accent); }
+  .add-player {
+    display: flex; align-items: center; gap: 10px; color: var(--accent); font-weight: 600; font-size: 14px;
+    padding: 12px 0;
+  }
+  .add-player .plus { width: 26px; height: 26px; border: 1px solid var(--accent); border-radius: 8px; display: grid; place-items: center; }
+
+  /* ─── Scoring ───────────────────────────────────────────────────────── */
+  .score-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .round-tag { font-family: var(--font-mono); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .ledger { width: 100%; border-collapse: collapse; }
+  .ledger th {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); font-weight: 500; text-align: right; padding: 6px 4px; border-bottom: 1px solid var(--fg);
+  }
+  .ledger th:first-child { text-align: left; }
+  .ledger td { padding: 0; }
+  .ledger .prow td { border-bottom: 1px solid var(--border); }
+  .ledger .prow.active td { background: var(--accent-soft); }
+  .ledger .pcell { display: flex; align-items: center; gap: 8px; padding: 10px 4px; }
+  .ledger .pcell .pname { font-weight: 600; font-size: 14px; }
+  .ledger .score {
+    font-family: var(--font-mono); font-weight: 700; font-size: 17px; font-variant-numeric: tabular-nums;
+    text-align: right; padding: 10px 4px;
+  }
+  .ledger .score.total { font-size: 19px; }
+  .ledger .score.lead { color: var(--gold-ink); }
+
+  .stepper-bar {
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+    display: flex; align-items: center; gap: 12px;
+  }
+  .stepper {
+    width: 56px; height: 56px; border-radius: 12px; font-size: 26px; font-weight: 600;
+    display: grid; place-items: center; border: 1px solid var(--border);
+    transition: background 0.11s ease, color 0.11s ease, transform 0.05s ease;
+  }
+  .stepper:active { transform: scale(0.94); }
+  .stepper.minus:hover { background: var(--red); border-color: var(--red); color: var(--surface); }
+  .stepper.plus { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+  .stepper.plus:hover { background: var(--accent-press); }
+  .stepper-field { flex: 1; text-align: center; }
+  .stepper-field .amount { font-family: var(--font-mono); font-weight: 700; font-size: 34px; font-variant-numeric: tabular-nums; line-height: 1; }
+  .stepper-field .who { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+  /* ─── Game over ─────────────────────────────────────────────────────── */
+  .final-sheet {
+    margin: 8px 0 0;
+    border-radius: 14px; padding: 22px;
+    position: relative;
+  }
+  .final-sheet .confetti-corner { position: absolute; top: -14px; right: 14px; color: var(--yellow); font-size: 26px; }
+  .final-title { font-family: var(--font-display); font-weight: 700; font-size: 26px; margin: 10px 0 2px; }
+  .final-badge { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .final-rows { margin-top: 14px; border-top: 2px solid var(--fg); }
+  .final-row {
+    display: flex; align-items: center; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--border);
+  }
+  .final-row.first .fname { font-weight: 700; }
+  .final-row .f-score { margin-left: auto; font-family: var(--font-mono); font-weight: 700; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .final-row.first .f-score { color: var(--gold-ink); }
+  .final-row .crown { color: var(--yellow); }
+
+  .foot-note { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em; color: var(--muted); text-align: center; margin-top: 12px; }
+
+  @media (max-width: 460px) {
+    .stage { padding: 18px 12px 40px; }
+    .phone { border-radius: 34px; }
+  }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="stage-top">
+      <span class="stage-wordmark">ScoreKeeper · Paper Bauhaus</span>
+      <label class="theme-switch" for="themeToggle">
+        <span>Dark</span>
+        <span class="switch" role="switch" aria-checked="false" id="themeToggle" tabindex="0" aria-label="Toggle dark mode"></span>
+      </label>
+    </div>
+
+    <nav class="screen-nav" aria-label="Prototype screens" data-od-id="screen-nav">
+      <button class="active" data-nav="home">Home</button>
+      <button data-nav="picker">Game</button>
+      <button data-nav="roster">Roster</button>
+      <button data-nav="scoring">Scoring</button>
+      <button data-nav="final">Final</button>
+    </nav>
+
+    <div class="phone">
+      <div class="dynamic-island" aria-hidden="true"></div>
+
+      <!-- HOME -->
+      <div class="screen" id="screen-home" data-od-id="home">
+        <header class="app-top">
+          <p class="app-kicker">Friday table</p>
+          <h1 class="app-title">ScoreKeeper</h1>
+          <hr class="app-rule">
+        </header>
+        <div class="content">
+          <section class="slip hero-slip" aria-label="Active game">
+            <div class="ruler">
+              <h3 class="game-name">Friday Darts</h3>
+              <span class="stamp stamp-blue">Live</span>
+            </div>
+            <div class="live-rows">
+              <div class="live-row"><span class="pip pip-blue"></span><span>Mia</span><span class="sum">120</span></div>
+              <div class="live-row"><span class="pip pip-yellow"></span><span>Leo</span><span class="sum">98</span></div>
+              <div class="live-row"><span class="pip pip-red"></span><span>Noah</span><span class="sum">104</span></div>
+              <div class="live-row"><span class="pip pip-green"></span><span>Ava</span><span class="sum">86</span></div>
+            </div>
+            <button class="btn btn-primary btn-block" data-goto="scoring" style="margin-top:14px;">Resume game</button>
+          </section>
+
+          <section data-od-id="home-actions">
+            <button class="btn btn-secondary btn-block" data-goto="picker">New game</button>
+            <div class="tool-row" style="margin-top:10px;">
+              <button class="tool-chip">Timer</button>
+              <button class="tool-chip">Dice</button>
+              <button class="tool-chip">Starter</button>
+              <button class="tool-chip">Undo</button>
+            </div>
+          </section>
+
+          <section data-od-id="home-recent">
+            <div class="ruler" style="margin:6px 0 10px;">
+              <h3>Recent</h3>
+              <button data-goto="final" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);">See all <span aria-hidden="true">→</span></button>
+            </div>
+            <div class="recent-slips">
+              <div class="recent-slip">
+                <span class="pip pip-green"></span>
+                <div>
+                  <div style="font-weight:600;">Cribbage</div>
+                  <div class="date">Jun 12</div>
+                </div>
+                <span class="winner">Ava · 121</span>
+                <span class="stamp stamp-red" style="margin-left:auto;">Final</span>
+              </div>
+              <div class="recent-slip">
+                <span class="pip pip-blue"></span>
+                <div>
+                  <div style="font-weight:600;">Phase 10</div>
+                  <div class="date">Jun 08</div>
+                </div>
+                <span class="winner">Mia · 214</span>
+                <span class="stamp stamp-red" style="margin-left:auto;">Final</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- GAME PICKER -->
+      <div class="screen" id="screen-picker" hidden data-od-id="picker">
+        <header class="app-top">
+          <p class="app-kicker">New game</p>
+          <h1 class="app-title">Pick a game</h1>
+          <hr class="app-rule">
+        </header>
+        <div class="content">
+          <button class="cover" data-goto="roster">
+            <span class="cover-mark mark-blue">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h16"/></svg>
+            </span>
+            <div class="cover-name">Scoreboard</div>
+            <p class="cover-desc">Round-by-round totals. The classic score pad.</p>
+          </button>
+          <button class="cover" data-goto="roster">
+            <span class="cover-mark mark-yellow">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg>
+            </span>
+            <div class="cover-name">What's for Dinner</div>
+            <p class="cover-desc">Pick a meal, level up your hand, find the winner.</p>
+          </button>
+          <button class="cover" data-goto="roster">
+            <span class="cover-mark mark-red">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>
+            </span>
+            <div class="cover-name">Phase 10</div>
+            <p class="cover-desc">Ten phases, one winner. Track hands and penalties.</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- PLAYER ROSTER -->
+      <div class="screen" id="screen-roster" hidden data-od-id="roster">
+        <header class="app-top">
+          <p class="app-kicker">Scoreboard</p>
+          <h1 class="app-title">Add your crew</h1>
+          <hr class="app-rule">
+        </header>
+        <div class="content">
+          <section class="slip" aria-label="Roster">
+            <div class="roster-row">
+              <span class="pip pip-blue"></span>
+              <input class="name-field" value="Mia" aria-label="Player name">
+            </div>
+            <div class="roster-row">
+              <span class="pip pip-yellow"></span>
+              <input class="name-field" value="Leo" aria-label="Player name">
+            </div>
+            <div class="roster-row">
+              <span class="pip pip-red"></span>
+              <input class="name-field" value="Noah" aria-label="Player name">
+            </div>
+            <div class="roster-row">
+              <span class="pip pip-green"></span>
+              <input class="name-field" value="Ava" aria-label="Player name">
+            </div>
+            <button class="add-player">
+              <span class="plus">+</span> Add player
+            </button>
+          </section>
+          <button class="btn btn-primary btn-block" data-goto="scoring">Start keeping score</button>
+        </div>
+      </div>
+
+      <!-- SCORING -->
+      <div class="screen" id="screen-scoring" hidden data-od-id="scoring">
+        <header class="app-top">
+          <p class="app-kicker">Friday Darts</p>
+          <div class="score-header">
+            <h1 class="app-title" style="font-size:26px;">Score</h1>
+            <span class="round-tag">Round 5</span>
+          </div>
+          <hr class="app-rule">
+        </header>
+        <div class="content" style="flex:0 0 auto;">
+          <table class="ledger" aria-label="Score ledger">
+            <thead>
+              <tr><th>Player</th><th style="text-align:right;">Round</th><th style="text-align:right;">Total</th></tr>
+            </thead>
+            <tbody id="ledgerBody"></tbody>
+          </table>
+        </div>
+        <div class="stepper-bar">
+          <button class="stepper minus" data-delta="-1" aria-label="Decrease score">&ndash;</button>
+          <div class="stepper-field">
+            <div class="amount" id="stepperAmt">+3</div>
+            <div class="who" id="stepperWho">Mia · Round 5</div>
+          </div>
+          <button class="stepper plus" data-delta="1" aria-label="Increase score">+</button>
+        </div>
+      </div>
+
+      <!-- GAME OVER / FINAL -->
+      <div class="screen" id="screen-final" hidden data-od-id="final">
+        <div class="content" style="padding-top:8px;">
+          <section class="slip final-sheet" aria-label="Final score">
+            <span class="confetti-corner" aria-hidden="true">&#9889;</span>
+            <p class="final-badge">Friday Darts · Complete</p>
+            <h2 class="final-title">Final Score</h2>
+            <span class="stamp stamp-gold" style="margin-top:6px;">Winner</span>
+            <div class="final-rows">
+              <div class="final-row first"><span class="crown">&#9813;</span><span class="fname">Mia</span><span class="f-score">120</span></div>
+              <div class="final-row"><span class="pip pip-red"></span><span>Noah</span><span class="f-score">104</span></div>
+              <div class="final-row"><span class="pip pip-yellow"></span><span>Leo</span><span class="f-score">98</span></div>
+              <div class="final-row"><span class="pip pip-green"></span><span>Ava</span><span class="f-score">86</span></div>
+            </div>
+          </section>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <button class="btn btn-secondary" style="flex:1;" data-goto="scoring">Play again</button>
+            <button class="btn btn-primary" style="flex:1;" data-goto="home">Home</button>
+          </div>
+          <p class="foot-note">Every night becomes history — saved automatically.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  var THEME = "scorekeeper-theme";
+  var root = document.documentElement;
+  var saved = null;
+  try { saved = localStorage.getItem(THEME); } catch (e) {}
+  if (saved === "dark") { root.setAttribute("data-theme", "dark"); }
+  function isDark() { return root.getAttribute("data-theme") === "dark"; }
+  var toggle = document.getElementById("themeToggle");
+  function syncToggle() { toggle.setAttribute("aria-checked", isDark() ? "true" : "false"); }
+  syncToggle();
+  function flipTheme() {
+    root.setAttribute("data-theme", isDark() ? "light" : "dark");
+    try { localStorage.setItem(THEME, isDark() ? "dark" : "light"); } catch (e) {}
+    syncToggle();
+  }
+  toggle.addEventListener("click", flipTheme);
+  toggle.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flipTheme(); } });
+
+  var navBtns = Array.prototype.slice.call(document.querySelectorAll(".screen-nav button"));
+  var screens = Array.prototype.slice.call(document.querySelectorAll(".screen"));
+  function show(id) {
+    screens.forEach(function (s) { s.hidden = s.id !== "screen-" + id; });
+    navBtns.forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-nav") === id); });
+    var active = document.getElementById("screen-" + id);
+    if (active) active.scrollTop = 0;
+  }
+  document.querySelectorAll("[data-goto]").forEach(function (el) {
+    el.addEventListener("click", function () { show(el.getAttribute("data-goto")); });
+  });
+  navBtns.forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-nav")); }); });
+
+  /* scoring state */
+  var players = [
+    { name: "Mia", color: "pip-blue", roundScore: 3, total: 120 },
+    { name: "Leo", color: "pip-yellow", roundScore: 1, total: 98 },
+    { name: "Noah", color: "pip-red", roundScore: 2, total: 104 },
+    { name: "Ava", color: "pip-green", roundScore: 0, total: 86 }
+  ];
+  var activeIdx = 0;
+  var body = document.getElementById("ledgerBody");
+  var amt = document.getElementById("stepperAmt");
+  var who = document.getElementById("stepperWho");
+
+  function render() {
+    body.innerHTML = "";
+    var lead = Math.max.apply(null, players.map(function (p) { return p.total; }));
+    players.forEach(function (p, i) {
+      var tr = document.createElement("tr");
+      tr.className = "prow" + (i === activeIdx ? " active" : "");
+      var pcell = '<td><div class="pcell"><span class="pip ' + p.color + '"></span><span class="pname">' + p.name + '</span></div></td>';
+      var rcell = '<td class="score">+' + p.roundScore + '</td>';
+      var tcell = '<td class="score total ' + (p.total === lead ? "lead" : "") + '" data-total="' + p.total + '">' + p.total + "</td>";
+      tr.innerHTML = pcell + rcell + tcell;
+      tr.addEventListener("click", function () { activeIdx = i; render(); });
+      body.appendChild(tr);
+    });
+    var p = players[activeIdx];
+    var sign = p.roundScore >= 0 ? "+" : "&ndash;";
+    amt.innerHTML = sign + Math.abs(p.roundScore);
+    who.textContent = p.name + " · Round 5";
+  }
+  function step(d) {
+    players[activeIdx].roundScore += d;
+    players[activeIdx].total += d;
+    render();
+  }
+  document.querySelectorAll(".stepper[data-delta]").forEach(function (b) {
+    b.addEventListener("click", function () { step(parseInt(b.getAttribute("data-delta"), 10)); });
+  });
+  render();
+  show("home");
+})();
+</script>
+</body>
+</html>
