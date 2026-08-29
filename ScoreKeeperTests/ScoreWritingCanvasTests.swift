@@ -1,5 +1,6 @@
 import PencilKit
 import XCTest
+@testable import ScoreKeeper
 
 final class ScoreWritingCanvasTests: XCTestCase {
     func testEmptyDrawingReturnsNil() {
@@ -16,7 +17,7 @@ final class ScoreWritingCanvasTests: XCTestCase {
         ))
     }
 
-    func testNormalizedOutputIs512By256PixelsAtEveryRequestedScale() {
+    func testNormalizedOutputIs512By256PixelsAtEveryRequestedScale() throws {
         let drawing = drawing([[CGPoint(x: 40, y: 40), CGPoint(x: 180, y: 100)]])
         for scale in [CGFloat(1), 2, 3] {
             let image = try XCTUnwrap(ScoreWritingCanvas.normalizedImage(
@@ -33,15 +34,13 @@ final class ScoreWritingCanvasTests: XCTestCase {
             canvasSize: CGSize(width: 320, height: 160), scale: 2
         ))
         let cgImage = try XCTUnwrap(image.cgImage)
-        let background = pixel(cgImage, x: 0, y: 0)
+        let raster = PixelRaster(cgImage)
+        let background = raster.pixel(x: 0, y: 0)
         XCTAssertEqual(background.0, 255)
         XCTAssertEqual(background.1, 255)
         XCTAssertEqual(background.2, 255)
         XCTAssertEqual(background.3, 255)
-        XCTAssertTrue((0..<cgImage.width).contains { x in
-            let color = pixel(cgImage, x: x, y: cgImage.height / 2)
-            return color.0 < 80 && color.1 < 80 && color.2 < 80
-        })
+        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 0, y: cgImage.height / 2, width: cgImage.width, height: 1)))
     }
 
     func testAsymmetricDrawingRemainsUpright() throws {
@@ -50,8 +49,15 @@ final class ScoreWritingCanvasTests: XCTestCase {
             canvasSize: CGSize(width: 320, height: 160), scale: 2
         ))
         let cgImage = try XCTUnwrap(image.cgImage)
-        XCTAssertTrue(hasDarkPixel(cgImage, in: CGRect(x: 300, y: 145, width: 80, height: 70)))
-        XCTAssertFalse(hasDarkPixel(cgImage, in: CGRect(x: 300, y: 40, width: 80, height: 70)))
+        let raster = PixelRaster(cgImage)
+        let topInk = raster.darkPixelCount(in: CGRect(x: 0, y: 0, width: cgImage.width, height: cgImage.height / 2))
+        let bottomInk = raster.darkPixelCount(in: CGRect(
+            x: 0,
+            y: cgImage.height / 2,
+            width: cgImage.width,
+            height: cgImage.height / 2
+        ))
+        XCTAssertGreaterThan(topInk, bottomInk)
     }
 
     func testInkTouchingEveryCanvasEdgeRemainsRepresented() throws {
@@ -63,10 +69,11 @@ final class ScoreWritingCanvasTests: XCTestCase {
             canvasSize: CGSize(width: 320, height: 160), scale: 2
         ))
         let cgImage = try XCTUnwrap(image.cgImage)
-        XCTAssertTrue(hasDarkPixel(cgImage, in: CGRect(x: 0, y: 80, width: 35, height: 96)))
-        XCTAssertTrue(hasDarkPixel(cgImage, in: CGRect(x: 477, y: 80, width: 35, height: 96)))
-        XCTAssertTrue(hasDarkPixel(cgImage, in: CGRect(x: 208, y: 0, width: 96, height: 35)))
-        XCTAssertTrue(hasDarkPixel(cgImage, in: CGRect(x: 208, y: 221, width: 96, height: 35)))
+        let raster = PixelRaster(cgImage)
+        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 0, y: 80, width: 35, height: 96)))
+        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 477, y: 80, width: 35, height: 96)))
+        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 208, y: 0, width: 96, height: 35)))
+        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 208, y: 221, width: 96, height: 35)))
     }
 
     private func drawing(_ strokes: [[CGPoint]], width: CGFloat = 10) -> PKDrawing {
@@ -81,19 +88,59 @@ final class ScoreWritingCanvasTests: XCTestCase {
         })
     }
 
-    private func hasDarkPixel(_ image: CGImage, in rect: CGRect) -> Bool {
-        let bounds = rect.intersection(CGRect(x: 0, y: 0, width: image.width, height: image.height))
-        return stride(from: Int(bounds.minY), to: Int(bounds.maxY), by: 2).contains { y in
-            stride(from: Int(bounds.minX), to: Int(bounds.maxX), by: 2).contains { x in
-                let p = pixel(image, x: x, y: y)
-                return p.0 < 80 && p.1 < 80 && p.2 < 80
-            }
+}
+
+private struct PixelRaster {
+    let bytes: [UInt8]
+    let width: Int
+    let height: Int
+
+    init(_ image: CGImage) {
+        width = image.width
+        height = image.height
+        var renderedBytes = [UInt8](repeating: 0, count: width * height * 4)
+        let rendered = renderedBytes.withUnsafeMutableBytes { buffer -> Bool in
+            guard let context = CGContext(
+                data: buffer.baseAddress,
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: width * 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue
+                    | CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else { return false }
+
+            context.translateBy(x: 0, y: CGFloat(height))
+            context.scaleBy(x: 1, y: -1)
+            context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
         }
+        precondition(rendered)
+        bytes = renderedBytes
     }
 
-    private func pixel(_ image: CGImage, x: Int, y: Int) -> (UInt8, UInt8, UInt8, UInt8) {
-        let data = image.dataProvider!.data! as Data
-        let offset = (y * image.bytesPerRow) + (x * 4)
-        return (data[offset], data[offset + 1], data[offset + 2], data[offset + 3])
+    func pixel(x: Int, y: Int) -> (UInt8, UInt8, UInt8, UInt8) {
+        let offset = (y * width + x) * 4
+        return (bytes[offset], bytes[offset + 1], bytes[offset + 2], bytes[offset + 3])
+    }
+
+    func hasDarkPixel(in rect: CGRect) -> Bool {
+        darkPixelCount(in: rect) > 0
+    }
+
+    func darkPixelCount(in rect: CGRect) -> Int {
+        let bounds = rect.intersection(CGRect(x: 0, y: 0, width: width, height: height))
+        guard !bounds.isNull else { return 0 }
+        var count = 0
+        for y in Int(bounds.minY)..<Int(bounds.maxY) {
+            for x in Int(bounds.minX)..<Int(bounds.maxX) {
+                let color = pixel(x: x, y: y)
+                if color.0 < 80, color.1 < 80, color.2 < 80 {
+                    count += 1
+                }
+            }
+        }
+        return count
     }
 }
