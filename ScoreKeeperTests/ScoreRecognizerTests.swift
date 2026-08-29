@@ -49,14 +49,23 @@ final class ScoreRecognizerTests: XCTestCase {
         )
     }
 
-    func testMinusFragmentIsDiscardedWhenCleanFragmentExists() {
-        assertSuccess(
+    func testASCIIminusFragmentMakesCompleteReadingUnreadable() {
+        XCTAssertEqual(
             ScoreRecognizer.interpret(fragments: [
                 fragment("-3", minX: 0.1),
                 fragment("4", minX: 0.5),
             ]),
-            value: 4,
-            confidence: 0.9
+            .unreadable
+        )
+    }
+
+    func testUnicodeMinusFragmentMakesCompleteReadingUnreadable() {
+        XCTAssertEqual(
+            ScoreRecognizer.interpret(fragments: [
+                fragment("−3", minX: 0.1),
+                fragment("4", minX: 0.5),
+            ]),
+            .unreadable
         )
     }
 
@@ -70,11 +79,10 @@ final class ScoreRecognizerTests: XCTestCase {
         )
     }
 
-    func testJunkWithinFragmentIsStripped() {
-        assertSuccess(
+    func testMixedAlphanumericFragmentIsUnreadable() {
+        XCTAssertEqual(
             ScoreRecognizer.interpret(fragments: [fragment("1a2")]),
-            value: 12,
-            confidence: 0.9
+            .unreadable
         )
     }
 

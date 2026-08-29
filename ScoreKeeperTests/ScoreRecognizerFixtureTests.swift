@@ -67,6 +67,22 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
         await verifyDigitFixture("25", expected: 25, scale: 1.18, offset: CGPoint(x: 76, y: -10))
     }
 
+    func testEverySyntheticScoreIsExactOrSafelyRejected() async {
+        for expected in 0...99 {
+            let result = await ScoreRecognizer.recognize(
+                ScoreRecognitionFixtures.drawDigits(String(expected))
+            )
+            switch result {
+            case let .success(value, _):
+                XCTAssertEqual(value, expected, "Synthetic score \(expected) was misread as \(value)")
+            case .unreadable, .error:
+                break
+            case .noInk:
+                XCTFail("Synthetic score \(expected) was reported as no ink")
+            }
+        }
+    }
+
     func testBlankFixtureNeverSucceeds() async {
         for level in recognitionLevels {
             assertFailedRecognition(
