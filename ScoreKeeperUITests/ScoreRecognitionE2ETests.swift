@@ -390,6 +390,32 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         XCTAssertFalse(app.staticTexts["Is this right?"].exists)
     }
 
+    func testManualZeroFromUnreadableScribbleEnablesUseZeroAndAdvancesPlayer() {
+        startTwoPlayerGame()
+        openScoreDeck()
+        enterManualFallbackFromUnreadableScribble()
+
+        ScoreDeckUITestSupport.useManualValue("0", in: app)
+
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Manual score 0 did not advance to player 2"
+        )
+    }
+
+    func testManualNinetyNineFromUnreadableScribbleEnablesUseNinetyNineAndAdvancesPlayer() {
+        startTwoPlayerGame()
+        openScoreDeck()
+        enterManualFallbackFromUnreadableScribble()
+
+        ScoreDeckUITestSupport.useManualValue("99", in: app)
+
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Manual score 99 did not advance to player 2"
+        )
+    }
+
     func testUnreadableShowsManualEntry() {
         startTwoPlayerGame()
         openScoreDeck()
@@ -476,6 +502,24 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 5))
         app.buttons["start_game_button"].tap()
         XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 5))
+    }
+
+    private func enterManualFallbackFromUnreadableScribble() {
+        ScoreDeckUITestSupport.drawZigzagScribble(in: app)
+        app.buttons["recognize_score_button"].tap()
+
+        let rejection = ScoreDeckUITestSupport.rejectionCard(in: app)
+        assertExistsWithDiagnostics(
+            rejection,
+            timeout: 20,
+            message: "Rejection card did not appear for deliberate unreadable scribble",
+            in: app
+        )
+        XCTAssertTrue(app.staticTexts["Couldn't read that"].exists)
+        XCTAssertTrue(
+            app.textFields["deck_manual_value"].waitForExistence(timeout: 5),
+            "Manual fallback field did not appear after unreadable scribble"
+        )
     }
 
     private func openScoreDeck() {
