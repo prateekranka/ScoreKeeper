@@ -74,6 +74,8 @@ struct ScoreWritingCanvas: UIViewRepresentable {
     }
 
     static func normalizedImage(for drawing: PKDrawing, canvasSize: CGSize, scale: CGFloat) -> UIImage? {
+        guard canvasSize.width.isFinite, canvasSize.height.isFinite,
+              canvasSize.width > 0, canvasSize.height > 0 else { return nil }
         guard !drawing.strokes.isEmpty else { return nil }
         let inkBounds = drawing.bounds
         guard !inkBounds.isNull, inkBounds.width >= 0.5, inkBounds.height >= 0.5 else { return nil }
@@ -116,7 +118,7 @@ struct ScoreWritingCanvas: UIViewRepresentable {
         )
 
         let format = UIGraphicsImageRendererFormat()
-        format.scale = renderScale
+        format.scale = 1
         format.opaque = true
         let renderer = UIGraphicsImageRenderer(size: recognitionSize, format: format)
         return renderer.image { rendererContext in
