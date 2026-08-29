@@ -129,6 +129,45 @@ enum ScoreRecognizer {
         // the normalized ink itself before either OCR pass can lose it.
         guard !containsLeadingMinus(in: analysis) else { return .unreadable }
 
+        let candidate = recognitionCandidate(
+            cgImage,
+            analysis: analysis,
+            recognitionLevel: recognitionLevel
+        )
+        guard case let .success(value, _) = candidate else { return candidate }
+
+        // A missing digit can still produce a high-confidence plausible score.
+        // Require the OCR digit count to match the deterministic ink segments.
+        guard case let .digits(segments) = ScoreDigitSegmenter.segment(cgImage),
+              segments.count == String(value).count
+        else {
+            return .unreadable
+        }
+
+        if recognitionLevel == .accurate {
+            // Accurate and fast Vision make different mistakes. Accept only
+            // when the final accurate/fallback value agrees with an independent
+            // fast pass. Disagreement is safe rejection, never a guessed score.
+            let fastCandidate = recognitionCandidate(
+                cgImage,
+                analysis: analysis,
+                recognitionLevel: .fast
+            )
+            guard case let .success(fastValue, _) = fastCandidate,
+                  fastValue == value
+            else {
+                return .unreadable
+            }
+        }
+
+        return candidate
+    }
+
+    private static func recognitionCandidate(
+        _ cgImage: CGImage,
+        analysis: InkAnalysis,
+        recognitionLevel: VNRequestTextRecognitionLevel
+    ) -> ScoreRecognitionResult {
         let primary = recognizeText(cgImage, recognitionLevel: recognitionLevel)
         guard primary == .unreadable else { return primary }
 
