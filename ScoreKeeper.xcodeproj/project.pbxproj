@@ -63,6 +63,7 @@
 		AA000000000000000100034C /* CupMascotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100034B /* CupMascotView.swift */; };
 		AA0000000000000001000351 /* PressStart2P-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100034F /* PressStart2P-Regular.ttf */; };
 		AA0000000000000001000354 /* StoreManagerStoreKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */; };
+		AA0000000000000001000620 /* ScoreWritingCanvasTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000621 /* ScoreWritingCanvasTests.swift */; };
 		AA0000000000000001000362 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000340 /* StoreManager.swift */; };
 		AA0000000000000001000401 /* GameAllowanceStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000406 /* GameAllowanceStorage.swift */; };
 		AA0000000000000001000402 /* LegalSupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000407 /* LegalSupportView.swift */; };
@@ -178,6 +179,7 @@
 		AA000000000000000100034F /* PressStart2P-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PressStart2P-Regular.ttf"; sourceTree = "<group>"; };
 		AA0000000000000001000350 /* VT323-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "VT323-Regular.ttf"; sourceTree = "<group>"; };
 		AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManagerStoreKitTests.swift; sourceTree = "<group>"; };
+		AA0000000000000001000621 /* ScoreWritingCanvasTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreWritingCanvasTests.swift; sourceTree = "<group>"; };
 		AA0000000000000001000358 /* ScoreKeeperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScoreKeeperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA0000000000000001000406 /* GameAllowanceStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameAllowanceStorage.swift; sourceTree = "<group>"; };
 		AA0000000000000001000407 /* LegalSupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalSupportView.swift; sourceTree = "<group>"; };
@@ -430,6 +432,7 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */,
+				AA0000000000000001000621 /* ScoreWritingCanvasTests.swift */,
 				AA000000000000000100040A /* TargetScoreEngineTests.swift */,
 				AA000000000000000100041C /* ScoreDigitClassifierTests.swift */,
 				AA0000000000000001000414 /* ScoreRecognizerTests.swift */,
@@ -745,6 +748,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA0000000000000001000354 /* StoreManagerStoreKitTests.swift in Sources */,
+				AA0000000000000001000620 /* ScoreWritingCanvasTests.swift in Sources */,
 				AA000000000000000100040B /* TargetScoreEngineTests.swift in Sources */,
 				AA0000000000000001000413 /* ScoreRecognizerTests.swift in Sources */,
 				AA000000000000000100041B /* ScoreDigitClassifierTests.swift in Sources */,
