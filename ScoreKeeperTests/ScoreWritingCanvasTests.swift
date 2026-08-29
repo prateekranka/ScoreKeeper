@@ -96,27 +96,29 @@ private struct PixelRaster {
     let height: Int
 
     init(_ image: CGImage) {
-        width = image.width
-        height = image.height
-        var renderedBytes = [UInt8](repeating: 0, count: width * height * 4)
+        let pixelWidth = image.width
+        let pixelHeight = image.height
+        var renderedBytes = [UInt8](repeating: 0, count: pixelWidth * pixelHeight * 4)
         let rendered = renderedBytes.withUnsafeMutableBytes { buffer -> Bool in
             guard let context = CGContext(
                 data: buffer.baseAddress,
-                width: width,
-                height: height,
+                width: pixelWidth,
+                height: pixelHeight,
                 bitsPerComponent: 8,
-                bytesPerRow: width * 4,
+                bytesPerRow: pixelWidth * 4,
                 space: CGColorSpaceCreateDeviceRGB(),
                 bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue
                     | CGImageAlphaInfo.premultipliedLast.rawValue
             ) else { return false }
 
-            context.translateBy(x: 0, y: CGFloat(height))
+            context.translateBy(x: 0, y: CGFloat(pixelHeight))
             context.scaleBy(x: 1, y: -1)
-            context.draw(image, in: CGRect(x: 0, y: 0, width: width, height: height))
+            context.draw(image, in: CGRect(x: 0, y: 0, width: pixelWidth, height: pixelHeight))
             return true
         }
         precondition(rendered)
+        width = pixelWidth
+        height = pixelHeight
         bytes = renderedBytes
     }
 
