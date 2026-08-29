@@ -244,18 +244,18 @@ enum ScoreRecognizer {
 
     /// Turns candidate fragments into a single score reading.
     ///
-    /// Fragments containing a minus are rejected outright. Remaining fragments
-    /// are stripped to ASCII digits, gated on confidence, ordered left-to-right,
-    /// and joined. Only one- and two-digit scores in `0...99` are accepted.
+    /// Fragments must contain only ASCII digits. Low-confidence valid digit fragments
+    /// are discarded, then remaining fragments are ordered left-to-right and joined.
+    /// Only one- and two-digit scores in `0...99` are accepted.
     static func interpret(fragments: [ScoreRecognitionFragment]) -> ScoreRecognitionResult {
+        guard fragments.allSatisfy({ fragment in
+            fragment.digits.allSatisfy(\.isASCIIDigit)
+        }) else {
+            return .unreadable
+        }
+
         let accepted = fragments
-            .filter { !$0.digits.contains("-") }
-            .compactMap { fragment -> ScoreRecognitionFragment? in
-                let digits = fragment.digits.filter(\.isASCIIDigit)
-                guard !digits.isEmpty else { return nil }
-                return ScoreRecognitionFragment(digits: digits, minX: fragment.minX, confidence: fragment.confidence)
-            }
-            .filter { $0.confidence >= defaultConfidenceThreshold }
+            .filter { !$0.digits.isEmpty && $0.confidence >= defaultConfidenceThreshold }
             .sorted { $0.minX < $1.minX }
 
         let joined = accepted.map(\.digits).joined()
