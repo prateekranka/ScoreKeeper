@@ -103,8 +103,9 @@ enum ScoreRecognizer {
         )
     }
 
-    /// Legacy Vision fallback kept until an accepted PipCount model is bundled
-    /// and wired to the explicit classifier pipeline above.
+    /// Shipping score-entry inference. Apple Vision remains the production
+    /// recognizer until an accepted PipCount model is bundled and wired to the
+    /// explicit classifier pipeline above.
     static func recognize(
         _ image: UIImage,
         recognitionLevel: VNRequestTextRecognitionLevel = .accurate
@@ -134,7 +135,9 @@ enum ScoreRecognizer {
             analysis: analysis,
             recognitionLevel: recognitionLevel
         )
-        guard case let .success(value, _) = candidate else { return candidate }
+        guard case let .success(value, confidence, origin) = candidate else {
+            return candidate.publicResult
+        }
 
         // A missing digit can still produce a high-confidence plausible score.
         // Require the OCR digit count to match the deterministic ink segments.
@@ -145,47 +148,95 @@ enum ScoreRecognizer {
         }
 
         if recognitionLevel == .accurate {
-            // Accurate and fast Vision make different mistakes. Accept only
-            // when the final accurate/fallback value agrees with an independent
-            // fast pass. Disagreement is safe rejection, never a guessed score.
+            // Accurate and fast Vision make different mistakes. Require
+            // agreement whenever the fast pass produces a candidate, but do
+            // not turn a fast-pass miss (no observation) into a false
+            // rejection when the accurate pass itself supplied the value. A
+            // value obtained from the fast fallback still needs a fast
+            // candidate on this independent pass.
             let fastCandidate = recognitionCandidate(
                 cgImage,
                 analysis: analysis,
                 recognitionLevel: .fast
             )
-            guard case let .success(fastValue, _) = fastCandidate,
-                  fastValue == value
-            else {
+            switch fastCandidate {
+            case let .success(fastValue, _, _):
+                guard fastValue == value else { return .unreadable }
+            case .noCandidate:
+                guard origin != .fastFallback else { return .unreadable }
+            case .unreadable:
                 return .unreadable
+            case .error:
+                return .error
             }
         }
 
-        return candidate
+        return .success(value: value, confidence: confidence)
+    }
+
+    private enum VisionCandidateOrigin: Equatable {
+        case requestedPass
+        case fastFallback
+        case closedZero
+    }
+
+    private enum VisionCandidate {
+        case success(value: Int, confidence: Double, origin: VisionCandidateOrigin)
+        case noCandidate
+        case unreadable
+        case error
+
+        var publicResult: ScoreRecognitionResult {
+            switch self {
+            case let .success(value, confidence, _):
+                return .success(value: value, confidence: confidence)
+            case .noCandidate, .unreadable:
+                return .unreadable
+            case .error:
+                return .error
+            }
+        }
     }
 
     private static func recognitionCandidate(
         _ cgImage: CGImage,
         analysis: InkAnalysis,
         recognitionLevel: VNRequestTextRecognitionLevel
-    ) -> ScoreRecognitionResult {
+    ) -> VisionCandidate {
         let primary = recognizeText(cgImage, recognitionLevel: recognitionLevel)
-        guard primary == .unreadable else { return primary }
+        switch primary {
+        case .success(_, _, _), .error:
+            return primary
+        case .noCandidate:
+            if recognitionLevel == .accurate {
+                // Accurate recognition is best for multi-digit scores, but on
+                // current Vision models it can return no observations for
+                // isolated handwritten 0, 1, 7, 8, and 99. Fast recognition is
+                // a narrow fallback only when accurate found no candidate.
+                switch recognizeText(cgImage, recognitionLevel: .fast) {
+                case .success(let value, let confidence, _):
+                    return .success(value: value, confidence: confidence, origin: .fastFallback)
+                case .error:
+                    return .error
+                case .noCandidate, .unreadable:
+                    break
+                }
+            }
 
-        if recognitionLevel == .accurate {
-            // Accurate recognition is best for multi-digit scores, but on current
-            // Vision models it can return no observations for isolated handwritten
-            // 0, 1, 7, 8, and 99. Fast recognition is a narrow fallback only when
-            // the accurate pass found nothing usable.
-            let fallback = recognizeText(cgImage, recognitionLevel: .fast)
-            guard fallback == .unreadable else { return fallback }
+            // Vision can classify a thin, segmented zero gesture as a bullet.
+            // Only recover zero when the ink itself is one centered closed ring;
+            // arbitrary unreadable ink must stay unreadable.
+            return looksLikeClosedZero(in: analysis)
+                ? .success(value: 0, confidence: defaultConfidenceThreshold, origin: .closedZero)
+                : .noCandidate
+        case .unreadable:
+            // Do not rescue a low-confidence or non-digit candidate with the
+            // fast pass. The topology fallback is limited to the existing
+            // closed-zero rule used for a thin zero gesture.
+            return looksLikeClosedZero(in: analysis)
+                ? .success(value: 0, confidence: defaultConfidenceThreshold, origin: .closedZero)
+                : .unreadable
         }
-
-        // Vision can classify a thin, segmented zero gesture as a bullet. Only
-        // recover zero when the ink itself is one centered closed ring; arbitrary
-        // unreadable ink must stay unreadable rather than becoming phantom zero.
-        return looksLikeClosedZero(in: analysis)
-            ? .success(value: 0, confidence: defaultConfidenceThreshold)
-            : .unreadable
     }
 
     private static func accepts(
@@ -208,7 +259,7 @@ enum ScoreRecognizer {
     private static func recognizeText(
         _ cgImage: CGImage,
         recognitionLevel: VNRequestTextRecognitionLevel
-    ) -> ScoreRecognitionResult {
+    ) -> VisionCandidate {
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = recognitionLevel
         request.usesLanguageCorrection = false
@@ -224,6 +275,7 @@ enum ScoreRecognizer {
         }
 
         let observations = request.results ?? []
+        guard !observations.isEmpty else { return .noCandidate }
         if observations.contains(where: { observation in
             observation.topCandidates(3).contains {
                 containsNegativeMarker(in: $0.string)
@@ -234,7 +286,18 @@ enum ScoreRecognizer {
             // remaining positive digits to become a score.
             return .unreadable
         }
-        return interpret(fragments: extractFragments(from: observations))
+        let fragments = extractFragments(from: observations)
+        guard fragments.count == observations.count else {
+            // Never drop an observed letter, punctuation mark, or low-confidence
+            // fragment and accept the remaining digits as a partial score.
+            return .unreadable
+        }
+        switch interpret(fragments: fragments) {
+        case let .success(value, confidence):
+            return .success(value: value, confidence: confidence, origin: .requestedPass)
+        case .noInk, .unreadable, .error:
+            return .unreadable
+        }
     }
 
     private static func containsNegativeMarker(in text: String) -> Bool {

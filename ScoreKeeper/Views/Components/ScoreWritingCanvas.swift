@@ -118,7 +118,7 @@ struct ScoreWritingCanvas: UIViewRepresentable {
         )
 
         let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
+        format.scale = renderScale
         format.opaque = true
         let renderer = UIGraphicsImageRenderer(size: recognitionSize, format: format)
         return renderer.image { rendererContext in

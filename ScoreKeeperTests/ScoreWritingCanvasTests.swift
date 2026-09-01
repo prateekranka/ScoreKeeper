@@ -17,14 +17,15 @@ final class ScoreWritingCanvasTests: XCTestCase {
         ))
     }
 
-    func testNormalizedOutputIs512By256PixelsAtEveryRequestedScale() throws {
+    func testNormalizedOutputPreservesRequestedPixelScale() throws {
         let drawing = drawing([[CGPoint(x: 40, y: 40), CGPoint(x: 180, y: 100)]])
         for scale in [CGFloat(1), 2, 3] {
             let image = try XCTUnwrap(ScoreWritingCanvas.normalizedImage(
                 for: drawing, canvasSize: CGSize(width: 320, height: 160), scale: scale
             ))
-            XCTAssertEqual(image.cgImage?.width, 512)
-            XCTAssertEqual(image.cgImage?.height, 256)
+            let expectedScale = max(scale, 1)
+            XCTAssertEqual(image.cgImage?.width, Int(512 * expectedScale))
+            XCTAssertEqual(image.cgImage?.height, Int(256 * expectedScale))
         }
     }
 
