@@ -71,10 +71,33 @@ final class ScoreWritingCanvasTests: XCTestCase {
         ))
         let cgImage = try XCTUnwrap(image.cgImage)
         let raster = PixelRaster(cgImage)
-        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 0, y: 80, width: 35, height: 96)))
-        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 477, y: 80, width: 35, height: 96)))
-        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 208, y: 0, width: 96, height: 35)))
-        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 208, y: 221, width: 96, height: 35)))
+        let pixelScale = CGFloat(cgImage.width) / 512
+        let edgeBand = 35 * pixelScale
+        let crossbarBand = 96 * pixelScale
+        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(
+            x: 0,
+            y: 80 * pixelScale,
+            width: edgeBand,
+            height: crossbarBand
+        )))
+        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(
+            x: CGFloat(cgImage.width) - edgeBand,
+            y: 80 * pixelScale,
+            width: edgeBand,
+            height: crossbarBand
+        )))
+        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(
+            x: 208 * pixelScale,
+            y: 0,
+            width: crossbarBand,
+            height: edgeBand
+        )))
+        XCTAssertTrue(raster.hasDarkPixel(in: CGRect(
+            x: 208 * pixelScale,
+            y: CGFloat(cgImage.height) - edgeBand,
+            width: crossbarBand,
+            height: edgeBand
+        )))
     }
 
     private func drawing(_ strokes: [[CGPoint]], width: CGFloat = 10) -> PKDrawing {
