@@ -905,7 +905,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
@@ -941,7 +941,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 13;
 				DEVELOPMENT_ASSET_PATHS = "\"ScoreKeeper/Preview Content\"";
 				DEVELOPMENT_TEAM = 4JRB53LG5C;
 				ENABLE_PREVIEWS = YES;
