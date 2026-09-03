@@ -205,6 +205,8 @@ def _coarse_scan(region_gray, ref_gray, aspect, down):
     region coordinates, or None when no candidate fits.
     """
     rh, rw = region_gray.shape
+    if rh < 2 or rw < 2:
+        return None
     region_d = resize_gray(region_gray, max(2, round(rw / down)), max(2, round(rh / down)))
     best = None
     w = COARSE_SCALE_MIN * rw
@@ -397,7 +399,9 @@ def run_compare(args, box):
     rect, ncc = located
 
     stats, maxd = compare_at(shot, ref, rect)
-    stem = os.path.splitext(os.path.basename(args.screenshot))[0]
+    screenshot_stem = os.path.splitext(os.path.basename(args.screenshot))[0]
+    reference_stem = os.path.splitext(os.path.basename(args.reference))[0]
+    stem = f"{screenshot_stem}.{reference_stem}"
     out_dir = args.out_dir or os.path.dirname(os.path.abspath(args.screenshot))
     crop = shot[rect[1]:rect[1] + rect[3], rect[0]:rect[0] + rect[2]]
     heat_path, crop_path = write_artifacts(out_dir, stem, crop, maxd)

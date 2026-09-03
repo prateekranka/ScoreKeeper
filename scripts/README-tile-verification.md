@@ -116,9 +116,10 @@ the whole artwork.
 ```
 
 Replace the `<..._TOP_Y>` placeholders with the measured values from step 5. Each run
-prints the located rect, the diff metrics and a `VERDICT:` line, and writes a diff
-heatmap (`*.tile-diff-heatmap.png`) plus the aligned crop (`*.tile-aligned-crop.png`)
-next to the screenshot (or into `--out-dir`). Don't commit screenshots or artifacts.
+prints the located rect, the diff metrics and a `VERDICT:` line, and writes a unique
+heatmap (`<screenshot>.<reference>.tile-diff-heatmap.png`) plus aligned crop
+(`<screenshot>.<reference>.tile-aligned-crop.png`) for each tile next to the screenshot
+(or into `--out-dir`). Don't commit screenshots or artifacts.
 
 ## Verdicts and exit codes
 
