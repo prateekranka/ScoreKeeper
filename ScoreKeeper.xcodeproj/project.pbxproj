@@ -34,6 +34,8 @@
 		AA0000000000000000000219 /* RoundTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000119 /* RoundTracker.swift */; };
 		AA000000000000000000021A /* ScoreEntryField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000011A /* ScoreEntryField.swift */; };
 		AA000000000000000000021B /* GameTypeTile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000011B /* GameTypeTile.swift */; };
+		AA0000000000000003000902 /* Phase10TileArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000003000901 /* Phase10TileArt.swift */; };
+		AA0000000000000003000904 /* DinnerTileArt.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000003000903 /* DinnerTileArt.swift */; };
 		AA000000000000000000021C /* AnimatedScoreChange.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000011C /* AnimatedScoreChange.swift */; };
 		AA000000000000000000021D /* ConfettiOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000011D /* ConfettiOverlay.swift */; };
 		AA000000000000000000021E /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000000000000000000011E /* AppTheme.swift */; };
@@ -146,6 +148,8 @@
 		AA0000000000000000000119 /* RoundTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundTracker.swift; sourceTree = "<group>"; };
 		AA000000000000000000011A /* ScoreEntryField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreEntryField.swift; sourceTree = "<group>"; };
 		AA000000000000000000011B /* GameTypeTile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameTypeTile.swift; sourceTree = "<group>"; };
+		AA0000000000000003000901 /* Phase10TileArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase10TileArt.swift; sourceTree = "<group>"; };
+		AA0000000000000003000903 /* DinnerTileArt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerTileArt.swift; sourceTree = "<group>"; };
 		AA000000000000000000011C /* AnimatedScoreChange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedScoreChange.swift; sourceTree = "<group>"; };
 		AA000000000000000000011D /* ConfettiOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiOverlay.swift; sourceTree = "<group>"; };
 		AA000000000000000000011E /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
@@ -378,6 +382,8 @@
 				AA0000000000000000000119 /* RoundTracker.swift */,
 				AA000000000000000000011A /* ScoreEntryField.swift */,
 				AA000000000000000000011B /* GameTypeTile.swift */,
+				AA0000000000000003000901 /* Phase10TileArt.swift */,
+				AA0000000000000003000903 /* DinnerTileArt.swift */,
 				AA000000000000000000011C /* AnimatedScoreChange.swift */,
 				AA000000000000000000011D /* ConfettiOverlay.swift */,
 				AA0000000000000001000313 /* PressableButtonStyle.swift */,
@@ -704,6 +710,8 @@
 				AA0000000000000000000219 /* RoundTracker.swift in Sources */,
 				AA000000000000000000021A /* ScoreEntryField.swift in Sources */,
 				AA000000000000000000021B /* GameTypeTile.swift in Sources */,
+				AA0000000000000003000902 /* Phase10TileArt.swift in Sources */,
+				AA0000000000000003000904 /* DinnerTileArt.swift in Sources */,
 				AA000000000000000000021C /* AnimatedScoreChange.swift in Sources */,
 				AA000000000000000000021D /* ConfettiOverlay.swift in Sources */,
 				AA0000000000000001000312 /* PressableButtonStyle.swift in Sources */,

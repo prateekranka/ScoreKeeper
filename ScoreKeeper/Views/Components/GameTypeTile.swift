@@ -7,26 +7,11 @@ struct GameTypeTile: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 18) {
-                HStack(spacing: 10) {
-                    Text(gameType.displayName == "Scoreboard" ? "PIPCOUNT / SCOREBOARD" : "PIPCOUNT / \(gameType.displayName.uppercased())")
-                        .font(AppFonts.columnHeader)
-                        .tracking(1.05)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.72)
-
-                    Spacer(minLength: AppTheme.spacingSmall)
-
-                    Text("\(gameType.minPlayers)–\(gameType.maxPlayers)")
-                        .font(AppFonts.columnHeader)
-                        .monospacedDigit()
-                        .foregroundStyle(ClubhouseTheme.ink)
-                }
-
-                GameTypeArtwork(gameType: gameType)
+            VStack(alignment: .leading, spacing: 16) {
+                GamePickerArtwork(gameType: gameType)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 184)
+                    .aspectRatio(4 / 3, contentMode: .fit)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
 
                 HStack(alignment: .bottom, spacing: 14) {
                     VStack(alignment: .leading, spacing: 6) {
@@ -45,12 +30,11 @@ struct GameTypeTile: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                    Image(systemName: "arrow.up.right")
-                        .font(.system(size: 14, weight: .black))
-                        .foregroundStyle(ClubhouseTheme.onPrimary)
-                        .frame(width: 44, height: 44)
-                        .background(gameType.color, in: Circle())
-                        .shadow(color: ClubhouseTheme.artShadow.opacity(0.42), radius: 7, y: 4)
+                    Text("\(gameType.minPlayers)–\(gameType.maxPlayers)")
+                        .font(AppFonts.columnHeader)
+                        .monospacedDigit()
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .padding(.bottom, 2)
                 }
             }
             .padding(20)
@@ -68,6 +52,102 @@ struct GameTypeTile: View {
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(accessibilityID ?? "")
         .accessibilityLabel("\(gameType.displayName). \(gameType.subtitle). \(gameType.minPlayers) to \(gameType.maxPlayers) players.")
+    }
+}
+
+/// Image-backed artwork used only by the Games picker. Other screens keep the
+/// adaptive vector `GameTypeArtwork` below.
+private struct GamePickerArtwork: View {
+    let gameType: GameType
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.pipCountPageIsExiting) private var pageIsExiting
+    @State private var appeared = false
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: reduceMotion || isFrozenForVerification)) { timeline in
+            GeometryReader { proxy in
+                let time = timeline.date.timeIntervalSinceReferenceDate
+
+                switch gameType {
+                case .generic:
+                    ScoreboardTileArt(
+                        size: proxy.size,
+                        time: time,
+                        active: isActive,
+                        reduceMotion: reduceMotion
+                    )
+                case .phase10:
+                    Phase10TileArt(
+                        size: proxy.size,
+                        time: time,
+                        active: isActive,
+                        reduceMotion: reduceMotion
+                    )
+                case .whatsForDinner:
+                    DinnerTileArt(
+                        size: proxy.size,
+                        time: time,
+                        active: isActive,
+                        reduceMotion: reduceMotion
+                    )
+                }
+            }
+        }
+        .onAppear {
+            if reduceMotion {
+                appeared = true
+            } else {
+                withAnimation(AppMotion.artEntrance) {
+                    appeared = true
+                }
+            }
+        }
+        .onDisappear { appeared = false }
+        .accessibilityHidden(true)
+    }
+
+    private var isActive: Bool {
+        appeared && !pageIsExiting
+    }
+
+    private var isFrozenForVerification: Bool {
+        ProcessInfo.processInfo.arguments.contains("-tile-art-frozen")
+    }
+}
+
+private struct ScoreboardTileArt: View {
+    let size: CGSize
+    let time: TimeInterval
+    let active: Bool
+    let reduceMotion: Bool
+
+    var body: some View {
+        let breath = TileIdleLoop.breath(
+            time: time,
+            delay: 0,
+            reduceMotion: reduceMotion || isFrozenForVerification
+        )
+        let scale = TileIdleLoop.scale(breath: breath, contracted: 0.996, expanded: 1.012)
+
+        Image("ScoreboardTileArtwork")
+            .resizable()
+            .scaledToFit()
+            .frame(width: size.width, height: size.height)
+            .clipped()
+            .scaleEffect(scale)
+            .offset(
+                x: TileIdleLoop.drift(breath: breath, peak: 3),
+                y: TileIdleLoop.drift(breath: breath, peak: -3)
+            )
+            .opacity(active ? 1 : 0)
+            .offset(active ? .zero : CGSize(width: 0, height: 28))
+            .scaleEffect(active ? 1 : 0.78)
+            .animation(active ? AppMotion.artEntrance : AppMotion.artExit, value: active)
+    }
+
+    private var isFrozenForVerification: Bool {
+        ProcessInfo.processInfo.arguments.contains("-tile-art-frozen")
     }
 }
 
@@ -252,6 +332,57 @@ struct GameTypeArtwork: View {
     private func wave(_ time: TimeInterval, phase: Double, amplitude: CGFloat) -> CGFloat {
         guard !reduceMotion else { return 0 }
         return CGFloat(sin(time * 0.72 + phase)) * amplitude
+    }
+}
+
+/// Shared 3.2s idle loop for the bitmap game-tile thumbnails.
+/// Sinusoidal easeInOut, no spring.
+struct TileIdleLoop {
+    static let duration: TimeInterval = 3.2
+    static let restHold: TimeInterval = 0.45
+
+    /// 0 at rest, +1 at peak, −1 at counter-sway.
+    static func breath(time: TimeInterval, delay: TimeInterval, reduceMotion: Bool) -> CGFloat {
+        guard !reduceMotion else { return 0 }
+        var local = (time - delay).truncatingRemainder(dividingBy: duration)
+        if local < 0 { local += duration }
+        return sample(local)
+    }
+
+    static func scale(breath: CGFloat, contracted: CGFloat, expanded: CGFloat) -> CGFloat {
+        if breath >= 0 {
+            return 1 + (expanded - 1) * breath
+        }
+        return 1 + (1 - contracted) * breath
+    }
+
+    static func drift(breath: CGFloat, peak: CGFloat) -> CGFloat {
+        breath * peak
+    }
+
+    static func sample(_ t: TimeInterval) -> CGFloat {
+        let keys: [(TimeInterval, Double)] = [
+            (0.00, 0),
+            (0.45, 0),
+            (0.55, 0.18),
+            (1.05, 1.00),
+            (1.55, 0.22),
+            (2.25, -1.00),
+            (3.20, 0)
+        ]
+
+        for index in 0..<(keys.count - 1) {
+            let start = keys[index]
+            let end = keys[index + 1]
+            if t <= end.0 || index == keys.count - 2 {
+                let span = max(end.0 - start.0, 0.0001)
+                let u = min(max((t - start.0) / span, 0), 1)
+                let eased = 0.5 - 0.5 * cos(.pi * u)
+                return CGFloat(start.1 + (end.1 - start.1) * eased)
+            }
+        }
+
+        return 0
     }
 }
 
