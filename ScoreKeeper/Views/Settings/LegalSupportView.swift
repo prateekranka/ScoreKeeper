@@ -19,9 +19,6 @@ struct LegalSupportView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
-                settingsHero
-                    .staggeredEntrance(visible: contentVisible, index: 0)
-
                 responsiveContent
             }
             .padding(.horizontal, AppTheme.spacingMedium)
@@ -55,90 +52,29 @@ struct LegalSupportView: View {
         if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
             HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
                 VStack(spacing: AppTheme.spacingMedium) {
+                    proPanel
+                        .staggeredEntrance(visible: contentVisible, index: 0)
+
                     appearancePanel
                         .staggeredEntrance(visible: contentVisible, index: 1)
-
-                    proPanel
-                        .staggeredEntrance(visible: contentVisible, index: 2)
                 }
                 .frame(maxWidth: 430, alignment: .top)
 
-                VStack(spacing: AppTheme.spacingMedium) {
-                    supportPanel
-                        .staggeredEntrance(visible: contentVisible, index: 3)
-
-                    aboutPanel
-                        .staggeredEntrance(visible: contentVisible, index: 4)
-                }
-                .frame(maxWidth: .infinity, alignment: .top)
+                supportPanel
+                    .staggeredEntrance(visible: contentVisible, index: 2)
+                    .frame(maxWidth: .infinity, alignment: .top)
             }
         } else {
             VStack(spacing: AppTheme.spacingMedium) {
+                proPanel
+                    .staggeredEntrance(visible: contentVisible, index: 0)
+
                 appearancePanel
                     .staggeredEntrance(visible: contentVisible, index: 1)
 
-                proPanel
-                    .staggeredEntrance(visible: contentVisible, index: 2)
-
                 supportPanel
-                    .staggeredEntrance(visible: contentVisible, index: 3)
-
-                aboutPanel
-                    .staggeredEntrance(visible: contentVisible, index: 4)
+                    .staggeredEntrance(visible: contentVisible, index: 2)
             }
-        }
-    }
-
-    private var settingsHero: some View {
-        Group {
-            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
-                HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
-                    heroCopy
-                        .frame(maxWidth: 390, alignment: .leading)
-
-                    PipCountGeometricArtwork(scene: .gameSettings)
-                        .frame(maxWidth: 500)
-                        .frame(height: 300)
-                }
-            } else {
-                HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
-                    heroCopy
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                    if !dynamicTypeSize.isAccessibilitySize {
-                        PipCountGeometricArtwork(scene: .gameSettings)
-                            .frame(width: 168, height: 178)
-                    }
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var heroCopy: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            HStack(spacing: 8) {
-                Text("PipCount")
-                    .font(AppFonts.headline)
-                    .foregroundStyle(ClubhouseTheme.ink)
-
-                BauhausStarburst(color: ClubhouseTheme.blue, size: 18)
-            }
-
-            Text("Make it\nyours.")
-                .font(AppFonts.hero)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Text("Appearance, PipCount Pro, privacy, and help — all in one place.")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Rectangle()
-                .fill(ClubhouseTheme.red)
-                .frame(width: 82, height: 4)
-                .padding(.top, 4)
         }
     }
 
@@ -146,7 +82,6 @@ struct LegalSupportView: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             panelHeader(
                 title: "Appearance",
-                subtitle: "Choose how PipCount looks on this device.",
                 systemImage: "circle.lefthalf.filled"
             )
 
@@ -169,11 +104,6 @@ struct LegalSupportView: View {
                     systemImage: "moon.fill"
                 )
             }
-
-            Text("System follows your iPhone or iPad appearance automatically.")
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(AppTheme.spacingMedium)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
@@ -288,12 +218,6 @@ struct LegalSupportView: View {
 
     private var supportPanel: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            panelHeader(
-                title: "Privacy & Support",
-                subtitle: "The details and help you need.",
-                systemImage: "lifepreserver"
-            )
-
             VStack(alignment: .leading, spacing: 0) {
                 Link(destination: LegalSupportLinks.privacyPolicy) {
                     LegalSupportLink(
@@ -322,45 +246,12 @@ struct LegalSupportView: View {
                 .accessibilityHint("Open PipCount support")
                 .accessibilityIdentifier("support_link")
             }
-
-            Label("Links open in your default browser.", systemImage: "safari")
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .accessibilityLabel("Privacy and support links open in your default browser.")
         }
         .padding(AppTheme.spacingMedium)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
-    private var aboutPanel: some View {
-        HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
-            PipCountGeometricArtwork(scene: .homeEmpty, ambientMotion: false)
-                .frame(width: 112, height: 104)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("About PipCount")
-                    .font(AppFonts.title)
-                    .foregroundStyle(ClubhouseTheme.ink)
-
-                Text("A private, local-first scorekeeper made for the people already around your table.")
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(versionText)
-                    .columnHeaderStyle()
-                    .foregroundStyle(ClubhouseTheme.blue)
-                    .padding(.top, 3)
-            }
-
-            Spacer(minLength: 0)
-        }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-        .accessibilityElement(children: .combine)
-    }
-
-    private func panelHeader(title: String, subtitle: String, systemImage: String) -> some View {
+    private func panelHeader(title: String, subtitle: String? = nil, systemImage: String) -> some View {
         HStack(spacing: AppTheme.spacingSmall) {
             Image(systemName: systemImage)
                 .font(.headline.weight(.semibold))
@@ -374,18 +265,14 @@ struct LegalSupportView: View {
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text(subtitle)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                if let subtitle {
+                    Text(subtitle)
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var versionText: String {
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
-        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "—"
-        return "VERSION \(version) • BUILD \(build)"
     }
 
     private func selectTab(_ tab: PipCountTab) {

@@ -26,6 +26,7 @@ struct RoundEntryDeckView: View {
     @State private var captureTrigger = 0
     @State private var captureEvent = 0
     @State private var capturedImage: UIImage?
+    @State private var capturedPreviewImage: UIImage?
     @State private var sourceImage: UIImage?
     @State private var isPresented = false
     @State private var isExiting = false
@@ -312,6 +313,7 @@ struct RoundEntryDeckView: View {
                 clearTrigger: clearBinding(for: player),
                 captureTrigger: $captureTrigger,
                 capturedImage: $capturedImage,
+                capturedPreviewImage: $capturedPreviewImage,
                 captureEvent: $captureEvent
             )
             .clipShape(RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
@@ -343,10 +345,7 @@ struct RoundEntryDeckView: View {
 
     private var scoreActions: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Text("Tap the blue check when finished")
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            Spacer(minLength: 0)
 
             Button {
                 clear(for: player)
@@ -648,6 +647,7 @@ struct RoundEntryDeckView: View {
         let targetPlayerID = player.id
         let targetIndex = currentIndex
         let requestID = eventID
+        let previewImage = capturedPreviewImage
 
         Task { @MainActor in
             let result = await ScoreRecognizer.recognize(image)
@@ -662,7 +662,7 @@ struct RoundEntryDeckView: View {
 
             switch result {
             case .success(let value, _):
-                sourceImage = image
+                sourceImage = previewImage ?? image
                 entryState = .confirming(value: value)
                 feedbackTrigger &+= 1
             case .noInk:
@@ -690,6 +690,7 @@ struct RoundEntryDeckView: View {
         clearTriggers[player.id, default: 0] += 1
         scores[player.id] = nil
         capturedImage = nil
+        capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
         entryState = .drawing
@@ -701,6 +702,7 @@ struct RoundEntryDeckView: View {
         recognitionRequestID &+= 1
         let requestID = recognitionRequestID
         capturedImage = nil
+        capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
         entryState = .recognizing(requestID: requestID)
@@ -712,6 +714,7 @@ struct RoundEntryDeckView: View {
         recognitionRequestID &+= 1
         clearTriggers[player.id, default: 0] += 1
         capturedImage = nil
+        capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
         entryState = .drawing
@@ -730,6 +733,7 @@ struct RoundEntryDeckView: View {
         scores[player.id] = value
         recognitionRequestID &+= 1
         capturedImage = nil
+        capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
         entryState = .drawing
@@ -752,6 +756,7 @@ struct RoundEntryDeckView: View {
 
         invalidateRecognition()
         capturedImage = nil
+        capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
         entryState = .drawing

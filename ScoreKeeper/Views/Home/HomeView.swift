@@ -467,34 +467,11 @@ private struct HomeActiveGamesSection: View {
 
             VStack(spacing: AppTheme.spacingSmall) {
                 ForEach(sessions) { session in
-                    HStack(spacing: AppTheme.spacingSmall) {
-                        Button {
-                            onGameTap(session)
-                        } label: {
-                            ActiveGameRow(session: session)
-                        }
-                        .buttonStyle(PressableButtonStyle())
-                        .accessibilityIdentifier("active_game_\(session.id.uuidString)")
-                        .accessibilityLabel("Resume \(session.gameType.displayName), round \(session.currentRoundNumber)")
-
-                        Button(role: .destructive) {
-                            onDelete(session)
-                        } label: {
-                            Image(systemName: "trash")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(ClubhouseTheme.red)
-                                .frame(width: 46, height: 46)
-                                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                        .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-                                }
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(PressableButtonStyle())
-                        .accessibilityLabel("Delete active \(session.gameType.displayName) game")
-                        .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
-                    }
+                    ActiveGameRow(
+                        session: session,
+                        onResume: { onGameTap(session) },
+                        onDelete: { onDelete(session) }
+                    )
                 }
             }
         }
@@ -503,6 +480,8 @@ private struct HomeActiveGamesSection: View {
 
 private struct ActiveGameRow: View {
     let session: GameSession
+    let onResume: () -> Void
+    let onDelete: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -533,32 +512,63 @@ private struct ActiveGameRow: View {
                 }
             }
 
-            HStack(spacing: 12) {
-                Circle()
-                    .fill(ClubhouseTheme.paperCard)
-                    .frame(width: 42, height: 42)
-                    .overlay {
-                        Image(systemName: "arrow.right")
-                            .font(.headline.weight(.black))
-                            .foregroundStyle(ClubhouseTheme.blue)
+            HStack(spacing: AppTheme.spacingSmall) {
+                Button(action: onResume) {
+                    HStack(spacing: 12) {
+                        Circle()
+                            .fill(ClubhouseTheme.paperCard)
+                            .frame(width: 42, height: 42)
+                            .overlay {
+                                Image(systemName: "arrow.right")
+                                    .font(.headline.weight(.black))
+                                    .foregroundStyle(ClubhouseTheme.blue)
+                            }
+
+                        Text("Resume Game")
+                            .font(AppFonts.headline)
+                            .foregroundStyle(ClubhouseTheme.onPrimary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+
+                        Spacer(minLength: 0)
+
+                        BauhausHalftone(color: ClubhouseTheme.paperCard, spacing: 6)
+                            .frame(width: 48, height: 42)
                     }
+                    .padding(.horizontal, 14)
+                    .frame(maxWidth: .infinity, minHeight: 62)
+                    .background(ClubhouseTheme.blue, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityIdentifier("active_game_\(session.id.uuidString)")
+                .accessibilityLabel("Resume \(session.gameType.displayName), round \(session.currentRoundNumber)")
+                .frame(maxWidth: .infinity)
 
-                Text("Resume Game")
-                    .font(AppFonts.headline)
-                    .foregroundStyle(ClubhouseTheme.onPrimary)
-
-                Spacer()
-
-                BauhausHalftone(color: ClubhouseTheme.paperCard, spacing: 6)
-                    .frame(width: 70, height: 42)
+                Button(role: .destructive, action: onDelete) {
+                    Image(systemName: "trash")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(ClubhouseTheme.red)
+                        .frame(maxWidth: .infinity, minHeight: 62)
+                        .background(
+                            ClubhouseTheme.paperSunken,
+                            in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                        )
+                        .overlay {
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                        }
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityLabel("Delete active \(session.gameType.displayName) game")
+                .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
+                .frame(minWidth: 64, idealWidth: 72, maxWidth: 88)
             }
-            .padding(.horizontal, 14)
-            .frame(minHeight: 62)
-            .background(ClubhouseTheme.blue, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -1022,6 +1032,7 @@ struct SavedPlayersView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query(sort: \SavedPlayer.lastUsed, order: .reverse) private var savedPlayers: [SavedPlayer]
     @State private var contentVisible = false
+    @State private var showAddPlayer = false
 
     var body: some View {
         ScrollView {
@@ -1056,11 +1067,11 @@ struct SavedPlayersView: View {
                 }
 
                 AppActionButton(role: .primary(ClubhouseTheme.blue)) {
-                    router.goHome()
-                    router.push(.gamePicker)
+                    showAddPlayer = true
                 } label: {
-                    Label("Start a new game", systemImage: "arrow.right")
+                    Text("Add new player")
                 }
+                .accessibilityIdentifier("add_new_player_button")
                 .staggeredEntrance(visible: contentVisible, index: 2)
             }
             .padding(.horizontal, AppTheme.spacingMedium)
@@ -1073,6 +1084,9 @@ struct SavedPlayersView: View {
         .toolbar(.hidden, for: .navigationBar)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             PipCountDock(selected: .players, onSelect: selectTab)
+        }
+        .sheet(isPresented: $showAddPlayer) {
+            AddSavedPlayerSheet()
         }
         .onAppear { contentVisible = true }
     }
@@ -1129,10 +1143,6 @@ private struct PlayersLibraryHero: View {
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            Text("Your game-night roster.")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-
             Rectangle()
                 .fill(ClubhouseTheme.green)
                 .frame(width: 82, height: 4)
@@ -1168,5 +1178,95 @@ private struct SavedPlayerCard: View {
         .padding(AppTheme.spacingMedium)
         .frame(minHeight: 78)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium)
+    }
+}
+
+private struct AddSavedPlayerSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query private var savedPlayers: [SavedPlayer]
+
+    @State private var playerName = ""
+    @State private var saveError: String?
+    @FocusState private var isNameFocused: Bool
+
+    private var trimmedName: String {
+        playerName.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var isDuplicate: Bool {
+        savedPlayers.contains { $0.name.caseInsensitiveCompare(trimmedName) == .orderedSame }
+    }
+
+    private var canSave: Bool {
+        !trimmedName.isEmpty && !isDuplicate
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                TextField("Player name", text: $playerName)
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .textFieldStyle(.plain)
+                    .autocorrectionDisabled()
+                    .focused($isNameFocused)
+                    .padding(.horizontal, AppTheme.spacingSmall)
+                    .padding(.vertical, 12)
+                    .background(ClubhouseTheme.paperCard)
+                    .overlay(alignment: .bottom) {
+                        Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
+                    }
+                    .accessibilityIdentifier("add_saved_player_name_field")
+
+                if isDuplicate {
+                    Text("That name is already saved.")
+                        .font(AppFonts.caption.weight(.semibold))
+                        .foregroundStyle(ClubhouseTheme.red)
+                }
+            }
+            .padding(AppTheme.spacingMedium)
+            .navigationTitle("Add Player")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") { savePlayer() }
+                        .disabled(!canSave)
+                        .accessibilityIdentifier("add_saved_player_save_button")
+                }
+            }
+            .alert(
+                "Couldn’t save player",
+                isPresented: Binding(
+                    get: { saveError != nil },
+                    set: { if !$0 { saveError = nil } }
+                )
+            ) {
+                Button("OK", role: .cancel) { saveError = nil }
+            } message: {
+                Text(saveError ?? "Please try again.")
+            }
+            .onAppear { isNameFocused = true }
+        }
+        .presentationDetents([.medium])
+    }
+
+    private func savePlayer() {
+        let saved = SavedPlayer(
+            name: trimmedName,
+            colorIndex: Int.random(in: 0..<PlayerColors.palette.count)
+        )
+        modelContext.insert(saved)
+
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            modelContext.rollback()
+            saveError = error.localizedDescription
+        }
     }
 }

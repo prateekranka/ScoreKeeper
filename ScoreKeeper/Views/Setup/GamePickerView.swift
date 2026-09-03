@@ -65,50 +65,20 @@ struct GamePickerView: View {
 }
 
 private struct GamePickerHero: View {
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-
     var body: some View {
-        Group {
-            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
-                HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
-                    copy
-                        .frame(maxWidth: 360, alignment: .leading)
-
-                    PipCountGeometricArtwork(scene: .gamePicker)
-                        .frame(maxWidth: 520)
-                        .frame(height: AppTheme.regularHeroArtHeight)
-                }
-            } else {
-                VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                    copy
-
-                    PipCountGeometricArtwork(scene: .gamePicker)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: dynamicTypeSize.isAccessibilitySize ? 205 : AppTheme.heroArtHeight)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 2)
-    }
-
-    private var copy: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Choose\na Game")
+            Text("Choose a Game")
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Text("Pick your format for tonight.")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .minimumScaleFactor(0.62)
 
             Rectangle()
                 .fill(ClubhouseTheme.blue)
                 .frame(width: 82, height: 4)
                 .padding(.top, 4)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 2)
     }
 }

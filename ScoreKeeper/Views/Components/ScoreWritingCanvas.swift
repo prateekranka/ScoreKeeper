@@ -5,6 +5,7 @@ struct ScoreWritingCanvas: UIViewRepresentable {
     @Binding var clearTrigger: Int
     @Binding var captureTrigger: Int
     @Binding var capturedImage: UIImage?
+    @Binding var capturedPreviewImage: UIImage?
     @Binding var captureEvent: Int
     var accessibilityIdentifier: String = "score_writing_canvas"
 
@@ -35,6 +36,7 @@ struct ScoreWritingCanvas: UIViewRepresentable {
             let scale = max(Self.displayScale(for: canvas), 1)
             let captureID = captureTrigger
             let imageBinding = $capturedImage
+            let previewImageBinding = $capturedPreviewImage
             let eventBinding = $captureEvent
             Task { @MainActor in
                 // A replaced card can finish an older capture after a newer
@@ -42,6 +44,11 @@ struct ScoreWritingCanvas: UIViewRepresentable {
                 // capture or move the event counter backwards.
                 guard captureID > eventBinding.wrappedValue else { return }
                 imageBinding.wrappedValue = Self.normalizedImage(
+                    for: drawing,
+                    canvasSize: canvasSize,
+                    scale: scale
+                )
+                previewImageBinding.wrappedValue = Self.previewImage(
                     for: drawing,
                     canvasSize: canvasSize,
                     scale: scale
@@ -146,6 +153,50 @@ struct ScoreWritingCanvas: UIViewRepresentable {
             context.setBlendMode(.destinationOver)
             context.setFillColor(UIColor.black.cgColor)
             context.fill(fittedInkRect)
+        }
+    }
+
+    /// Cropped black-on-white thumbnail that matches the canvas orientation.
+    static func previewImage(for drawing: PKDrawing, canvasSize: CGSize, scale: CGFloat) -> UIImage? {
+        guard canvasSize.width.isFinite, canvasSize.height.isFinite,
+              canvasSize.width > 0, canvasSize.height > 0 else { return nil }
+        guard !drawing.strokes.isEmpty else { return nil }
+        let inkBounds = drawing.bounds
+        guard !inkBounds.isNull, inkBounds.width >= 0.5, inkBounds.height >= 0.5 else { return nil }
+        let padding = max(min(canvasSize.width, canvasSize.height) * 0.05, 24)
+        let canvasRect = CGRect(origin: .zero, size: canvasSize)
+        let captureRect = inkBounds.insetBy(dx: -padding, dy: -padding).intersection(canvasRect)
+        guard !captureRect.isNull, captureRect.width >= 0.5, captureRect.height >= 0.5 else { return nil }
+
+        let renderScale = max(scale, 1)
+        let inkImage = drawing.image(from: captureRect, scale: renderScale)
+        guard inkImage.cgImage != nil else { return nil }
+
+        let bakeFormat = UIGraphicsImageRendererFormat()
+        bakeFormat.scale = renderScale
+        bakeFormat.opaque = false
+        let bakeRenderer = UIGraphicsImageRenderer(size: captureRect.size, format: bakeFormat)
+        let uprightInk = bakeRenderer.image { _ in
+            inkImage.draw(in: CGRect(origin: .zero, size: captureRect.size))
+        }
+
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = renderScale
+        format.opaque = true
+        let renderer = UIGraphicsImageRenderer(size: captureRect.size, format: format)
+        return renderer.image { rendererContext in
+            let context = rendererContext.cgContext
+            let outputRect = CGRect(origin: .zero, size: captureRect.size)
+            context.setFillColor(UIColor.white.cgColor)
+            context.fill(outputRect)
+            context.saveGState()
+            context.translateBy(x: 0, y: outputRect.height)
+            context.scaleBy(x: 1, y: -1)
+            uprightInk.draw(in: outputRect, blendMode: .destinationOut, alpha: 1)
+            context.restoreGState()
+            context.setBlendMode(.destinationOver)
+            context.setFillColor(UIColor.black.cgColor)
+            context.fill(outputRect)
         }
     }
 
