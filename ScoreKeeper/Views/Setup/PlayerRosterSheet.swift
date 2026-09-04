@@ -17,9 +17,9 @@ struct PlayerRosterSheet: View {
             Group {
                 if savedPlayers.isEmpty {
                     ContentUnavailableView(
-                        "No Saved Players",
+                        "no saved players",
                         systemImage: "person.slash",
-                        description: Text("Play a game to save player names to your roster.")
+                        description: Text("play a game to save player names to your roster")
                     )
                 } else {
                     ScrollView {
@@ -32,14 +32,14 @@ struct PlayerRosterSheet: View {
                     }
                 }
             }
-            .navigationTitle("Select Players")
+            .navigationTitle("select players")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add (\(selectedNames.count))") {
+                    Button("add (\(selectedNames.count))") {
                         onSelect(Array(selectedNames))
                         dismiss()
                     }
@@ -47,27 +47,27 @@ struct PlayerRosterSheet: View {
                 }
             }
             .confirmationDialog(
-                "Delete saved player?",
+                "delete saved player?",
                 isPresented: $showDeleteConfirmation,
                 titleVisibility: .visible
             ) {
-                Button("Delete \(pendingDeleteName ?? "player")", role: .destructive) {
+                Button("delete \(pendingDeleteName ?? "player")", role: .destructive) {
                     deletePendingPlayer()
                 }
-                Button("Cancel", role: .cancel) {}
+                Button("cancel", role: .cancel) {}
             } message: {
-                Text("This removes the name from your saved roster. Existing games are unchanged.")
+                Text("this removes the name from your saved roster. existing games are unchanged")
             }
             .alert(
-                "Couldn’t update saved roster",
+                "couldn’t update saved roster",
                 isPresented: Binding(
                     get: { saveError != nil },
                     set: { if !$0 { saveError = nil } }
                 )
             ) {
-                Button("OK", role: .cancel) { saveError = nil }
+                Button("ok", role: .cancel) { saveError = nil }
             } message: {
-                Text(saveError ?? "Please try again.")
+                Text(saveError ?? "please try again")
             }
         }
     }

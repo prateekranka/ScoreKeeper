@@ -72,7 +72,7 @@ struct PipCountArtworkCatalogPreview: View {
                 .padding(24)
             }
             .appBackground()
-            .navigationTitle("PipCount artwork")
+            .navigationTitle("pipcount artwork")
         }
     }
 

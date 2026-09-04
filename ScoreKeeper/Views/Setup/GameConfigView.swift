@@ -45,7 +45,7 @@ struct GameConfigView: View {
             .pipCountPageContent(maxWidth: 980)
         }
         .appBackground()
-        .navigationTitle("Game Settings")
+        .navigationTitle("game settings")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
             startButton
@@ -65,15 +65,15 @@ struct GameConfigView: View {
                 .presentationDetents([.large])
         }
         .alert(
-            "Couldn’t save game",
+            "couldn’t save game",
             isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
             )
         ) {
-            Button("OK", role: .cancel) { saveError = nil }
+            Button("ok", role: .cancel) { saveError = nil }
         } message: {
-            Text(saveError ?? "Please try again.")
+            Text(saveError ?? "please try again")
         }
     }
 
@@ -103,11 +103,11 @@ struct GameConfigView: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Rules for Tonight")
+                    Text("rules for tonight")
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text("Set this once. PipCount handles the rest.")
+                    Text("set this once. pipcount handles the rest")
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
@@ -122,12 +122,12 @@ struct GameConfigView: View {
 
             if gameType == .generic {
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                    Text("How to win?")
+                    Text("how to win?")
                         .columnHeaderStyle()
 
-                    Picker("Win Condition", selection: $winCondition) {
-                        Text("Highest Score Wins").tag(WinCondition.highestScore)
-                        Text("Lowest Score Wins").tag(WinCondition.lowestScore)
+                    Picker("win condition", selection: $winCondition) {
+                        Text("highest score wins").tag(WinCondition.highestScore)
+                        Text("lowest score wins").tag(WinCondition.lowestScore)
                     }
                     .pickerStyle(.segmented)
                     .accessibilityIdentifier("win_condition_picker")
@@ -142,11 +142,11 @@ struct GameConfigView: View {
 
             if gameType == .phase10 {
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                    Toggle("No repeat rounds", isOn: $phase10SkipOnFail)
+                    Toggle("no repeat rounds", isOn: $phase10SkipOnFail)
                         .font(AppFonts.body.weight(.semibold))
                         .tint(ClubhouseTheme.felt)
 
-                    Text("Players advance to the next stage every round, even when they do not complete the current stage.")
+                    Text("players advance to the next stage every round, even when they do not complete the current stage")
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -160,7 +160,7 @@ struct GameConfigView: View {
     private var lineupSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("Tonight's Lineup")
+                Text("tonight's lineup")
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
@@ -197,7 +197,7 @@ struct GameConfigView: View {
                     .frame(width: 8, height: 8)
                     .rotationEffect(.degrees(45))
 
-                Text("Ready to score")
+                Text("ready to score")
                     .font(AppFonts.caption.weight(.bold))
                     .foregroundStyle(ClubhouseTheme.green)
             }
@@ -208,11 +208,11 @@ struct GameConfigView: View {
 
     private var targetScoreSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Target score (optional)")
+            Text("target score (optional)")
                 .font(AppFonts.body.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            TextField("Manual end only", text: $targetScoreText)
+            TextField("manual end only", text: $targetScoreText)
                 .font(AppFonts.body)
                 .keyboardType(.numberPad)
                 .textFieldStyle(.plain)
@@ -235,13 +235,13 @@ struct GameConfigView: View {
             } else if let targetScore {
                 Text(
                     winCondition == .highestScore
-                        ? "The first player to reach \(targetScore) after a submitted round ends the game; highest total wins."
-                        : "When any player reaches \(targetScore) after a submitted round, the game ends; lowest total wins."
+                        ? "the first player to reach \(targetScore) after a submitted round ends the game; highest total wins"
+                        : "when any player reaches \(targetScore) after a submitted round, the game ends; lowest total wins"
                 )
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
             } else {
-                Text("Leave blank for manual-only completion.")
+                Text("leave blank for manual-only completion")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
@@ -250,7 +250,7 @@ struct GameConfigView: View {
 
     private var startButton: some View {
         AppActionButton(role: .primary(ClubhouseTheme.blue), action: startConfiguredGame) {
-            Label("Start Game", systemImage: "arrow.right.circle.fill")
+            Label("start game", systemImage: "arrow.right.circle.fill")
         }
         .accessibilityIdentifier("start_game_button")
         .disabled(!canStart)
@@ -350,7 +350,7 @@ private struct GameConfigHero: View {
                 .lineLimit(2)
                 .minimumScaleFactor(0.78)
 
-            Text("Calibrate the rules for tonight.")
+            Text("calibrate the rules for tonight")
                 .font(AppFonts.body)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .fixedSize(horizontal: false, vertical: true)

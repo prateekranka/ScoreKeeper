@@ -15,15 +15,15 @@ struct WhatsForDinnerScoringView: View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "Submit",
+            actionTitle: "submit",
             actionSystemImage: "fork.knife",
             action: submitRound
         ) {
             RoundBanner(
                 icon: GameType.whatsForDinner.icon,
                 color: GameType.whatsForDinner.color,
-                title: "Round \(session.currentRoundNumber)",
-                subtitle: "Lowest total wins"
+                title: "round \(session.currentRoundNumber)",
+                subtitle: "lowest total wins"
             )
             mealRevealSection
             playerHandsSection
@@ -32,15 +32,15 @@ struct WhatsForDinnerScoringView: View {
         }
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
         .alert(
-            "Couldn’t save round",
+            "couldn’t save round",
             isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
             )
         ) {
-            Button("OK", role: .cancel) { saveError = nil }
+            Button("ok", role: .cancel) { saveError = nil }
         } message: {
-            Text(saveError ?? "Please try again.")
+            Text(saveError ?? "please try again")
         }
     }
 
@@ -98,10 +98,10 @@ struct WhatsForDinnerScoringView: View {
                     player: player,
                     value: handValueBinding(for: player),
                     range: 0...9999,
-                    title: "Hand value"
+                    title: "hand value"
                 ) {
                     if callerID == player.id {
-                        Label("Caller", systemImage: "checkmark.circle.fill")
+                        Label("caller", systemImage: "checkmark.circle.fill")
                             .font(AppFonts.caption)
                             .foregroundStyle(ClubhouseTheme.felt)
                     } else {

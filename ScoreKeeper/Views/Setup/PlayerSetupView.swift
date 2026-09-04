@@ -28,26 +28,26 @@ struct PlayerSetupView: View {
     }
 
     private var cleanedNames: [String] {
-        playerNames.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        playerNames.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
     }
 
     private var playableNames: [String] {
         cleanedNames.enumerated().map { index, name in
-            name.isEmpty ? "Player \(index + 1)" : name
+            name.isEmpty ? "player \(index + 1)" : name
         }
     }
 
     private var validationMessage: String? {
         let filledNames = cleanedNames.filter { !$0.isEmpty }
         if filledNames.count < gameType.minPlayers {
-            return "Add at least \(gameType.minPlayers) players."
+            return "add at least \(gameType.minPlayers) players"
         }
         if playerNames.count > gameType.maxPlayers {
-            return "This game supports up to \(gameType.maxPlayers) players."
+            return "this game supports up to \(gameType.maxPlayers) players"
         }
         let lowercaseNames = filledNames.map { $0.lowercased() }
         if Set(lowercaseNames).count != lowercaseNames.count {
-            return "Player names must be unique."
+            return "player names must be unique"
         }
         return nil
     }
@@ -66,14 +66,14 @@ struct PlayerSetupView: View {
             .pipCountPageContent(maxWidth: 980)
         }
         .appBackground()
-        .navigationTitle("Players")
+        .navigationTitle("players")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
             AppActionButton(
                 role: canStart ? .primary(ClubhouseTheme.blue) : .secondary,
                 action: startGame
             ) {
-                Label("Continue", systemImage: "arrow.right")
+                Label("continue", systemImage: "arrow.right")
             }
             .accessibilityIdentifier("start_game_button")
             .disabled(!canStart)
@@ -92,15 +92,15 @@ struct PlayerSetupView: View {
                 .presentationDetents([.large])
         }
         .alert(
-            "Couldn’t save game",
+            "couldn’t save game",
             isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
             )
         ) {
-            Button("OK", role: .cancel) { saveError = nil }
+            Button("ok", role: .cancel) { saveError = nil }
         } message: {
-            Text(saveError ?? "Please try again.")
+            Text(saveError ?? "please try again")
         }
         .onAppear { contentVisible = true }
     }
@@ -316,12 +316,12 @@ private struct SetupPlayerHeader: View {
 
     private var copy: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Add\nPlayers")
+            Text("add\nplayers")
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("Build tonight's lineup.")
+            Text("build tonight's lineup")
                 .font(AppFonts.body)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
 
@@ -348,8 +348,8 @@ private struct SavedPlayersBar: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             AppSectionHeader(
-                title: "Saved Players",
-                subtitle: "Tap names to fill the table faster.",
+                title: "saved players",
+                subtitle: "tap names to fill the table faster",
                 systemImage: "person.crop.circle.badge.plus"
             )
 
@@ -385,7 +385,7 @@ private struct PlayerNameFields: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             HStack {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Tonight's Players")
+                    Text("tonight's players")
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
                     Text("\(playerNames.count) of \(gameType.maxPlayers) seats filled")
@@ -445,7 +445,7 @@ private struct PlayerNameRow: View {
                 showName: false
             )
 
-            TextField("Player \(index + 1)", text: $name)
+            TextField("player \(index + 1)", text: $name)
                 .font(AppFonts.headline)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .textFieldStyle(.plain)
@@ -460,7 +460,7 @@ private struct PlayerNameRow: View {
                 .accessibilityIdentifier("player_name_field_\(index)")
 
             if canRemove {
-                Button("Remove Player", systemImage: "minus.circle", action: onRemove)
+                Button("remove player", systemImage: "minus.circle", action: onRemove)
                     .labelStyle(.iconOnly)
                     .font(.title3)
                     .foregroundStyle(ClubhouseTheme.ink)
@@ -484,7 +484,7 @@ private struct AddPlayerControls: View {
         VStack(spacing: AppTheme.spacingSmall) {
             if playerCount < gameType.maxPlayers {
                 controlButton(
-                    title: "Add Player",
+                    title: "add player",
                     systemImage: "plus",
                     tint: ClubhouseTheme.blue,
                     action: onAdd
@@ -493,7 +493,7 @@ private struct AddPlayerControls: View {
             }
 
             controlButton(
-                title: "From Roster",
+                title: "from roster",
                 systemImage: "person.2.fill",
                 tint: ClubhouseTheme.yellow,
                 action: onRoster

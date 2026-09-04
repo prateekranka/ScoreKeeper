@@ -180,7 +180,7 @@ private struct OnboardingView: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 8) {
-                Text("PipCount")
+                Text("pipcount")
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
@@ -205,13 +205,13 @@ private struct OnboardingView: View {
 
                 AppActionButton(role: .primary(ClubhouseTheme.felt), action: primaryAction) {
                     Label(
-                        selectedPage == pages.count - 1 ? "Start keeping score" : "Continue",
+                        selectedPage == pages.count - 1 ? "start keeping score" : "continue",
                         systemImage: "arrow.right.circle.fill"
                     )
                 }
                 .accessibilityIdentifier("onboarding_primary_button")
 
-                Button("Skip", action: finish)
+                Button("skip", action: finish)
                     .font(AppFonts.body.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.ink)
                     .frame(minWidth: 44, minHeight: 44)
@@ -351,10 +351,10 @@ private struct OnboardingArtwork: View {
         case .scoreFast:
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 HStack {
-                    Text("Round 4")
+                    Text("round 4")
                         .columnHeaderStyle()
                     Spacer()
-                    Text("Live")
+                    Text("live")
                         .columnHeaderStyle()
                         .foregroundStyle(ClubhouseTheme.red)
                 }
@@ -383,10 +383,10 @@ private struct OnboardingArtwork: View {
                 }
 
                 HStack {
-                    Text("Tonight's Crew")
+                    Text("tonight's crew")
                         .columnHeaderStyle()
                     Spacer()
-                    Text("Saved")
+                    Text("saved")
                         .columnHeaderStyle()
                 }
 
@@ -402,16 +402,16 @@ private struct OnboardingArtwork: View {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Final Scores")
+                        Text("final scores")
                             .columnHeaderStyle()
-                        Text("Game night archive")
+                        Text("game night archive")
                             .font(AppFonts.caption)
                             .foregroundStyle(ClubhouseTheme.inkMuted)
                     }
 
                     Spacer()
 
-                    StampBadge(text: "Final")
+                    StampBadge(text: "final")
                 }
 
                 VStack(spacing: 0) {
@@ -463,7 +463,7 @@ private struct OnboardingRosterLine: View {
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
             Spacer()
-            Text("Roster")
+            Text("roster")
                 .columnHeaderStyle()
         }
         .padding(.vertical, 7)
@@ -504,7 +504,7 @@ private struct OnboardingStatsLine: View {
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
             PlayerColorPip(colorIndex: 0, size: 12)
-            Text("Mina leads head-to-head")
+            Text("mina leads head-to-head")
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
@@ -552,22 +552,22 @@ private enum OnboardingPage: CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .scoreFast:
-            return "Put the score pad down."
+            return "put the score pad down"
         case .setupFast:
-            return "Set up in seconds."
+            return "set up in seconds"
         case .toolsAndHistory:
-            return "Every night becomes history."
+            return "every night becomes history"
         }
     }
 
     var message: String {
         switch self {
         case .scoreFast:
-            return "PipCount replaces the notes app, napkin, and 'who's winning?'"
+            return "pipcount replaces the notes app, napkin, and 'who's winning?'"
         case .setupFast:
-            return "Pick a game, add your crew once, reuse them every night."
+            return "pick a game, add your crew once, reuse them every night"
         case .toolsAndHistory:
-            return "Final scores, stats, and rematches — saved automatically."
+            return "final scores, stats, and rematches — saved automatically"
         }
     }
 

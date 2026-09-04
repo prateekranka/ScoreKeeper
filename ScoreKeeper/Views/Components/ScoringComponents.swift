@@ -69,15 +69,15 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                 .presentationDetents([.medium, .large])
         }
         .alert(
-            "Couldn’t update rounds",
+            "couldn’t update rounds",
             isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
             )
         ) {
-            Button("OK", role: .cancel) { saveError = nil }
+            Button("ok", role: .cancel) { saveError = nil }
         } message: {
-            Text(saveError ?? "Please try again.")
+            Text(saveError ?? "please try again")
         }
         .onAppear { contentVisible = true }
         .onDisappear { actionUnlockTask?.cancel() }
@@ -124,7 +124,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                             undoTrigger &+= 1
                         }
                     } label: {
-                        compactActionLabel("Undo", systemImage: "arrow.uturn.backward")
+                        compactActionLabel("undo", systemImage: "arrow.uturn.backward")
                     }
                     .buttonStyle(PressableButtonStyle())
                     .disabled(session.sortedRounds.isEmpty)
@@ -134,7 +134,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                     Button {
                         selectedTool = .log
                     } label: {
-                        compactActionLabel("Round Log", systemImage: "list.bullet")
+                        compactActionLabel("round log", systemImage: "list.bullet")
                     }
                     .buttonStyle(PressableButtonStyle())
                     .accessibilityIdentifier("round_log_button")
@@ -220,7 +220,7 @@ private struct CompactScoringGameHeader: View {
                         .minimumScaleFactor(0.7)
                 }
 
-                Text("Round \(session.currentRoundNumber)")
+                Text("round \(session.currentRoundNumber)")
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.blue)
                     .monospacedDigit()
@@ -282,7 +282,7 @@ private struct ScoringGameHeader: View {
 
     private var headerCopy: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("PipCount")
+            Text("pipcount")
                 .font(AppFonts.headline)
                 .foregroundStyle(ClubhouseTheme.ink)
 
@@ -292,7 +292,7 @@ private struct ScoringGameHeader: View {
                 .lineLimit(2)
                 .minimumScaleFactor(0.75)
 
-            Text("Round \(session.currentRoundNumber)")
+            Text("round \(session.currentRoundNumber)")
                 .font(AppFonts.title)
                 .foregroundStyle(ClubhouseTheme.blue)
                 .monospacedDigit()
@@ -326,10 +326,10 @@ private enum ScoringTool: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .timer: return "Timer"
-        case .dice: return "Dice"
-        case .starter: return "Starter"
-        case .log: return "Log"
+        case .timer: return "timer"
+        case .dice: return "dice"
+        case .starter: return "starter"
+        case .log: return "log"
         }
     }
 
@@ -358,7 +358,7 @@ private struct ScoringToolsBar: View {
 
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
-            Text("Round \(session.currentRoundNumber)")
+            Text("round \(session.currentRoundNumber)")
                 .columnHeaderStyle()
                 .foregroundStyle(ClubhouseTheme.blue)
                 .padding(.horizontal, 10)
@@ -428,7 +428,7 @@ private struct ScoringToolSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button("done") { dismiss() }
                 }
             }
         }
@@ -448,19 +448,19 @@ private struct ScoringToolSheet: View {
                     .contentTransition(.numericText(value: Double(dieRoll)))
 
                 AppActionButton(role: .primary(tool.tint), action: rollNumber) {
-                    Label("Roll", systemImage: "arrow.triangle.2.circlepath")
+                    Label("roll", systemImage: "arrow.triangle.2.circlepath")
                 }
             }
         case .starter:
             VStack(spacing: AppTheme.spacingMedium) {
-                Text(selectedStarter?.name ?? "Pick from \(session.players.count.quantityText("player"))")
+                Text(selectedStarter?.name ?? "pick from \(session.players.count.quantityText("player"))")
                     .font(AppFonts.scoreSmall)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                     .contentTransition(.opacity)
 
                 AppActionButton(role: .primary(tool.tint), action: pickStarter) {
-                    Label("Pick Starter", systemImage: "shuffle")
+                    Label("pick starter", systemImage: "shuffle")
                 }
             }
         case .log:
@@ -486,10 +486,10 @@ private struct ScoringToolSheet: View {
 
             HStack(spacing: AppTheme.spacingSmall) {
                 AppActionButton(role: .primary(ClubhouseTheme.red), action: toggleTimer) {
-                    Label(timerEndDate == nil ? "Start" : "Pause", systemImage: timerEndDate == nil ? "play.fill" : "pause.fill")
+                    Label(timerEndDate == nil ? "start" : "pause", systemImage: timerEndDate == nil ? "play.fill" : "pause.fill")
                 }
 
-                Button("Reset", action: resetTimer)
+                Button("reset", action: resetTimer)
                     .font(AppFonts.body.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.ink)
                     .frame(width: 92, height: 56)
@@ -506,11 +506,11 @@ private struct ScoringToolSheet: View {
     private var roundLog: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             if session.sortedRounds.isEmpty {
-                ContentUnavailableView("No rounds yet", systemImage: "list.bullet.rectangle")
+                ContentUnavailableView("no rounds yet", systemImage: "list.bullet.rectangle")
             } else {
                 ForEach(session.sortedRounds.reversed().prefix(8), id: \.id) { round in
                     HStack {
-                        Text("Round \(round.roundNumber)")
+                        Text("round \(round.roundNumber)")
                             .font(AppFonts.body.weight(.semibold))
                             .foregroundStyle(ClubhouseTheme.ink)
                         Spacer()
@@ -735,7 +735,7 @@ struct RoundHistoryStrip: View {
         if !session.sortedRounds.isEmpty {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 AppSectionHeader(
-                    title: "Rounds",
+                    title: "rounds",
                     subtitle: "\(session.sortedRounds.count) submitted",
                     systemImage: "clock.arrow.circlepath"
                 )
@@ -755,7 +755,7 @@ struct RoundHistoryStrip: View {
 
     private func roundCard(_ round: Round) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Round \(round.roundNumber)")
+            Text("round \(round.roundNumber)")
                 .columnHeaderStyle()
 
             ForEach(session.players, id: \.id) { player in

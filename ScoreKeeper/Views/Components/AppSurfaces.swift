@@ -296,7 +296,7 @@ enum PipCountTab: String, CaseIterable {
 
     var sidebarTitle: String {
         switch self {
-        case .more: return "More"
+        case .more: return "more"
         default: return title
         }
     }
@@ -423,7 +423,7 @@ struct PipCountSidebar: View {
                     AppActionButton(role: .primary(ClubhouseTheme.blue)) {
                         onSelect(.games)
                     } label: {
-                        Label("Start New Game", systemImage: "plus")
+                        Label("start new game", systemImage: "plus")
                     }
                     .accessibilityIdentifier("sidebar_new_game_button")
                     .staggeredEntrance(visible: contentVisible, index: 2)
@@ -466,7 +466,7 @@ struct PipCountSidebar: View {
     private var brand: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 8) {
-                Text("PipCount")
+                Text("pipcount")
                     .font(AppFonts.largeTitle)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .lineLimit(1)
@@ -475,7 +475,7 @@ struct PipCountSidebar: View {
                 BauhausStarburst(color: ClubhouseTheme.blue, size: 21)
             }
 
-            Text("Game night, organized.")
+            Text("game night, organized")
                 .font(AppFonts.body)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
 
@@ -546,10 +546,10 @@ struct PipCountSidebar: View {
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("PipCount Pro")
+                    Text("pipcount pro")
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
-                    Text("Unlimited game nights")
+                    Text("unlimited game nights")
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
@@ -568,7 +568,7 @@ struct PipCountSidebar: View {
                         .frame(width: 66, height: 62)
 
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("PipCount Pro")
+                        Text("pipcount pro")
                             .font(AppFonts.headline)
                             .foregroundStyle(ClubhouseTheme.ink)
 
@@ -577,7 +577,7 @@ struct PipCountSidebar: View {
                             .foregroundStyle(ClubhouseTheme.inkMuted)
                             .monospacedDigit()
 
-                        Text("Unlock forever")
+                        Text("unlock forever")
                             .font(AppFonts.caption.weight(.bold))
                             .foregroundStyle(ClubhouseTheme.blue)
                     }

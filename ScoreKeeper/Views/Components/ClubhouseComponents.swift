@@ -204,7 +204,7 @@ struct PipStepper: View {
                 stepButton(systemImage: "minus", delta: -step, identifier: "decrement", label: "Decrease score")
 
                 VStack(spacing: 2) {
-                    Text("THIS ROUND")
+                    Text("this round")
                         .font(AppFonts.columnHeader)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
 

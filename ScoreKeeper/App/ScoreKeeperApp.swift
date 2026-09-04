@@ -28,7 +28,7 @@ struct ScoreKeeperApp: App {
             : []
 
         guard let container = try? ModelContainer(for: schema, configurations: configurations) else {
-            fatalError("Failed to create ModelContainer.")
+            fatalError("failed to create model container")
         }
         return container
     }

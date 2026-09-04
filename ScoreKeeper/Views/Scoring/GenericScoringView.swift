@@ -17,7 +17,7 @@ struct GenericScoringView: View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "Score Round",
+            actionTitle: "score round",
             actionSystemImage: "pencil.line",
             showsScoreboardHeader: false,
             headerStyle: .compact,
@@ -39,11 +39,11 @@ struct GenericScoringView: View {
             )
         }
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
-        .alert("Couldn’t save round", isPresented: Binding(
+        .alert("couldn’t save round", isPresented: Binding(
             get: { saveError != nil }, set: { if !$0 { saveError = nil } }
         )) {
-            Button("OK", role: .cancel) { saveError = nil }
-        } message: { Text(saveError ?? "Please try again.") }
+            Button("ok", role: .cancel) { saveError = nil }
+        } message: { Text(saveError ?? "please try again") }
     }
 
     private func submitRound(using roundScores: [UUID: Int]) {
@@ -92,11 +92,11 @@ private struct GenericTotalsList: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Running totals").font(AppFonts.title).foregroundStyle(ClubhouseTheme.ink)
-                    Text("Add this round with handwriting.").font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted)
+                    Text("running totals").font(AppFonts.title).foregroundStyle(ClubhouseTheme.ink)
+                    Text("add this round with handwriting").font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted)
                 }
                 Spacer()
-                Text(session.winCondition == .highestScore ? "Highest wins" : "Lowest wins")
+                Text(session.winCondition == .highestScore ? "highest wins" : "lowest wins")
                     .columnHeaderStyle().foregroundStyle(ClubhouseTheme.blue)
             }
             .padding(AppTheme.spacingMedium)
@@ -107,7 +107,7 @@ private struct GenericTotalsList: View {
                     BauhausPlayerShape(colorIndex: player.colorIndex, size: 34)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(player.name).font(AppFonts.headline).foregroundStyle(ClubhouseTheme.ink).lineLimit(1)
-                        Text(lastRound == 0 ? "No score last round" : "Last round \(lastRound > 0 ? "+\(lastRound)" : "\(lastRound)")")
+                        Text(lastRound == 0 ? "no score last round" : "last round \(lastRound > 0 ? "+\(lastRound)" : "\(lastRound)")")
                             .font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted).monospacedDigit()
                     }
                     Spacer()

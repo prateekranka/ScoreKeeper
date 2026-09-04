@@ -130,48 +130,15 @@ enum ScoreRecognizer {
         // the normalized ink itself before either OCR pass can lose it.
         guard !containsLeadingMinus(in: analysis) else { return .unreadable }
 
-        let candidate = recognitionCandidate(
+        // Restore the [verified] accept path: an accurate reading is accepted
+        // directly; fast is only a fallback when accurate finds nothing, and
+        // the closed-zero/minus/fragment gates still reject phantom zero,
+        // negatives, and mixed syntax.
+        return recognitionCandidate(
             cgImage,
             analysis: analysis,
             recognitionLevel: recognitionLevel
-        )
-        guard case let .success(value, confidence, origin) = candidate else {
-            return candidate.publicResult
-        }
-
-        // A missing digit can still produce a high-confidence plausible score.
-        // Require the OCR digit count to match the deterministic ink segments.
-        guard case let .digits(segments) = ScoreDigitSegmenter.segment(cgImage),
-              segments.count == String(value).count
-        else {
-            return .unreadable
-        }
-
-        if recognitionLevel == .accurate {
-            // Accurate and fast Vision make different mistakes. Require
-            // agreement whenever the fast pass produces a candidate, but do
-            // not turn a fast-pass miss (no observation) into a false
-            // rejection when the accurate pass itself supplied the value. A
-            // value obtained from the fast fallback still needs a fast
-            // candidate on this independent pass.
-            let fastCandidate = recognitionCandidate(
-                cgImage,
-                analysis: analysis,
-                recognitionLevel: .fast
-            )
-            switch fastCandidate {
-            case let .success(fastValue, _, _):
-                guard fastValue == value else { return .unreadable }
-            case .noCandidate:
-                guard origin != .fastFallback else { return .unreadable }
-            case .unreadable:
-                return .unreadable
-            case .error:
-                return .error
-            }
-        }
-
-        return .success(value: value, confidence: confidence)
+        ).publicResult
     }
 
     private enum VisionCandidateOrigin: Equatable {

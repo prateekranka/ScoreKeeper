@@ -31,7 +31,7 @@ struct LegalSupportView: View {
             .pipCountPageContent(maxWidth: 1_080)
         }
         .appBackground()
-        .navigationTitle("More")
+        .navigationTitle("more")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             PipCountDock(selected: .more, onSelect: selectTab)
@@ -99,33 +99,34 @@ struct LegalSupportView: View {
     }
 
     private var appearancePanel: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             panelHeader(
-                title: "Appearance",
-                systemImage: "circle.lefthalf.filled"
+                title: "appearance",
+                systemImage: "circle.lefthalf.filled",
+                compact: true
             )
 
-            HStack(spacing: AppTheme.spacingSmall) {
+            HStack(spacing: 5) {
                 appearanceButton(
                     mode: "system",
-                    title: "System",
+                    title: "system",
                     systemImage: "circle.lefthalf.filled"
                 )
 
                 appearanceButton(
                     mode: "light",
-                    title: "Light",
+                    title: "light",
                     systemImage: "sun.max.fill"
                 )
 
                 appearanceButton(
                     mode: "dark",
-                    title: "Dark",
+                    title: "dark",
                     systemImage: "moon.fill"
                 )
             }
         }
-        .padding(AppTheme.spacingMedium)
+        .padding(8)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
     }
 
@@ -137,9 +138,9 @@ struct LegalSupportView: View {
                 themeManager.mode = mode
             }
         } label: {
-            VStack(spacing: 7) {
+            VStack(spacing: 4) {
                 Image(systemName: systemImage)
-                    .font(.title3.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
 
                 Text(title)
                     .font(AppFonts.caption.weight(.bold))
@@ -148,7 +149,7 @@ struct LegalSupportView: View {
             }
             .foregroundStyle(isSelected ? ClubhouseTheme.onPrimary : ClubhouseTheme.ink)
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 72)
+            .frame(minHeight: 36)
             .background {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
                     .fill(isSelected ? ClubhouseTheme.blue : ClubhouseTheme.paperSunken)
@@ -181,11 +182,11 @@ struct LegalSupportView: View {
                     .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("PipCount Pro")
+                        Text("pipcount pro")
                             .font(AppFonts.title)
                             .foregroundStyle(ClubhouseTheme.ink)
 
-                        Text("Unlimited game nights are unlocked on this Apple ID.")
+                        Text("unlimited game nights are unlocked on this apple id")
                             .font(AppFonts.body)
                             .foregroundStyle(ClubhouseTheme.inkMuted)
                             .fixedSize(horizontal: false, vertical: true)
@@ -206,18 +207,22 @@ struct LegalSupportView: View {
                             .frame(width: 104, height: 96)
 
                         VStack(alignment: .leading, spacing: 3) {
-                            Text("PipCount Pro")
+                            Text("pipcount pro")
                                 .font(AppFonts.title)
                                 .foregroundStyle(ClubhouseTheme.ink)
 
                             Text("\(storeManager.remainingFreeGames.quantityText("free game")) remaining")
-                                .font(AppFonts.body)
+                                .font(AppFonts.caption)
                                 .foregroundStyle(ClubhouseTheme.inkMuted)
                                 .monospacedDigit()
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.72)
 
-                            Text("Unlock unlimited games forever")
+                            Text("unlock unlimited games forever")
                                 .font(AppFonts.caption.weight(.bold))
                                 .foregroundStyle(ClubhouseTheme.blue)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.72)
                         }
 
                         Spacer(minLength: 0)
@@ -241,8 +246,8 @@ struct LegalSupportView: View {
             VStack(alignment: .leading, spacing: 0) {
                 Link(destination: LegalSupportLinks.privacyPolicy) {
                     LegalSupportLink(
-                        title: "Privacy Policy",
-                        subtitle: "How PipCount handles your information",
+                        title: "privacy policy",
+                        subtitle: "how pipcount handles your information",
                         systemImage: "hand.raised"
                     )
                 }
@@ -256,8 +261,8 @@ struct LegalSupportView: View {
 
                 Link(destination: LegalSupportLinks.support) {
                     LegalSupportLink(
-                        title: "Support",
-                        subtitle: "Get help or contact the PipCount team",
+                        title: "support",
+                        subtitle: "get help or contact the pipcount team",
                         systemImage: "questionmark.bubble"
                     )
                 }
@@ -271,13 +276,13 @@ struct LegalSupportView: View {
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
-    private func panelHeader(title: String, subtitle: String? = nil, systemImage: String) -> some View {
-        HStack(spacing: AppTheme.spacingSmall) {
+    private func panelHeader(title: String, subtitle: String? = nil, systemImage: String, compact: Bool = false) -> some View {
+        HStack(spacing: compact ? 6 : AppTheme.spacingSmall) {
             Image(systemName: systemImage)
-                .font(.headline.weight(.semibold))
+                .font(compact ? .footnote.weight(.semibold) : .headline.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.blue)
-                .frame(width: 42, height: 42)
-                .background(ClubhouseTheme.blue.opacity(0.09), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .frame(width: compact ? 30 : 42, height: compact ? 30 : 42)
+                .background(ClubhouseTheme.blue.opacity(0.09), in: RoundedRectangle(cornerRadius: compact ? 9 : 14, style: .continuous))
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {

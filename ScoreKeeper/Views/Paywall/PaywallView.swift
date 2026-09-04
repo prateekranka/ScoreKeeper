@@ -95,11 +95,11 @@ struct PaywallView: View {
 
     private var sheetHeader: some View {
         HStack(spacing: 6) {
-            Text("PipCount")
+            Text("pipcount")
                 .font(AppFonts.title)
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            Text("Pro")
+            Text("pro")
                 .font(AppFonts.headline)
                 .foregroundStyle(ClubhouseTheme.red)
                 .accessibilityIdentifier("paywall_title")
@@ -138,7 +138,7 @@ struct PaywallView: View {
 
     private var heroCopy: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Unlock\nunlimited\ngame night.")
+            Text("unlock\nunlimited\ngame night")
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(3)
@@ -150,10 +150,10 @@ struct PaywallView: View {
                 .frame(width: 76, height: 4)
 
             VStack(alignment: .leading, spacing: 0) {
-                Text("More games.\nMore moments.")
+                Text("more games.\nmore moments")
                     .foregroundStyle(ClubhouseTheme.inkMuted)
 
-                Text("Yours forever.")
+                Text("yours forever")
                     .foregroundStyle(ClubhouseTheme.red)
             }
             .font(AppFonts.body)
@@ -186,7 +186,7 @@ struct PaywallView: View {
 
     private var priceCopy: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("One-time purchase")
+            Text("one-time purchase")
                 .font(AppFonts.headline)
                 .foregroundStyle(ClubhouseTheme.ink)
 
@@ -196,7 +196,7 @@ struct PaywallView: View {
                 .foregroundStyle(ClubhouseTheme.ink)
                 .accessibilityLabel("\(storeManager.displayPrice), one-time purchase")
 
-            Text("No subscription. No recurring fee.")
+            Text("no subscription. no recurring fee")
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
         }
@@ -231,31 +231,31 @@ struct PaywallView: View {
             benefitRow(
                 colorIndex: 0,
                 title: "25 games free",
-                detail: "Try every part of PipCount before you upgrade"
+                detail: "try every part of pipcount before you upgrade"
             )
 
             divider
 
             benefitRow(
                 colorIndex: 1,
-                title: "Then \(storeManager.displayPrice) once",
-                detail: "A single purchase unlocks the full app"
+                title: "then \(storeManager.displayPrice) once",
+                detail: "a single purchase unlocks the full app"
             )
 
             divider
 
             benefitRow(
                 colorIndex: 2,
-                title: "Unlimited games forever",
-                detail: "All current and future game formats"
+                title: "unlimited games forever",
+                detail: "all current and future game formats"
             )
 
             divider
 
             benefitRow(
                 colorIndex: 3,
-                title: "No subscription",
-                detail: "No monthly fees. Ever"
+                title: "no subscription",
+                detail: "no monthly fees. ever"
             )
         }
         .padding(.horizontal, 2)
@@ -285,7 +285,7 @@ struct PaywallView: View {
                 .accessibilityIdentifier("paywall_unlock_button")
                 .disabled(isPurchaseButtonDisabled)
 
-                Button("Restore purchase") {
+                Button("restore purchase") {
                     Task {
                         if await storeManager.restore() {
                             completeUnlockFlow()
@@ -298,7 +298,7 @@ struct PaywallView: View {
                 .accessibilityIdentifier("paywall_restore_button")
                 .disabled(isRestoreButtonDisabled)
 
-                Label("Secure one-time purchase. Your progress is saved.", systemImage: "lock")
+                Label("secure one-time purchase. your progress is saved", systemImage: "lock")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
@@ -332,7 +332,7 @@ struct PaywallView: View {
                 Text(message)
                     .statusStyle(color: ClubhouseTheme.lacquer)
 
-                Button("Retry loading purchase details") {
+                Button("retry loading purchase details") {
                     Task { await storeManager.retryProductLoad() }
                 }
                 .font(AppFonts.caption.weight(.semibold))
@@ -346,16 +346,16 @@ struct PaywallView: View {
             case .idle:
                 EmptyView()
             case .loading:
-                Text("Loading purchase details…")
+                Text("loading purchase details…")
                     .statusStyle()
             case .purchasing:
-                Text("Unlocking PipCount Pro…")
+                Text("unlocking pipcount pro…")
                     .statusStyle()
             case .restoring:
-                Text("Checking past purchases…")
+                Text("checking past purchases…")
                     .statusStyle()
             case .success:
-                Text("Unlocked. Starting your game…")
+                Text("unlocked. starting your game…")
                     .statusStyle(color: ClubhouseTheme.felt)
             case .failed(let message):
                 Text(message)
@@ -368,7 +368,7 @@ struct PaywallView: View {
     private var purchaseButtonLabel: some View {
         switch storeManager.productState {
         case .unavailable:
-            Label("Unlock unavailable", systemImage: "exclamationmark.triangle")
+            Label("unlock unavailable", systemImage: "exclamationmark.triangle")
 
         case .notLoaded, .loading, .loaded:
             switch storeManager.purchaseState {
@@ -376,15 +376,15 @@ struct PaywallView: View {
                 HStack(spacing: AppTheme.spacingSmall) {
                     ProgressView()
                         .tint(ClubhouseTheme.onFelt)
-                    Text("Please wait")
+                    Text("please wait")
                 }
             case .success:
-                Label("Pro unlocked", systemImage: "checkmark.seal.fill")
+                Label("pro unlocked", systemImage: "checkmark.seal.fill")
             case .idle, .failed:
                 if storeManager.product == nil {
-                    Label("Unlock unavailable", systemImage: "exclamationmark.triangle")
+                    Label("unlock unavailable", systemImage: "exclamationmark.triangle")
                 } else {
-                    Label("Unlock forever — \(storeManager.displayPrice)", systemImage: "arrow.right.circle.fill")
+                    Label("unlock forever — \(storeManager.displayPrice)", systemImage: "arrow.right.circle.fill")
                 }
             }
         }

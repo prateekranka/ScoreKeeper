@@ -18,15 +18,15 @@ struct Phase10ScoringView: View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "Submit",
+            actionTitle: "submit",
             actionSystemImage: "checkmark.circle.fill",
             action: submitRound
         ) {
             RoundBanner(
                 icon: GameType.phase10.icon,
                 color: GameType.phase10.color,
-                title: "Round \(session.currentRoundNumber)",
-                subtitle: "Ten-stage card-game scoring"
+                title: "round \(session.currentRoundNumber)",
+                subtitle: "ten-stage card-game scoring"
             )
             phaseOverview
             roundEntrySection
@@ -34,24 +34,24 @@ struct Phase10ScoringView: View {
             RoundHistoryStrip(session: session)
         }
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
-        .alert("Ten Phases complete", isPresented: $showGameCompleteAlert) {
-            Button("Keep Playing", role: .cancel) {}
-            Button("End Game", role: .destructive) {
+        .alert("ten phases complete", isPresented: $showGameCompleteAlert) {
+            Button("keep playing", role: .cancel) {}
+            Button("end game", role: .destructive) {
                 finishGame()
             }
         } message: {
-            Text("At least one player has completed all ten stages. You can end the game now or keep scoring.")
+            Text("at least one player has completed all ten stages. you can end the game now or keep scoring")
         }
         .alert(
-            "Couldn’t save round",
+            "couldn’t save round",
             isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
             )
         ) {
-            Button("OK", role: .cancel) { saveError = nil }
+            Button("ok", role: .cancel) { saveError = nil }
         } message: {
-            Text(saveError ?? "Please try again.")
+            Text(saveError ?? "please try again")
         }
     }
 
@@ -73,7 +73,7 @@ struct Phase10ScoringView: View {
 
                         Spacer()
 
-                        Text("Stage \(currentPhase)/10")
+                        Text("stage \(currentPhase)/10")
                             .font(AppFonts.scoreSmall)
                             .monospacedDigit()
                             .foregroundStyle(currentPhase >= 10 ? ClubhouseTheme.felt : ClubhouseTheme.ink)
@@ -108,7 +108,7 @@ struct Phase10ScoringView: View {
                     value: leftoverPointsBinding(for: player),
                     range: 0...9999,
                     step: 5,
-                    title: "Leftover points"
+                    title: "leftover points"
                 ) {
                     phaseAccessory(for: player, currentPhase: currentPhase)
                 }
@@ -120,19 +120,19 @@ struct Phase10ScoringView: View {
     private func phaseAccessory(for player: Player, currentPhase: Int) -> some View {
         if currentPhase < 10 {
             if session.phase10SkipOnFail {
-                    Label("Stage \(currentPhase + 1) completed", systemImage: "checkmark.circle.fill")
+                    Label("stage \(currentPhase + 1) completed", systemImage: "checkmark.circle.fill")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.felt)
             } else {
                 Toggle(isOn: completedPhaseBinding(for: player)) {
-                    Text("Stage \(currentPhase + 1)")
+                    Text("stage \(currentPhase + 1)")
                         .font(AppFonts.caption)
                 }
                 .toggleStyle(.switch)
                 .tint(ClubhouseTheme.felt)
             }
         } else {
-                Label("All ten stages done", systemImage: "checkmark.seal.fill")
+                Label("all ten stages done", systemImage: "checkmark.seal.fill")
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.felt)
         }

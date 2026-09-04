@@ -126,12 +126,12 @@ struct RoundEntryDeckView: View {
                 header
 
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                    Text("Write it. Check it. Keep playing.")
+                    Text("write it. check it. keep playing")
                         .font(AppFonts.hero)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    Text("Use your finger or Apple Pencil. PipCount reads the score, then asks you to confirm it before moving on.")
+                    Text("use your finger or apple pencil. pipcount reads the score, then asks you to confirm it before moving on")
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -155,7 +155,7 @@ struct RoundEntryDeckView: View {
 
             HStack(alignment: .center, spacing: AppTheme.spacingSmall) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Draw the score")
+                    Text("draw the score")
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
                 }
@@ -177,7 +177,7 @@ struct RoundEntryDeckView: View {
     private var header: some View {
         HStack(spacing: AppTheme.spacingSmall) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Round \(session.currentRoundNumber)")
+                Text("round \(session.currentRoundNumber)")
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .monospacedDigit()
@@ -211,7 +211,7 @@ struct RoundEntryDeckView: View {
 
     private var playerProgressCard: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Tonight's scores")
+            Text("tonight's scores")
                 .columnHeaderStyle()
 
             ForEach(Array(session.players.enumerated()), id: \.element.id) { index, candidate in
@@ -231,7 +231,7 @@ struct RoundEntryDeckView: View {
                             .monospacedDigit()
                             .foregroundStyle(ClubhouseTheme.blue)
                     } else if index == currentIndex {
-                        Text("Writing")
+                        Text("writing")
                             .font(AppFonts.caption.weight(.bold))
                             .foregroundStyle(ClubhouseTheme.red)
                     } else {
@@ -292,7 +292,7 @@ struct RoundEntryDeckView: View {
                     .foregroundStyle(ClubhouseTheme.ink)
                     .lineLimit(1)
 
-                Text("Running total \(player.totalScore(in: session))")
+                Text("running total \(player.totalScore(in: session))")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .monospacedDigit()
@@ -401,7 +401,7 @@ struct RoundEntryDeckView: View {
                 .controlSize(.large)
                 .tint(ClubhouseTheme.blue)
 
-            Text("Reading your score…")
+            Text("reading your score…")
                 .font(AppFonts.headline)
                 .foregroundStyle(ClubhouseTheme.ink)
         }
@@ -411,7 +411,7 @@ struct RoundEntryDeckView: View {
     }
 
     private var noInkHint: some View {
-        Text("Draw the score first")
+        Text("draw the score first")
             .font(AppFonts.caption.weight(.semibold))
             .foregroundStyle(ClubhouseTheme.inkMuted)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -443,7 +443,7 @@ struct RoundEntryDeckView: View {
                     .foregroundStyle(ClubhouseTheme.ink)
                     .contentTransition(.numericText(value: Double(value)))
 
-                Text("Is this right?")
+                Text("is this right?")
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
             }
@@ -452,7 +452,7 @@ struct RoundEntryDeckView: View {
                 Button {
                     redraw()
                 } label: {
-                    Label("Redraw", systemImage: "arrow.counterclockwise")
+                    Label("redraw", systemImage: "arrow.counterclockwise")
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.blue)
                         .lineLimit(1)
@@ -472,7 +472,7 @@ struct RoundEntryDeckView: View {
                 Button {
                     accept(value)
                 } label: {
-                    Label("Use \(value)", systemImage: "checkmark")
+                    Label("use \(value)", systemImage: "checkmark")
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.onPrimary)
                         .lineLimit(1)
@@ -493,12 +493,12 @@ struct RoundEntryDeckView: View {
     private var rejectionCard: some View {
         VStack(spacing: AppTheme.spacingLarge) {
             VStack(spacing: 4) {
-                Text("Couldn't read that")
+                Text("couldn't read that")
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .accessibilityIdentifier("deck_invalid_value")
 
-                Text("Redraw or type the score.")
+                Text("redraw or type the score")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
@@ -507,7 +507,7 @@ struct RoundEntryDeckView: View {
                 Button {
                     redraw()
                 } label: {
-                    Label("Redraw", systemImage: "arrow.counterclockwise")
+                    Label("redraw", systemImage: "arrow.counterclockwise")
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.blue)
                         .lineLimit(1)
@@ -524,7 +524,7 @@ struct RoundEntryDeckView: View {
                 .accessibilityLabel("Redraw score")
                 .accessibilityIdentifier("deck_retry_\(player.name)")
 
-                TextField("Score", text: $manualEntry)
+                TextField("score", text: $manualEntry)
                     .keyboardType(.numberPad)
                     .font(AppFonts.scoreSmall)
                     .monospacedDigit()
@@ -543,7 +543,7 @@ struct RoundEntryDeckView: View {
                     guard let manualScore else { return }
                     accept(manualScore)
                 } label: {
-                    Text(manualScore.map { "Use \($0)" } ?? "Use")
+                    Text(manualScore.map { "use \($0)" } ?? "use")
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.onPrimary)
                         .padding(.horizontal, AppTheme.spacingMedium)
@@ -584,11 +584,11 @@ struct RoundEntryDeckView: View {
                     .frame(width: 230, height: 190)
 
                 VStack(spacing: AppTheme.spacingSmall) {
-                    Text("Score with your finger")
+                    Text("score with your finger")
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text("Draw each player's score, tap ✓ to read it, then confirm. Swipe from either edge to move between players.")
+                    Text("draw each player's score, tap ✓ to read it, then confirm. swipe from either edge to move between players")
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .multilineTextAlignment(.center)
@@ -596,10 +596,10 @@ struct RoundEntryDeckView: View {
                 }
 
                 AppActionButton(role: .primary(ClubhouseTheme.blue), action: dismissTutorial) {
-                    Text("Got it")
+                    Text("got it")
                 }
 
-                Button("Skip", action: dismissTutorial)
+                Button("skip", action: dismissTutorial)
                     .font(AppFonts.caption.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.ink)
                     .frame(minWidth: 44, minHeight: 44)

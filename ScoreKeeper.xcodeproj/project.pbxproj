@@ -47,6 +47,8 @@
 		AA0000000000000001000304 /* ScoreKeeperUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000302 /* ScoreKeeperUITestsLaunchTests.swift */; };
 		AA0000000000000001000312 /* PressableButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000313 /* PressableButtonStyle.swift */; };
 		AA0000000000000001000314 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000315 /* ThemeManager.swift */; };
+		AA0000000000000001000722 /* ShortDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000723 /* ShortDate.swift */; };
+		AA00000000000000C0DE0001 /* ScorecardShareCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000C0DE0002 /* ScorecardShareCard.swift */; };
 		AA0000000000000001000317 /* SavedPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000316 /* SavedPlayer.swift */; };
 		AA0000000000000001000319 /* PlayerRosterSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000318 /* PlayerRosterSheet.swift */; };
 		AA0000000000000001000321 /* PlayerStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000001000320 /* PlayerStats.swift */; };
@@ -162,6 +164,8 @@
 		AA000000000000000100030F /* ScoreKeeperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScoreKeeperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA0000000000000001000313 /* PressableButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressableButtonStyle.swift; sourceTree = "<group>"; };
 		AA0000000000000001000315 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
+		AA0000000000000001000723 /* ShortDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortDate.swift; sourceTree = "<group>"; };
+		AA00000000000000C0DE0002 /* ScorecardShareCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorecardShareCard.swift; sourceTree = "<group>"; };
 		AA0000000000000001000316 /* SavedPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedPlayer.swift; sourceTree = "<group>"; };
 		AA0000000000000001000318 /* PlayerRosterSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerRosterSheet.swift; sourceTree = "<group>"; };
 		AA0000000000000001000320 /* PlayerStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStats.swift; sourceTree = "<group>"; };
@@ -377,6 +381,7 @@
 			isa = PBXGroup;
 			children = (
 				AA0000000000000001000504 /* ScoreWritingCanvas.swift */,
+				AA00000000000000C0DE0002 /* ScorecardShareCard.swift */,
 				AA0000000000000000000117 /* PlayerBadge.swift */,
 				AA0000000000000000000118 /* ScoreCard.swift */,
 				AA0000000000000000000119 /* RoundTracker.swift */,
@@ -404,6 +409,7 @@
 				AA000000000000000000011F /* PlayerColors.swift */,
 				AA0000000000000000000120 /* AppFonts.swift */,
 				AA0000000000000001000315 /* ThemeManager.swift */,
+				AA0000000000000001000723 /* ShortDate.swift */,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -700,6 +706,7 @@
 				AA0000000000000001000507 /* ScoreDigitClassifier.swift in Sources */,
 				AA0000000000000001000701 /* ScoreDigitSegmenter.swift in Sources */,
 				AA0000000000000001000503 /* ScoreWritingCanvas.swift in Sources */,
+				AA00000000000000C0DE0001 /* ScorecardShareCard.swift in Sources */,
 				AA0000000000000001000505 /* RoundEntryDeckView.swift in Sources */,
 				AA0000000000000000000213 /* Phase10ScoringView.swift in Sources */,
 				AA0000000000000000000214 /* WhatsForDinnerScoringView.swift in Sources */,
@@ -719,6 +726,7 @@
 				AA000000000000000000021F /* PlayerColors.swift in Sources */,
 				AA0000000000000000000220 /* AppFonts.swift in Sources */,
 				AA0000000000000001000314 /* ThemeManager.swift in Sources */,
+				AA0000000000000001000722 /* ShortDate.swift in Sources */,
 				AA0000000000000001000317 /* SavedPlayer.swift in Sources */,
 				AA0000000000000001000319 /* PlayerRosterSheet.swift in Sources */,
 				AA0000000000000001000321 /* PlayerStats.swift in Sources */,

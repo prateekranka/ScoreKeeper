@@ -50,7 +50,7 @@ struct HeadToHeadView: View {
             .pipCountPageContent(maxWidth: 1_080)
         }
         .appBackground()
-        .navigationTitle("Head to Head")
+        .navigationTitle("head to head")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             contentVisible = true
@@ -94,12 +94,12 @@ struct HeadToHeadView: View {
 
     private var heroCopy: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Head\nto Head")
+            Text("head\nto head")
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("See how two regulars have finished against each other.")
+            Text("see how two regulars have finished against each other")
                 .font(AppFonts.body)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .fixedSize(horizontal: false, vertical: true)
@@ -114,11 +114,11 @@ struct HeadToHeadView: View {
     private var selectionPanel: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             VStack(alignment: .leading, spacing: 3) {
-                Text("Choose the Matchup")
+                Text("choose the matchup")
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text("PipCount compares completed games shared by both players.")
+                Text("pipcount compares completed games shared by both players")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
@@ -129,7 +129,7 @@ struct HeadToHeadView: View {
 
             layout {
                 playerPicker(
-                    title: "Player One",
+                    title: "player one",
                     selection: $playerA,
                     names: playerNames,
                     colorIndex: 0
@@ -138,7 +138,7 @@ struct HeadToHeadView: View {
                 matchDivider
 
                 playerPicker(
-                    title: "Player Two",
+                    title: "player two",
                     selection: $playerB,
                     names: playerNames.filter { $0.caseInsensitiveCompare(playerA) != .orderedSame },
                     colorIndex: 1
@@ -163,7 +163,7 @@ struct HeadToHeadView: View {
             }
 
             Picker(title, selection: selection) {
-                Text("Select a player").tag("")
+                Text("select a player").tag("")
                 ForEach(names, id: \.self) { name in
                     Text(name).tag(name)
                 }
@@ -188,7 +188,7 @@ struct HeadToHeadView: View {
                 .fill(ClubhouseTheme.yellow)
                 .frame(width: 42, height: 42)
 
-            Text("VS")
+            Text("vs")
                 .font(AppFonts.caption.weight(.black))
                 .foregroundStyle(ClubhouseTheme.ink)
         }
@@ -228,14 +228,14 @@ struct HeadToHeadView: View {
             )
             .frame(width: 210, height: 180)
 
-            Text(hasValidSelection ? "No games together" : "Choose two players")
+            Text(hasValidSelection ? "no games together" : "choose two players")
                 .font(AppFonts.title)
                 .foregroundStyle(ClubhouseTheme.ink)
 
             Text(
                 hasValidSelection
-                    ? "\(playerA) and \(playerB) do not have a completed matchup yet."
-                    : "Their shared record will appear here, separated by game type."
+                    ? "\(playerA) and \(playerB) do not have a completed matchup yet"
+                    : "their shared record will appear here, separated by game type"
             )
             .font(AppFonts.body)
             .foregroundStyle(ClubhouseTheme.inkMuted)
@@ -255,7 +255,7 @@ struct HeadToHeadView: View {
                     .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(record.gameType?.displayName ?? "All Games")
+                    Text(record.gameType?.displayName ?? "all games")
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(1)
@@ -378,7 +378,7 @@ struct HeadToHeadView: View {
 
                 Spacer()
 
-                Text("Recent games")
+                Text("recent games")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
 
@@ -427,7 +427,7 @@ struct HeadToHeadView: View {
             $0.name.caseInsensitiveCompare(highlightedPlayer) == .orderedSame
         }
         let isWinner = player.map { winnerIDs.contains($0.id) } ?? false
-        let outcome = isWinner ? "Win" : winnerIDs.isEmpty ? "No winner" : "Finished"
+        let outcome = isWinner ? "win" : winnerIDs.isEmpty ? "no winner" : "finished"
 
         return HStack(spacing: AppTheme.spacingSmall) {
             Rectangle()
@@ -435,7 +435,7 @@ struct HeadToHeadView: View {
                 .frame(width: 8, height: 8)
                 .rotationEffect(.degrees(45))
 
-            Text(session.completedAt ?? session.createdAt, style: .date)
+            Text(ShortDate.string(from: session.completedAt ?? session.createdAt))
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
 

@@ -37,15 +37,15 @@ struct GameOverView: View {
         }
         .sensoryFeedback(.success, trigger: contentVisible)
         .alert(
-            "Couldn’t save rematch",
+            "couldn’t save rematch",
             isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
             )
         ) {
-            Button("OK", role: .cancel) { saveError = nil }
+            Button("ok", role: .cancel) { saveError = nil }
         } message: {
-            Text(saveError ?? "Please try again.")
+            Text(saveError ?? "please try again")
         }
     }
 
@@ -127,7 +127,7 @@ struct GameOverView: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Game\nOver")
+                    Text("game\nover")
                         .font(AppFonts.display)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
@@ -136,7 +136,7 @@ struct GameOverView: View {
                         .font(AppFonts.body.weight(.semibold))
                         .foregroundStyle(ClubhouseTheme.blue)
 
-                    Text("The scores are saved. The rematch is one tap away.")
+                    Text("the scores are saved. the rematch is one tap away")
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .fixedSize(horizontal: false, vertical: true)
@@ -162,13 +162,13 @@ struct GameOverView: View {
 
         if winnerNames.count == 1, let winner = winnerNames.first {
             title = "\(winner) wins"
-            subtitle = "Tonight belongs to \(winner)."
+            subtitle = "tonight belongs to \(winner)"
         } else if winnerNames.count > 1 {
-            title = "It’s a tie"
+            title = "it’s a tie"
             subtitle = winnerNames.joined(separator: " • ")
         } else {
-            title = "No winner"
-            subtitle = "A perfectly unresolved game night."
+            title = "no winner"
+            subtitle = "a perfectly unresolved game night"
         }
 
         return VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
@@ -216,18 +216,18 @@ struct GameOverView: View {
         return VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Final Scores")
+                    Text("final scores")
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text(session.winCondition == .highestScore ? "Highest score wins" : "Lowest score wins")
+                    Text(session.winCondition == .highestScore ? "highest score wins" : "lowest score wins")
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
                 Spacer()
 
-                StampBadge(text: "Final")
+                StampBadge(text: "final")
             }
             .padding(AppTheme.spacingMedium)
 
@@ -256,14 +256,14 @@ struct GameOverView: View {
             AppActionButton(role: .primary(ClubhouseTheme.blue)) {
                 playAgain(session)
             } label: {
-                Label("Play Again", systemImage: "arrow.clockwise.circle.fill")
+                Label("play again", systemImage: "arrow.clockwise.circle.fill")
             }
             .accessibilityIdentifier("play_again_button")
 
             AppActionButton(role: .secondary) {
                 router.goHome()
             } label: {
-                Label("Back Home", systemImage: "house")
+                Label("back home", systemImage: "house")
             }
             .accessibilityIdentifier("home_button")
         }
@@ -274,11 +274,11 @@ struct GameOverView: View {
 
         return VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("Game Recap")
+                Text("game recap")
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text("A quick memory of how the table finished.")
+                Text("a quick memory of how the table finished")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
@@ -294,27 +294,41 @@ struct GameOverView: View {
     }
 
     private func shareButton(_ session: GameSession) -> some View {
-        ShareLink(item: shareText(session)) {
-            HStack(spacing: AppTheme.spacingSmall) {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.headline)
+        let engine = GameEngineFactory.engine(for: session.gameType)
 
-                Text("Share Game Recap")
-                    .font(AppFonts.headline)
-
-                Spacer()
-
-                Image(systemName: "arrow.up.right")
-                    .font(.caption.weight(.bold))
+        if let shareImage = ScorecardShareCard.shareImage(session: session, engine: engine) {
+            ShareLink(item: shareImage, preview: SharePreview("pipcount scorecard", image: shareImage)) {
+                shareLabel
             }
-            .foregroundStyle(ClubhouseTheme.ink)
-            .padding(.horizontal, AppTheme.spacingMedium)
-            .frame(maxWidth: .infinity)
-            .frame(minHeight: 58)
-            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+            .buttonStyle(PressableButtonStyle())
+            .accessibilityIdentifier("share_game_recap_button")
+        } else {
+            ShareLink(item: shareText(session)) {
+                shareLabel
+            }
+            .buttonStyle(PressableButtonStyle())
+            .accessibilityIdentifier("share_game_recap_button")
         }
-        .buttonStyle(PressableButtonStyle())
-        .accessibilityIdentifier("share_game_recap_button")
+    }
+
+    private var shareLabel: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            Image(systemName: "square.and.arrow.up")
+                .font(.headline)
+
+            Text("share game recap")
+                .font(AppFonts.headline)
+
+            Spacer()
+
+            Image(systemName: "arrow.up.right")
+                .font(.caption.weight(.bold))
+        }
+        .foregroundStyle(ClubhouseTheme.ink)
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .frame(maxWidth: .infinity)
+        .frame(minHeight: 58)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
     }
 
     private func winners(for session: GameSession) -> [Player] {
@@ -340,10 +354,10 @@ struct GameOverView: View {
     private func playerRoundSubtitle(_ player: Player, session: GameSession) -> String {
         let scores = session.sortedRounds.compactMap { $0.entry(for: player.id)?.points }
         guard let best = session.winCondition == .highestScore ? scores.max() : scores.min() else {
-            return "No submitted score"
+            return "no submitted score"
         }
 
-        return "Best round \(best > 0 ? "+\(best)" : "\(best)")"
+        return "best round \(best > 0 ? "+\(best)" : "\(best)")"
     }
 
     private func recapMetrics(_ session: GameSession) -> [RecapMetric] {
@@ -366,15 +380,15 @@ struct GameOverView: View {
         } ?? 0
 
         return [
-            RecapMetric(title: "Rounds", value: "\(session.sortedRounds.count)", detail: "played", tint: ClubhouseTheme.blue),
-            RecapMetric(title: "Players", value: "\(session.players.count)", detail: "at the table", tint: ClubhouseTheme.red),
+            RecapMetric(title: "rounds", value: "\(session.sortedRounds.count)", detail: "played", tint: ClubhouseTheme.blue),
+            RecapMetric(title: "players", value: "\(session.players.count)", detail: "at the table", tint: ClubhouseTheme.red),
             RecapMetric(
-                title: "Biggest Round",
+                title: "biggest round",
                 value: biggest.map { $0.1 > 0 ? "+\($0.1)" : "\($0.1)" } ?? "—",
-                detail: biggestPlayer?.name ?? "No scores",
+                detail: biggestPlayer?.name ?? "no scores",
                 tint: ClubhouseTheme.green
             ),
-            RecapMetric(title: "Duration", value: durationText(duration), detail: "game time", tint: ClubhouseTheme.yellow)
+            RecapMetric(title: "duration", value: durationText(duration), detail: "game time", tint: ClubhouseTheme.yellow)
         ]
     }
 
@@ -436,7 +450,7 @@ struct GameOverView: View {
             "\(index + 1). \(player.name) — \(player.totalScore(in: session))"
         }.joined(separator: "\n")
 
-        return "PipCount game over — \(session.gameType.displayName)\n\(standings)\n\(session.sortedRounds.count.quantityText("round")) played."
+        return "pipcount game over — \(session.gameType.displayName)\n\(standings)\n\(session.sortedRounds.count.quantityText("round")) played"
     }
 }
 

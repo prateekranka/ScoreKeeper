@@ -39,37 +39,37 @@ struct GameHistoryListView: View {
             .scrollIndicators(.hidden)
         }
         .appBackground()
-        .navigationTitle("Game History")
+        .navigationTitle("game history")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { contentVisible = true }
         .confirmationDialog(
-            "Delete this game?",
+            "delete this game?",
             isPresented: Binding(
                 get: { sessionPendingDeletion != nil },
                 set: { if !$0 { sessionPendingDeletion = nil } }
             ),
             titleVisibility: .visible
         ) {
-            Button("Delete Game", role: .destructive) {
+            Button("delete game", role: .destructive) {
                 deletePendingSession()
             }
-            Button("Cancel", role: .cancel) {
+            Button("cancel", role: .cancel) {
                 sessionPendingDeletion = nil
             }
         } message: {
-            Text("This removes its scores and stats from PipCount.")
+            Text("this removes its scores and stats from pipcount")
         }
     }
 
     private var hero: some View {
         HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                Text("Every night\nbecomes history.")
+                Text("every night\nbecomes history")
                     .font(AppFonts.display)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Text("Final scores, rematches, and the story of your table — saved automatically.")
+                Text("final scores, rematches, and the story of your table — saved automatically")
                     .font(AppFonts.body)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .fixedSize(horizontal: false, vertical: true)
@@ -94,11 +94,11 @@ struct GameHistoryListView: View {
                 .frame(height: 300)
 
             VStack(spacing: AppTheme.spacingSmall) {
-                Text("No finished games yet")
+                Text("no finished games yet")
                     .font(AppFonts.hero)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text("Complete a game and its recap will appear here.")
+                Text("complete a game and its recap will appear here")
                     .font(AppFonts.body)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .multilineTextAlignment(.center)
@@ -107,7 +107,7 @@ struct GameHistoryListView: View {
             AppActionButton(role: .primary(ClubhouseTheme.blue)) {
                 router.push(.gamePicker)
             } label: {
-                Label("Start a New Game", systemImage: "plus")
+                Label("start a new game", systemImage: "plus")
             }
             .frame(maxWidth: 420)
         }
@@ -188,7 +188,7 @@ struct GameHistoryListView: View {
 
                     Spacer()
 
-                    Text("GAME OVER")
+                    Text("game over")
                         .font(AppFonts.columnHeader)
                         .tracking(1.1)
                         .foregroundStyle(ClubhouseTheme.red)
@@ -203,7 +203,7 @@ struct GameHistoryListView: View {
             Button(role: .destructive) {
                 sessionPendingDeletion = session
             } label: {
-                Label("Delete Game", systemImage: "trash")
+                Label("delete game", systemImage: "trash")
             }
         }
         .accessibilityLabel("\(session.gameType.displayName), \(resultTitle(session)), \(completedDate(session))")
@@ -212,8 +212,8 @@ struct GameHistoryListView: View {
     private func resultTitle(_ session: GameSession) -> String {
         let names = winners(session).map(\.name)
         if names.count == 1 { return "\(names[0]) won" }
-        if names.count > 1 { return "Tie: \(names.joined(separator: ", "))" }
-        return "No winner"
+        if names.count > 1 { return "tie: \(names.joined(separator: ", "))" }
+        return "no winner"
     }
 
     private func winners(_ session: GameSession) -> [Player] {
@@ -233,7 +233,7 @@ struct GameHistoryListView: View {
     }
 
     private func completedDate(_ session: GameSession) -> String {
-        (session.completedAt ?? session.createdAt).formatted(.dateTime.day().month(.abbreviated).year())
+        ShortDate.string(from: session.completedAt ?? session.createdAt)
     }
 
     private func deletePendingSession() {

@@ -24,7 +24,7 @@ struct GameDetailView: View {
             }
             .accessibilityIdentifier("game_detail_view")
             .appBackground()
-            .navigationTitle("Game Details")
+            .navigationTitle("game details")
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 if reduceMotion {
@@ -120,24 +120,19 @@ struct GameDetailView: View {
 
     private func detailHeroCopy(session: GameSession, engine: GameEngine) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            HStack(spacing: 8) {
-                Text("PipCount")
-                    .font(AppFonts.headline)
-                    .foregroundStyle(ClubhouseTheme.ink)
-
-                StampBadge(text: "Final")
-            }
+            StampBadge(text: "final")
 
             Text(session.gameType.displayName)
                 .font(AppFonts.display)
                 .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(2)
-                .minimumScaleFactor(0.72)
+                .lineLimit(1)
+                .minimumScaleFactor(0.62)
 
             Text(resultTitle(session: session, engine: engine))
                 .font(AppFonts.title)
                 .foregroundStyle(ClubhouseTheme.blue)
-                .lineLimit(2)
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
 
             Text(completionDate(session))
                 .font(AppFonts.body)
@@ -153,32 +148,26 @@ struct GameDetailView: View {
     private func standingsPanel(session: GameSession, engine: GameEngine) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             VStack(alignment: .leading, spacing: 3) {
-                Text("Final Standings")
+                Text("final standings")
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text(session.winCondition == .highestScore ? "Highest score wins" : "Lowest score wins")
+                Text(session.winCondition == .highestScore ? "highest score wins" : "lowest score wins")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
-            StandingsList(title: "Scores", standings: session.standings(using: engine))
+            StandingsList(title: "scores", standings: session.standings(using: engine))
         }
     }
 
     private func summaryPanel(session: GameSession, engine: GameEngine) -> some View {
         let metrics = detailMetrics(session: session, engine: engine)
 
-        return VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text("At a Glance")
-                    .font(AppFonts.title)
-                    .foregroundStyle(ClubhouseTheme.ink)
-
-                Text("The shape of this game night.")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-            }
+        return VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text("at a glance")
+                .font(AppFonts.title)
+                .foregroundStyle(ClubhouseTheme.ink)
 
             LazyVGrid(
                 columns: [GridItem(.flexible()), GridItem(.flexible())],
@@ -194,27 +183,39 @@ struct GameDetailView: View {
     }
 
     private func shareButton(session: GameSession, engine: GameEngine) -> some View {
-        ShareLink(item: shareText(session: session, engine: engine)) {
-            HStack(spacing: AppTheme.spacingSmall) {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.headline.weight(.semibold))
-
-                Text("Share Final Scorecard")
-                    .font(AppFonts.headline)
-
-                Spacer()
-
-                Image(systemName: "arrow.up.right")
-                    .font(.caption.weight(.bold))
+        if let shareImage = ScorecardShareCard.shareImage(session: session, engine: engine) {
+            ShareLink(item: shareImage, preview: SharePreview("pipcount scorecard", image: shareImage)) {
+                shareLabel
             }
-            .foregroundStyle(ClubhouseTheme.ink)
-            .padding(.horizontal, AppTheme.spacingMedium)
-            .frame(maxWidth: .infinity)
-            .frame(minHeight: 58)
-            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+            .buttonStyle(PressableButtonStyle())
+            .accessibilityIdentifier("share_game_detail_button")
+        } else {
+            ShareLink(item: shareText(session: session, engine: engine)) {
+                shareLabel
+            }
+            .buttonStyle(PressableButtonStyle())
+            .accessibilityIdentifier("share_game_detail_button")
         }
-        .buttonStyle(PressableButtonStyle())
-        .accessibilityIdentifier("share_game_detail_button")
+    }
+
+    private var shareLabel: some View {
+        HStack(spacing: AppTheme.spacingSmall) {
+            Image(systemName: "square.and.arrow.up")
+                .font(.headline.weight(.semibold))
+
+            Text("share final scorecard")
+                .font(AppFonts.headline)
+
+            Spacer()
+
+            Image(systemName: "arrow.up.right")
+                .font(.caption.weight(.bold))
+        }
+        .foregroundStyle(ClubhouseTheme.ink)
+        .padding(.horizontal, AppTheme.spacingMedium)
+        .frame(maxWidth: .infinity)
+        .frame(minHeight: 58)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
     }
 
     private func resultTitle(session: GameSession, engine: GameEngine) -> String {
@@ -225,14 +226,18 @@ struct GameDetailView: View {
             return "\(names[0]) won"
         }
         if names.count > 1 {
-            return "Tie: \(names.joined(separator: " & "))"
+            return "tie: \(names.joined(separator: " & "))"
         }
-        return "No winner"
+        return "no winner"
     }
 
     private func completionDate(_ session: GameSession) -> String {
         let date = session.completedAt ?? session.createdAt
-        return date.formatted(.dateTime.weekday(.wide).day().month(.wide).year())
+        let weekday = date.formatted(.dateTime.weekday(.abbreviated)).lowercased()
+        let day = date.formatted(.dateTime.day())
+        let month = date.formatted(.dateTime.month(.abbreviated)).lowercased()
+        let year = date.formatted(.dateTime.year())
+        return "\(weekday), \(day) \(month) \(year)"
     }
 
     private func sortedPlayers(_ session: GameSession) -> [Player] {
@@ -253,38 +258,27 @@ struct GameDetailView: View {
         let winnerIDs = Set(engine.winners(session: session))
         let winningPlayer = sortedPlayers(session).first { winnerIDs.contains($0.id) }
 
-        let allRoundScores = session.sortedRounds.flatMap { round in
-            round.entries.map(\.points)
-        }
-        let biggestRound = allRoundScores.max { abs($0) < abs($1) }
-
         return [
             DetailMetric(
-                title: "Rounds",
+                title: "rounds",
                 value: "\(session.sortedRounds.count)",
                 detail: "played",
                 tint: ClubhouseTheme.blue
             ),
             DetailMetric(
-                title: "Players",
+                title: "players",
                 value: "\(session.players.count)",
                 detail: "at the table",
                 tint: ClubhouseTheme.red
             ),
             DetailMetric(
-                title: "Winning Score",
+                title: "winning score",
                 value: winningPlayer.map { "\($0.totalScore(in: session))" } ?? "—",
-                detail: winningPlayer?.name ?? "No winner",
+                detail: winningPlayer?.name ?? "no winner",
                 tint: ClubhouseTheme.yellow
             ),
             DetailMetric(
-                title: "Biggest Round",
-                value: biggestRound.map { $0 > 0 ? "+\($0)" : "\($0)" } ?? "—",
-                detail: "single entry",
-                tint: ClubhouseTheme.green
-            ),
-            DetailMetric(
-                title: "Duration",
+                title: "duration",
                 value: durationText(duration),
                 detail: "game time",
                 tint: ClubhouseTheme.ink
@@ -311,7 +305,7 @@ struct GameDetailView: View {
         }
         .joined(separator: "\n")
 
-        return "PipCount — \(session.gameType.displayName)\n\(resultTitle(session: session, engine: engine))\n\(standings)\n\(session.sortedRounds.count.quantityText("round")) played."
+        return "pipcount — \(session.gameType.displayName)\n\(resultTitle(session: session, engine: engine))\n\(standings)\n\(session.sortedRounds.count.quantityText("round")) played"
     }
 }
 
@@ -328,11 +322,11 @@ private struct RoundBreakdownSection: View {
             VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
                 HStack(alignment: .firstTextBaseline) {
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("Round by Round")
+                        Text("round by round")
                             .font(AppFonts.title)
                             .foregroundStyle(ClubhouseTheme.ink)
 
-                        Text("Every submitted score, in order.")
+                        Text("every submitted score, in order")
                             .font(AppFonts.caption)
                             .foregroundStyle(ClubhouseTheme.inkMuted)
                     }
@@ -378,7 +372,7 @@ private struct RoundCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             HStack {
-                Text("Round \(round.roundNumber)")
+                Text("round \(round.roundNumber)")
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .monospacedDigit()

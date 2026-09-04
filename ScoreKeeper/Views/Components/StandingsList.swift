@@ -19,7 +19,7 @@ struct StandingsList: View {
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
                 Spacer()
-                StampBadge(text: "Final")
+                StampBadge(text: "final")
             }
 
             ForEach(standings) { standing in

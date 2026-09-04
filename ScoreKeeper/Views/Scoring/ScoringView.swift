@@ -44,7 +44,7 @@ struct ScoringView: View {
             }
 
             ToolbarItem(placement: .topBarTrailing) {
-                Button("End Game") {
+                Button("end game") {
                     showEndGameAlert = true
                 }
                 .accessibilityIdentifier("end_game_button")
@@ -52,24 +52,24 @@ struct ScoringView: View {
                 .foregroundStyle(ClubhouseTheme.lacquer)
             }
         }
-        .alert("End Game?", isPresented: $showEndGameAlert) {
-            Button("Cancel", role: .cancel) {}
-            Button("End Game", role: .destructive) {
+        .alert("end game?", isPresented: $showEndGameAlert) {
+            Button("cancel", role: .cancel) {}
+            Button("end game", role: .destructive) {
                 endGame(session, engine: engine)
             }
         } message: {
-            Text("This will finish the current game and determine the winner.")
+            Text("this will finish the current game and determine the winner")
         }
         .alert(
-            "Couldn’t save game",
+            "couldn’t save game",
             isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
             )
         ) {
-            Button("OK", role: .cancel) { saveError = nil }
+            Button("ok", role: .cancel) { saveError = nil }
         } message: {
-            Text(saveError ?? "Please try again.")
+            Text(saveError ?? "please try again")
         }
         .navigationBarBackButtonHidden(true)
     }

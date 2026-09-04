@@ -67,7 +67,7 @@ struct GamePickerView: View {
 private struct GamePickerHero: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Choose a Game")
+            Text("choose a game")
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)

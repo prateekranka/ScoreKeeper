@@ -34,12 +34,27 @@ struct PlayerStatsView: View {
 
     private var metrics: [PlayerStatMetric] {
         [
-            PlayerStatMetric(title: "Games", value: "\(stats.gamesPlayed)", detail: "played", tint: ClubhouseTheme.blue),
-            PlayerStatMetric(title: "Wins", value: "\(stats.wins)", detail: "finished first", tint: ClubhouseTheme.red),
-            PlayerStatMetric(title: "Win Rate", value: String(format: "%.0f%%", stats.winRate * 100), detail: "all games", tint: ClubhouseTheme.green),
-            PlayerStatMetric(title: "Best Rank", value: stats.bestRank > 0 ? "#\(stats.bestRank)" : "—", detail: "best finish", tint: ClubhouseTheme.yellow),
-            PlayerStatMetric(title: "Average", value: String(format: "%.0f", stats.avgScore), detail: "score", tint: ClubhouseTheme.ink)
+            PlayerStatMetric(title: "games", value: "\(stats.gamesPlayed)", detail: "played", tint: ClubhouseTheme.blue),
+            PlayerStatMetric(title: "wins", value: "\(stats.wins)", detail: "finished first", tint: ClubhouseTheme.red),
+            PlayerStatMetric(title: "win rate", value: String(format: "%.0f%%", stats.winRate * 100), detail: "all games", tint: ClubhouseTheme.green),
+            PlayerStatMetric(title: "average", value: String(format: "%.0f", stats.avgScore), detail: "score", tint: ClubhouseTheme.ink)
         ]
+    }
+
+    private var matchups: [PlayerMatchup] {
+        let opponentNames = completedSessions
+            .flatMap { $0.players.map(\.name) }
+            .filter { !$0.isEmpty && $0.caseInsensitiveCompare(playerName) != .orderedSame }
+
+        return Array(Set(opponentNames))
+            .map { name in
+                PlayerMatchup(
+                    name: name,
+                    records: StatsCalculator.headToHeadByGameType(playerName, vs: name, sessions: completedSessions)
+                )
+            }
+            .filter { !$0.records.isEmpty }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
     var body: some View {
@@ -57,7 +72,7 @@ struct PlayerStatsView: View {
         }
         .appBackground()
         .accessibilityIdentifier("player_stats_view")
-        .navigationTitle(playerName)
+        .navigationTitle("player history")
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             contentVisible = true
@@ -75,6 +90,10 @@ struct PlayerStatsView: View {
                 recentGamesPanel
                     .frame(maxWidth: .infinity, alignment: .top)
                     .staggeredEntrance(visible: contentVisible, index: 2)
+
+                matchupsPanel
+                    .frame(maxWidth: .infinity, alignment: .top)
+                    .staggeredEntrance(visible: contentVisible, index: 3)
             }
         } else {
             VStack(spacing: AppTheme.spacingMedium) {
@@ -83,6 +102,9 @@ struct PlayerStatsView: View {
 
                 recentGamesPanel
                     .staggeredEntrance(visible: contentVisible, index: 2)
+
+                matchupsPanel
+                    .staggeredEntrance(visible: contentVisible, index: 3)
             }
         }
     }
@@ -121,10 +143,11 @@ struct PlayerStatsView: View {
                 .lineLimit(2)
                 .minimumScaleFactor(0.72)
 
-            Text("Every result, remembered.")
+            Text("every result, remembered")
                 .font(AppFonts.body)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
-                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(1)
+                .minimumScaleFactor(0.68)
 
             Rectangle()
                 .fill(ClubhouseTheme.blue)
@@ -134,16 +157,10 @@ struct PlayerStatsView: View {
     }
 
     private var metricsPanel: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            VStack(alignment: .leading, spacing: 3) {
-                Text("At a Glance")
-                    .font(AppFonts.title)
-                    .foregroundStyle(ClubhouseTheme.ink)
-
-                Text("A lifetime record across completed games.")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-            }
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text("at a glance")
+                .font(AppFonts.title)
+                .foregroundStyle(ClubhouseTheme.ink)
 
             LazyVGrid(
                 columns: [GridItem(.flexible()), GridItem(.flexible())],
@@ -165,11 +182,11 @@ struct PlayerStatsView: View {
                 PipCountGeometricArtwork(scene: .homeEmpty, ambientMotion: false)
                     .frame(width: 190, height: 170)
 
-                Text("No completed games yet")
+                Text("no completed games yet")
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text("Finish a game with \(playerName) and their history will appear here.")
+                Text("finish a game with \(playerName) and their history will appear here")
                     .font(AppFonts.body)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .multilineTextAlignment(.center)
@@ -181,19 +198,13 @@ struct PlayerStatsView: View {
         } else {
             VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
                 HStack(alignment: .firstTextBaseline) {
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("Recent Games")
-                            .font(AppFonts.title)
-                            .foregroundStyle(ClubhouseTheme.ink)
-
-                        Text("Tap a result to reopen the full scorecard.")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                    }
+                    Text("recent games")
+                        .font(AppFonts.title)
+                        .foregroundStyle(ClubhouseTheme.ink)
 
                     Spacer()
 
-                    Text(relevantSessions.count.quantityText("result"))
+                    Text("\(relevantSessions.count)")
                         .columnHeaderStyle()
                         .foregroundStyle(ClubhouseTheme.blue)
                 }
@@ -240,7 +251,8 @@ struct PlayerStatsView: View {
 
                 HStack(spacing: 6) {
                     if let date = session.completedAt {
-                        Text(date, style: .date)
+                        Text(ShortDate.string(from: date))
+                            .font(AppFonts.caption2)
                     }
 
                     Text("•")
@@ -258,7 +270,7 @@ struct PlayerStatsView: View {
                     .monospacedDigit()
                     .foregroundStyle(isWinner ? ClubhouseTheme.brass : ClubhouseTheme.ink)
 
-                Text(isWinner ? "Win" : "Finished")
+                Text(isWinner ? "win" : "finished")
                     .columnHeaderStyle()
                     .foregroundStyle(isWinner ? ClubhouseTheme.green : ClubhouseTheme.inkMuted)
             }
@@ -272,6 +284,87 @@ struct PlayerStatsView: View {
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
     }
+}
+
+    @ViewBuilder
+    private var matchupsPanel: some View {
+        if !matchups.isEmpty {
+            VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("head to head")
+                        .font(AppFonts.title)
+                        .foregroundStyle(ClubhouseTheme.ink)
+
+                    Spacer()
+
+                    Button {
+                        router.push(.headToHead)
+                    } label: {
+                        Text("compare")
+                            .font(AppFonts.caption.weight(.bold))
+                            .foregroundStyle(ClubhouseTheme.blue)
+                    }
+                    .buttonStyle(PressableButtonStyle())
+                    .accessibilityIdentifier("player_history_head_to_head_link")
+                }
+
+                ForEach(matchups) { matchup in
+                    matchupCard(matchup)
+                }
+            }
+            .padding(AppTheme.spacingMedium)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        }
+    }
+
+    private func matchupCard(_ matchup: PlayerMatchup) -> some View {
+        let wins = matchup.records.reduce(0) { $0 + $1.aWins }
+        let losses = matchup.records.reduce(0) { $0 + $1.bWins }
+        let games = matchup.records.reduce(0) { $0 + $1.gamesTogether }
+        let rate = games > 0 ? Double(wins) / Double(games) : 0
+
+        return Button {
+            router.push(.headToHead)
+        } label: {
+            HStack(spacing: AppTheme.spacingSmall) {
+                PlayerColorPip(colorIndex: 0, size: 14)
+
+                Text(matchup.name)
+                    .font(AppFonts.body.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .lineLimit(1)
+
+                Spacer()
+
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("\(wins)–\(losses)")
+                        .font(AppFonts.scoreSmall)
+                        .monospacedDigit()
+                        .foregroundStyle(ClubhouseTheme.ink)
+
+                    Text(String(format: "%.0f%%", rate * 100))
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+            .padding(.horizontal, AppTheme.spacingSmall)
+            .frame(minHeight: 52)
+            .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PressableButtonStyle())
+    }
+}
+
+private struct PlayerMatchup: Identifiable {
+    let name: String
+    let records: [H2HRecord]
+
+    var id: String { name }
 }
 
 private struct PlayerStatMetric: Identifiable {
