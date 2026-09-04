@@ -479,7 +479,7 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(destructiveButton.waitForExistence(timeout: 2))
         destructiveButton.tap()
 
-        XCTAssertFalse(app.buttons["roster_player_alice"].exists)
+        XCTAssertTrue(app.buttons["roster_player_alice"].waitForNonExistence(timeout: 3))
         XCTAssertTrue(app.buttons["roster_player_bob"].exists)
     }
 
