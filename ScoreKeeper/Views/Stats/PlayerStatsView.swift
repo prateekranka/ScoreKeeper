@@ -252,7 +252,7 @@ struct PlayerStatsView: View {
                 HStack(spacing: 6) {
                     if let date = session.completedAt {
                         Text(ShortDate.string(from: date))
-                            .font(AppFonts.caption2)
+                            .font(AppFonts.caption)
                     }
 
                     Text("•")
