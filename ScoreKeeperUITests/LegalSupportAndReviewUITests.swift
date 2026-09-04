@@ -59,7 +59,7 @@ final class LegalSupportAndReviewUITests: XCTestCase {
 
         ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         app.buttons["game_tile_generic"].tap()
-        fillPlayerNames(["Ada", "Ben"])
+        fillPlayerNames(["ada", "ben"])
         app.buttons["start_game_button"].tap()
         XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 2))
         app.buttons["start_game_button"].tap()
@@ -71,7 +71,7 @@ final class LegalSupportAndReviewUITests: XCTestCase {
         ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
         ScoreDeckUITestSupport.waitForDeckToClose(in: app)
         app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        app.alerts.buttons["end game"].tap()
 
         XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.buttons["review_ask_rate_button"].waitForExistence(timeout: 2))

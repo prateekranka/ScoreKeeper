@@ -1145,6 +1145,7 @@ private struct SavedPlayerCard: View {
             .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
         }
         .buttonStyle(PressableButtonStyle())
+        .accessibilityIdentifier("saved_player_\(player.name)")
     }
 }
 

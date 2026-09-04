@@ -3,10 +3,10 @@ import XCTest
 @MainActor
 enum ScoreDeckUITestSupport {
     static func dismissDeckTutorialIfPresent(in app: XCUIApplication) {
-        if app.buttons["Got it"].waitForExistence(timeout: 2) {
-            app.buttons["Got it"].tap()
-        } else if app.buttons["Skip"].waitForExistence(timeout: 1) {
-            app.buttons["Skip"].tap()
+        if app.buttons["got it"].waitForExistence(timeout: 2) {
+            app.buttons["got it"].tap()
+        } else if app.buttons["skip"].waitForExistence(timeout: 1) {
+            app.buttons["skip"].tap()
         }
     }
 
@@ -329,7 +329,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
             message: "Confirmation card did not appear for handwritten zero",
             in: app
         )
-        XCTAssertTrue(app.staticTexts["Is this right?"].exists)
+        XCTAssertTrue(app.staticTexts["is this right?"].exists)
         XCTAssertTrue(app.staticTexts["0"].exists, "Confirmed value was not exactly 0")
         XCTAssertEqual(accept.label, "Use 0")
         XCTAssertEqual(ScoreDeckUITestSupport.retryButton(in: app).label, "Redraw score")
@@ -360,7 +360,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
             message: "Confirmation card did not appear for handwritten seven",
             in: app
         )
-        XCTAssertTrue(app.staticTexts["Is this right?"].exists)
+        XCTAssertTrue(app.staticTexts["is this right?"].exists)
         XCTAssertTrue(app.staticTexts["7"].exists, "Confirmed value was not exactly 7")
         XCTAssertEqual(accept.label, "Use 7")
 
@@ -379,7 +379,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
 
         let hint = ScoreDeckUITestSupport.noInkHint(in: app)
         XCTAssertTrue(hint.waitForExistence(timeout: 15), "Inline no-ink hint did not appear")
-        XCTAssertTrue(app.staticTexts["Draw the score first"].exists)
+        XCTAssertTrue(app.staticTexts["draw the score first"].exists)
 
         let reading = app.descendants(matching: .any)
             .matching(NSPredicate(format: "label == 'Reading score'"))
@@ -387,7 +387,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
 
         XCTAssertFalse(ScoreDeckUITestSupport.acceptButton(in: app).exists, "Confirmation card appeared without ink")
         XCTAssertFalse(ScoreDeckUITestSupport.rejectionCard(in: app).exists, "Rejection card appeared without ink")
-        XCTAssertFalse(app.staticTexts["Is this right?"].exists)
+        XCTAssertFalse(app.staticTexts["is this right?"].exists)
     }
 
     func testManualZeroFromUnreadableScribbleEnablesUseZeroAndAdvancesPlayer() {
@@ -425,7 +425,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
 
         let rejection = ScoreDeckUITestSupport.rejectionCard(in: app)
         XCTAssertTrue(rejection.waitForExistence(timeout: 20), "Rejection card did not appear for scribbled ink")
-        XCTAssertTrue(app.staticTexts["Couldn't read that"].exists)
+        XCTAssertTrue(app.staticTexts["couldn't read that"].exists)
         let use = ScoreDeckUITestSupport.manualUseButton(in: app)
         XCTAssertTrue(use.waitForExistence(timeout: 5), "Manual Use button missing")
         XCTAssertFalse(use.isEnabled, "Use button was enabled before a score was entered")
@@ -447,7 +447,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
         ScoreDeckUITestSupport.waitForDeckToClose(in: app)
 
-        XCTAssertTrue(app.staticTexts["Round 2"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 10))
         let committedScore = app.staticTexts["25"]
         assertExistsWithDiagnostics(
             committedScore,
@@ -479,7 +479,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         attachEvidenceScreenshot(named: "iphone-redraw-cleared")
     }
 
-    private func startTwoPlayerGame(first: String = "Alice", second: String = "Bob") {
+    private func startTwoPlayerGame(first: String = "alice", second: String = "bob") {
         let newGame = app.buttons["new_game_button"]
         XCTAssertTrue(newGame.waitForExistence(timeout: 5))
         ScoreDeckUITestSupport.tapButtonInSafeArea(newGame, in: app)
@@ -515,7 +515,7 @@ final class ScoreRecognitionE2ETests: XCTestCase {
             message: "Rejection card did not appear for deliberate unreadable scribble",
             in: app
         )
-        XCTAssertTrue(app.staticTexts["Couldn't read that"].exists)
+        XCTAssertTrue(app.staticTexts["couldn't read that"].exists)
         XCTAssertTrue(
             app.textFields["deck_manual_value"].waitForExistence(timeout: 5),
             "Manual fallback field did not appear after unreadable scribble"

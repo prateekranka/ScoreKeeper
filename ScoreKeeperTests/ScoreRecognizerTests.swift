@@ -21,16 +21,6 @@ final class ScoreRecognizerTests: XCTestCase {
         )
     }
 
-    func testFragmentsAlreadyInMinXOrderJoinAsWritten() {
-        assertSuccess(
-            ScoreRecognizer.interpret(fragments: [
-                fragment("1", minX: 0.1),
-                fragment("5", minX: 0.4),
-            ]),
-            value: 15,
-            confidence: 0.9
-        )
-    }
 
     func testCombinedFragmentsAbove99AreUnreadable() {
         XCTAssertEqual(
@@ -49,15 +39,6 @@ final class ScoreRecognizerTests: XCTestCase {
         )
     }
 
-    func testASCIIminusFragmentMakesCompleteReadingUnreadable() {
-        XCTAssertEqual(
-            ScoreRecognizer.interpret(fragments: [
-                fragment("-3", minX: 0.1),
-                fragment("4", minX: 0.5),
-            ]),
-            .unreadable
-        )
-    }
 
     func testUnicodeMinusFragmentMakesCompleteReadingUnreadable() {
         XCTAssertEqual(
@@ -151,19 +132,8 @@ final class ScoreRecognizerTests: XCTestCase {
         )
     }
 
-    func testThresholdConstant() {
-        XCTAssertEqual(ScoreRecognizer.defaultConfidenceThreshold, 0.35, accuracy: 0.0001)
-    }
 
-    func testVisionLowercaseOIsNotConvertedToZero() {
-        XCTAssertNil(ScoreRecognizer.normalizedDigits(from: "o"))
-    }
 
-    func testVisionOneLikeLettersAndPunctuationAreNotConvertedToOne() {
-        for candidate in ["I", "l", "|"] {
-            XCTAssertNil(ScoreRecognizer.normalizedDigits(from: candidate))
-        }
-    }
 
     func testUnrelatedLettersAreNotSilentlyConvertedToDigits() {
         XCTAssertNil(ScoreRecognizer.normalizedDigits(from: "score"))

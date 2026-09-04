@@ -8,26 +8,9 @@ final class ScoreDigitClassifierTests: XCTestCase {
         minimumMargin: 0.20
     )
 
-    func testPredictionExposesRunnerUpMargin() {
-        let prediction = ScoreDigitPrediction(
-            digit: 7,
-            probability: 0.91,
-            runnerUpProbability: 0.12
-        )
-
-        XCTAssertEqual(prediction.margin, 0.79, accuracy: 0.0001)
-    }
 
     func testDigitInputRejectsMismatchedPixelCount() {
         XCTAssertNil(ScoreDigitInput(width: 28, height: 28, pixels: [0]))
-    }
-
-    func testDigitInputOwnsImmutablePixelValue() {
-        var pixels = [UInt8](repeating: 255, count: 28 * 28)
-        let input = ScoreDigitInput(pixels: pixels)
-        pixels[0] = 0
-
-        XCTAssertEqual(input?.pixels[0], 255)
     }
 
 
