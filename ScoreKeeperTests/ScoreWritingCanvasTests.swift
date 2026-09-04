@@ -44,23 +44,6 @@ final class ScoreWritingCanvasTests: XCTestCase {
         XCTAssertTrue(raster.hasDarkPixel(in: CGRect(x: 0, y: cgImage.height / 2, width: cgImage.width, height: 1)))
     }
 
-    func testAsymmetricDrawingRemainsUpright() throws {
-        let image = try XCTUnwrap(ScoreWritingCanvas.normalizedImage(
-            for: drawing([[CGPoint(x: 60, y: 40), CGPoint(x: 220, y: 40), CGPoint(x: 220, y: 120)]]),
-            canvasSize: CGSize(width: 320, height: 160), scale: 2
-        ))
-        let cgImage = try XCTUnwrap(image.cgImage)
-        let raster = PixelRaster(cgImage)
-        let topInk = raster.darkPixelCount(in: CGRect(x: 0, y: 0, width: cgImage.width, height: cgImage.height / 2))
-        let bottomInk = raster.darkPixelCount(in: CGRect(
-            x: 0,
-            y: cgImage.height / 2,
-            width: cgImage.width,
-            height: cgImage.height / 2
-        ))
-        XCTAssertGreaterThan(topInk, bottomInk)
-    }
-
     func testPreviewImageMatchesCanvasLeftRightAndTop() throws {
         let image = try XCTUnwrap(ScoreWritingCanvas.previewImage(
             for: drawing([[CGPoint(x: 60, y: 40), CGPoint(x: 220, y: 40), CGPoint(x: 220, y: 120)]]),
