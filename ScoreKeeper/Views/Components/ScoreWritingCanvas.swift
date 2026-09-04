@@ -138,7 +138,18 @@ struct ScoreWritingCanvas: UIViewRepresentable {
             context.setFillColor(UIColor.white.cgColor)
             context.fill(canvasRect)
             context.saveGState()
-            inkImage.draw(in: fittedInkRect, blendMode: .destinationOut, alpha: 1)
+            // PKDrawing.image's bitmap is vertically oriented for Core Graphics,
+            // while UIImage drawing uses UIKit's top-left coordinate space. Flip
+            // the source only while compositing so the captured score stays
+            // upright for Vision and callers that inspect the raster.
+            context.translateBy(x: fittedInkRect.minX, y: fittedInkRect.maxY)
+            context.scaleBy(x: 1, y: -1)
+            inkImage.draw(
+                in: CGRect(origin: .zero, size: fittedInkRect.size),
+                blendMode: .destinationOut,
+                alpha: 1
+            )
+            context.restoreGState()
             context.setBlendMode(.destinationOver)
             context.setFillColor(UIColor.black.cgColor)
             context.fill(fittedInkRect)

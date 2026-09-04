@@ -51,7 +51,7 @@ final class StoreManagerStoreKitTests: XCTestCase {
     func testOtherPurchaseErrorReturnsCustomerSafeFailure() {
         XCTAssertEqual(
             StoreManager.purchaseState(for: StoreKitError.networkError(URLError(.notConnectedToInternet))),
-            .failed("The purchase could not be completed.")
+            .failed("the purchase could not be completed")
         )
     }
 
@@ -65,7 +65,7 @@ final class StoreManagerStoreKitTests: XCTestCase {
 
         XCTAssertEqual(
             manager.productState,
-            .unavailable("PipCount Pro is unavailable right now.")
+            .unavailable("pipcount pro is unavailable right now")
         )
         XCTAssertNil(manager.product)
         XCTAssertEqual(manager.displayPrice, "Price unavailable")
@@ -77,7 +77,7 @@ final class StoreManagerStoreKitTests: XCTestCase {
         XCTAssertEqual(loader.requestCount, 2)
         XCTAssertEqual(
             manager.productState,
-            .unavailable("PipCount Pro is unavailable right now.")
+            .unavailable("pipcount pro is unavailable right now")
         )
         XCTAssertFalse(manager.canPurchase)
     }
@@ -90,7 +90,7 @@ final class StoreManagerStoreKitTests: XCTestCase {
 
         XCTAssertEqual(
             manager.productState,
-            .unavailable("Unable to load PipCount Pro right now.")
+            .unavailable("unable to load pipcount pro right now")
         )
         XCTAssertFalse(manager.canPurchase)
         XCTAssertNotEqual(manager.displayPrice, "$0.99")
