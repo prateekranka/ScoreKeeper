@@ -182,6 +182,7 @@ struct GameDetailView: View {
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
+    @ViewBuilder
     private func shareButton(session: GameSession, engine: GameEngine) -> some View {
         if let shareImage = ScorecardShareCard.shareImage(session: session, engine: engine) {
             ShareLink(item: shareImage, preview: SharePreview("pipcount scorecard", image: shareImage)) {

@@ -293,6 +293,7 @@ struct GameOverView: View {
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
+    @ViewBuilder
     private func shareButton(_ session: GameSession) -> some View {
         let engine = GameEngineFactory.engine(for: session.gameType)
 
