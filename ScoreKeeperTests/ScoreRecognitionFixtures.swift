@@ -221,7 +221,7 @@ enum ScoreRecognitionFixtures {
     ) -> PKDrawing {
         let glyphWidth: CGFloat = 72 * glyphScale
         let glyphHeight: CGFloat = 154 * glyphScale
-        let glyphSpacing = spacing ?? 20 * glyphScale
+        let glyphSpacing = spacing ?? 30 * glyphScale
         let digitCount = CGFloat(digits.count)
         let totalWidth = digitCount * glyphWidth + max(digitCount - 1, 0) * glyphSpacing
         let origin = CGPoint(

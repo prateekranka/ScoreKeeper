@@ -313,12 +313,12 @@ final class ScoreKeeperUITests: XCTestCase {
         }
         XCTAssertTrue(pushed, "Head to Head screen never appeared")
         // The redesigned picker's menu button carries the full label
-        // "Player One, Select a player" / "Player Two, Select a player".
-        let playerOnePicker = app.buttons["player one, Select a player"]
+        // "player one, select a player" / "player two, select a player".
+        let playerOnePicker = app.buttons["player one, select a player"]
         XCTAssertTrue(playerOnePicker.waitForExistence(timeout: 3))
         playerOnePicker.tap()
         app.buttons["taylor"].firstMatch.tap()
-        let playerTwoPicker = app.buttons["player two, Select a player"]
+        let playerTwoPicker = app.buttons["player two, select a player"]
         XCTAssertTrue(playerTwoPicker.waitForExistence(timeout: 3))
         playerTwoPicker.tap()
         app.buttons["morgan"].firstMatch.tap()
@@ -804,9 +804,9 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(h2h.waitForExistence(timeout: 3))
         h2h.tap()
         XCTAssertTrue(app.navigationBars["head to head"].waitForExistence(timeout: 3))
-        app.buttons["player one, Select a player"].tap()
+        app.buttons["player one, select a player"].tap()
         app.buttons["taylor"].tap()
-        app.buttons["player two, Select a player"].tap()
+        app.buttons["player two, select a player"].tap()
         app.buttons["morgan"].tap()
         _ = app.staticTexts["1 game together"].waitForExistence(timeout: 2)
         snap("22-head-to-head")
