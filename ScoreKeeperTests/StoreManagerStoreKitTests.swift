@@ -68,7 +68,7 @@ final class StoreManagerStoreKitTests: XCTestCase {
             .unavailable("pipcount pro is unavailable right now")
         )
         XCTAssertNil(manager.product)
-        XCTAssertEqual(manager.displayPrice, "Price unavailable")
+        XCTAssertEqual(manager.displayPrice, "price unavailable")
         XCTAssertFalse(manager.canPurchase)
         XCTAssertEqual(loader.requestCount, 1)
 

@@ -253,6 +253,14 @@ enum ScoreRecognizer {
             // remaining positive digits to become a score.
             return .unreadable
         }
+
+#if DEBUG
+        for observation in observations {
+            let candidates = observation.topCandidates(3).map { "-> \($0.string)[\($0.confidence)]" }.joined(separator: "|")
+            print("VISDEBUG: \(candidates)")
+        }
+#endif
+
         let fragments = extractFragments(from: observations)
         guard fragments.count == observations.count else {
             // Never drop an observed letter, punctuation mark, or low-confidence
