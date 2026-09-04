@@ -130,15 +130,38 @@ enum ScoreRecognizer {
         // the normalized ink itself before either OCR pass can lose it.
         guard !containsLeadingMinus(in: analysis) else { return .unreadable }
 
-        // Restore the [verified] accept path: an accurate reading is accepted
-        // directly; fast is only a fallback when accurate finds nothing, and
-        // the closed-zero/minus/fragment gates still reject phantom zero,
-        // negatives, and mixed syntax.
-        return recognitionCandidate(
+        let candidate = recognitionCandidate(
             cgImage,
             analysis: analysis,
             recognitionLevel: recognitionLevel
-        ).publicResult
+        )
+        // Never accept a partial score. When the ink spans more glyph
+        // clusters than the recognized value has digits (a leading digit is
+        // dropped or merged out of a wide reading like 14 -> 4), the reading
+        // is partial and must go to manual entry.
+        if case let .success(value, confidence, _) = candidate,
+           glyphClusters(in: analysis) > String(value).count {
+            return .unreadable
+        }
+        return candidate.publicResult
+    }
+
+    /// Counts horizontally separated glyph clusters in the ink raster.
+    /// Two clusters are separated when the empty column gap between their
+    /// ink spans exceeds 6% of the raster width (wide enough to be a real
+    /// digit separator, narrow enough not to split a glyph's own strokes).
+    private static func glyphClusters(in analysis: InkAnalysis) -> Int {
+        let gapWidth = Int(Double(analysis.raster.width) * 0.06)
+        let components = analysis.inkComponents.sorted { $0.minX < $1.minX }
+        guard var currentMaxX = components.first?.maxX else { return 0 }
+        var clusters = 1
+        for component in components.dropFirst() {
+            if component.minX - currentMaxX - 1 >= gapWidth {
+                clusters += 1
+            }
+            currentMaxX = max(currentMaxX, component.maxX)
+        }
+        return clusters
     }
 
     private enum VisionCandidateOrigin: Equatable {
