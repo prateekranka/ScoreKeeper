@@ -238,9 +238,13 @@ final class ScoreKeeperUITests: XCTestCase {
         completeGenericGame(playerNames: ["taylor", "morgan"])
 
         // Stats now belongs to the Players page, directly below Add Player.
-        // Open that page before locating the Head to Head control.
-        if app.buttons["tab_players"].exists {
-            app.buttons["tab_players"].tap()
+        // Open that page before locating the Head to Head control. The dock
+        // tab may not exist yet: navigation from the game-over screen runs
+        // through the router's ~175ms deferral, so wait instead of an
+        // instant exists check.
+        let playersTab = app.buttons["tab_players"]
+        if playersTab.waitForExistence(timeout: 5) {
+            playersTab.tap()
             usleep(400_000)
         }
 
