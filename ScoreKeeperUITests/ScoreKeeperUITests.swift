@@ -157,9 +157,10 @@ final class ScoreKeeperUITests: XCTestCase {
         homeButton2.tap()
         sleep(1)
 
-        // Verify Home screen with recent games using the section's stable control identifier.
+        // Verify Recent Games on More below the PipCount Pro banner.
+        app.buttons["legal_support_button"].tap()
         XCTAssertTrue(scrollToHittable(app.buttons["see_all_button"]))
-        XCTAssertTrue(app.buttons["new_game_button"].exists)
+        XCTAssertTrue(app.buttons["tab_home"].exists)
     }
 
     // MARK: - Test 6: Cautious user fixes invalid setup
@@ -233,30 +234,26 @@ final class ScoreKeeperUITests: XCTestCase {
     // MARK: - Test 10: Theme and stats user explores completed data
 
     func testThemeToggleAndHeadToHeadStatsNavigation() throws {
-        app.buttons["theme_button"].tap()
-        app.buttons["theme_button"].tap()
+        XCTAssertFalse(app.buttons["theme_button"].exists)
+        app.buttons["legal_support_button"].tap()
+        XCTAssertTrue(app.buttons["theme_dark_button"].waitForExistence(timeout: 3))
+        app.buttons["theme_dark_button"].tap()
+        app.buttons["theme_system_button"].tap()
+        app.buttons["tab_home"].tap()
 
         completeGenericGame(playerNames: ["Taylor", "Morgan"])
 
-        // The floating PipCountDock covers the bottom ~130pt of the screen and
-        // Home content scrolls under it. Returning from Game Over can leave the
-        // Stats row (head_to_head_button) below the fold / behind the dock, and
-        // a tap aimed at its frame then lands on the dock (observed: the
-        // Players tab fired). Reset to the Home root, then scroll the Home
-        // scroll view itself — not the app — until the button's frame sits
-        // fully inside the dock-free band, then tap by normalized coordinates.
-        if app.buttons["tab_home"].exists {
-            app.buttons["tab_home"].tap()
+        // Stats now belongs to the Players page, directly below Add Player.
+        // Open that page before locating the Head to Head control.
+        if app.buttons["tab_players"].exists {
+            app.buttons["tab_players"].tap()
             usleep(400_000)
         }
 
         let headToHeadButton = app.buttons["head_to_head_button"]
         XCTAssertTrue(headToHeadButton.waitForExistence(timeout: 5))
 
-        // The vertical Home scroll view that contains the Stats row (the
-        // player-chips list is a nested horizontal ScrollView, so scope the
-        // query to the button's own container).
-        let homeScrollView = app.scrollViews
+        let playersScrollView = app.scrollViews
             .containing(.button, identifier: "head_to_head_button")
             .firstMatch
         let dockTop = app.frame.height - 130
@@ -299,19 +296,18 @@ final class ScoreKeeperUITests: XCTestCase {
                     pushed = true
                     break
                 }
-                // Swallowed — the tap likely landed on the dock. Re-root and retry.
-                if app.buttons["tab_home"].exists {
-                    app.buttons["tab_home"].tap()
+                // Swallowed — the tap likely landed on the dock. Re-open Players and retry.
+                if app.buttons["tab_players"].exists {
+                    app.buttons["tab_players"].tap()
                     usleep(400_000)
                 }
             } else if frame.minY < safeTop {
                 // Overshot past the top of the screen: ease back down.
-                homeScrollView.swipeDown(velocity: .fast)
+                playersScrollView.swipeDown(velocity: .fast)
                 usleep(300_000)
             } else {
-                // Below the fold or behind the dock: scroll the Home scroll
-                // view (not the app) so the Stats row rises above the dock.
-                homeScrollView.swipeUp(velocity: .fast)
+                // Below the fold or behind the dock: scroll the Players view.
+                playersScrollView.swipeUp(velocity: .fast)
                 usleep(300_000)
             }
         }
@@ -335,6 +331,8 @@ final class ScoreKeeperUITests: XCTestCase {
 
     func testGameHistoryIsReachableWithOneCompletedGame() throws {
         completeGenericGame(playerNames: ["Ivy", "Noah"])
+        XCTAssertFalse(app.buttons["see_all_button"].exists)
+        app.buttons["legal_support_button"].tap()
 
         let seeAllButton = app.buttons["see_all_button"]
         if !seeAllButton.waitForExistence(timeout: 1) {
@@ -357,7 +355,11 @@ final class ScoreKeeperUITests: XCTestCase {
     func testPlayerStatsNavigationFromStatsEntry() throws {
         completeGenericGame(playerNames: ["Taylor", "Morgan"])
 
-        _ = waitForHittable(app.buttons["new_game_button"])
+        XCTAssertFalse(app.buttons["head_to_head_button"].exists)
+        app.buttons["tab_players"].tap()
+        let addPlayerButton = app.buttons["add_new_player_button"]
+        XCTAssertTrue(addPlayerButton.waitForExistence(timeout: 3))
+        XCTAssertEqual(addPlayerButton.label, "Add Player")
 
         // Scroll to find the player stats entry
         let playerStatsButton = app.buttons["player_stats_Taylor"]
@@ -439,6 +441,21 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertEqual(activeRows.count, 2)
         XCTAssertTrue(activeRows.element(boundBy: 0).exists)
         XCTAssertTrue(activeRows.element(boundBy: 1).exists)
+
+        let deleteButtons = app.buttons
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'delete_active_game_'"))
+        XCTAssertEqual(deleteButtons.count, 2)
+
+        let firstSlider = activeRows.element(boundBy: 0)
+        let firstDeleteButton = deleteButtons.element(boundBy: 0)
+        let actionWidth = firstSlider.frame.width + firstDeleteButton.frame.width
+        XCTAssertEqual(firstSlider.frame.width / actionWidth, 0.95, accuracy: 0.01)
+
+        let sliderStart = firstSlider.coordinate(withNormalizedOffset: CGVector(dx: 0.12, dy: 0.5))
+        let sliderEnd = firstSlider.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.5))
+        sliderStart.press(forDuration: 0.1, thenDragTo: sliderEnd)
+
+        XCTAssertTrue(app.buttons["submit_round_button"].waitForExistence(timeout: 3))
     }
 
     // MARK: - Test 17: Target score completes after a qualifying submitted round
@@ -682,10 +699,14 @@ final class ScoreKeeperUITests: XCTestCase {
         _ = app.buttons["new_game_button"].waitForExistence(timeout: 3)
         snap("11-home-with-history")
 
-        if app.buttons["theme_button"].exists {
-            app.buttons["theme_button"].tap()
+        app.buttons["legal_support_button"].tap()
+        if app.buttons["theme_dark_button"].waitForExistence(timeout: 3) {
+            app.buttons["theme_dark_button"].tap()
+            app.buttons["tab_home"].tap()
             sleep(1); snap("12-home-theme-toggled")
-            app.buttons["theme_button"].tap()
+            app.buttons["legal_support_button"].tap()
+            app.buttons["theme_system_button"].tap()
+            app.buttons["tab_home"].tap()
             sleep(1)
         }
 
@@ -779,6 +800,7 @@ final class ScoreKeeperUITests: XCTestCase {
         _ = app.buttons["new_game_button"].waitForExistence(timeout: 3)
 
         // Game history + detail
+        app.buttons["legal_support_button"].tap()
         let seeAll = app.buttons["see_all_button"]
         if !seeAll.waitForExistence(timeout: 1) { app.swipeUp() }
         XCTAssertTrue(seeAll.waitForExistence(timeout: 3))
@@ -797,6 +819,7 @@ final class ScoreKeeperUITests: XCTestCase {
         sleep(1)
 
         // Head to head
+        app.buttons["tab_players"].tap()
         let h2h = app.buttons["Head to Head"]
         if !h2h.waitForExistence(timeout: 1) { app.swipeUp() }
         XCTAssertTrue(h2h.waitForExistence(timeout: 3))
@@ -821,11 +844,13 @@ final class ScoreKeeperUITests: XCTestCase {
         app.navigationBars.buttons.firstMatch.tap()
         sleep(1)
 
-        // Dark mode: the tour starts in forced light, so one cycle enters dark.
-        app.swipeDown()
-        let theme = app.buttons["theme_button"]
-        XCTAssertTrue(theme.waitForExistence(timeout: 3))
-        theme.tap(); sleep(1)
+        // Dark mode: the tour starts in forced light, so select dark in More.
+        app.buttons["legal_support_button"].tap()
+        let darkTheme = app.buttons["theme_dark_button"]
+        XCTAssertTrue(darkTheme.waitForExistence(timeout: 3))
+        darkTheme.tap()
+        app.buttons["tab_home"].tap()
+        sleep(1)
         snap("24-home-dark")
 
         navigateToGenericScoring(playerNames: ["Ada", "Ben"])
@@ -843,13 +868,14 @@ final class ScoreKeeperUITests: XCTestCase {
         }
         sleep(2); snap("26-game-over-dark")
 
-        // Restore theme to system
+        // Restore theme to system.
         app.swipeUp()
         if app.buttons["home_button"].waitForExistence(timeout: 3) {
             app.buttons["home_button"].tap()
         }
-        if theme.waitForExistence(timeout: 3) {
-            theme.tap()
+        app.buttons["legal_support_button"].tap()
+        if app.buttons["theme_system_button"].waitForExistence(timeout: 3) {
+            app.buttons["theme_system_button"].tap()
         }
     }
 

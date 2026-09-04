@@ -2,11 +2,9 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(NavigationRouter.self) private var router
-    @Environment(ThemeManager.self) private var themeManager
     @Environment(StoreManager.self) private var storeManager
     @Environment(\.modelContext) private var modelContext
 
@@ -46,18 +44,13 @@ struct HomeView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
-                HomeHeader(
-                    subtitle: headerSubtitle,
-                    themeIconName: themeManager.iconName,
-                    onThemeTap: cycleTheme
-                )
-                .staggeredEntrance(visible: sectionsVisible, index: 0)
+                HomeHeader(subtitle: headerSubtitle)
+                    .staggeredEntrance(visible: sectionsVisible, index: 0)
 
                 responsiveDashboard
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
-            .padding(.bottom, 118)
             .pipCountPageContent()
         }
         .appBackground()
@@ -107,15 +100,6 @@ struct HomeView: View {
                 VStack(spacing: AppTheme.spacingMedium) {
                     gameActionSection
                     upgradeSection
-
-                    if !completedGames.isEmpty {
-                        HomeRecentGamesSection(
-                            sessions: completedGames,
-                            onGameTap: { router.push(.gameDetail($0)) },
-                            onSeeAll: { router.push(.gameHistory) }
-                        )
-                        .staggeredEntrance(visible: sectionsVisible, index: 4)
-                    }
                 }
                 .frame(maxWidth: .infinity)
 
@@ -125,15 +109,10 @@ struct HomeView: View {
                         activeCount: inProgressGames.count,
                         playersCount: uniquePlayerCount
                     )
-                    .staggeredEntrance(visible: sectionsVisible, index: 5)
-
-                    if !completedGames.isEmpty {
-                        HomeStatsSection(sessions: completedGames)
-                            .staggeredEntrance(visible: sectionsVisible, index: 6)
-                    }
+                    .staggeredEntrance(visible: sectionsVisible, index: 4)
 
                     HomeQuickToolsRow(selectedTool: $selectedTool)
-                        .staggeredEntrance(visible: sectionsVisible, index: 7)
+                        .staggeredEntrance(visible: sectionsVisible, index: 5)
                 }
                 .frame(width: 360)
             }
@@ -142,27 +121,15 @@ struct HomeView: View {
                 gameActionSection
                 upgradeSection
 
-                if !completedGames.isEmpty {
-                    HomeRecentGamesSection(
-                        sessions: completedGames,
-                        onGameTap: { router.push(.gameDetail($0)) },
-                        onSeeAll: { router.push(.gameHistory) }
-                    )
-                    .staggeredEntrance(visible: sectionsVisible, index: 4)
-
-                    HomeStatsSection(sessions: completedGames)
-                        .staggeredEntrance(visible: sectionsVisible, index: 5)
-                }
-
                 HomeDashboardRow(
                     gamesCount: completedGames.count,
                     activeCount: inProgressGames.count,
                     playersCount: uniquePlayerCount
                 )
-                .staggeredEntrance(visible: sectionsVisible, index: 6)
+                .staggeredEntrance(visible: sectionsVisible, index: 4)
 
                 HomeQuickToolsRow(selectedTool: $selectedTool)
-                    .staggeredEntrance(visible: sectionsVisible, index: 7)
+                    .staggeredEntrance(visible: sectionsVisible, index: 5)
             }
         }
     }
@@ -199,12 +166,6 @@ struct HomeView: View {
         } else if !storeManager.isUnlocked {
             PipCountUpgradeEntry(onUpgrade: { showPaywall = true })
                 .staggeredEntrance(visible: sectionsVisible, index: 3)
-        }
-    }
-
-    private func cycleTheme() {
-        withAnimation(reduceMotion ? nil : AppMotion.theme) {
-            themeManager.cycle()
         }
     }
 
@@ -248,20 +209,14 @@ struct HomeView: View {
 
 private struct HomeHeader: View {
     let subtitle: String
-    let themeIconName: String
-    let onThemeTap: () -> Void
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var themeTrigger = 0
 
     var body: some View {
         VStack(spacing: AppTheme.spacingMedium) {
-            HStack(alignment: .top) {
-                brandCopy
-                Spacer(minLength: AppTheme.spacingSmall)
-                themeButton
-            }
+            brandCopy
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
                 HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
@@ -313,25 +268,6 @@ private struct HomeHeader: View {
                 .foregroundStyle(ClubhouseTheme.blue)
                 .padding(.top, 4)
         }
-    }
-
-    private var themeButton: some View {
-        Button {
-            themeTrigger &+= 1
-            onThemeTap()
-        } label: {
-            Image(systemName: themeIconName)
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.ink)
-                .contentTransition(.opacity)
-                .animation(AppMotion.fade, value: themeIconName)
-                .frame(width: 48, height: 48)
-                .appGlass(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
-        }
-        .accessibilityLabel("Change appearance")
-        .accessibilityIdentifier("theme_button")
-        .buttonStyle(PressableButtonStyle())
-        .sensoryFeedback(.selection, trigger: themeTrigger)
     }
 }
 
@@ -512,63 +448,113 @@ private struct ActiveGameRow: View {
                 }
             }
 
-            HStack(spacing: AppTheme.spacingSmall) {
-                Button(action: onResume) {
-                    HStack(spacing: 12) {
-                        Circle()
-                            .fill(ClubhouseTheme.paperCard)
-                            .frame(width: 42, height: 42)
+            GeometryReader { geometry in
+                let availableWidth = max(0, geometry.size.width - AppTheme.spacingSmall)
+
+                HStack(spacing: AppTheme.spacingSmall) {
+                    ResumeGameSlider(
+                        accessibilityLabel: "Resume \(session.gameType.displayName), round \(session.currentRoundNumber)",
+                        accessibilityIdentifier: "active_game_\(session.id.uuidString)",
+                        action: onResume
+                    )
+                    .frame(width: availableWidth * 0.95)
+
+                    Button(role: .destructive, action: onDelete) {
+                        Image(systemName: "trash")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(ClubhouseTheme.red)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(
+                                ClubhouseTheme.paperSunken,
+                                in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                            )
                             .overlay {
-                                Image(systemName: "arrow.right")
-                                    .font(.headline.weight(.black))
-                                    .foregroundStyle(ClubhouseTheme.blue)
+                                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
                             }
-
-                        Text("Resume Game")
-                            .font(AppFonts.headline)
-                            .foregroundStyle(ClubhouseTheme.onPrimary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-
-                        Spacer(minLength: 0)
-
-                        BauhausHalftone(color: ClubhouseTheme.paperCard, spacing: 6)
-                            .frame(width: 48, height: 42)
+                            .contentShape(Rectangle())
                     }
-                    .padding(.horizontal, 14)
-                    .frame(maxWidth: .infinity, minHeight: 62)
-                    .background(ClubhouseTheme.blue, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall))
-                    .contentShape(Rectangle())
+                    .buttonStyle(PressableButtonStyle())
+                    .accessibilityLabel("Delete active \(session.gameType.displayName) game")
+                    .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
+                    .frame(width: availableWidth * 0.05)
                 }
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityIdentifier("active_game_\(session.id.uuidString)")
-                .accessibilityLabel("Resume \(session.gameType.displayName), round \(session.currentRoundNumber)")
-                .frame(maxWidth: .infinity)
-
-                Button(role: .destructive, action: onDelete) {
-                    Image(systemName: "trash")
-                        .font(.body.weight(.bold))
-                        .foregroundStyle(ClubhouseTheme.red)
-                        .frame(maxWidth: .infinity, minHeight: 62)
-                        .background(
-                            ClubhouseTheme.paperSunken,
-                            in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                        )
-                        .overlay {
-                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-                        }
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel("Delete active \(session.gameType.displayName) game")
-                .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
-                .frame(minWidth: 64, idealWidth: 72, maxWidth: 88)
             }
+            .frame(height: 62)
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+    }
+}
+
+private struct ResumeGameSlider: View {
+    let accessibilityLabel: String
+    let accessibilityIdentifier: String
+    let action: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var dragOffset: CGFloat = 0
+
+    private let thumbDiameter: CGFloat = 50
+    private let thumbInset: CGFloat = 6
+
+    var body: some View {
+        GeometryReader { geometry in
+            let maximumOffset = max(0, geometry.size.width - thumbDiameter - (thumbInset * 2))
+
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                    .fill(ClubhouseTheme.blue)
+
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                    .fill(ClubhouseTheme.paperCard.opacity(0.16))
+                    .frame(width: thumbDiameter + thumbInset + dragOffset)
+
+                Text("Slide to Resume Game")
+                    .font(AppFonts.headline)
+                    .foregroundStyle(ClubhouseTheme.onPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+                    .frame(maxWidth: .infinity)
+                    .padding(.leading, thumbDiameter + 10)
+                    .padding(.trailing, 12)
+
+                Circle()
+                    .fill(ClubhouseTheme.paperCard)
+                    .frame(width: thumbDiameter, height: thumbDiameter)
+                    .overlay {
+                        Image(systemName: "arrow.right")
+                            .font(.headline.weight(.black))
+                            .foregroundStyle(ClubhouseTheme.blue)
+                    }
+                    .offset(x: thumbInset + dragOffset)
+            }
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 4)
+                    .onChanged { value in
+                        dragOffset = min(max(value.translation.width, 0), maximumOffset)
+                    }
+                    .onEnded { _ in
+                        if maximumOffset > 0, dragOffset >= maximumOffset * 0.85 {
+                            dragOffset = 0
+                            action()
+                        } else if reduceMotion {
+                            dragOffset = 0
+                        } else {
+                            withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
+                                dragOffset = 0
+                            }
+                        }
+                    }
+            )
+        }
+        .accessibilityRepresentation {
+            Button(accessibilityLabel, action: action)
+                .accessibilityHint("Resumes the saved game")
+                .accessibilityIdentifier(accessibilityIdentifier)
+        }
     }
 }
 
@@ -628,7 +614,7 @@ private struct HomeMetric: View {
     }
 }
 
-private struct HomeRecentGamesSection: View {
+struct HomeRecentGamesSection: View {
     let sessions: [GameSession]
     let onGameTap: (PersistentIdentifier) -> Void
     let onSeeAll: () -> Void
@@ -1031,6 +1017,9 @@ struct SavedPlayersView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query(sort: \SavedPlayer.lastUsed, order: .reverse) private var savedPlayers: [SavedPlayer]
+    @Query(filter: #Predicate<GameSession> { $0.isComplete },
+           sort: \GameSession.createdAt, order: .reverse)
+    private var completedGames: [GameSession]
     @State private var contentVisible = false
     @State private var showAddPlayer = false
 
@@ -1069,10 +1058,15 @@ struct SavedPlayersView: View {
                 AppActionButton(role: .primary(ClubhouseTheme.blue)) {
                     showAddPlayer = true
                 } label: {
-                    Text("Add new player")
+                    Text("Add Player")
                 }
                 .accessibilityIdentifier("add_new_player_button")
                 .staggeredEntrance(visible: contentVisible, index: 2)
+
+                if !completedGames.isEmpty {
+                    HomeStatsSection(sessions: completedGames)
+                        .staggeredEntrance(visible: contentVisible, index: 3)
+                }
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)

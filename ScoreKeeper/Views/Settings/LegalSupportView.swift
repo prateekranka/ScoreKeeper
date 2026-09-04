@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 enum LegalSupportLinks {
     static let privacyPolicy = URL(string: "https://privacy.contenthelper.in")!
@@ -12,6 +13,9 @@ struct LegalSupportView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Query(filter: #Predicate<GameSession> { $0.isComplete },
+           sort: \GameSession.createdAt, order: .reverse)
+    private var completedGames: [GameSession]
 
     @State private var contentVisible = false
     @State private var showPaywall = false
@@ -55,13 +59,15 @@ struct LegalSupportView: View {
                     proPanel
                         .staggeredEntrance(visible: contentVisible, index: 0)
 
+                    recentGamesSection
+
                     appearancePanel
-                        .staggeredEntrance(visible: contentVisible, index: 1)
+                        .staggeredEntrance(visible: contentVisible, index: 2)
                 }
                 .frame(maxWidth: 430, alignment: .top)
 
                 supportPanel
-                    .staggeredEntrance(visible: contentVisible, index: 2)
+                    .staggeredEntrance(visible: contentVisible, index: 3)
                     .frame(maxWidth: .infinity, alignment: .top)
             }
         } else {
@@ -69,12 +75,26 @@ struct LegalSupportView: View {
                 proPanel
                     .staggeredEntrance(visible: contentVisible, index: 0)
 
+                recentGamesSection
+
                 appearancePanel
-                    .staggeredEntrance(visible: contentVisible, index: 1)
+                    .staggeredEntrance(visible: contentVisible, index: 2)
 
                 supportPanel
-                    .staggeredEntrance(visible: contentVisible, index: 2)
+                    .staggeredEntrance(visible: contentVisible, index: 3)
             }
+        }
+    }
+
+    @ViewBuilder
+    private var recentGamesSection: some View {
+        if !completedGames.isEmpty {
+            HomeRecentGamesSection(
+                sessions: completedGames,
+                onGameTap: { router.push(.gameDetail($0)) },
+                onSeeAll: { router.push(.gameHistory) }
+            )
+            .staggeredEntrance(visible: contentVisible, index: 1)
         }
     }
 
