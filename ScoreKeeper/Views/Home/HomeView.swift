@@ -705,7 +705,7 @@ private struct HomeStatsSection: View {
             Button {
                 router.push(.headToHead)
             } label: {
-                QuietLinkRow(title: "Head to Head", systemImage: "arrow.left.arrow.right")
+                QuietLinkRow(title: "head to head", systemImage: "arrow.left.arrow.right")
             }
             .buttonStyle(PressableButtonStyle())
             .accessibilityIdentifier("head_to_head_button")

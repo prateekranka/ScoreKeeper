@@ -31,7 +31,7 @@ struct PipCountArtworkCatalogPreview: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 28) {
-                    previewSection(title: "Vector assets") {
+                    previewSection(title: "vector assets") {
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(assets, id: \.0) { item in
                                 previewCard(title: item.0) {
@@ -42,7 +42,7 @@ struct PipCountArtworkCatalogPreview: View {
                         }
                     }
 
-                    previewSection(title: "Screen routing") {
+                    previewSection(title: "screen routing") {
                         LazyVGrid(columns: columns, spacing: 16) {
                             ForEach(scenes, id: \.0) { item in
                                 previewCard(title: item.0) {
@@ -53,7 +53,7 @@ struct PipCountArtworkCatalogPreview: View {
                         }
                     }
 
-                    previewSection(title: "Player pieces") {
+                    previewSection(title: "player pieces") {
                         HStack(spacing: 24) {
                             ForEach(0..<8, id: \.self) { index in
                                 VStack(spacing: 8) {

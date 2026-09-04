@@ -46,7 +46,7 @@ struct WhatsForDinnerScoringView: View {
 
     private var mealRevealSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "Meal Reveal", subtitle: "Choose the player who called it", systemImage: "person.crop.circle.badge.checkmark")
+            AppSectionHeader(title: "meal reveal", subtitle: "choose the player who called it", systemImage: "person.crop.circle.badge.checkmark")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: AppTheme.spacingSmall) {
@@ -91,7 +91,7 @@ struct WhatsForDinnerScoringView: View {
 
     private var playerHandsSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "Card Values", systemImage: "number")
+            AppSectionHeader(title: "card values", systemImage: "number")
 
             ForEach(session.players, id: \.id) { player in
                 ScoreEntryRow(

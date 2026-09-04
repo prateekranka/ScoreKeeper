@@ -57,7 +57,7 @@ struct Phase10ScoringView: View {
 
     private var phaseOverview: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "Current Stages", systemImage: "flag.checkered")
+            AppSectionHeader(title: "current stages", systemImage: "flag.checkered")
 
             ForEach(session.players, id: \.id) { player in
                 let currentPhase = engine.currentPhase(for: player.id, in: session)
@@ -98,7 +98,7 @@ struct Phase10ScoringView: View {
 
     private var roundEntrySection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "This Round", systemImage: "square.and.pencil")
+            AppSectionHeader(title: "this round", systemImage: "square.and.pencil")
 
             ForEach(session.players, id: \.id) { player in
                 let currentPhase = engine.currentPhase(for: player.id, in: session)
