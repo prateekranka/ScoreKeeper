@@ -284,7 +284,6 @@ struct PlayerStatsView: View {
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
     }
-}
 
     @ViewBuilder
     private var matchupsPanel: some View {
