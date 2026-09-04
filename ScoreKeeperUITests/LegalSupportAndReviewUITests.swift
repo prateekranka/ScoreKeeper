@@ -30,7 +30,7 @@ final class LegalSupportAndReviewUITests: XCTestCase {
         XCTAssertTrue(legalSupportButton.waitForExistence(timeout: 3))
         legalSupportButton.tap()
 
-        XCTAssertTrue(app.navigationBars["More"].waitForExistence(timeout: 6))
+        XCTAssertTrue(app.navigationBars["more"].waitForExistence(timeout: 6))
 
         let privacyLink = app.descendants(matching: .any)["privacy_policy_link"]
         let supportLink = app.descendants(matching: .any)["support_link"]
