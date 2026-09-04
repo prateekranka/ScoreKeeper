@@ -285,7 +285,7 @@ enum ScoreRecognitionFixtures {
         case "4":
             return [
                 [CGPoint(x: 0.62, y: 0.06), CGPoint(x: 0.62, y: 0.94)],
-                [CGPoint(x: 0.10, y: 0.60), CGPoint(x: 0.92, y: 0.60)],
+                [CGPoint(x: 0.20, y: 0.60), CGPoint(x: 0.78, y: 0.60)],
                 [CGPoint(x: 0.72, y: 0.06), CGPoint(x: 0.22, y: 0.60)],
             ]
         case "5":
