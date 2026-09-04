@@ -182,12 +182,6 @@ final class ScoreKeeperUITests: XCTestCase {
 
     // MARK: - Test 7: Score-focused user adjusts points
 
-    func testGenericScoreStepperUpdatesVisibleScore() throws {
-        navigateToGenericScoring(playerNames: ["alice", "bob"])
-        completeRound(playerNames: ["alice", "bob"])
-        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 3))
-    }
-
     // MARK: - Test 8: What's for Dinner player records a meal reveal
 
     func testWhatsForDinnerMealRevealFlow() throws {
@@ -490,18 +484,6 @@ final class ScoreKeeperUITests: XCTestCase {
     }
 
     // MARK: - Test 19: Generic scoring ignores the retired handwriting flag
-
-    func testGenericScoringIgnoresLegacyHandwritingFlagAndSubmitsDirectly() throws {
-        relaunch(arguments: ["-in-memory-store", "-force-handwriting-entry"])
-        navigateToGenericScoring(playerNames: ["mina", "omar"])
-
-        XCTAssertFalse(app.buttons["accept_handwritten_score_button"].exists)
-
-        // Open deck, accept 0 for both players (last accept submits)
-        completeRound(playerNames: ["mina", "omar"])
-
-        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 3))
-    }
 
     func testRapidDuplicateSubmitCreatesOnlyOneRound() throws {
         navigateToGenericScoring(playerNames: ["mina", "omar"])

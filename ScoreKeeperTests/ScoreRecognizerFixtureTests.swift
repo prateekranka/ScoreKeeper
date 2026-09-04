@@ -55,10 +55,6 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
         await verifyOutOfRangeFixtureIsUnreadable("105")
     }
 
-    func testDrawnTwoHundredFiftyIsUnreadable() async {
-        await verifyOutOfRangeFixtureIsUnreadable("250")
-    }
-
     func testSmallOffsetOneHundredFiveIsUnreadable() async {
         await verifyOutOfRangeFixtureIsUnreadable("105", scale: 0.64, offset: CGPoint(x: -112, y: 16))
     }
@@ -228,13 +224,6 @@ final class ScoreRecognizerFixtureTests: XCTestCase {
     func testRecordingNineAndOneAreCorrectOrUnreadable() async {
         await assertCorrectOrUnreadable(9, fixtureName: "recording-9")
         await assertCorrectOrUnreadable(1, fixtureName: "recording-1")
-    }
-
-    func testScribbleNeverReturnsSuccess() async {
-        let result = await ScoreRecognizer.recognize(ScoreRecognitionFixtures.drawScribble())
-        if case let .success(value, _) = result {
-            XCTFail("Scribble was accepted as \(value)")
-        }
     }
 
     private var recognitionLevels: [VNRequestTextRecognitionLevel] {

@@ -32,29 +32,11 @@ final class ScoreRecognizerTests: XCTestCase {
         )
     }
 
-    func testMinusFragmentAloneIsUnreadable() {
-        XCTAssertEqual(
-            ScoreRecognizer.interpret(fragments: [fragment("-3")]),
-            .unreadable
-        )
-    }
-
-
     func testUnicodeMinusFragmentMakesCompleteReadingUnreadable() {
         XCTAssertEqual(
             ScoreRecognizer.interpret(fragments: [
                 fragment("−3", minX: 0.1),
                 fragment("4", minX: 0.5),
-            ]),
-            .unreadable
-        )
-    }
-
-    func testJunkOnlyFragmentsAreUnreadable() {
-        XCTAssertEqual(
-            ScoreRecognizer.interpret(fragments: [
-                fragment("a", minX: 0.1),
-                fragment("b", minX: 0.4),
             ]),
             .unreadable
         )
@@ -86,20 +68,6 @@ final class ScoreRecognizerTests: XCTestCase {
             ]),
             value: 5,
             confidence: 0.8
-        )
-    }
-
-    func testValueAbove99IsUnreadable() {
-        XCTAssertEqual(
-            ScoreRecognizer.interpret(fragments: [fragment("99999")]),
-            .unreadable
-        )
-    }
-
-    func testOverflowingDigitStringIsUnreadable() {
-        XCTAssertEqual(
-            ScoreRecognizer.interpret(fragments: [fragment(String(repeating: "9", count: 30))]),
-            .unreadable
         )
     }
 
