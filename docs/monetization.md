@@ -22,3 +22,16 @@ The UI tests do not depend on the StoreKit config or network state. They use lau
 - `-force-review-ask`: makes the next eligible Game Over screen call Apple's native review request API; no custom review sheet is shown.
 
 These hooks are only honored with the existing `-in-memory-store` UI-test pattern.
+
+## Current upgrade routes (2026-09-08)
+
+PipCount Pro is still the one-time non-consumable `com.icequeen.scorekeeper.unlimited`. Price and territory must not be changed in this release.
+
+Visible upgrade or remaining-count entries:
+
+- Home: `25 free games included` through 21 used starts, then `N free games left`, with `upgrade to pipcount pro`.
+- More / Legal & Support: `pipcount pro` panel, `N free games remaining`, restore on the paywall.
+- iPad sidebar: remaining-count row that opens the same paywall.
+- New game / rematch: paywall when 25 successful starts are used and the Apple ID is not unlocked.
+
+A verified purchase unlocks unlimited new games. Active games and history stay available after the free allowance is used. Deleting history does not restore a free start. Native App Store sandbox purchase, restore, pending, and refund proof remains a device check, not a local `.storekit` result.

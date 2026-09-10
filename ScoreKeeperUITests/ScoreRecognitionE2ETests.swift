@@ -218,6 +218,21 @@ enum ScoreDeckUITestSupport {
         use.tap()
     }
 
+    static func typeScoreForCurrentPlayer(
+        _ value: String,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let typeScore = app.buttons["deck_type_score_button"]
+        guard typeScore.waitForExistence(timeout: 10) else {
+            XCTFail("deck_type_score_button missing", file: file, line: line)
+            return
+        }
+        typeScore.tap()
+        useManualValue(value, in: app, file: file, line: line)
+    }
+
     /// Draws a zero on the current player's canvas and commits it, handling
     /// every terminal recognition state: confirmation is accepted, a rejection
     /// card falls back to manual entry, and a no-ink hint (touch that failed
@@ -388,6 +403,21 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         XCTAssertFalse(ScoreDeckUITestSupport.acceptButton(in: app).exists, "Confirmation card appeared without ink")
         XCTAssertFalse(ScoreDeckUITestSupport.rejectionCard(in: app).exists, "Rejection card appeared without ink")
         XCTAssertFalse(app.staticTexts["is this right?"].exists)
+        XCTAssertTrue(app.buttons["deck_type_score_button"].exists, "Typed entry was not available without drawing")
+    }
+
+    func testTypeScoreIsAvailableWithoutDrawing() {
+        startTwoPlayerGame()
+        openScoreDeck()
+
+        XCTAssertTrue(app.buttons["deck_type_score_button"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["couldn't read that"].exists)
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("12", in: app)
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Direct typed score did not advance to player 2"
+        )
+        XCTAssertFalse(app.staticTexts["couldn't read that"].exists)
     }
 
     func testManualZeroFromUnreadableScribbleEnablesUseZeroAndAdvancesPlayer() {
@@ -436,6 +466,10 @@ final class ScoreRecognitionE2ETests: XCTestCase {
         manualField.tap()
         manualField.typeText("100")
         XCTAssertFalse(use.isEnabled, "Use button was enabled for an out-of-range three-digit score")
+        XCTAssertTrue(
+            app.staticTexts["enter a score between 0 and 99"].waitForExistence(timeout: 2),
+            "Invalid typed score did not explain the 0 to 99 range"
+        )
 
         ScoreDeckUITestSupport.useManualValue("25", in: app)
 

@@ -11,6 +11,7 @@ struct GameHistoryListView: View {
 
     @State private var contentVisible = false
     @State private var sessionPendingDeletion: GameSession?
+    @State private var saveError: String?
 
     private var completedSessions: [GameSession] {
         sessions.filter { $0.completedAt != nil }
@@ -58,6 +59,17 @@ struct GameHistoryListView: View {
             }
         } message: {
             Text("this removes its scores and stats from pipcount")
+        }
+        .alert(
+            "couldn’t delete game",
+            isPresented: Binding(
+                get: { saveError != nil },
+                set: { if !$0 { saveError = nil } }
+            )
+        ) {
+            Button("ok", role: .cancel) { saveError = nil }
+        } message: {
+            Text(saveError ?? "please try again")
         }
     }
 
@@ -239,8 +251,15 @@ struct GameHistoryListView: View {
     private func deletePendingSession() {
         guard let sessionPendingDeletion else { return }
         modelContext.delete(sessionPendingDeletion)
-        try? modelContext.save()
-        self.sessionPendingDeletion = nil
+        do {
+            try modelContext.save()
+            self.sessionPendingDeletion = nil
+        } catch {
+            let message = error.localizedDescription
+            modelContext.rollback()
+            self.sessionPendingDeletion = nil
+            saveError = message
+        }
     }
 }
 

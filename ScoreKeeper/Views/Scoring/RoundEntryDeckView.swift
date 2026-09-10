@@ -33,6 +33,7 @@ struct RoundEntryDeckView: View {
     @State private var feedbackTrigger = 0
     @State private var warningFeedbackTrigger = 0
     @State private var recognitionRequestID = 0
+    @State private var manualFromRecognitionFailure = false
 
     private var player: Player {
         session.players[currentIndex]
@@ -362,6 +363,21 @@ struct RoundEntryDeckView: View {
             .accessibilityIdentifier("deck_clear_\(player.name)")
 
             Button {
+                showManualEntry(fromRecognitionFailure: false)
+            } label: {
+                Image(systemName: "keyboard")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .frame(width: 48, height: 48)
+                    .background(ClubhouseTheme.paperSunken, in: Circle())
+            }
+            .buttonStyle(PressableButtonStyle())
+            .disabled(!canRecognize)
+            .accessibilityLabel("Type score")
+            .accessibilityHint("Opens the typed score field. Enter a number from 0 to 99, then confirm with Use.")
+            .accessibilityIdentifier("deck_type_score_button")
+
+            Button {
                 recognizeCurrent()
             } label: {
                 Image(systemName: "checkmark")
@@ -493,12 +509,12 @@ struct RoundEntryDeckView: View {
     private var rejectionCard: some View {
         VStack(spacing: AppTheme.spacingLarge) {
             VStack(spacing: 4) {
-                Text("couldn't read that")
+                Text(manualFromRecognitionFailure ? "couldn't read that" : "type the score")
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
                     .accessibilityIdentifier("deck_invalid_value")
 
-                Text("redraw or type the score")
+                Text(manualFromRecognitionFailure ? "redraw or type the score" : "then tap use to confirm")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
@@ -537,6 +553,7 @@ struct RoundEntryDeckView: View {
                             .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
                     }
                     .accessibilityLabel("Enter score manually")
+                    .accessibilityHint("Enter a whole number from 0 to 99")
                     .accessibilityIdentifier("deck_manual_value")
 
                 Button {
@@ -556,6 +573,14 @@ struct RoundEntryDeckView: View {
                 .accessibilityLabel(manualScore.map { "Use \($0)" } ?? "Enter a valid score")
                 .accessibilityIdentifier("deck_manual_use_\(player.name)")
             }
+
+            if showsManualRangeHint {
+                Text("enter a score between 0 and 99")
+                    .font(AppFonts.caption.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityIdentifier("deck_manual_range_hint")
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(ClubhouseTheme.paper.opacity(0.97))
@@ -571,6 +596,10 @@ struct RoundEntryDeckView: View {
             return nil
         }
         return value
+    }
+
+    private var showsManualRangeHint: Bool {
+        !manualEntry.isEmpty && manualScore == nil
     }
 
     private var tutorial: some View {
@@ -671,7 +700,7 @@ struct RoundEntryDeckView: View {
             case .unreadable, .error:
                 sourceImage = nil
                 manualEntry = ""
-                entryState = .manual
+                showManualEntry(fromRecognitionFailure: true)
                 warningFeedbackTrigger &+= 1
             }
         }
@@ -693,7 +722,20 @@ struct RoundEntryDeckView: View {
         capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
+        manualFromRecognitionFailure = false
         entryState = .drawing
+    }
+
+    private func showManualEntry(fromRecognitionFailure: Bool) {
+        guard !isExiting else { return }
+        if !fromRecognitionFailure {
+            guard canRecognize else { return }
+            invalidateRecognition()
+        }
+        sourceImage = nil
+        manualEntry = ""
+        manualFromRecognitionFailure = fromRecognitionFailure
+        entryState = .manual
     }
 
     private func recognizeCurrent() {
@@ -705,6 +747,7 @@ struct RoundEntryDeckView: View {
         capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
+        manualFromRecognitionFailure = false
         entryState = .recognizing(requestID: requestID)
         captureTrigger = requestID
     }
@@ -717,6 +760,7 @@ struct RoundEntryDeckView: View {
         capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
+        manualFromRecognitionFailure = false
         entryState = .drawing
     }
 
@@ -736,6 +780,7 @@ struct RoundEntryDeckView: View {
         capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
+        manualFromRecognitionFailure = false
         entryState = .drawing
         feedbackTrigger &+= 1
 
@@ -759,6 +804,7 @@ struct RoundEntryDeckView: View {
         capturedPreviewImage = nil
         sourceImage = nil
         manualEntry = ""
+        manualFromRecognitionFailure = false
         entryState = .drawing
 
         if reduceMotion {

@@ -50,3 +50,62 @@ This tracks product, release, and App Store Connect work that must be true befor
 - Build 10 is live on internal TestFlight (2026-08-26). Remaining release actions: fix the one failing UI test (testThemeToggleAndHeadToHeadStatsNavigation), attach the non-consumable IAP to the App Store version, refresh storefront screenshots/privacy answers, then submit for review.
 
 Do not submit the App Store version until the refreshed metadata/screenshots, privacy answers, IAP, agreements, and selected build pass the final release review. TestFlight beta review is a separate gate.
+
+## Draft checkpoint — 2026-09-08 (supersedes build-10 instructions above)
+
+The 2026-08-23 receipt remains historical. Do not copy its build-10 upload steps.
+
+- Candidate worktree: `app-dev/pipcount-b16-copy` at the local frozen-scope tree.
+- Product version: `1.0`. Live attached App Store binary is still **build 9** and must not be released.
+- Latest previously uploaded binary at plan time: **build 16**, `VALID`. If this tree’s code or assets change, upload a new unused build after a live inventory. Never reuse 16.
+- Device families: iPhone and native iPad. Storefront screenshots must include the iPad class required for the selected binary.
+- Pro routes in the current UI: Home upgrade card, More / Legal & Support, iPad sidebar countdown, and the paywall after 25 successful game starts. Do not tell reviewers to use a removed Home-only label.
+- Local privacy draft: `docs/privacy-policy.md` now describes on-device Vision handwriting, typed 0–99 entry, and user-directed system share. Publish the live `https://privacy.contenthelper.in` page only after approval. Confirm ContentHelper’s page on the same host is not overwritten.
+- App Privacy answers: not verifiable through the public ASC API. Complete them in the authenticated portal. Likely “Data Not Collected” if that still matches the packaged `PrivacyInfo.xcprivacy` (UserDefaults `CA92.1`, no collected data, no tracking).
+- Local StoreKit tests are not proof of App Store sandbox purchase or restore.
+
+### App Review notes draft (do not publish until approved)
+
+No account or special hardware is required for ordinary scorekeeping.
+
+1. Launch the app. Skip or complete the three onboarding pages.
+2. Tap start new game, choose Scoreboard, Ten Phases, or What’s for Dinner, add at least two players, and start.
+3. Scoreboard: tap score round, draw a number or tap Type score, confirm with Use, or Redraw. Round scores are 0–99. Totals may be higher. Undo last round from the scoring screen.
+4. A target score ends the game after a qualifying submitted round. Otherwise use End game.
+5. PipCount Pro is a one-time non-consumable. Open it from Home, from More, or from the iPad sidebar. Restore purchases is on the paywall. The paywall also appears when starting a 26th game. StoreKit needs a network. Do not expect a purchase to work offline.
+6. After a game, Share uses the system share sheet. That is optional and user-directed.
+
+### What’s New draft (en-US)
+
+Score game night on a rebuilt score pad. Pick a scoreboard, ten phases, or dinner scoring. Draw or type each round, confirm before it saves, and keep history, stats, and rematches on this device. The first 25 games are free. A one-time purchase unlocks unlimited games. No subscription.
+
+### IAP review note draft (do not publish until the version is editable)
+
+PipCount Pro is a one-time non-consumable. Open it from Home (`upgrade to pipcount pro`), from More / Legal & Support, or from the iPad sidebar remaining-count row. The paywall also appears when starting a 26th game or a rematch after 25 successful starts. Restore purchases is on the paywall. StoreKit needs a network.
+
+Live note still says only Home. Keep that fact until Bobby approves the replacement text. Home still has an upgrade card.
+
+## Local implementation ledger — 2026-09-08
+
+| ID | Defect or obligation | Action | Status |
+|---|---|---|---|
+| PC-01 | History delete swallowed save errors | Same save/rollback/alert pattern as Home | Done locally |
+| PC-02 | Three UI tests overstated coverage | Existing tests now prove auto-finish, rapid submit, and resume | Done locally |
+| PC-03 | No direct typed-score route | Type score control on the drawing card; 0–99 Use confirm kept | Done locally |
+| C-3 | Invalid typed score had no recovery copy | Caption `enter a score between 0 and 99` | Done locally |
+| PC-06 | CI built but did not test; branch omitted | Scheme test job + `app-dev/pipcount-b16-copy` trigger on the existing production-validation workflow | Local edit only; push needs GitHub publication approval |
+| PC-09 | Other worktrees hold unshipped experiments | No import from root, Interfacecraft, or ML Kit | Preserved in place |
+| PC-10 | iPad sidebar squeezed player setup and game settings | Stack vs side-by-side now follows remaining detail width, not size class alone | Done locally on iPad Air 11 simulator |
+| PC-11 | Cosmetic/dead-code/test pruning | Deferred | Not done |
+
+## Local evidence — 2026-09-08 final tree
+
+- Full scheme on PipCount Bauhaus QA (iPhone 17 Pro Max, iOS 26.5) after PC-10: `result=Passed`, `passedTests=140`, `skippedTests=2` (screenshot tours), `failedTests=0`, `totalTestCount=142`. Bundle: `build/pc-fix-20260908/full-pc10.xcresult`. Earlier same-day pre-fix run: `build/pc-fix-20260908/full.xcresult`.
+- Focused UI proofs for auto-finish, resume, rapid submit, typed score, and 0–99 hint: 7 passed. Bundle: `build/pc-fix-20260908/ui-focused.xcresult`.
+- Unit/StoreKit local contracts: 110 passed. Bundle: `build/pc-fix-20260908/unit.xcresult`.
+- Unsigned archive after PC-10: `build/pc-fix-20260908/PipCount-1.0-b17-pc10.xcarchive`. Identity: PipCount `1.0` build `17`, bundle `com.icequeen.scorekeeper`, device family `[1,2]`, iOS 26.0, `ITSAppUsesNonExemptEncryption=NO`, `PrivacyInfo.xcprivacy` packaged, signing identity empty. Not uploaded.
+- Local storefront drafts: `build/pc-fix-20260908/storefront/APP_IPHONE_67` (1320×2868) and `APP_IPAD_PRO_3GEN_129` (2064×2752). Extra iPad Air 11 drafts: `APP_IPAD_PRO_3GEN_11` (1640×2360). Do not upload without Bobby approval. Live ASC still has 4 old iPhone images and no iPad set.
+- PC-10 iPad Air 11 simulator (iOS 26.5, not 26.6): sidebar-open portrait stacks player setup and game settings so names and win labels stay readable. Sidebar closed uses side-by-side. Landscape keeps Continue and Start reachable. Evidence: `build/pc-fix-20260908/ipad-layout/`. Physical TestFlight install remains Gate H.
+- Native App Store sandbox purchase/restore was not run. Local `.storekit` tests are not that proof.
+- Paper file `01KY2MC0H77PJPKKT5XDQDYJ6Y` was not edited. Free-account MCP quota is exhausted and no GUI control window was available. Gate P stays open.
+- App Store version `1.0` remains `PENDING_DEVELOPER_RELEASE` / `MANUAL` with attached build 9. Latest uploaded binary is still build 16 `VALID`. Next unused number is 17. Withdrawal, metadata publish, screenshot upload, IAP note edit, signed upload, and review submit stay gated.

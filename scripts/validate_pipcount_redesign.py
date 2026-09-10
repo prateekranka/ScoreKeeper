@@ -32,7 +32,6 @@ PRODUCTION_SCENES = {
 
 KEY_SCREEN_SCENES = {
     "Views/Home/HomeView.swift": {"home", "homeEmpty", "roster"},
-    "Views/Setup/GamePickerView.swift": {"gamePicker"},
     "Views/Setup/PlayerSetupView.swift": {"playerSetup"},
     "Views/Setup/GameConfigView.swift": {"gameSettings"},
     "Views/Scoring/RoundEntryDeckView.swift": {"handwriting"},
@@ -144,6 +143,11 @@ def validate_key_screen_routing() -> None:
                     f"{path.relative_to(ROOT)} is not routed to the .{scene} "
                     "Bauhaus composition"
                 )
+
+    picker = APP_ROOT / "Views" / "Setup" / "GamePickerView.swift"
+    picker_source = picker.read_text(encoding="utf-8")
+    if "GameTypeTile" not in picker_source:
+        fail("GamePickerView.swift is missing the approved 4:3 GameTypeTile artwork")
 
 
 def validate_universal_target() -> None:

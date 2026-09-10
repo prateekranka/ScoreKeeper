@@ -125,34 +125,51 @@ struct GameOverView: View {
 
     private func completionHeader(_ session: GameSession) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("game\nover")
-                        .font(AppFonts.display)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .fixedSize(horizontal: false, vertical: true)
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
+                    completionText(session)
+                        .frame(maxWidth: 300, alignment: .leading)
 
-                    Text(session.gameType.displayName)
-                        .font(AppFonts.body.weight(.semibold))
-                        .foregroundStyle(ClubhouseTheme.blue)
+                    Spacer(minLength: AppTheme.spacingSmall)
 
-                    Text("the scores are saved. the rematch is one tap away")
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .fixedSize(horizontal: false, vertical: true)
+                    completionArtwork
                 }
 
-                Spacer(minLength: AppTheme.spacingSmall)
-
-                PipCountGeometricArtwork(scene: .gameOver)
-                    .frame(minWidth: 160, idealWidth: 220, maxWidth: 260)
-                    .frame(height: 210)
+                VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                    completionText(session)
+                    completionArtwork
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
             }
 
             Rectangle()
                 .fill(ClubhouseTheme.blue)
                 .frame(width: 88, height: 5)
         }
+    }
+
+    private func completionText(_ session: GameSession) -> some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text("game\nover")
+                .font(AppFonts.display)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .fixedSize(horizontal: true, vertical: true)
+
+            Text(session.gameType.displayName)
+                .font(AppFonts.body.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.blue)
+
+            Text("the scores are saved. the rematch is one tap away")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var completionArtwork: some View {
+        PipCountGeometricArtwork(scene: .gameOver)
+            .frame(minWidth: 160, idealWidth: 220, maxWidth: 260)
+            .frame(height: 210)
     }
 
     private func resultHero(_ session: GameSession) -> some View {

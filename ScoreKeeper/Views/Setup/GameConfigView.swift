@@ -8,7 +8,6 @@ struct GameConfigView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
     @Environment(StoreManager.self) private var storeManager
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var winCondition: WinCondition = .highestScore
@@ -79,23 +78,37 @@ struct GameConfigView: View {
 
     @ViewBuilder
     private var responsiveConfiguration: some View {
-        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
-            HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
-                configSection
-                    .frame(maxWidth: .infinity)
-                    .staggeredEntrance(visible: contentVisible, index: 1)
-
-                lineupSection
-                    .frame(width: 320)
-                    .staggeredEntrance(visible: contentVisible, index: 2)
-            }
+        if dynamicTypeSize.isAccessibilitySize {
+            stackedConfiguration
         } else {
-            VStack(spacing: AppTheme.spacingMedium) {
-                configSection
-                    .staggeredEntrance(visible: contentVisible, index: 1)
-                lineupSection
-                    .staggeredEntrance(visible: contentVisible, index: 2)
+            // Use remaining detail width, not size class. Sidebar-open iPad
+            // portrait is still regular, but too narrow for two columns.
+            ViewThatFits(in: .horizontal) {
+                sideBySideConfiguration
+                stackedConfiguration
             }
+        }
+    }
+
+    private var sideBySideConfiguration: some View {
+        HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
+            configSection
+                .frame(minWidth: 300, maxWidth: .infinity)
+                .staggeredEntrance(visible: contentVisible, index: 1)
+
+            lineupSection
+                .frame(width: 320)
+                .layoutPriority(1)
+                .staggeredEntrance(visible: contentVisible, index: 2)
+        }
+    }
+
+    private var stackedConfiguration: some View {
+        VStack(spacing: AppTheme.spacingMedium) {
+            configSection
+                .staggeredEntrance(visible: contentVisible, index: 1)
+            lineupSection
+                .staggeredEntrance(visible: contentVisible, index: 2)
         }
     }
 

@@ -7,7 +7,6 @@ struct PlayerSetupView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
     @Environment(StoreManager.self) private var storeManager
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -107,41 +106,20 @@ struct PlayerSetupView: View {
 
     @ViewBuilder
     private var responsiveForm: some View {
-        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
-            HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
-                VStack(spacing: AppTheme.spacingMedium) {
-                    if !recentNames.isEmpty {
-                        SavedPlayersBar(
-                            names: recentNames,
-                            cleanedNames: cleanedNames,
-                            onTap: addRosterNames
-                        )
-                        .staggeredEntrance(visible: contentVisible, index: 1)
-                    }
-
-                    PlayerNameFields(
-                        playerNames: $playerNames,
-                        focusedIndex: $focusedIndex,
-                        gameType: gameType
-                    )
-                    .staggeredEntrance(visible: contentVisible, index: 2)
-                }
-                .frame(maxWidth: .infinity)
-
-                VStack(spacing: AppTheme.spacingMedium) {
-                    AddPlayerControls(
-                        gameType: gameType,
-                        playerCount: playerNames.count,
-                        onAdd: addPlayer,
-                        onRoster: { showRoster = true }
-                    )
-
-                    validationBanner
-                }
-                .frame(width: 330)
-                .staggeredEntrance(visible: contentVisible, index: 3)
-            }
+        if dynamicTypeSize.isAccessibilitySize {
+            stackedPlayerForm
         } else {
+            // Use remaining detail width, not size class. A regular iPad
+            // still has a narrow column when the native sidebar is open.
+            ViewThatFits(in: .horizontal) {
+                sideBySidePlayerForm
+                stackedPlayerForm
+            }
+        }
+    }
+
+    private var sideBySidePlayerForm: some View {
+        HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
             VStack(spacing: AppTheme.spacingMedium) {
                 if !recentNames.isEmpty {
                     SavedPlayersBar(
@@ -158,18 +136,53 @@ struct PlayerSetupView: View {
                     gameType: gameType
                 )
                 .staggeredEntrance(visible: contentVisible, index: 2)
+            }
+            .frame(minWidth: 280, maxWidth: .infinity)
 
+            VStack(spacing: AppTheme.spacingMedium) {
                 AddPlayerControls(
                     gameType: gameType,
                     playerCount: playerNames.count,
                     onAdd: addPlayer,
                     onRoster: { showRoster = true }
                 )
-                .staggeredEntrance(visible: contentVisible, index: 3)
 
                 validationBanner
-                    .staggeredEntrance(visible: contentVisible, index: 4)
             }
+            .frame(width: 330)
+            .layoutPriority(1)
+            .staggeredEntrance(visible: contentVisible, index: 3)
+        }
+    }
+
+    private var stackedPlayerForm: some View {
+        VStack(spacing: AppTheme.spacingMedium) {
+            if !recentNames.isEmpty {
+                SavedPlayersBar(
+                    names: recentNames,
+                    cleanedNames: cleanedNames,
+                    onTap: addRosterNames
+                )
+                .staggeredEntrance(visible: contentVisible, index: 1)
+            }
+
+            PlayerNameFields(
+                playerNames: $playerNames,
+                focusedIndex: $focusedIndex,
+                gameType: gameType
+            )
+            .staggeredEntrance(visible: contentVisible, index: 2)
+
+            AddPlayerControls(
+                gameType: gameType,
+                playerCount: playerNames.count,
+                onAdd: addPlayer,
+                onRoster: { showRoster = true }
+            )
+            .staggeredEntrance(visible: contentVisible, index: 3)
+
+            validationBanner
+                .staggeredEntrance(visible: contentVisible, index: 4)
         }
     }
 

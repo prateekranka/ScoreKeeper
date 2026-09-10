@@ -51,6 +51,17 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["bob"].exists)
         XCTAssertTrue(app.staticTexts["charlie"].exists)
 
+        // Cancel on a blank canvas must not create a phantom round.
+        app.buttons["submit_round_button"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+        app.buttons["round_deck_cancel_button"].tap()
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
+        XCTAssertTrue(app.buttons["submit_round_button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["round 1"].exists)
+        XCTAssertFalse(app.staticTexts["winner_text"].exists)
+        XCTAssertFalse(app.staticTexts["round 2"].exists)
+
         // Submit a round (all zeros is fine)
         completeRound(playerNames: ["alice", "bob", "charlie"])
 
@@ -83,26 +94,29 @@ final class ScoreKeeperUITests: XCTestCase {
     func testResumeInProgressGame() throws {
         navigateToGenericScoring(playerNames: ["alice", "bob"])
 
-        // Submit one round
         completeRound(playerNames: ["alice", "bob"])
+        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["alice"].exists)
+        XCTAssertTrue(app.staticTexts["bob"].exists)
 
-        // End Game
-        endGameViaAlert()
-
-        // Verify GameOver screen appears
-        XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 3))
-
-        // Swipe up to reveal buttons at bottom
-        app.swipeUp()
-
-        // Tap Home
-        let homeButton = app.buttons["home_button"]
-        XCTAssertTrue(homeButton.waitForExistence(timeout: 3))
-        homeButton.tap()
-        sleep(1)
-
-        // Verify we're back on Home screen
+        app.buttons["scoring_home_button"].tap()
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
+
+        let activeRows = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'active_game_'"))
+        XCTAssertTrue(activeRows.element(boundBy: 0).waitForExistence(timeout: 3))
+        XCTAssertEqual(activeRows.count, 1)
+
+        let firstSlider = activeRows.element(boundBy: 0)
+        let sliderStart = firstSlider.coordinate(withNormalizedOffset: CGVector(dx: 0.12, dy: 0.5))
+        let sliderEnd = firstSlider.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.5))
+        sliderStart.press(forDuration: 0.1, thenDragTo: sliderEnd)
+
+        XCTAssertTrue(app.buttons["submit_round_button"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["alice"].exists)
+        XCTAssertTrue(app.staticTexts["bob"].exists)
+        XCTAssertFalse(app.staticTexts["winner_text"].exists)
     }
 
     // MARK: - Test 4: Play Again
@@ -451,19 +465,15 @@ final class ScoreKeeperUITests: XCTestCase {
         app.buttons["start_game_button"].tap()
         XCTAssertTrue(app.buttons["submit_round_button"].waitForExistence(timeout: 3))
 
-        // Open deck, then cancel: a blank canvas no longer yields a phantom
-        // zero to accept (the inline no-ink hint replaces it), so no round is
-        // submitted and the game is ended manually.
         app.buttons["submit_round_button"].tap()
-        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 3))
-        if app.buttons["got it"].waitForExistence(timeout: 1) { app.buttons["got it"].tap() }
-        app.buttons["round_deck_cancel_button"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("5", in: app)
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("0", in: app)
         ScoreDeckUITestSupport.waitForDeckToClose(in: app)
 
-        // Target not met (no round submitted) — end game manually
-        endGameViaAlert()
-
         XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 4))
+        XCTAssertFalse(app.buttons["end_game_button"].exists)
     }
 
     // MARK: - Test 18: Saved roster deletion is explicit
@@ -492,11 +502,16 @@ final class ScoreKeeperUITests: XCTestCase {
     func testRapidDuplicateSubmitCreatesOnlyOneRound() throws {
         navigateToGenericScoring(playerNames: ["mina", "omar"])
 
-        // Open deck and submit round via accept on both cards
-        completeRound(playerNames: ["mina", "omar"])
+        let submit = app.buttons["submit_round_button"]
+        XCTAssertTrue(submit.waitForExistence(timeout: 3))
+        submit.tap()
+        submit.tap()
+
+        completeOpenDeck(playerNames: ["mina", "omar"])
 
         XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.staticTexts["round 3"].waitForExistence(timeout: 1))
+        XCTAssertFalse(app.staticTexts["winner_text"].exists)
     }
 
     // MARK: - Helpers

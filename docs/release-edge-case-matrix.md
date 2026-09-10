@@ -106,3 +106,17 @@ Use representative equivalence classes rather than a Cartesian matrix.
 4. Run one critical UI path per workflow.
 5. Run visual and device checks.
 6. Run the full suite once before archive.
+
+## Addendum — 2026-09-08
+
+The 2026-08-23 counts above are historical. Re-run the full scheme on the final tree before archive.
+
+| Area | Contract | Current | Proof layer |
+|---|---|---:|---|
+| History delete save failure | Failed save rolls back, keeps the list consistent, and shows `couldn’t delete game` | Covered in source | same save/rollback/alert pattern as Home; no injected-failure seam |
+| Target-score auto-finish | A qualifying submitted round finishes without End Game | Covered | existing `testTargetScoreConfigurationCompletesGenericGame` |
+| Rapid duplicate submit | Rapid repeat opens/saves one round | Covered | existing `testRapidDuplicateSubmitCreatesOnlyOneRound` |
+| Resume | Active session keeps submitted scores after returning from Home | Covered | existing `testResumeInProgressGame`; disk relaunch still Partial |
+| Direct typed score | Type score is available without drawing; Use still confirms 0–99 | Covered | `testTypeScoreIsAvailableWithoutDrawing` |
+| Invalid typed score copy | Non-empty invalid input explains 0–99 | Covered | existing unreadable manual-entry test |
+| iPad setup width | Player setup and game settings stay readable with the native sidebar open | Manual | iPad Air 11 simulator layout receipt `build/pc-fix-20260908/ipad-layout/` |
