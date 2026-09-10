@@ -152,7 +152,7 @@ struct GameDetailView: View {
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text(session.winCondition == .highestScore ? "highest score wins" : "lowest score wins")
+                Text(engine.rankingExplanation(session: session))
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
@@ -242,16 +242,7 @@ struct GameDetailView: View {
     }
 
     private func sortedPlayers(_ session: GameSession) -> [Player] {
-        session.players.sorted { lhs, rhs in
-            let left = lhs.totalScore(in: session)
-            let right = rhs.totalScore(in: session)
-
-            if left == right {
-                return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
-            }
-
-            return session.winCondition == .highestScore ? left > right : left < right
-        }
+        GameEngineFactory.engine(for: session.gameType).rankedPlayers(session: session)
     }
 
     private func detailMetrics(session: GameSession, engine: GameEngine) -> [DetailMetric] {

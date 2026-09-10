@@ -228,6 +228,7 @@ struct GameOverView: View {
     }
 
     private func standingsCard(_ session: GameSession) -> some View {
+        let engine = GameEngineFactory.engine(for: session.gameType)
         let winnerIDs = Set(winners(for: session).map(\.id))
 
         return VStack(alignment: .leading, spacing: 0) {
@@ -237,7 +238,7 @@ struct GameOverView: View {
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text(session.winCondition == .highestScore ? "highest score wins" : "lowest score wins")
+                    Text(engine.rankingExplanation(session: session))
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
@@ -252,11 +253,11 @@ struct GameOverView: View {
                 .fill(ClubhouseTheme.rule)
                 .frame(height: 1)
 
-            ForEach(Array(sortedPlayers(session).enumerated()), id: \.element.id) { index, player in
+            ForEach(sortedPlayers(session)) { player in
                 LedgerRow(
                     player: player,
                     score: player.totalScore(in: session),
-                    rank: index + 1,
+                    rank: engine.rank(of: player, in: session),
                     subtitle: playerRoundSubtitle(player, session: session),
                     isLeader: winnerIDs.contains(player.id),
                     isHighlighted: winnerIDs.contains(player.id)
@@ -355,18 +356,9 @@ struct GameOverView: View {
     }
 
     private func sortedPlayers(_ session: GameSession) -> [Player] {
-        session.players.sorted { lhs, rhs in
-            let lhsScore = lhs.totalScore(in: session)
-            let rhsScore = rhs.totalScore(in: session)
-
-            if lhsScore == rhsScore {
-                return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
-            }
-
-            return session.winCondition == .highestScore
-                ? lhsScore > rhsScore
-                : lhsScore < rhsScore
-        }
+        // One ranking rule for the whole app: the engine decides the order so
+        // the first row always agrees with the declared winner (PC17-002).
+        GameEngineFactory.engine(for: session.gameType).rankedPlayers(session: session)
     }
 
     private func playerRoundSubtitle(_ player: Player, session: GameSession) -> String {

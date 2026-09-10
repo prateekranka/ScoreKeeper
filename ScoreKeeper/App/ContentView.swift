@@ -81,10 +81,12 @@ enum AppDestination: Hashable {
 }
 
 struct ContentView: View {
+    /// Owned by AdaptivePipCountRootView so the route survives a shell change.
+    @Bindable var router: NavigationRouter
+
     @Environment(ReviewAskManager.self) private var reviewAskManager
     @Environment(\.requestReview) private var requestReview
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var router = NavigationRouter()
     @State private var didApplyOnboardingReset = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 

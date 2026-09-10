@@ -4,40 +4,42 @@ import Foundation
 enum StatsCalculator {
 
     static func stats(for name: String, sessions: [GameSession]) -> PlayerStats {
-        let relevant = sessions.filter { session in
-            session.players.contains { $0.name == name }
-        }
-        let wins = relevant.filter { session in
-            let engine = GameEngineFactory.engine(for: session.gameType)
-            let winnerIDs = engine.winners(session: session)
-            return session.players.contains { $0.name == name && winnerIDs.contains($0.id) }
-        }.count
-
+        var gamesPlayed = 0
+        var wins = 0
         var totalScoreSum = 0
         var scoreEntryCount = 0
         var bestRank = Int.max
-        for session in relevant {
+
+        for session in sessions {
+            // One player-identity rule everywhere: names match
+            // case-insensitively, the same way recent-game lists already match
+            // legacy mixed-case history (PC17-013).
+            let matchingPlayers = session.players.filter { $0.name.matchesPlayerName(name) }
+            guard let player = matchingPlayers.first else { continue }
+
+            gamesPlayed += 1
+
             let engine = GameEngineFactory.engine(for: session.gameType)
-            let sorted = session.players.sorted { p1, p2 in
-                let s1 = engine.totalScore(for: session.rounds.flatMap(\.entries).filter { $0.playerID == p1.id })
-                let s2 = engine.totalScore(for: session.rounds.flatMap(\.entries).filter { $0.playerID == p2.id })
-                return session.winCondition == .lowestScore ? s1 < s2 : s1 > s2
+            let winnerIDs = Set(engine.winners(session: session))
+            if matchingPlayers.contains(where: { winnerIDs.contains($0.id) }) {
+                wins += 1
             }
-            if let rank = sorted.firstIndex(where: { $0.name == name }) {
-                bestRank = min(bestRank, rank + 1)
-            }
-            if let player = session.players.first(where: { $0.name == name }) {
-                let entries = session.rounds.flatMap(\.entries).filter { $0.playerID == player.id }
-                totalScoreSum += entries.reduce(0) { $0 + $1.points }
-                scoreEntryCount += entries.count
-            }
+
+            // One pass over this session's entries; totals and ranks come
+            // from it instead of re-flattening entries inside sort comparators.
+            let entries = session.rounds.flatMap(\.entries)
+            let playerEntries = entries.filter { $0.playerID == player.id }
+            totalScoreSum += playerEntries.reduce(0) { $0 + $1.points }
+            scoreEntryCount += playerEntries.count
+
+            bestRank = min(bestRank, engine.rank(of: player, in: session))
         }
 
         let avgScore = scoreEntryCount > 0 ? Double(totalScoreSum) / Double(scoreEntryCount) : 0
 
         return PlayerStats(
             name: name,
-            gamesPlayed: relevant.count,
+            gamesPlayed: gamesPlayed,
             wins: wins,
             bestRank: bestRank == Int.max ? 0 : bestRank,
             avgScore: avgScore
@@ -45,23 +47,30 @@ enum StatsCalculator {
     }
 
     static func headToHead(_ a: String, vs b: String, sessions: [GameSession], gameType: GameType? = nil) -> H2HRecord {
-        let together = sessions.filter { session in
-            let names = session.players.map(\.name)
-            let matchesType = gameType.map { session.gameType == $0 } ?? true
-            return matchesType && names.contains(a) && names.contains(b)
-        }
-        let aWins = together.filter { session in
-            let engine = GameEngineFactory.engine(for: session.gameType)
-            let winnerIDs = engine.winners(session: session)
-            return session.players.contains { $0.name == a && winnerIDs.contains($0.id) }
-        }.count
-        let bWins = together.filter { session in
-            let engine = GameEngineFactory.engine(for: session.gameType)
-            let winnerIDs = engine.winners(session: session)
-            return session.players.contains { $0.name == b && winnerIDs.contains($0.id) }
-        }.count
+        var aWins = 0
+        var bWins = 0
+        var gamesTogether = 0
 
-        return H2HRecord(playerA: a, playerB: b, gameType: gameType, aWins: aWins, bWins: bWins, gamesTogether: together.count)
+        for session in sessions {
+            if let gameType, session.gameType != gameType { continue }
+
+            let players = session.players
+            guard players.contains(where: { $0.name.matchesPlayerName(a) }),
+                  players.contains(where: { $0.name.matchesPlayerName(b) }) else {
+                continue
+            }
+            gamesTogether += 1
+
+            let winnerIDs = Set(GameEngineFactory.engine(for: session.gameType).winners(session: session))
+            if players.contains(where: { $0.name.matchesPlayerName(a) && winnerIDs.contains($0.id) }) {
+                aWins += 1
+            }
+            if players.contains(where: { $0.name.matchesPlayerName(b) && winnerIDs.contains($0.id) }) {
+                bWins += 1
+            }
+        }
+
+        return H2HRecord(playerA: a, playerB: b, gameType: gameType, aWins: aWins, bWins: bWins, gamesTogether: gamesTogether)
     }
 
     static func headToHeadByGameType(_ a: String, vs b: String, sessions: [GameSession]) -> [H2HRecord] {
@@ -73,12 +82,22 @@ enum StatsCalculator {
 
     static func gamesBetween(_ a: String, and b: String, gameType: GameType, sessions: [GameSession]) -> [GameSession] {
         sessions.filter { session in
-            let names = session.players.map(\.name)
-            return session.gameType == gameType && names.contains(a) && names.contains(b)
+            session.gameType == gameType
+                && session.players.contains { $0.name.matchesPlayerName(a) }
+                && session.players.contains { $0.name.matchesPlayerName(b) }
         }
     }
 
     static func allPlayerNames(from sessions: [GameSession]) -> [String] {
         Array(Set(sessions.flatMap { $0.players.map(\.name) })).sorted()
+    }
+}
+
+extension String {
+    /// Player identity is name-based and case-insensitive, matching setup
+    /// (which stores lowercase names) and the recent-game lists. Every stats
+    /// query uses this one rule so legacy mixed-case history stays together.
+    func matchesPlayerName(_ other: String) -> Bool {
+        caseInsensitiveCompare(other) == .orderedSame
     }
 }

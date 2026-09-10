@@ -4,7 +4,7 @@ import XCTest
 final class LegalSupportAndReviewUITests: XCTestCase {
     private var app: XCUIApplication!
 
-    override func setUpWithError() throws {
+    override func setUp() async throws {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments = ["-in-memory-store", "-force-light-theme"]
@@ -17,7 +17,7 @@ final class LegalSupportAndReviewUITests: XCTestCase {
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
         app.terminate()
         app = nil
     }

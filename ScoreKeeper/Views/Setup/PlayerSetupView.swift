@@ -17,6 +17,7 @@ struct PlayerSetupView: View {
     @State private var showPaywall = false
     @State private var saveError: String?
     @State private var contentVisible = false
+    @State private var isStartingGame = false
 
     private var recentNames: [String] {
         Array(Set(allPlayers.map(\.name)).filter { !$0.isEmpty }).sorted().prefix(20).map { $0 }
@@ -101,7 +102,12 @@ struct PlayerSetupView: View {
         } message: {
             Text(saveError ?? "please try again")
         }
-        .onAppear { contentVisible = true }
+        .onAppear {
+            contentVisible = true
+            // Returning from configuration (or a popped flow) must release
+            // the start lock so Continue works again (PC17-004).
+            isStartingGame = false
+        }
     }
 
     @ViewBuilder
@@ -219,8 +225,14 @@ struct PlayerSetupView: View {
     }
 
     private func startGame() {
+        // The start action both creates sessions and pushes navigation; a
+        // rapid second activation must not create a second game, stack a
+        // duplicate destination, or consume another free game (PC17-004).
+        guard !isStartingGame else { return }
+
         let names = playableNames
         if gameType == .generic || gameType == .phase10 {
+            isStartingGame = true
             router.push(.gameConfig(gameType, names))
         } else {
             guard storeManager.canStartNewGame else {
@@ -228,7 +240,12 @@ struct PlayerSetupView: View {
                 return
             }
 
-            guard let session = createSession(names: names) else { return }
+            isStartingGame = true
+
+            guard let session = createSession(names: names) else {
+                isStartingGame = false
+                return
+            }
             storeManager.recordGameStarted()
             router.push(.scoring(session.persistentModelID))
         }

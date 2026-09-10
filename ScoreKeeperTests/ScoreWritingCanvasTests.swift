@@ -2,6 +2,7 @@ import PencilKit
 import XCTest
 @testable import ScoreKeeper
 
+@MainActor
 final class ScoreWritingCanvasTests: XCTestCase {
     func testEmptyDrawingReturnsNil() {
         XCTAssertNil(ScoreWritingCanvas.normalizedImage(

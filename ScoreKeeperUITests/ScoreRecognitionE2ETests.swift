@@ -318,14 +318,14 @@ private extension XCTestCase {
 final class ScoreRecognitionE2ETests: XCTestCase {
     var app: XCUIApplication!
 
-    override func setUpWithError() throws {
+    override func setUp() async throws {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments = ["-in-memory-store"]
         app.launch()
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
         app.terminate()
         app = nil
     }

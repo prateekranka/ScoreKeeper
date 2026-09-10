@@ -46,7 +46,7 @@ struct ScorecardShareCard: View {
 
                     Spacer()
 
-                    Text(session.winCondition == .lowestScore ? "lowest score wins" : "highest score wins")
+                    Text(engine.rankingExplanation(session: session))
                         .font(Font.system(size: 12))
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }

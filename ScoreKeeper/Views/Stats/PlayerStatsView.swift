@@ -6,7 +6,6 @@ struct PlayerStatsView: View {
 
     @Environment(NavigationRouter.self) private var router
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @Query(sort: \GameSession.createdAt, order: .reverse)
     private var allSessions: [GameSession]
@@ -58,17 +57,19 @@ struct PlayerStatsView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: AppTheme.spacingLarge) {
-                statsHero
-                    .staggeredEntrance(visible: contentVisible, index: 0)
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(spacing: AppTheme.spacingLarge) {
+                    statsHero(availableWidth: proxy.size.width)
+                        .staggeredEntrance(visible: contentVisible, index: 0)
 
-                responsiveContent
+                    responsiveContent(availableWidth: proxy.size.width)
+                }
+                .padding(.horizontal, AppTheme.spacingMedium)
+                .padding(.top, AppTheme.spacingSmall)
+                .padding(.bottom, AppTheme.spacingLarge)
+                .pipCountPageContent(maxWidth: 1_080)
             }
-            .padding(.horizontal, AppTheme.spacingMedium)
-            .padding(.top, AppTheme.spacingSmall)
-            .padding(.bottom, AppTheme.spacingLarge)
-            .pipCountPageContent(maxWidth: 1_080)
         }
         .appBackground()
         .accessibilityIdentifier("player_stats_view")
@@ -79,9 +80,13 @@ struct PlayerStatsView: View {
         }
     }
 
+    /// Column choice follows the actual container width, not the size class:
+    /// a sidebar-open iPad has a regular size class but a detail column too
+    /// narrow for the 390-point metrics panel plus two flexible columns
+    /// (PC17-005, same breakpoint contract as the scoring screens).
     @ViewBuilder
-    private var responsiveContent: some View {
-        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+    private func responsiveContent(availableWidth: CGFloat) -> some View {
+        if availableWidth >= 960 && !dynamicTypeSize.isAccessibilitySize {
             HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
                 metricsPanel
                     .frame(width: 390)
@@ -109,9 +114,10 @@ struct PlayerStatsView: View {
         }
     }
 
-    private var statsHero: some View {
+    @ViewBuilder
+    private func statsHero(availableWidth: CGFloat) -> some View {
         Group {
-            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+            if availableWidth >= 700 && !dynamicTypeSize.isAccessibilitySize {
                 HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
                     heroCopy
                         .frame(maxWidth: 390, alignment: .leading)

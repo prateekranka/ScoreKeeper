@@ -5,14 +5,14 @@ final class ScoreKeeperUITests: XCTestCase {
 
     var app: XCUIApplication!
 
-    override func setUpWithError() throws {
+    override func setUp() async throws {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments = ["-in-memory-store"]
         app.launch()
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
         app.terminate()
         app = nil
     }
@@ -512,6 +512,108 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.staticTexts["round 3"].waitForExistence(timeout: 1))
         XCTAssertFalse(app.staticTexts["winner_text"].exists)
+    }
+
+    // MARK: - Test 20: deck requires every player's confirmed score (PC17-001)
+
+    func testDeckRequiresEveryConfirmedScoreBeforeSubmitting() throws {
+        navigateToGenericScoring(playerNames: ["mina", "omar"])
+
+        app.buttons["submit_round_button"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+
+        // Skip mina without confirming a score: edge-swipe forward to the last
+        // card (a leftward drag from the card's right edge advances one card).
+        let card = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label BEGINSWITH 'Drawing area for'"))
+            .element(boundBy: 0)
+        XCTAssertTrue(card.waitForExistence(timeout: 5))
+        let start = card.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5))
+        let end = card.coordinate(withNormalizedOffset: CGVector(dx: 0.4, dy: 0.5))
+        start.press(forDuration: 0.05, thenDragTo: end)
+        XCTAssertTrue(ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 5))
+
+        // Confirm a typed score for omar (the last card).
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("7", in: app)
+
+        // The deck must stay open and return to mina instead of submitting a
+        // round that invents a zero for the skipped player.
+        XCTAssertTrue(ScoreDeckUITestSupport.playerPosition(1, of: 2, in: app).waitForExistence(timeout: 5))
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].exists)
+
+        // Confirming mina advances back to the last card; confirming that one
+        // submits the completed round.
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("3", in: app)
+        XCTAssertTrue(ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 5))
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("7", in: app)
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
+        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["winner_text"].exists)
+    }
+
+    // MARK: - Test 21: rapid Start taps create exactly one game (PC17-004)
+
+    func testRapidStartTapsCreateExactlyOneGame() throws {
+        let newGame = app.buttons["new_game_button"]
+        XCTAssertTrue(newGame.waitForExistence(timeout: 3))
+        ScoreDeckUITestSupport.tapButtonInSafeArea(newGame, in: app)
+        tapGameTile("game_tile_generic")
+        fillPlayerNames(["ada", "ben"])
+        app.buttons["start_game_button"].tap()
+        XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 2))
+
+        // Two activations inside the transition window must not create two
+        // games or stack two scoring destinations.
+        let configStart = app.buttons["start_game_button"]
+        XCTAssertTrue(configStart.waitForExistence(timeout: 5))
+        configStart.doubleTap()
+
+        // Whichever screen the double activation lands on, exactly one game
+        // must exist; the deck may have intercepted the second tap.
+        XCTAssertTrue(
+            app.buttons["submit_round_button"].waitForExistence(timeout: 10)
+                || app.buttons["end_game_button"].waitForExistence(timeout: 5),
+            "scoring screen did not appear after the double activation"
+        )
+        let deck = app.descendants(matching: .any)["round_entry_deck"]
+        if deck.waitForExistence(timeout: 3) {
+            let cancel = app.buttons["round_deck_cancel_button"]
+            if cancel.waitForExistence(timeout: 3) {
+                cancel.tap()
+            }
+        }
+        XCTAssertTrue(app.buttons["scoring_home_button"].waitForExistence(timeout: 5))
+        app.buttons["scoring_home_button"].tap()
+        XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
+
+        let activeRows = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'active_game_'"))
+        XCTAssertTrue(activeRows.element(boundBy: 0).waitForExistence(timeout: 3))
+        XCTAssertEqual(activeRows.count, 1)
+    }
+
+    // MARK: - Test 22: a failed round save keeps the draft for retry (PC17-003)
+
+    func testFailedRoundSaveKeepsDraftAndRetrySucceeds() throws {
+        relaunch(arguments: ["-in-memory-store", "-fail-first-round-save"])
+        navigateToGenericScoring(playerNames: ["ada", "ben"])
+
+        app.buttons["submit_round_button"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+
+        // The first save fails: the deck must stay open with every confirmed
+        // score, and Retry must succeed without re-entering anything.
+        let alert = app.alerts["couldn’t save round"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 5))
+        alert.buttons["try again"].tap()
+
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
+        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 5))
     }
 
     // MARK: - Helpers

@@ -16,6 +16,7 @@ struct GameConfigView: View {
     @State private var showPaywall = false
     @State private var saveError: String?
     @State private var contentVisible = false
+    @State private var isStartingGame = false
 
     private var targetScoreError: String? {
         guard gameType == .generic else { return nil }
@@ -266,16 +267,26 @@ struct GameConfigView: View {
             Label("start game", systemImage: "arrow.right.circle.fill")
         }
         .accessibilityIdentifier("start_game_button")
-        .disabled(!canStart)
+        .disabled(!canStart || isStartingGame)
     }
 
     private func startConfiguredGame() {
+        // A second activation landing before the navigation transition
+        // completes must not create a second game or consume another free
+        // game; the lock releases only when creation fails (PC17-004).
+        guard !isStartingGame else { return }
+
         guard storeManager.canStartNewGame else {
             showPaywall = true
             return
         }
 
-        guard let session = createSession() else { return }
+        isStartingGame = true
+
+        guard let session = createSession() else {
+            isStartingGame = false
+            return
+        }
         storeManager.recordGameStarted()
         router.push(.scoring(session.persistentModelID))
     }

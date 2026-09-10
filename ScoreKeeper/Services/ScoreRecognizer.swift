@@ -139,7 +139,7 @@ enum ScoreRecognizer {
         // clusters than the recognized value has digits (a leading digit is
         // dropped or merged out of a wide reading like 14 -> 4), the reading
         // is partial and must go to manual entry.
-        if case let .success(value, confidence, _) = candidate,
+        if case let .success(value, _, _) = candidate,
            glyphClusters(in: analysis) > String(value).count {
             return .unreadable
         }

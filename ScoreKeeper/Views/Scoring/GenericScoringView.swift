@@ -32,7 +32,6 @@ struct GenericScoringView: View {
             RoundEntryDeckView(
                 session: session,
                 onSubmit: { roundScores in
-                    showDeck = false
                     submitRound(using: roundScores)
                 },
                 onCancel: { showDeck = false }
@@ -46,25 +45,42 @@ struct GenericScoringView: View {
         } message: { Text(saveError ?? "please try again") }
     }
 
-    private func submitRound(using roundScores: [UUID: Int]) {
+    /// Returns nil after a successful save (the deck then dismisses); returns
+    /// a user-facing message when the round cannot be saved, so the deck can
+    /// stay open with the confirmed scores intact (PC17-003).
+    private func submitRound(using roundScores: [UUID: Int]) -> String? {
+        // The save boundary rejects incomplete dictionaries; it never
+        // substitutes zero for a player who did not confirm a score.
+        guard session.players.allSatisfy({ roundScores[$0.id] != nil }) else {
+            return "every player needs a confirmed score before this round can save"
+        }
+
         let round = Round(roundNumber: session.currentRoundNumber)
         round.session = session
         for player in session.players {
-            let entry = ScoreEntry(playerID: player.id, points: roundScores[player.id] ?? 0)
+            guard let points = roundScores[player.id] else {
+                return "every player needs a confirmed score before this round can save"
+            }
+            let entry = ScoreEntry(playerID: player.id, points: points)
             entry.round = round
             round.entries.append(entry)
         }
         session.rounds.append(round)
         do {
+            #if DEBUG
+            try RoundSaveFailureSeam.throwIfArmed()
+            #endif
             try modelContext.save()
         } catch {
-            saveError = error.localizedDescription
+            let message = error.localizedDescription
             modelContext.rollback()
-            return
+            return message
         }
+        showDeck = false
         scores = [:]
         scoreHapticTrigger += 1
         if engine.isGameOver(session: session) { finishGame() }
+        return nil
     }
 
     private func finishGame() {
@@ -123,3 +139,24 @@ private struct GenericTotalsList: View {
         .accessibilityLabel("Round \(session.currentRoundNumber) running totals")
     }
 }
+
+#if DEBUG
+/// UI-test seam: launching with `-fail-first-round-save` makes the next
+/// round save fail exactly once, so the deck's draft-retention path can be
+/// exercised on a disposable simulator. It is compiled out of release
+/// builds and never touches a real save path unless the argument is present.
+@MainActor
+private enum RoundSaveFailureSeam {
+    private static var remainingFailures = ProcessInfo.processInfo.arguments.contains("-fail-first-round-save") ? 1 : 0
+
+    static func throwIfArmed() throws {
+        guard remainingFailures > 0 else { return }
+        remainingFailures -= 1
+        throw NSError(
+            domain: "PipCountTestSeam",
+            code: 1,
+            userInfo: [NSLocalizedDescriptionKey: "simulated save failure (ui-test seam)"]
+        )
+    }
+}
+#endif

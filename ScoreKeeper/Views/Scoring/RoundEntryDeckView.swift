@@ -11,7 +11,10 @@ private enum ScoreEntryState: Equatable {
 
 struct RoundEntryDeckView: View {
     let session: GameSession
-    let onSubmit: ([UUID: Int]) -> Void
+    /// Attempts to save the confirmed round. Returns nil on success (the
+    /// presenting cover then dismisses); returns a user-facing message when
+    /// the save fails so the deck can stay open with the draft intact.
+    let onSubmit: ([UUID: Int]) -> String?
     let onCancel: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -34,6 +37,7 @@ struct RoundEntryDeckView: View {
     @State private var warningFeedbackTrigger = 0
     @State private var recognitionRequestID = 0
     @State private var manualFromRecognitionFailure = false
+    @State private var submissionErrorMessage: String?
 
     private var player: Player {
         session.players[currentIndex]
@@ -101,6 +105,15 @@ struct RoundEntryDeckView: View {
         }
         .onChange(of: captureEvent) { _, eventID in
             handleCaptureEvent(eventID)
+        }
+        .alert("couldn’t save round", isPresented: Binding(
+            get: { submissionErrorMessage != nil },
+            set: { if !$0 { submissionErrorMessage = nil } }
+        )) {
+            Button("try again") { retrySubmission() }
+            Button("ok", role: .cancel) { submissionErrorMessage = nil }
+        } message: {
+            Text(submissionErrorMessage ?? "please try again")
         }
     }
 
@@ -247,6 +260,7 @@ struct RoundEntryDeckView: View {
                     guard index != currentIndex, canSwitchPlayer else { return }
                     switchPlayer(to: index)
                 }
+                .accessibilityIdentifier("deck_player_\(candidate.name)")
             }
         }
         .padding(AppTheme.spacingMedium)
@@ -785,12 +799,40 @@ struct RoundEntryDeckView: View {
         feedbackTrigger &+= 1
 
         if currentIndex == session.players.count - 1 {
-            performExit {
-                onSubmit(scores)
+            // The last card is confirmed. A round may only submit once every
+            // player has a confirmed score, so return to the first unscored
+            // card instead of handing a partial round to the save boundary.
+            if let firstUnscored = session.players.firstIndex(where: { scores[$0.id] == nil }) {
+                warningFeedbackTrigger &+= 1
+                switchPlayer(to: firstUnscored)
+            } else {
+                submitRetainingDraftOnFailure()
             }
         } else {
             switchPlayer(to: currentIndex + 1)
         }
+    }
+
+    /// Attempts the round save while the deck is still on screen. Only a
+    /// successful save lets the deck exit; a failed save keeps this deck (and
+    /// every confirmed score) so the round can be retried without re-entering
+    /// anything (PC17-003).
+    private func submitRetainingDraftOnFailure() {
+        guard !isExiting else { return }
+
+        if let message = onSubmit(scores) {
+            submissionErrorMessage = message
+            warningFeedbackTrigger &+= 1
+            return
+        }
+
+        invalidateRecognition()
+        performExit {}
+    }
+
+    private func retrySubmission() {
+        submissionErrorMessage = nil
+        submitRetainingDraftOnFailure()
     }
 
     private func switchPlayer(to index: Int) {

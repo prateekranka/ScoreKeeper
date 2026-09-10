@@ -301,6 +301,8 @@ struct PaywallView: View {
                 Label("secure one-time purchase. your progress is saved", systemImage: "lock")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .padding(AppTheme.spacingSmall)
             .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
@@ -384,7 +386,14 @@ struct PaywallView: View {
                 if storeManager.product == nil {
                     Label("unlock unavailable", systemImage: "exclamationmark.triangle")
                 } else {
-                    Label("unlock forever — \(storeManager.displayPrice)", systemImage: "arrow.right.circle.fill")
+                    // Price stays on its own line: the action never truncates
+                    // and the localized price is always visible, including at
+                    // the largest accessibility text sizes (PC17-006).
+                    VStack(spacing: 2) {
+                        Label("unlock forever", systemImage: "arrow.right.circle.fill")
+                        Text(storeManager.displayPrice)
+                            .font(AppFonts.caption)
+                    }
                 }
             }
         }

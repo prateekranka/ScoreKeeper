@@ -115,6 +115,69 @@ final class TargetScoreEngineTests: XCTestCase {
         XCTAssertTrue(engine.winners(session: zero).isEmpty)
     }
 
+    func testPhase10StandingsRankProgressBeforePointsSoTheWinnerLeads() {
+        let session = makeSession(gameType: .phase10, names: ["Alice", "Bob"])
+        appendPhaseRound(to: session, phases: [1, 0], scores: [50, 0])
+
+        let engine = Phase10Engine()
+        XCTAssertEqual(engine.winners(session: session), [session.players[0].id])
+
+        let ranked = engine.rankedPlayers(session: session)
+        XCTAssertEqual(
+            ranked.map(\.name),
+            ["Alice", "Bob"],
+            "A lower-progress zero-point player must not outrank the winner"
+        )
+        XCTAssertEqual(engine.rank(of: session.players[0], in: session), 1)
+        XCTAssertEqual(engine.rank(of: session.players[1], in: session), 2)
+
+        // Result rows and rank numbers stay in agreement with the winner.
+        let standings = session.standings(using: engine)
+        XCTAssertEqual(standings.first?.player.name, "Alice")
+        XCTAssertTrue(standings.first?.isWinner == true)
+    }
+
+    func testPhase10CompletedPlayersOutrankHigherPointIncompleteProgress() {
+        let session = makeSession(gameType: .phase10, names: ["Alice", "Bob"])
+        appendPhaseRound(to: session, phases: [10, 9], scores: [80, 5])
+
+        let engine = Phase10Engine()
+        XCTAssertEqual(engine.winners(session: session), [session.players[0].id])
+        XCTAssertEqual(engine.rankedPlayers(session: session).first?.name, "Alice")
+        XCTAssertTrue(session.standings(using: engine).first?.isWinner == true)
+    }
+
+    func testTiedPlayersShareARankAndTheNextRankSkipsTheTie() {
+        let session = makeSession(gameType: .whatsForDinner, names: ["Alice", "Bob", "Cara"])
+        appendRound(to: session, scores: [2, 2, 7])
+
+        let engine = WhatsForDinnerEngine()
+        let standings = session.standings(using: engine)
+        XCTAssertEqual(standings.first { $0.player.name == "Alice" }?.rank, 1)
+        XCTAssertEqual(standings.first { $0.player.name == "Bob" }?.rank, 1)
+        XCTAssertEqual(standings.first { $0.player.name == "Cara" }?.rank, 3)
+    }
+
+    @MainActor
+    func testStatsTreatMixedCaseLegacyNamesAsOnePlayer() {
+        let legacy = makeSession(gameType: .generic, names: ["Alice", "Bob"])
+        appendRound(to: legacy, scores: [10, 5])
+        let current = makeSession(gameType: .generic, names: ["alice", "bob"])
+        appendRound(to: current, scores: [2, 5])
+
+        let stats = StatsCalculator.stats(for: "alice", sessions: [legacy, current])
+        XCTAssertEqual(stats.gamesPlayed, 2)
+        XCTAssertEqual(stats.wins, 1)
+
+        let headToHead = StatsCalculator.headToHead("Alice", vs: "bob", sessions: [legacy, current])
+        XCTAssertEqual(headToHead.gamesTogether, 2)
+        XCTAssertEqual(headToHead.aWins, 1)
+        XCTAssertEqual(
+            StatsCalculator.gamesBetween("alice", and: "Bob", gameType: .generic, sessions: [legacy, current]).count,
+            2
+        )
+    }
+
     @MainActor
     func testStatsCalculatorReportsScoresRanksHeadToHeadByGameAndNoData() {
         let first = makeSession(gameType: .generic, names: ["Alice", "Bob"])

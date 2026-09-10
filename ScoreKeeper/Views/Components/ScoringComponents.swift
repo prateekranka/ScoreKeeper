@@ -20,7 +20,6 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
 
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var selectedTool: ScoringTool?
     @State private var undoTrigger = 0
     @State private var saveError: String?
@@ -33,35 +32,37 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            Group {
-                if headerStyle == .compact {
-                    CompactScoringGameHeader(session: session)
-                } else {
-                    ScoringGameHeader(session: session)
+        GeometryReader { proxy in
+            VStack(spacing: 0) {
+                Group {
+                    if headerStyle == .compact {
+                        CompactScoringGameHeader(session: session, availableWidth: proxy.size.width)
+                    } else {
+                        ScoringGameHeader(session: session, availableWidth: proxy.size.width)
+                    }
                 }
-            }
-            .pipCountPageContent(maxWidth: 980)
+                .pipCountPageContent(maxWidth: 980)
 
-            if showsToolsBar {
-                ScoringToolsBar(session: session, selectedTool: $selectedTool)
-                    .pipCountPageContent(maxWidth: 980)
-            }
+                if showsToolsBar {
+                    ScoringToolsBar(session: session, selectedTool: $selectedTool)
+                        .pipCountPageContent(maxWidth: 980)
+                }
 
-            if showsScoreboardHeader {
-                ScoreboardHeader(session: session, engine: engine)
-                    .pipCountPageContent(maxWidth: 980)
-            }
+                if showsScoreboardHeader {
+                    ScoreboardHeader(session: session, engine: engine)
+                        .pipCountPageContent(maxWidth: 980)
+                }
 
-            ScrollView {
-                responsiveContent
-                    .padding(.horizontal, AppTheme.spacingMedium)
-                    .padding(.top, AppTheme.spacingSmall)
-                    .padding(.bottom, bottomBarContentInset)
-                    .pipCountPageContent(maxWidth: 980)
-            }
-            .safeAreaInset(edge: .bottom) {
-                scoringActions
+                ScrollView {
+                    responsiveContent(availableWidth: proxy.size.width)
+                        .padding(.horizontal, AppTheme.spacingMedium)
+                        .padding(.top, AppTheme.spacingSmall)
+                        .padding(.bottom, bottomBarContentInset)
+                        .pipCountPageContent(maxWidth: 980)
+                }
+                .safeAreaInset(edge: .bottom) {
+                    scoringActions
+                }
             }
         }
         .sheet(item: $selectedTool) { tool in
@@ -83,9 +84,12 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
         .onDisappear { actionUnlockTask?.cancel() }
     }
 
+    /// Column choice follows the actual container width, not the size class:
+    /// a sidebar-open iPad reports regular but its detail column is far too
+    /// narrow for the 310-point footer beside the score content (PC17-005).
     @ViewBuilder
-    private var responsiveContent: some View {
-        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+    private func responsiveContent(availableWidth: CGFloat) -> some View {
+        if availableWidth >= 760 && !dynamicTypeSize.isAccessibilitySize {
             HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
                 content
                     .frame(maxWidth: .infinity, alignment: .top)
@@ -201,8 +205,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
 
 private struct CompactScoringGameHeader: View {
     let session: GameSession
-
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    let availableWidth: CGFloat
 
     var body: some View {
         HStack(spacing: AppTheme.spacingMedium) {
@@ -233,8 +236,8 @@ private struct CompactScoringGameHeader: View {
 
             PipCountGeometricArtwork(scene: .scoring)
                 .frame(
-                    width: horizontalSizeClass == .regular ? 190 : 116,
-                    height: horizontalSizeClass == .regular ? 128 : 94
+                    width: availableWidth >= 700 ? 190 : 116,
+                    height: availableWidth >= 700 ? 128 : 94
                 )
         }
         .padding(.horizontal, AppTheme.spacingMedium)
@@ -247,13 +250,13 @@ private struct CompactScoringGameHeader: View {
 
 private struct ScoringGameHeader: View {
     let session: GameSession
+    let availableWidth: CGFloat
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
         Group {
-            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+            if availableWidth >= 760 && !dynamicTypeSize.isAccessibilitySize {
                 HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
                     headerCopy
                         .frame(maxWidth: 390, alignment: .leading)

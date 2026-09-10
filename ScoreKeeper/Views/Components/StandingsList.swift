@@ -41,17 +41,11 @@ struct StandingsList: View {
 
 extension GameSession {
     func standings(using engine: GameEngine) -> [PlayerStanding] {
-        let winnerIDs = engine.winners(session: self)
-        let sortedPlayers = players.sorted { first, second in
-            let firstScore = first.totalScore(in: self)
-            let secondScore = second.totalScore(in: self)
-            return winCondition == .lowestScore ? firstScore < secondScore : firstScore > secondScore
-        }
-
-        return sortedPlayers.enumerated().map { index, player in
+        let winnerIDs = Set(engine.winners(session: self))
+        return engine.rankedPlayers(session: self).map { player in
             PlayerStanding(
                 id: player.id,
-                rank: index + 1,
+                rank: engine.rank(of: player, in: self),
                 player: player,
                 score: player.totalScore(in: self),
                 isWinner: winnerIDs.contains(player.id)
