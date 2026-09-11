@@ -207,6 +207,8 @@ private struct CompactScoringGameHeader: View {
     let session: GameSession
     let availableWidth: CGFloat
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
         HStack(spacing: AppTheme.spacingMedium) {
             VStack(alignment: .leading, spacing: 3) {
@@ -227,18 +229,26 @@ private struct CompactScoringGameHeader: View {
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.blue)
                     .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
 
                 Text(session.players.count.quantityText("player").uppercased())
                     .columnHeaderStyle()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             }
 
             Spacer(minLength: AppTheme.spacingSmall)
 
-            PipCountGeometricArtwork(scene: .scoring)
-                .frame(
-                    width: availableWidth >= 700 ? 190 : 116,
-                    height: availableWidth >= 700 ? 128 : 94
-                )
+            // Decorative art yields at accessibility text sizes so the round
+            // label stays whole (same rule the hero header and setup use).
+            if !dynamicTypeSize.isAccessibilitySize {
+                PipCountGeometricArtwork(scene: .scoring)
+                    .frame(
+                        width: availableWidth >= 700 ? 190 : 116,
+                        height: availableWidth >= 700 ? 128 : 94
+                    )
+            }
         }
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.top, AppTheme.spacingSmall)
