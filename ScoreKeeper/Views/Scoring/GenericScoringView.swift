@@ -118,12 +118,12 @@ private struct GenericTotalsList: View {
             .padding(AppTheme.spacingMedium)
             Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
             ForEach(Array(session.players.enumerated()), id: \.element.id) { index, player in
-                let lastRound = session.sortedRounds.last?.entries.first(where: { $0.playerID == player.id })?.points ?? 0
+                let lastEntry = session.sortedRounds.last?.entries.first(where: { $0.playerID == player.id })
                 HStack(spacing: AppTheme.spacingSmall) {
                     BauhausPlayerShape(colorIndex: player.colorIndex, size: 34)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(player.name).font(AppFonts.headline).foregroundStyle(ClubhouseTheme.ink).lineLimit(1)
-                        Text(lastRound == 0 ? "no score last round" : "last round \(lastRound > 0 ? "+\(lastRound)" : "\(lastRound)")")
+                        Text(lastRoundText(lastEntry))
                             .font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted).monospacedDigit()
                     }
                     Spacer()
@@ -137,6 +137,13 @@ private struct GenericTotalsList: View {
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Round \(session.currentRoundNumber) running totals")
+    }
+
+    /// A submitted zero is a score: show it. Only a round that has no entry
+    /// for this player reads as absent.
+    private func lastRoundText(_ entry: ScoreEntry?) -> String {
+        guard let entry else { return "no score last round" }
+        return "last round \(entry.points > 0 ? "+\(entry.points)" : "\(entry.points)")"
     }
 }
 

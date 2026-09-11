@@ -21,7 +21,7 @@ struct GameHistoryListView: View {
         GeometryReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
-                    hero
+                    hero(width: proxy.size.width)
                         .historyEntrance(contentVisible, index: 0, reduceMotion: reduceMotion)
 
                     if completedSessions.isEmpty {
@@ -73,29 +73,44 @@ struct GameHistoryListView: View {
         }
     }
 
-    private var hero: some View {
-        HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
-            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                Text("every night\nbecomes history")
-                    .font(AppFonts.display)
-                    .foregroundStyle(ClubhouseTheme.ink)
-                    .fixedSize(horizontal: false, vertical: true)
+    /// The heading carries the page's message in whole words: at narrow widths
+    /// (phone, iPad split detail) the decorative artwork yields to it.
+    private func hero(width: CGFloat) -> some View {
+        Group {
+            if width >= 640 {
+                HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
+                    heroCopy
 
-                Text("final scores, rematches, and the story of your table — saved automatically")
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: AppTheme.spacingSmall)
 
-                Rectangle()
-                    .fill(ClubhouseTheme.green)
-                    .frame(width: 92, height: 5)
+                    PipCountGeometricArtwork(scene: .onboardingHistory)
+                        .frame(minWidth: 160, idealWidth: 260, maxWidth: 340)
+                        .frame(height: 250)
+                }
+            } else {
+                heroCopy
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
+        }
+    }
 
-            Spacer(minLength: AppTheme.spacingSmall)
+    private var heroCopy: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text("every night\nbecomes history")
+                .font(AppFonts.display)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .lineLimit(2)
+                .minimumScaleFactor(0.6)
+                .fixedSize(horizontal: false, vertical: true)
 
-            PipCountGeometricArtwork(scene: .onboardingHistory)
-                .frame(minWidth: 160, idealWidth: 260, maxWidth: 340)
-                .frame(height: 250)
+            Text("final scores, rematches, and the story of your table — saved automatically")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Rectangle()
+                .fill(ClubhouseTheme.green)
+                .frame(width: 92, height: 5)
         }
     }
 

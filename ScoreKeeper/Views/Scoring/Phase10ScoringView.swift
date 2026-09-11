@@ -20,14 +20,10 @@ struct Phase10ScoringView: View {
             engine: engine,
             actionTitle: "submit",
             actionSystemImage: "checkmark.circle.fill",
+            showsScoreboardHeader: false,
+            headerStyle: .compact,
             action: submitRound
         ) {
-            RoundBanner(
-                icon: GameType.phase10.icon,
-                color: GameType.phase10.color,
-                title: "round \(session.currentRoundNumber)",
-                subtitle: "ten-stage card-game scoring"
-            )
             phaseOverview
             roundEntrySection
         } footer: {
@@ -61,15 +57,24 @@ struct Phase10ScoringView: View {
 
             ForEach(session.players, id: \.id) { player in
                 let currentPhase = engine.currentPhase(for: player.id, in: session)
+                let totalPoints = player.totalScore(in: session)
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: AppTheme.spacingSmall) {
                         PlayerColorPip(colorIndex: player.colorIndex)
 
                         PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
 
-                        Text(player.name)
-                            .font(AppFonts.body)
-                            .foregroundStyle(ClubhouseTheme.ink)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(player.name)
+                                .font(AppFonts.body)
+                                .foregroundStyle(ClubhouseTheme.ink)
+                                .lineLimit(1)
+
+                            Text("\(totalPoints) \(totalPoints == 1 ? "point" : "points")")
+                                .font(AppFonts.caption)
+                                .foregroundStyle(ClubhouseTheme.inkMuted)
+                                .monospacedDigit()
+                        }
 
                         Spacer()
 
