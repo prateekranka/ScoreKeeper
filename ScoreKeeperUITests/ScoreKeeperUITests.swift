@@ -426,6 +426,9 @@ final class ScoreKeeperUITests: XCTestCase {
 
         let activeList = app.descendants(matching: .any)["active_games_list"]
         XCTAssertTrue(activeList.waitForExistence(timeout: 3))
+        // The games render as a swipeable carousel with the next card
+        // peeking in from the right edge.
+        XCTAssertTrue(app.descendants(matching: .any)["active_games_carousel"].waitForExistence(timeout: 3))
 
         let activeRows = app.descendants(matching: .any)
             .matching(NSPredicate(format: "identifier BEGINSWITH 'active_game_'"))

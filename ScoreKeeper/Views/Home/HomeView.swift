@@ -401,15 +401,30 @@ private struct HomeActiveGamesSection: View {
                     .accessibilityLabel("\(sessions.count) active games")
             }
 
-            VStack(spacing: AppTheme.spacingSmall) {
-                ForEach(sessions) { session in
-                    ActiveGameRow(
-                        session: session,
-                        onResume: { onGameTap(session) },
-                        onDelete: { onDelete(session) }
-                    )
+            ScrollView(.horizontal) {
+                HStack(alignment: .top, spacing: 12) {
+                    ForEach(sessions) { session in
+                        ActiveGameRow(
+                            session: session,
+                            onResume: { onGameTap(session) },
+                            onDelete: { onDelete(session) }
+                        )
+                        // One nearly full-width card per game so the next
+                        // card's edge peeks in from the right (the swipe
+                        // affordance); a lone card fills the row.
+                        .containerRelativeFrame(
+                            .horizontal,
+                            count: 8,
+                            span: sessions.count > 1 ? 7 : 8,
+                            spacing: 12
+                        )
+                    }
                 }
+                .scrollTargetLayout()
             }
+            .scrollTargetBehavior(.viewAligned)
+            .scrollIndicators(.hidden)
+            .accessibilityIdentifier("active_games_carousel")
         }
     }
 }
@@ -527,7 +542,9 @@ private struct ResumeGameSlider: View {
                     .offset(x: thumbInset + dragOffset)
             }
             .contentShape(Rectangle())
-            .gesture(
+            // Higher priority than the surrounding active-games carousel so
+            // sliding the thumb never scrolls the cards instead.
+            .highPriorityGesture(
                 DragGesture(minimumDistance: 4)
                     .onChanged { value in
                         dragOffset = min(max(value.translation.width, 0), maximumOffset)
