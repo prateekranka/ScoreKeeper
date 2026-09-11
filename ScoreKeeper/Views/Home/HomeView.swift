@@ -240,10 +240,12 @@ private struct HomeHeader: View {
                         .frame(maxWidth: 520)
                         .frame(height: AppTheme.regularHeroArtHeight)
                 }
-            } else {
+            } else if !dynamicTypeSize.isAccessibilitySize {
+                // Decorative art yields to content at accessibility text sizes,
+                // so the first action card stays above the fold (dogfood pass 1).
                 PipCountGeometricArtwork(scene: .home)
                     .frame(maxWidth: .infinity)
-                    .frame(height: dynamicTypeSize.isAccessibilitySize ? 200 : AppTheme.heroArtHeight)
+                    .frame(height: AppTheme.heroArtHeight)
             }
         }
         .padding(.top, 2)
@@ -275,6 +277,7 @@ private struct HomeEmptyHero: View {
     let action: () -> Void
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Group {
@@ -286,13 +289,20 @@ private struct HomeEmptyHero: View {
                 }
             } else {
                 VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                    HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
+                    if dynamicTypeSize.isAccessibilitySize {
+                        // Action first: at accessibility sizes the card copy
+                        // alone fills the screen, so the primary action leads
+                        // and the art (decorative) is dropped.
+                        NewGameButton(action: action)
                         copy
-                        PipCountGeometricArtwork(scene: .homeEmpty)
-                            .frame(width: 118, height: 138)
+                    } else {
+                        HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
+                            copy
+                            PipCountGeometricArtwork(scene: .homeEmpty)
+                                .frame(width: 118, height: 138)
+                        }
+                        NewGameButton(action: action)
                     }
-
-                    NewGameButton(action: action)
                 }
             }
         }

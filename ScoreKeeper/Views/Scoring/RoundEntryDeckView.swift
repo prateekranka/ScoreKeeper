@@ -631,7 +631,7 @@ struct RoundEntryDeckView: View {
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text("draw each player's score, tap ✓ to read it, then confirm. swipe from either edge to move between players")
+                    Text("draw each player's score, tap ✓ to read it, then confirm. swipe from either edge to move between players. confirm the last card last — that submits the round, so confirm it again if you jump back")
                         .font(AppFonts.body)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .multilineTextAlignment(.center)

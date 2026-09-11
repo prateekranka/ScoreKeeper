@@ -386,11 +386,13 @@ struct PaywallView: View {
                 if storeManager.product == nil {
                     Label("unlock unavailable", systemImage: "exclamationmark.triangle")
                 } else {
-                    // Price stays on its own line: the action never truncates
-                    // and the localized price is always visible, including at
-                    // the largest accessibility text sizes (PC17-006).
+                    // Price stays on its own line, and the action wraps instead
+                    // of truncating, so the localized price is always visible
+                    // and the action stays readable at the largest
+                    // accessibility text sizes (PC17-006, dogfood pass 1).
                     VStack(spacing: 2) {
                         Label("unlock forever", systemImage: "arrow.right.circle.fill")
+                            .fixedSize(horizontal: false, vertical: true)
                         Text(storeManager.displayPrice)
                             .font(AppFonts.caption)
                     }
