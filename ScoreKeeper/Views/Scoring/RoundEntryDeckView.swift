@@ -9,8 +9,11 @@ private enum ScoreEntryState: Equatable {
     case noInk
 }
 
-struct RoundEntryDeckView: View {
+struct RoundEntryDeckView<Accessory: View>: View {
     let session: GameSession
+    /// Optional per-player control shown above the writing surface while that
+    /// player's card is on screen (for example Ten Phases' stage control).
+    @ViewBuilder var accessory: (Player) -> Accessory
     /// Attempts to save the confirmed round. Returns nil on success (the
     /// presenting cover then dismisses); returns a user-facing message when
     /// the save fails so the deck can stay open with the draft intact.
@@ -270,6 +273,8 @@ struct RoundEntryDeckView: View {
     private var playerCard: some View {
         VStack(spacing: AppTheme.spacingMedium) {
             playerHeader
+
+            accessory(player)
 
             writingSurface
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -887,5 +892,21 @@ struct RoundEntryDeckView: View {
         // swallowed every subsequent touch on the underlying screen.
         isExiting = true
         completion()
+    }
+}
+
+extension RoundEntryDeckView where Accessory == EmptyView {
+    /// The deck as every game used to present it: no per-player accessory.
+    init(
+        session: GameSession,
+        onSubmit: @escaping ([UUID: Int]) -> String?,
+        onCancel: @escaping () -> Void
+    ) {
+        self.init(
+            session: session,
+            accessory: { _ in EmptyView() },
+            onSubmit: onSubmit,
+            onCancel: onCancel
+        )
     }
 }

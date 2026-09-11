@@ -6,11 +6,12 @@ struct Phase10ScoringView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationRouter.self) private var router
 
-    @State private var leftoverPoints: [UUID: Int] = [:]
     @State private var completedPhase: [UUID: Bool] = [:]
     @State private var showGameCompleteAlert = false
+    @State private var pendingGameCompleteAlert = false
     @State private var scoreHapticTrigger = 0
     @State private var saveError: String?
+    @State private var showDeck = false
 
     private let engine = Phase10Engine()
 
@@ -18,16 +19,27 @@ struct Phase10ScoringView: View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "submit",
-            actionSystemImage: "checkmark.circle.fill",
+            actionTitle: "score round",
+            actionSystemImage: "square.and.pencil",
             showsScoreboardHeader: false,
             headerStyle: .compact,
-            action: submitRound
+            action: { showDeck = true }
         ) {
             phaseOverview
-            roundEntrySection
         } footer: {
             RoundHistoryStrip(session: session)
+        }
+        .fullScreenCover(isPresented: $showDeck, onDismiss: presentPendingGameCompleteAlert) {
+            RoundEntryDeckView(
+                session: session,
+                accessory: { player in
+                    stageControl(for: player)
+                },
+                onSubmit: { roundScores in
+                    submitRound(using: roundScores)
+                },
+                onCancel: { showDeck = false }
+            )
         }
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
         .alert("ten phases complete", isPresented: $showGameCompleteAlert) {
@@ -53,7 +65,11 @@ struct Phase10ScoringView: View {
 
     private var phaseOverview: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "current stages", systemImage: "flag.checkered")
+            AppSectionHeader(
+                title: "current stages",
+                subtitle: "write this round's leftover points with the score deck",
+                systemImage: "flag.checkered"
+            )
 
             ForEach(session.players, id: \.id) { player in
                 let currentPhase = engine.currentPhase(for: player.id, in: session)
@@ -101,45 +117,36 @@ struct Phase10ScoringView: View {
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
-    private var roundEntrySection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "this round", systemImage: "square.and.pencil")
-
-            ForEach(session.players, id: \.id) { player in
-                let currentPhase = engine.currentPhase(for: player.id, in: session)
-
-                ScoreEntryRow(
-                    player: player,
-                    value: leftoverPointsBinding(for: player),
-                    range: 0...9999,
-                    step: 5,
-                    title: "leftover points"
-                ) {
-                    phaseAccessory(for: player, currentPhase: currentPhase)
-                }
-            }
-        }
-    }
-
+    /// The stage control rides inside the handwriting deck: it shows the stage
+    /// the player is working on and records whether they completed it this
+    /// round. The ranking rule (most stages wins, ties by fewest points) is
+    /// unchanged and still lives in `Phase10Engine`.
     @ViewBuilder
-    private func phaseAccessory(for player: Player, currentPhase: Int) -> some View {
+    private func stageControl(for player: Player) -> some View {
+        let currentPhase = engine.currentPhase(for: player.id, in: session)
+
         if currentPhase < 10 {
             if session.phase10SkipOnFail {
-                    Label("stage \(currentPhase + 1) completed", systemImage: "checkmark.circle.fill")
+                Label("stage \(currentPhase + 1) completed", systemImage: "checkmark.circle.fill")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.felt)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityIdentifier("stage_status_\(player.name)")
             } else {
                 Toggle(isOn: completedPhaseBinding(for: player)) {
-                    Text("stage \(currentPhase + 1)")
+                    Text("stage \(currentPhase + 1) completed")
                         .font(AppFonts.caption)
                 }
                 .toggleStyle(.switch)
                 .tint(ClubhouseTheme.felt)
+                .accessibilityIdentifier("stage_toggle_\(player.name)")
             }
         } else {
-                Label("all ten stages done", systemImage: "checkmark.seal.fill")
+            Label("all ten stages done", systemImage: "checkmark.seal.fill")
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.felt)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityIdentifier("stage_status_\(player.name)")
         }
     }
 
@@ -150,21 +157,25 @@ struct Phase10ScoringView: View {
         )
     }
 
-    private func leftoverPointsBinding(for player: Player) -> Binding<Int> {
-        Binding(
-            get: { leftoverPoints[player.id] ?? 0 },
-            set: { leftoverPoints[player.id] = $0 }
-        )
-    }
+    /// Returns nil after a successful save (the deck then dismisses); returns
+    /// a user-facing message when the round cannot be saved, so the deck can
+    /// stay open with the confirmed scores intact (PC17-003).
+    private func submitRound(using roundScores: [UUID: Int]) -> String? {
+        // The save boundary rejects incomplete dictionaries; it never
+        // substitutes zero for a player who did not confirm a score.
+        guard session.players.allSatisfy({ roundScores[$0.id] != nil }) else {
+            return "every player needs a confirmed score before this round can save"
+        }
 
-    private func submitRound() {
         let round = Round(roundNumber: session.currentRoundNumber)
         round.session = session
 
         for player in session.players {
+            guard let points = roundScores[player.id] else {
+                return "every player needs a confirmed score before this round can save"
+            }
             let currentPhase = engine.currentPhase(for: player.id, in: session)
             let didComplete = completedPhase[player.id] ?? false
-            let points = leftoverPoints[player.id] ?? 0
             let nextPhase = min(currentPhase + 1, 10)
 
             let metadata = Phase10Metadata(
@@ -185,18 +196,25 @@ struct Phase10ScoringView: View {
         } catch {
             let message = error.localizedDescription
             modelContext.rollback()
-            saveError = message
-            return
+            return message
         }
 
+        showDeck = false
         if engine.isGameOver(session: session) {
-            showGameCompleteAlert = true
+            // The deck owns the screen until its cover dismisses; present the
+            // completion alert from the dismissal so it cannot be dropped.
+            pendingGameCompleteAlert = true
         }
 
-        leftoverPoints = [:]
         completedPhase = [:]
-
         scoreHapticTrigger += 1
+        return nil
+    }
+
+    private func presentPendingGameCompleteAlert() {
+        guard pendingGameCompleteAlert else { return }
+        pendingGameCompleteAlert = false
+        showGameCompleteAlert = true
     }
 
     private func finishGame() {
@@ -226,7 +244,7 @@ private struct PegBoardStrip: View {
                     .frame(width: 13, height: 13)
                     .overlay {
                         Circle()
-                            .stroke(ClubhouseTheme.rule, lineWidth: 1)
+                            .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
                     }
                     .accessibilityHidden(true)
             }

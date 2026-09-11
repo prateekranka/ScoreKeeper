@@ -694,53 +694,6 @@ struct RoundBanner: View {
     }
 }
 
-struct ScoreEntryRow<Accessory: View>: View {
-    let player: Player
-    @Binding var value: Int
-    var range: ClosedRange<Int> = -9999...9999
-    var step = 1
-    var title: String?
-    @ViewBuilder var accessory: Accessory
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            HStack(spacing: AppTheme.spacingSmall) {
-                PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small)
-                    .layoutPriority(2)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                accessory
-                    .fixedSize(horizontal: true, vertical: false)
-            }
-
-            HStack(alignment: .top, spacing: AppTheme.spacingSmall) {
-                if let title {
-                    Text(title)
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .layoutPriority(1)
-                }
-
-                Spacer()
-
-                ScoreEntryField(
-                    value: $value,
-                    label: "",
-                    range: range,
-                    step: step,
-                    identifierPrefix: "\(player.name)_"
-                )
-                .fixedSize(horizontal: true, vertical: false)
-            }
-        }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
-        .accessibilityElement(children: .contain)
-    }
-}
-
 struct RoundHistoryStrip: View {
     let session: GameSession
 

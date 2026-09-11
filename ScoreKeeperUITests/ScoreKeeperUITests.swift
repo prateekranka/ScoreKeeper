@@ -79,7 +79,7 @@ final class ScoreKeeperUITests: XCTestCase {
     func testCreatePhase10GameAndScore() throws {
         navigateToScoring(gameTileID: "game_tile_phase10", playerNames: ["alice", "bob"])
 
-        // Submit one round for Ten Phases (submits directly, no deck)
+        // Submit one round for Ten Phases through the handwriting deck.
         completeRound(playerNames: ["alice", "bob"], gameType: "phase10")
 
         // End Game
@@ -202,15 +202,10 @@ final class ScoreKeeperUITests: XCTestCase {
         navigateToScoring(gameTileID: "game_tile_whatsForDinner", playerNames: ["mina", "nora", "omar"])
 
         app.buttons["meal_reveal_mina"].tap()
-        if !app.staticTexts["caller"].waitForExistence(timeout: 1) {
-            app.staticTexts["mina"].firstMatch.tap()
-        }
+        XCTAssertTrue(app.staticTexts["caller"].firstMatch.waitForExistence(timeout: 2))
 
-        // WhatsForDinner uses its own scoring rows (not the deck) — unchanged
-        app.buttons["mina_increment"].tap()
-        app.buttons["nora_increment"].tap()
-        app.buttons["nora_increment"].tap()
-        app.buttons["submit_round_button"].tap()
+        // Every game uses the handwriting deck for the round now.
+        completeRound(playerNames: ["mina", "nora", "omar"])
 
         XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 2))
         XCTAssertTrue(app.staticTexts["rounds"].exists)
@@ -1079,12 +1074,9 @@ final class ScoreKeeperUITests: XCTestCase {
 
     private func completeRound(playerNames: [String], gameType: String = "generic") {
         app.buttons["submit_round_button"].tap()
-        // Only generic scoring opens the deck; Phase 10 and WhatsForDinner submit directly
-        if gameType == "generic" {
-            completeOpenDeck(playerNames: playerNames)
-        } else {
-            _ = app.staticTexts["rounds"].waitForExistence(timeout: 3)
-        }
+        // Every game opens the handwriting deck for a round now. The typed
+        // fallback inside the deck keeps the round completable without ink.
+        completeOpenDeck(playerNames: playerNames)
     }
 
     private func completeGenericGame(playerNames: [String]) {

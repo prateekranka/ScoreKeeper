@@ -304,7 +304,6 @@ private struct OnboardingArtwork: View {
     let isVisible: Bool
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var scoreInput = 12
 
     var body: some View {
         GeometryReader { proxy in
@@ -371,8 +370,7 @@ private struct OnboardingArtwork: View {
                     Text("Mina")
                         .columnHeaderStyle()
                     Spacer(minLength: AppTheme.spacingSmall)
-                    PipStepper(value: $scoreInput, range: -99...99)
-                        .scaleEffect(0.82)
+                    OnboardingWritingMock()
                         .frame(width: 160, height: 48)
                 }
             }
@@ -499,6 +497,40 @@ private struct OnboardingPegStrip: View {
             }
         }
         .padding(.top, 3)
+    }
+}
+
+private struct OnboardingWritingMock: View {
+    var body: some View {
+        HStack(spacing: 6) {
+            ZStack {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                    .fill(Color.white)
+
+                // A little hand-drawn 7: the handwriting entry, in miniature.
+                Path { path in
+                    path.move(to: CGPoint(x: 14, y: 12))
+                    path.addLine(to: CGPoint(x: 40, y: 12))
+                    path.addLine(to: CGPoint(x: 24, y: 40))
+                }
+                .stroke(ClubhouseTheme.ink, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+                .padding(4)
+
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                    .strokeBorder(ClubhouseTheme.ink.opacity(0.72), lineWidth: 1)
+            }
+            .frame(width: 60, height: 48)
+
+            ZStack {
+                Circle()
+                    .fill(ClubhouseTheme.blue)
+                    .frame(width: 34, height: 34)
+
+                Image(systemName: "checkmark")
+                    .font(.system(size: 15, weight: .black))
+                    .foregroundStyle(ClubhouseTheme.onPrimary)
+            }
+        }
     }
 }
 
