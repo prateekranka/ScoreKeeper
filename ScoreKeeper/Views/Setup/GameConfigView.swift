@@ -139,12 +139,22 @@ struct GameConfigView: View {
                     Text("how to win?")
                         .columnHeaderStyle()
 
-                    Picker("win condition", selection: $winCondition) {
-                        Text("highest score wins").tag(WinCondition.highestScore)
-                        Text("lowest score wins").tag(WinCondition.lowestScore)
+                    // Segmented when both choices fit; stacked rows when the
+                    // column is too narrow (iPad split view, large text), so
+                    // the rule labels never truncate.
+                    ViewThatFits(in: .horizontal) {
+                        Picker("win condition", selection: $winCondition) {
+                            Text("highest score wins").tag(WinCondition.highestScore)
+                            Text("lowest score wins").tag(WinCondition.lowestScore)
+                        }
+                        .pickerStyle(.segmented)
+                        .accessibilityIdentifier("win_condition_picker")
+
+                        VStack(spacing: AppTheme.spacingSmall) {
+                            winConditionChoice(.highestScore)
+                            winConditionChoice(.lowestScore)
+                        }
                     }
-                    .pickerStyle(.segmented)
-                    .accessibilityIdentifier("win_condition_picker")
                 }
 
                 Rectangle()
@@ -169,6 +179,40 @@ struct GameConfigView: View {
         }
         .padding(AppTheme.spacingLarge)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+    }
+
+    private func winConditionChoice(_ condition: WinCondition) -> some View {
+        let isSelected = winCondition == condition
+        let title = condition == .highestScore ? "highest score wins" : "lowest score wins"
+
+        return Button {
+            winCondition = condition
+        } label: {
+            HStack(spacing: AppTheme.spacingSmall) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.inkMuted)
+
+                Text(title)
+                    .font(AppFonts.body.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(minHeight: 46)
+            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                    .strokeBorder(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.rule, lineWidth: isSelected ? 2 : 1)
+            }
+        }
+        .buttonStyle(PressableButtonStyle())
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier(condition == .highestScore ? "win_condition_choice_highest" : "win_condition_choice_lowest")
     }
 
     private var lineupSection: some View {

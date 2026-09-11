@@ -53,24 +53,21 @@ struct LegalSupportView: View {
 
     @ViewBuilder
     private var responsiveContent: some View {
-        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
-            HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
-                VStack(spacing: AppTheme.spacingMedium) {
-                    proPanel
-                        .staggeredEntrance(visible: contentVisible, index: 0)
-
-                    recentGamesSection
-
-                    appearancePanel
-                        .staggeredEntrance(visible: contentVisible, index: 2)
-                }
-                .frame(maxWidth: 430, alignment: .top)
-
-                supportPanel
-                    .staggeredEntrance(visible: contentVisible, index: 3)
-                    .frame(maxWidth: .infinity, alignment: .top)
-            }
+        if dynamicTypeSize.isAccessibilitySize {
+            stackedContent
         } else {
+            // Column count follows the space that is actually there: an iPad
+            // with the sidebar open reports regular but leaves ~500 pt, which
+            // squeezes the pro card into broken labels. PC-10 width contract.
+            ViewThatFits(in: .horizontal) {
+                sideBySideContent
+                stackedContent
+            }
+        }
+    }
+
+    private var sideBySideContent: some View {
+        HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
             VStack(spacing: AppTheme.spacingMedium) {
                 proPanel
                     .staggeredEntrance(visible: contentVisible, index: 0)
@@ -79,10 +76,27 @@ struct LegalSupportView: View {
 
                 appearancePanel
                     .staggeredEntrance(visible: contentVisible, index: 2)
-
-                supportPanel
-                    .staggeredEntrance(visible: contentVisible, index: 3)
             }
+            .frame(minWidth: 430, maxWidth: 430, alignment: .top)
+
+            supportPanel
+                .staggeredEntrance(visible: contentVisible, index: 3)
+                .frame(maxWidth: .infinity, alignment: .top)
+        }
+    }
+
+    private var stackedContent: some View {
+        VStack(spacing: AppTheme.spacingMedium) {
+            proPanel
+                .staggeredEntrance(visible: contentVisible, index: 0)
+
+            recentGamesSection
+
+            appearancePanel
+                .staggeredEntrance(visible: contentVisible, index: 2)
+
+            supportPanel
+                .staggeredEntrance(visible: contentVisible, index: 3)
         }
     }
 
