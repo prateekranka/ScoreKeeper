@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - app-dev/pipcount-bauhaus-motion
+      - app-dev/pipcount-b16-copy
   pull_request:
     branches:
       - app-dev/pipcount-bauhaus-motion
+      - app-dev/pipcount-b16-copy
       - main
 
 concurrency:
