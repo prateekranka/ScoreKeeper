@@ -143,19 +143,20 @@ function recapScreen(s) {
   const wins = Object.fromEntries(s.players.map(p => [p.id, s.completed.filter(g => (g.winnerIds || [g.winnerId]).includes(p.id)).length]));
   const last = s.completed.at(-1);
   const highlight = last ? `<div class="highlight">${icon(last.recordValue ? 'spark' : 'trophy')}<div><strong>${escapeHTML(last.winner)}’s ${last.recordValue ? 'personal best' : 'moment'}</strong><p>${last.recordValue ? `${escapeHTML(last.name)} · ${last.recordValue}-point winning margin<br>Previous best: ${last.recordPrevious} points` : `${escapeHTML(last.name)} · ${escapeHTML(last.note)}`}</p></div></div>` : '';
-  return `<div class="screen feature-screen">
+  return `<div class="screen feature-screen recap-screen">
     <header class="product-header">${brand()}${actionButton('share-night', 'share', 'Share the night recap', 'icon-button')}</header>
     <span class="eyebrow">${s.nightFinished ? 'Night complete' : 'The whole night, together'}</span>
     <h1>${escapeHTML(s.night)}</h1><p class="subline">Fri, Oct 2 · ${escapeHTML(currentCrew(s).name)}</p>
-    <section class="recap-sheet" aria-label="Game Night summary"><div class="recap-icon">${icon('spark')}</div>
-      <h2>${s.nightFinished ? 'A night worth keeping.' : 'Good games. Better company.'}</h2>
+    <section class="recap-sheet" aria-label="Game Night summary"><div class="recap-title-row"><div class="recap-icon">${icon('spark')}</div>
+      <h2>${s.nightFinished ? 'A night worth keeping.' : 'Good games. Better company.'}</h2></div>
       <p>${s.completed.length} games finished · ${s.players.length} friends<br>${s.active && !s.nightFinished ? `${escapeHTML(s.game)} is still on the table.` : 'Same crew, next time.'}</p>
       <div class="recap-wins">${s.players.slice(0, 4).map(p => `<div>${avatar(p)}<strong>${wins[p.id]}</strong><span class="name">${escapeHTML(p.name)}</span><div class="small-label">${wins[p.id] === 1 ? 'win' : 'wins'}</div></div>`).join('')}</div>
     </section>
-    <div class="section-heading" style="margin-bottom:0"><h2>The games</h2><span class="small-label">Wins, not mixed points</span></div>
-    <div class="recap-games">${recentGames(s, 10)}</div>${highlight}
     ${s.active ? primary('night', 'Back to the game', 'left') : primary('next-game', s.nightFinished ? 'Start another night' : 'Next game, same crew', 'plus')}
     <div style="height:9px"></div><div class="pair-actions">${secondary('share-night', 'Share recap', 'share')}${secondary(s.nightFinished ? 'crews' : 'finish-night', s.nightFinished ? 'Saved crew' : 'End the night', s.nightFinished ? 'people' : 'check')}</div>
+    <div style="height:16px"></div>${highlight}
+    <div class="section-heading" style="margin-bottom:0"><h2>The games</h2><span class="small-label">Wins, not mixed points</span></div>
+    <div class="recap-games">${recentGames(s, 10)}</div>
   </div>`;
 }
 function roundsScreen(s) {

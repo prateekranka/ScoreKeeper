@@ -294,6 +294,15 @@ svg.icon { width: 20px; height: 20px; flex: 0 0 auto; vertical-align: middle; }
 .recap-wins strong { display: block; font-size: 22px; margin: 7px 0 2px; }
 .recap-wins .name { font-size: 9px; }
 .recap-wins .small-label { font-size: 8px; }
+.recap-screen .product-header { margin-bottom: 14px; }
+.recap-screen .recap-sheet { padding: 16px; margin: 14px 0; }
+.recap-title-row { display: flex; gap: 11px; align-items: center; }
+.recap-title-row .recap-icon { width: 34px; height: 34px; margin: 0; flex-shrink: 0; }
+.recap-title-row .recap-icon .icon { width: 20px; height: 20px; }
+.recap-title-row h2 { text-align: left; font-size: 23px; }
+.recap-screen .recap-sheet > p { text-align: left; padding-left: 45px; margin: 10px 0 14px; }
+.recap-screen .recap-wins > div { font-size: 10px; line-height: 1.2; }
+.recap-screen .recap-wins strong { font-size: 20px; margin: 4px 0 2px; }
 .recap-games { margin: 13px 0 18px; }
 .highlight { padding: 13px; display: flex; gap: 11px; align-items: center; background: var(--tint); border-radius: 12px; margin-bottom: 18px; }
 .highlight .icon { color: var(--accent); }
