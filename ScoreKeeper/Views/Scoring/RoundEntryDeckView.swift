@@ -89,7 +89,15 @@ struct RoundEntryDeckView<Accessory: View>: View {
         .background(PipCountPaperBackground().ignoresSafeArea())
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if dynamicTypeSize.isAccessibilitySize && manualEntryFocused {
-                HStack {
+                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                    Text(player.name)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityLabel("Score for \(player.name)")
+                        .accessibilityIdentifier("deck_keyboard_player")
+                        .padding(.horizontal, AppTheme.spacingMedium)
+                    HStack {
                     Spacer()
                     Button("done") { manualEntryFocused = false }
                         .font(AppFonts.headline)
@@ -99,6 +107,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
                         .padding(.vertical, AppTheme.spacingSmall)
                         .buttonStyle(PressableButtonStyle())
                         .accessibilityIdentifier("deck_keyboard_done")
+                    }
                 }
                 .background(ClubhouseTheme.paperCard)
             }
@@ -253,11 +262,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
                     .font(.headline.weight(.bold))
                     .foregroundStyle(ClubhouseTheme.ink)
                     .frame(width: 44, height: 44)
-                    .background(ClubhouseTheme.paperCard, in: Circle())
-                    .overlay {
-                        Circle()
-                            .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-                    }
+                    .appGlass(cornerRadius: 22, isInteractive: true)
             }
             .buttonStyle(PressableButtonStyle())
             .accessibilityLabel("Cancel")
@@ -271,15 +276,19 @@ struct RoundEntryDeckView<Accessory: View>: View {
                 .columnHeaderStyle()
 
             ForEach(Array(session.players.enumerated()), id: \.element.id) { index, candidate in
-                HStack(spacing: AppTheme.spacingSmall) {
+                let layout = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
+                    : AnyLayout(HStackLayout(spacing: AppTheme.spacingSmall))
+                layout {
                     BauhausPlayerShape(colorIndex: candidate.colorIndex, size: 22)
 
                     Text(candidate.name)
                         .font(AppFonts.body.weight(index == currentIndex ? .bold : .regular))
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .lineLimit(1)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                        .fixedSize(horizontal: false, vertical: true)
 
-                    Spacer()
+                    if !dynamicTypeSize.isAccessibilitySize { Spacer() }
 
                     if let score = scores[candidate.id] {
                         Text("\(score)")

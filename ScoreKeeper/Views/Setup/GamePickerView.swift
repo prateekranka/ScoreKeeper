@@ -27,15 +27,12 @@ struct GamePickerView: View {
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
-            .padding(.bottom, 112)
+            .padding(.bottom, AppTheme.spacingXLarge)
             .pipCountPageContent()
         }
         .appBackground()
         .navigationTitle("")
-        .toolbar(.hidden, for: .navigationBar)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            PipCountDock(selected: .games, onSelect: selectTab)
-        }
+        .toolbar(horizontalSizeClass == .regular ? .visible : .hidden, for: .navigationBar)
         .onAppear { contentVisible = true }
     }
 
@@ -50,19 +47,7 @@ struct GamePickerView: View {
         return [GridItem(.flexible(), alignment: .top)]
     }
 
-    private func selectTab(_ tab: PipCountTab) {
-        switch tab {
-        case .home:
-            router.goHome()
-        case .games:
-            break
-        case .players:
-            router.goHome()
-            router.push(.players)
-        case .more:
-            router.push(.legalSupport)
-        }
-    }
+
 }
 
 private struct GamePickerHero: View {

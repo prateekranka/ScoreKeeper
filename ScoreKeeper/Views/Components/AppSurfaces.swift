@@ -57,9 +57,13 @@ struct ReleaseSheetHeader<Trailing: View>: View {
     let systemImage: String
     var titleIdentifier: String?
     @ViewBuilder var trailing: Trailing
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        HStack(spacing: 12) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(spacing: 12))
+        layout {
             Image(systemName: systemImage)
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.blue)
@@ -79,7 +83,7 @@ struct ReleaseSheetHeader<Trailing: View>: View {
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
-            Spacer(minLength: AppTheme.spacingSmall)
+            if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: AppTheme.spacingSmall) }
             trailing
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -119,8 +123,9 @@ struct AppActionButton<LabelContent: View>: View {
         Button(action: action) {
             label
                 .font(dynamicTypeSize.isAccessibilitySize ? .body.weight(.bold) : AppFonts.headline)
-                .lineLimit(dynamicTypeSize.isAccessibilitySize ? 2 : 1)
-                .minimumScaleFactor(0.72)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.72)
+                .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: 56)
@@ -149,11 +154,12 @@ struct AppActionButton<LabelContent: View>: View {
                 }
         }
         .buttonStyle(PressableButtonStyle())
-        .opacity(isEnabled ? 1 : 0.48)
+
     }
 
     private var foregroundStyle: Color {
-        switch role {
+        guard isEnabled else { return ClubhouseTheme.inkMuted }
+        return switch role {
         case .primary:
             ClubhouseTheme.onPrimary
         case .destructive:
@@ -164,7 +170,8 @@ struct AppActionButton<LabelContent: View>: View {
     }
 
     private var backgroundStyle: AnyShapeStyle {
-        switch role {
+        guard isEnabled else { return AnyShapeStyle(ClubhouseTheme.paperCard) }
+        return switch role {
         case .primary(let color):
             AnyShapeStyle(
                 LinearGradient(
@@ -241,9 +248,17 @@ func glassGroup<Content: View>(spacing: CGFloat = 8, @ViewBuilder content: () ->
 struct AppGlassModifier: ViewModifier {
     let cornerRadius: CGFloat
     let isInteractive: Bool
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
+        if reduceTransparency {
+            content
+                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                }
+        } else if #available(iOS 26.0, *) {
             if isInteractive {
                 content.glassEffect(.regular.interactive(), in: .rect(cornerRadius: cornerRadius))
             } else {
@@ -290,6 +305,10 @@ enum PipCountTab: String, CaseIterable {
     case players
     case more
 
+    var accessibilityIdentifier: String {
+        self == .more ? "legal_support_button" : "tab_\(rawValue)"
+    }
+
     var title: String {
         rawValue.capitalized
     }
@@ -320,86 +339,6 @@ enum PipCountTab: String, CaseIterable {
     }
 }
 
-/// Compact-width primary navigation. On iPad the root split view supplies a
-/// persistent sidebar instead, so the dock deliberately takes up no space.
-struct PipCountDock: View {
-    let selected: PipCountTab
-    let onSelect: (PipCountTab) -> Void
-
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-
-    @ViewBuilder
-    var body: some View {
-        if horizontalSizeClass != .regular {
-            dockContent
-        }
-    }
-
-    private var dockContent: some View {
-        ZStack(alignment: .bottom) {
-            LinearGradient(
-                colors: [ClubhouseTheme.paper.opacity(0), ClubhouseTheme.paper.opacity(0.96)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(height: 104)
-            .allowsHitTesting(false)
-
-            HStack(spacing: 4) {
-                ForEach(PipCountTab.allCases, id: \.rawValue) { tab in
-                    Button {
-                        onSelect(tab)
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: selected == tab ? tab.selectedSystemImage : tab.systemImage)
-                                .font(.system(size: 17, weight: selected == tab ? .bold : .medium))
-                            Text(tab.title)
-                                .font(.caption2.weight(selected == tab ? .bold : .medium))
-                                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.65)
-                        }
-                        .foregroundStyle(selected == tab ? ClubhouseTheme.blue : ClubhouseTheme.inkMuted)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 58)
-                        .background {
-                            if selected == tab {
-                                Capsule()
-                                    .fill(ClubhouseTheme.blue.opacity(0.09))
-                                    .padding(.horizontal, 2)
-                            }
-                        }
-                        .contentShape(Rectangle())
-                    }
-                    .buttonStyle(PressableButtonStyle())
-                    .accessibilityLabel(tab == .more ? "Legal & Support" : tab.title)
-                    .accessibilityHint(tab == .more ? "Opens privacy, legal, and support links" : "")
-                    .accessibilityIdentifier(tab == .more ? "legal_support_button" : "tab_\(tab.rawValue)")
-                    .accessibilityAddTraits(selected == tab ? .isSelected : [])
-                }
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 8)
-            .background(.ultraThinMaterial, in: Capsule())
-            .overlay {
-                Capsule()
-                    .strokeBorder(ClubhouseTheme.warmHighlight.opacity(0.72), lineWidth: 1.2)
-            }
-            .overlay {
-                Capsule()
-                    .inset(by: 1.5)
-                    .strokeBorder(ClubhouseTheme.rule.opacity(0.72), lineWidth: 0.75)
-            }
-            .shadow(color: ClubhouseTheme.paperShadow, radius: 22, y: 10)
-            .padding(.horizontal, 24)
-            .padding(.bottom, 6)
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-/// Persistent iPad navigation. The artwork and entitlement card use the same
-/// visual grammar as the phone UI while leaving the detail column uncluttered.
 struct PipCountSidebar: View {
     let selected: PipCountTab
     let onSelect: (PipCountTab) -> Void
@@ -522,8 +461,8 @@ struct PipCountSidebar: View {
 
                         Text(tab.sidebarTitle)
                             .font(AppFonts.body.weight(selected == tab ? .bold : .semibold))
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.78)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                            .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.78)
                             .fixedSize(horizontal: false, vertical: true)
                             .frame(maxWidth: .infinity, alignment: .leading)
 

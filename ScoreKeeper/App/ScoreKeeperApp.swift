@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import StoreKit
 
 @main
 struct ScoreKeeperApp: App {
@@ -205,22 +206,24 @@ private struct PipCountTabletRootView: View {
     @Environment(\.requestReview) private var requestReview
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    @State private var selectedTab: PipCountTab = .home
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var containerWidth: CGFloat = 0
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            PipCountSidebar(selected: selectedTab, onSelect: selectTab)
+            PipCountSidebar(selected: router.selectedTab, onSelect: selectTab)
                 .navigationSplitViewColumnWidth(min: 248, ideal: 292, max: 330)
         } detail: {
-            NavigationStack(path: $router.path) {
-                TabletHomeRoot {
-                    selectedTab = .home
-                }
-                .navigationDestination(for: AppDestination.self, destination: destinationView)
-            }
+            PipCountNavigationRoot(tab: router.selectedTab, router: router)
+                .id(router.selectedTab)
         }
         .navigationSplitViewStyle(.balanced)
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.size.width
+        } action: { width in
+            containerWidth = width
+            columnVisibility = width >= 760 ? .all : .detailOnly
+        }
         .environment(router)
         .environment(\.pipCountPageIsExiting, router.isPageExiting)
         .onChange(of: reviewAskManager.reviewRequestPending) { _, isPending in
@@ -237,57 +240,7 @@ private struct PipCountTabletRootView: View {
     }
 
     private func selectTab(_ tab: PipCountTab) {
-        selectedTab = tab
-
-        switch tab {
-        case .home:
-            router.goHome()
-        case .games:
-            router.goHome()
-            router.push(.gamePicker)
-        case .players:
-            router.goHome()
-            router.push(.players)
-        case .more:
-            router.goHome()
-            router.push(.legalSupport)
-        }
-    }
-
-    @ViewBuilder
-    private func destinationView(_ destination: AppDestination) -> some View {
-        switch destination {
-        case .gamePicker:
-            GamePickerView()
-        case .players:
-            SavedPlayersView()
-        case .playerSetup(let gameType):
-            PlayerSetupView(gameType: gameType)
-        case .gameConfig(let gameType, let playerNames):
-            GameConfigView(gameType: gameType, playerNames: playerNames)
-        case .scoring(let sessionID):
-            ScoringView(sessionID: sessionID)
-        case .gameOver(let sessionID):
-            GameOverView(sessionID: sessionID)
-        case .gameDetail(let sessionID):
-            GameDetailView(sessionID: sessionID)
-        case .gameHistory:
-            GameHistoryListView()
-        case .headToHead:
-            HeadToHeadView()
-        case .playerStats(let playerName):
-            PlayerStatsView(playerName: playerName)
-        case .legalSupport:
-            LegalSupportView()
-        }
-    }
-}
-
-private struct TabletHomeRoot: View {
-    let didAppear: () -> Void
-
-    var body: some View {
-        HomeView()
-            .onAppear(perform: didAppear)
+        router.selectedTab = tab
+        if containerWidth < 760 { columnVisibility = .detailOnly }
     }
 }

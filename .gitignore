@@ -52,3 +52,7 @@ Pods/
 # Playgrounds
 timeline.xctimeline
 playground.xcworkspace
+
+# Task-local TesterArmy output and shared installed dependencies
+.e2e*/
+node_modules

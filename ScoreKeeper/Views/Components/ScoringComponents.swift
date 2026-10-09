@@ -33,41 +33,38 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
 
     var body: some View {
         GeometryReader { proxy in
-            VStack(spacing: 0) {
-                Group {
-                    if headerStyle == .compact {
-                        CompactScoringGameHeader(session: session, availableWidth: proxy.size.width)
-                    } else {
-                        ScoringGameHeader(session: session, availableWidth: proxy.size.width)
-                    }
-                }
-                .pipCountPageContent(maxWidth: 980)
-
-                if showsToolsBar {
-                    ScoringToolsBar(session: session, selectedTool: $selectedTool)
-                        .pipCountPageContent(maxWidth: 980)
-                }
-
-                if showsScoreboardHeader {
-                    ScoreboardHeader(session: session, engine: engine)
-                        .pipCountPageContent(maxWidth: 980)
-                }
-
+            if dynamicTypeSize.isAccessibilitySize {
                 ScrollView {
-                    responsiveContent(availableWidth: proxy.size.width)
-                        .padding(.horizontal, AppTheme.spacingMedium)
-                        .padding(.top, AppTheme.spacingSmall)
-                        .padding(.bottom, bottomBarContentInset)
-                        .pipCountPageContent(maxWidth: 980)
+                    VStack(spacing: AppTheme.spacingMedium) {
+                        scoringHeader(availableWidth: proxy.size.width)
+                        responsiveContent(availableWidth: proxy.size.width)
+                            .padding(.horizontal, AppTheme.spacingMedium)
+                            .pipCountPageContent(maxWidth: 980)
+                        scoringActions
+                    }
+                    .padding(.bottom, AppTheme.spacingLarge)
                 }
-                .safeAreaInset(edge: .bottom) {
-                    scoringActions
+                .accessibilityIdentifier("scoring_accessible_scroll")
+            } else {
+                VStack(spacing: 0) {
+                    scoringHeader(availableWidth: proxy.size.width)
+
+                    ScrollView {
+                        responsiveContent(availableWidth: proxy.size.width)
+                            .padding(.horizontal, AppTheme.spacingMedium)
+                            .padding(.top, AppTheme.spacingSmall)
+                            .padding(.bottom, bottomBarContentInset)
+                            .pipCountPageContent(maxWidth: 980)
+                    }
+                    .safeAreaInset(edge: .bottom) {
+                        scoringActions
+                    }
                 }
             }
         }
         .sheet(item: $selectedTool) { tool in
             ScoringToolSheet(tool: tool, session: session)
-                .presentationDetents([.medium, .large])
+                .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
         }
         .alert(
             "couldn’t update rounds",
@@ -82,6 +79,27 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
         }
         .onAppear { contentVisible = true }
         .onDisappear { actionUnlockTask?.cancel() }
+    }
+
+    @ViewBuilder
+    private func scoringHeader(availableWidth: CGFloat) -> some View {
+        Group {
+            if headerStyle == .compact {
+                CompactScoringGameHeader(session: session, availableWidth: availableWidth)
+            } else {
+                ScoringGameHeader(session: session, availableWidth: availableWidth)
+            }
+        }
+        .pipCountPageContent(maxWidth: 980)
+
+        if showsToolsBar {
+            ScoringToolsBar(session: session, selectedTool: $selectedTool)
+                .pipCountPageContent(maxWidth: 980)
+        }
+        if showsScoreboardHeader {
+            ScoreboardHeader(session: session, engine: engine)
+                .pipCountPageContent(maxWidth: 980)
+        }
     }
 
     /// Column choice follows the actual container width, not the size class:
@@ -122,7 +140,10 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                 .disabled(isActionLocked)
                 .accessibilityIdentifier("submit_round_button")
 
-                HStack(spacing: AppTheme.spacingSmall) {
+                let utilityLayout = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(spacing: AppTheme.spacingSmall))
+                    : AnyLayout(HStackLayout(spacing: AppTheme.spacingSmall))
+                utilityLayout {
                     Button {
                         if undoLastRound() {
                             undoTrigger &+= 1
@@ -156,9 +177,13 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
 
     private func compactActionLabel(_ title: String, systemImage: String) -> some View {
         Label(title, systemImage: systemImage)
-            .font(dynamicTypeSize.isAccessibilitySize ? .caption.weight(.semibold) : AppFonts.body.weight(.semibold))
-            .lineLimit(1)
-            .minimumScaleFactor(0.65)
+            .font(dynamicTypeSize.isAccessibilitySize ? .body.weight(.semibold) : AppFonts.body.weight(.semibold))
+            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+            .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.65)
+            .fixedSize(horizontal: false, vertical: true)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 8)
+            .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 8 : 0)
             .foregroundStyle(ClubhouseTheme.ink)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 46)
@@ -221,21 +246,21 @@ private struct CompactScoringGameHeader: View {
                     Text(session.gameType.displayName)
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.7)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                        .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.7)
                 }
 
                 Text("round \(session.currentRoundNumber)")
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.blue)
                     .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                    .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.7)
 
                 Text(session.players.count.quantityText("player").uppercased())
                     .columnHeaderStyle()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                    .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.7)
             }
 
             Spacer(minLength: AppTheme.spacingSmall)
@@ -366,11 +391,15 @@ private enum ScoringTool: String, CaseIterable, Identifiable {
 }
 
 private struct ScoringToolsBar: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let session: GameSession
     @Binding var selectedTool: ScoringTool?
 
     var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
+            : AnyLayout(HStackLayout(spacing: AppTheme.spacingSmall))
+        layout {
             Text("round \(session.currentRoundNumber)")
                 .columnHeaderStyle()
                 .foregroundStyle(ClubhouseTheme.blue)
@@ -381,12 +410,14 @@ private struct ScoringToolsBar: View {
                         .strokeBorder(ClubhouseTheme.blue, lineWidth: 1.5)
                 }
                 .rotationEffect(.degrees(-2))
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                .fixedSize(horizontal: false, vertical: true)
+                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.75)
                 .accessibilityLabel("\(session.gameType.displayName), Round \(session.currentRoundNumber)")
 
-            Spacer()
+            if !dynamicTypeSize.isAccessibilitySize { Spacer() }
 
+            HStack(spacing: AppTheme.spacingSmall) {
             ForEach(ScoringTool.allCases) { tool in
                 Button {
                     selectedTool = tool
@@ -400,6 +431,7 @@ private struct ScoringToolsBar: View {
                 }
                 .buttonStyle(PressableButtonStyle())
                 .accessibilityLabel(tool.title)
+            }
             }
         }
         .padding(.horizontal, AppTheme.spacingMedium)
@@ -416,6 +448,7 @@ private struct ScoringToolSheet: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var dieRoll = 1
     @State private var selectedStarter: Player?
     @State private var pausedTimerSeconds = 60
@@ -492,13 +525,16 @@ private struct ScoringToolSheet: View {
                     .contentTransition(.numericText())
             }
 
-            HStack(spacing: AppTheme.spacingSmall) {
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(spacing: AppTheme.spacingSmall))
+                : AnyLayout(HStackLayout(spacing: AppTheme.spacingSmall))
+            layout {
                 timerPreset("30s", seconds: 30)
                 timerPreset("1m", seconds: 60)
                 timerPreset("2m", seconds: 120)
             }
 
-            HStack(spacing: AppTheme.spacingSmall) {
+            layout {
                 AppActionButton(role: .primary(ClubhouseTheme.red), action: toggleTimer) {
                     Label(timerEndDate == nil ? "start" : "pause", systemImage: timerEndDate == nil ? "play.fill" : "pause.fill")
                 }
@@ -506,7 +542,9 @@ private struct ScoringToolSheet: View {
                 Button("reset", action: resetTimer)
                     .font(AppFonts.body.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.ink)
-                    .frame(width: 92, height: 56)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : 92)
+                    .frame(minHeight: 56)
                     .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous))
                     .overlay {
                         RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
@@ -709,6 +747,7 @@ struct RoundBanner: View {
 }
 
 struct RoundHistoryStrip: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let session: GameSession
 
     var body: some View {
@@ -720,10 +759,18 @@ struct RoundHistoryStrip: View {
                     systemImage: "clock.arrow.circlepath"
                 )
 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: AppTheme.spacingSmall) {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(spacing: AppTheme.spacingMedium) {
                         ForEach(session.sortedRounds, id: \.id) { round in
                             roundCard(round)
+                        }
+                    }
+                } else {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: AppTheme.spacingSmall) {
+                            ForEach(session.sortedRounds, id: \.id) { round in
+                                roundCard(round)
+                            }
                         }
                     }
                 }
@@ -739,15 +786,20 @@ struct RoundHistoryStrip: View {
                 .columnHeaderStyle()
 
             ForEach(session.players, id: \.id) { player in
-                HStack(spacing: 6) {
+                let layout = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))
+                    : AnyLayout(HStackLayout(spacing: 6))
+                layout {
                     PlayerColorPip(colorIndex: player.colorIndex, size: 10)
 
                     Text(player.name)
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .lineLimit(1)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("round_history_\(round.roundNumber)_player_\(player.name)")
 
-                    Spacer(minLength: AppTheme.spacingSmall)
+                    if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: AppTheme.spacingSmall) }
 
                     Text("\(round.entry(for: player.id)?.points ?? 0)")
                         .font(AppFonts.caption.weight(.semibold))
@@ -757,7 +809,10 @@ struct RoundHistoryStrip: View {
             }
         }
         .padding(AppTheme.spacingSmall)
-        .frame(width: 140, alignment: .leading)
+        .frame(width: dynamicTypeSize.isAccessibilitySize ? nil : 140, alignment: .leading)
+        .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil, alignment: .leading)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("round_history_\(round.roundNumber)_card")
         .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)

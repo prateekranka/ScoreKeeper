@@ -27,15 +27,12 @@ struct LegalSupportView: View {
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
-            .padding(.bottom, horizontalSizeClass == .regular ? AppTheme.spacingXLarge : 118)
+            .padding(.bottom, AppTheme.spacingXLarge)
             .pipCountPageContent(maxWidth: 1_080)
         }
         .appBackground()
         .navigationTitle("more")
         .navigationBarTitleDisplayMode(.inline)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            PipCountDock(selected: .more, onSelect: selectTab)
-        }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
                 .presentationDetents([.large])
@@ -120,7 +117,10 @@ struct LegalSupportView: View {
                 compact: true
             )
 
-            HStack(spacing: 5) {
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(spacing: AppTheme.spacingSmall))
+                : AnyLayout(HStackLayout(spacing: 5))
+            layout {
                 appearanceButton(
                     mode: "system",
                     title: "system",
@@ -158,12 +158,13 @@ struct LegalSupportView: View {
 
                 Text(title)
                     .font(AppFonts.caption.weight(.bold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.72)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                    .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.72)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .foregroundStyle(isSelected ? ClubhouseTheme.onPrimary : ClubhouseTheme.ink)
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 36)
+            .frame(minHeight: 44)
             .background {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
                     .fill(isSelected ? ClubhouseTheme.blue : ClubhouseTheme.paperSunken)
@@ -324,20 +325,7 @@ struct LegalSupportView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func selectTab(_ tab: PipCountTab) {
-        switch tab {
-        case .home:
-            router.goHome()
-        case .games:
-            router.goHome()
-            router.push(.gamePicker)
-        case .players:
-            router.goHome()
-            router.push(.players)
-        case .more:
-            break
-        }
-    }
+
 }
 
 private struct LegalSupportLink: View {

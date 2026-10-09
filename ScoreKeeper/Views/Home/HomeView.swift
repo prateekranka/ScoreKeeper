@@ -51,17 +51,15 @@ struct HomeView: View {
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
+            .padding(.bottom, AppTheme.spacingXLarge)
             .pipCountPageContent()
         }
         .appBackground()
         .navigationTitle("")
-        .toolbar(.hidden, for: .navigationBar)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            PipCountDock(selected: .home, onSelect: selectTab)
-        }
+        .toolbar(horizontalSizeClass == .regular ? .visible : .hidden, for: .navigationBar)
         .sheet(item: $selectedTool) { tool in
             HomeToolSheet(tool: tool, activeGame: inProgressGames.first)
-                .presentationDetents([.medium, .large])
+                .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
@@ -169,18 +167,7 @@ struct HomeView: View {
         }
     }
 
-    private func selectTab(_ tab: PipCountTab) {
-        switch tab {
-        case .home:
-            break
-        case .games:
-            router.push(.gamePicker)
-        case .players:
-            router.push(.players)
-        case .more:
-            router.push(.legalSupport)
-        }
-    }
+
 
     private func requestDelete(_ session: GameSession) {
         pendingDeletionID = session.persistentModelID
@@ -787,6 +774,7 @@ private struct QuietLinkRow: View {
 // MARK: - Home tools
 
 private struct HomeQuickToolsRow: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Binding var selectedTool: HomeTool?
 
     var body: some View {
@@ -795,7 +783,10 @@ private struct HomeQuickToolsRow: View {
                 .columnHeaderStyle()
 
             glassGroup(spacing: AppTheme.spacingSmall) {
-                HStack(spacing: AppTheme.spacingSmall) {
+                let layout = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(spacing: AppTheme.spacingSmall))
+                    : AnyLayout(HStackLayout(spacing: AppTheme.spacingSmall))
+                layout {
                     ForEach(HomeTool.allCases) { tool in
                         HomeToolButton(tool: tool) {
                             selectedTool = tool
@@ -808,6 +799,7 @@ private struct HomeQuickToolsRow: View {
 }
 
 private struct HomeToolButton: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let tool: HomeTool
     let action: () -> Void
 
@@ -815,20 +807,22 @@ private struct HomeToolButton: View {
         Button(action: action) {
             VStack(spacing: 6) {
                 Image(systemName: tool.systemImage)
-                    .font(.title3.weight(.semibold))
-                    .frame(width: 38, height: 38)
+                    .font(dynamicTypeSize.isAccessibilitySize ? .system(size: 24, weight: .semibold) : .title3.weight(.semibold))
+                    .frame(width: dynamicTypeSize.isAccessibilitySize ? 44 : 38, height: dynamicTypeSize.isAccessibilitySize ? 44 : 38)
                     .background(ClubhouseTheme.paperCard.opacity(0.76), in: Circle())
                     .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
                     .foregroundStyle(tool.tint)
 
                 Text(tool.title)
                     .font(AppFonts.caption.weight(.semibold))
-                    .lineLimit(2)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                     .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.8)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 88)
+            .frame(height: dynamicTypeSize.isAccessibilitySize ? nil : 88)
+            .frame(minHeight: 88)
             .padding(.horizontal, 4)
             .appGlass(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
         }
@@ -892,6 +886,7 @@ private struct HomeToolSheet: View {
 
     var body: some View {
         NavigationStack {
+            ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
                 ZStack {
                     Circle()
@@ -926,9 +921,10 @@ private struct HomeToolSheet: View {
                     selectedStarter: $selectedStarter
                 )
 
-                Spacer()
             }
+            .frame(maxWidth: .infinity)
             .padding(AppTheme.spacingLarge)
+            }
             .appBackground()
             .navigationTitle(tool.title)
             .navigationBarTitleDisplayMode(.inline)
@@ -1083,15 +1079,12 @@ struct SavedPlayersView: View {
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
-            .padding(.bottom, 108)
+            .padding(.bottom, AppTheme.spacingXLarge)
             .pipCountPageContent()
         }
         .appBackground()
         .navigationTitle("")
-        .toolbar(.hidden, for: .navigationBar)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            PipCountDock(selected: .players, onSelect: selectTab)
-        }
+        .toolbar(horizontalSizeClass == .regular ? .visible : .hidden, for: .navigationBar)
         .sheet(isPresented: $showAddPlayer) {
             AddSavedPlayerSheet()
         }
@@ -1104,19 +1097,7 @@ struct SavedPlayersView: View {
             : [GridItem(.flexible())]
     }
 
-    private func selectTab(_ tab: PipCountTab) {
-        switch tab {
-        case .home:
-            router.goHome()
-        case .games:
-            router.goHome()
-            router.push(.gamePicker)
-        case .players:
-            break
-        case .more:
-            router.push(.legalSupport)
-        }
-    }
+
 }
 
 private struct PlayersLibraryHero: View {
@@ -1198,6 +1179,7 @@ private struct SavedPlayerCard: View {
 }
 
 private struct AddSavedPlayerSheet: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query private var savedPlayers: [SavedPlayer]
@@ -1267,7 +1249,7 @@ private struct AddSavedPlayerSheet: View {
             }
             .onAppear { isNameFocused = true }
         }
-        .presentationDetents([.medium])
+        .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
     }
 
     private func savePlayer() {

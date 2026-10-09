@@ -156,17 +156,21 @@ enum GenericRoundPersistence {
 }
 
 private struct GenericTotalsList: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let session: GameSession
     let engine: GameEngine
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .firstTextBaseline) {
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
+                : AnyLayout(HStackLayout(alignment: .firstTextBaseline))
+            layout {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("running totals").font(AppFonts.title).foregroundStyle(ClubhouseTheme.ink)
                     Text("add this round with handwriting").font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted)
                 }
-                Spacer()
+                if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                 Text(session.winCondition == .highestScore ? "highest wins" : "lowest wins")
                     .columnHeaderStyle().foregroundStyle(ClubhouseTheme.blue)
             }
@@ -174,15 +178,18 @@ private struct GenericTotalsList: View {
             Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
             ForEach(Array(session.players.enumerated()), id: \.element.id) { index, player in
                 let lastEntry = session.sortedRounds.last?.entries.first(where: { $0.playerID == player.id })
-                HStack(spacing: AppTheme.spacingSmall) {
+                layout {
                     BauhausPlayerShape(colorIndex: player.colorIndex, size: 34)
                     VStack(alignment: .leading, spacing: 1) {
-                        Text(player.name).font(AppFonts.headline).foregroundStyle(ClubhouseTheme.ink).lineLimit(1)
+                        Text(player.name).font(AppFonts.headline).foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                            .fixedSize(horizontal: false, vertical: true)
                         Text(lastRoundText(lastEntry))
                             .font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted).monospacedDigit()
                     }
-                    Spacer()
+                    if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                     Text("\(player.totalScore(in: session))").font(AppFonts.scoreMedium).monospacedDigit().foregroundStyle(ClubhouseTheme.ink)
+                        .accessibilityIdentifier("running_total_\(player.name)")
                 }
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.vertical, 10)

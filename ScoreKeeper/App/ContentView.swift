@@ -1,11 +1,25 @@
 import SwiftUI
+import UIKit
 import SwiftData
 import StoreKit
 import Observation
 
 @MainActor @Observable
 class NavigationRouter {
-    var path = NavigationPath()
+    var selectedTab: PipCountTab = .home
+    private var paths: [PipCountTab: NavigationPath] = [:]
+
+    var path: NavigationPath {
+        get { paths[selectedTab] ?? NavigationPath() }
+        set { paths[selectedTab] = newValue }
+    }
+
+    func pathBinding(for tab: PipCountTab) -> Binding<NavigationPath> {
+        Binding(
+            get: { self.paths[tab] ?? NavigationPath() },
+            set: { self.paths[tab] = $0 }
+        )
+    }
     var isPageExiting = false
 
     @ObservationIgnored private var reduceMotion = false
@@ -19,12 +33,26 @@ class NavigationRouter {
     func goHome() {
         transition {
             self.path = NavigationPath()
+            self.selectedTab = .home
+            self.path = NavigationPath()
         }
     }
 
     func push(_ destination: AppDestination) {
         transition {
-            self.path.append(destination)
+            switch destination {
+            case .gamePicker:
+                self.selectedTab = .games
+                self.path = NavigationPath()
+            case .players:
+                self.selectedTab = .players
+                self.path = NavigationPath()
+            case .legalSupport:
+                self.selectedTab = .more
+                self.path = NavigationPath()
+            default:
+                self.path.append(destination)
+            }
         }
     }
 
@@ -91,35 +119,18 @@ struct ContentView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
-        NavigationStack(path: $router.path) {
-            HomeView()
-                .navigationDestination(for: AppDestination.self) { destination in
-                    switch destination {
-                    case .gamePicker:
-                        GamePickerView()
-                    case .players:
-                        SavedPlayersView()
-                    case .playerSetup(let gameType):
-                        PlayerSetupView(gameType: gameType)
-                    case .gameConfig(let gameType, let playerNames):
-                        GameConfigView(gameType: gameType, playerNames: playerNames)
-                    case .scoring(let sessionID):
-                        ScoringView(sessionID: sessionID)
-                    case .gameOver(let sessionID):
-                        GameOverView(sessionID: sessionID)
-                    case .gameDetail(let sessionID):
-                        GameDetailView(sessionID: sessionID)
-                    case .gameHistory:
-                        GameHistoryListView()
-                    case .headToHead:
-                        HeadToHeadView()
-                    case .playerStats(let playerName):
-                        PlayerStatsView(playerName: playerName)
-                    case .legalSupport:
-                        LegalSupportView()
+        TabView(selection: $router.selectedTab) {
+            ForEach(PipCountTab.allCases, id: \.self) { tab in
+                PipCountNavigationRoot(tab: tab, router: router)
+                    .background(NativeTabIdentifiers().frame(width: 0, height: 0))
+                    .tabItem {
+                        Label(tab.title.capitalized, systemImage: tab.systemImage)
+                            .accessibilityIdentifier(tab.accessibilityIdentifier)
                     }
-                }
+                    .tag(tab)
+            }
         }
+        .tint(ClubhouseTheme.blue)
         .environment(router)
         .environment(\.pipCountPageIsExiting, router.isPageExiting)
         .fullScreenCover(isPresented: onboardingBinding) {
@@ -167,6 +178,93 @@ struct ContentView: View {
 
         didApplyOnboardingReset = true
         hasCompletedOnboarding = false
+    }
+}
+
+/// SwiftUI does not forward tab-label identifiers to native tab items.
+/// Set accessibility metadata through public UIKit APIs; leave rendering native.
+private struct NativeTabIdentifiers: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> Controller { Controller() }
+
+    func updateUIViewController(_ controller: Controller, context: Context) {
+        controller.updateIdentifiers()
+    }
+
+    final class Controller: UIViewController {
+        override func loadView() {
+            view = UIView()
+            view.isUserInteractionEnabled = false
+            view.backgroundColor = .clear
+        }
+
+        override func didMove(toParent parent: UIViewController?) {
+            super.didMove(toParent: parent)
+            updateIdentifiers()
+        }
+
+        override func viewDidAppear(_ animated: Bool) {
+            super.viewDidAppear(animated)
+            updateIdentifiers()
+        }
+
+        func updateIdentifiers() {
+            var ancestor = parent
+            while let controller = ancestor {
+                if let tabs = controller as? UITabBarController,
+                   let items = tabs.tabBar.items,
+                   items.count == PipCountTab.allCases.count {
+                    for (item, tab) in zip(items, PipCountTab.allCases) {
+                        item.accessibilityIdentifier = tab.accessibilityIdentifier
+                    }
+                    return
+                }
+                ancestor = controller.parent
+            }
+        }
+    }
+}
+
+/// Both shells use the same tab routes. The router owns their paths across resizing.
+struct PipCountNavigationRoot: View {
+    let tab: PipCountTab
+    @Bindable var router: NavigationRouter
+
+    var body: some View {
+        NavigationStack(path: router.pathBinding(for: tab)) {
+            root
+                .navigationDestination(for: AppDestination.self) { destination in
+                    destinationView(destination)
+                        .toolbar(.hidden, for: .tabBar)
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var root: some View {
+        switch tab {
+        case .home: HomeView()
+        case .games: GamePickerView()
+        case .players: SavedPlayersView()
+        case .more: LegalSupportView()
+        }
+    }
+
+    @ViewBuilder
+    private func destinationView(_ destination: AppDestination) -> some View {
+        switch destination {
+        case .gamePicker: GamePickerView()
+        case .players: SavedPlayersView()
+        case .playerSetup(let gameType): PlayerSetupView(gameType: gameType)
+        case .gameConfig(let gameType, let playerNames):
+            GameConfigView(gameType: gameType, playerNames: playerNames)
+        case .scoring(let sessionID): ScoringView(sessionID: sessionID)
+        case .gameOver(let sessionID): GameOverView(sessionID: sessionID)
+        case .gameDetail(let sessionID): GameDetailView(sessionID: sessionID)
+        case .gameHistory: GameHistoryListView()
+        case .headToHead: HeadToHeadView()
+        case .playerStats(let playerName): PlayerStatsView(playerName: playerName)
+        case .legalSupport: LegalSupportView()
+        }
     }
 }
 
