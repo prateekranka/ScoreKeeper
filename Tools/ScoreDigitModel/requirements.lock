@@ -1,0 +1,7 @@
+# Top-level pins for the offline training/evaluation/export environment.
+# Use a supported CPython 3.11 interpreter; this repository does not vendor a
+# virtual environment or any model weights.
+numpy==1.26.4
+Pillow==10.4.0
+torch==2.4.1
+coremltools==8.3.0

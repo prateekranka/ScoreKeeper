@@ -14,16 +14,16 @@ enum GameType: String, Codable, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .generic: return "Scoreboard"
-        case .whatsForDinner: return "What's for Dinner"
-        case .phase10: return "Ten Phases"
+        case .generic: return "scoreboard"
+        case .whatsForDinner: return "what's for dinner"
+        case .phase10: return "ten phases"
         }
     }
 
     var subtitle: String {
         switch self {
-        case .generic: return "Track any game"
-        case .whatsForDinner: return "Lowest hand wins"
+        case .generic: return "track any game"
+        case .whatsForDinner: return "lowest hand wins"
         case .phase10: return "ten-stage card-game scoring"
         }
     }
@@ -64,7 +64,7 @@ enum TargetScoreConfiguration {
         guard !value.isEmpty else { return nil }
 
         guard let score = Int(value), score > 0 else {
-            return "Enter a whole number greater than zero, or leave it blank."
+            return "enter a whole number greater than zero, or leave it blank"
         }
         return nil
     }

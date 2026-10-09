@@ -3,15 +3,21 @@ import SwiftData
 
 struct PlayerSetupView: View {
     let gameType: GameType
+
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
     @Environment(StoreManager.self) private var storeManager
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     @Query(sort: \Player.name) private var allPlayers: [Player]
     @State private var playerNames: [String] = ["", ""]
     @FocusState private var focusedIndex: Int?
     @State private var showRoster = false
     @State private var showPaywall = false
     @State private var saveError: String?
+    @State private var contentVisible = false
+    @State private var isStartingGame = false
 
     private var recentNames: [String] {
         Array(Set(allPlayers.map(\.name)).filter { !$0.isEmpty }).sorted().prefix(20).map { $0 }
@@ -22,72 +28,52 @@ struct PlayerSetupView: View {
     }
 
     private var cleanedNames: [String] {
-        playerNames.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+        playerNames.map { $0.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() }
     }
 
     private var playableNames: [String] {
         cleanedNames.enumerated().map { index, name in
-            name.isEmpty ? "Player \(index + 1)" : name
+            name.isEmpty ? "player \(index + 1)" : name
         }
     }
 
     private var validationMessage: String? {
         let filledNames = cleanedNames.filter { !$0.isEmpty }
         if filledNames.count < gameType.minPlayers {
-            return "Add at least \(gameType.minPlayers) players."
+            return "add at least \(gameType.minPlayers) players"
         }
         if playerNames.count > gameType.maxPlayers {
-            return "This game supports up to \(gameType.maxPlayers) players."
+            return "this game supports up to \(gameType.maxPlayers) players"
         }
-        let lowercaseNames = filledNames.map { $0.lowercased() }
+        let lowercaseNames = playableNames.map { $0.lowercased() }
         if Set(lowercaseNames).count != lowercaseNames.count {
-            return "Player names must be unique."
+            return "player names must be unique"
         }
         return nil
     }
 
     var body: some View {
         ScrollView {
-            VStack(spacing: AppTheme.spacingMedium) {
+            VStack(spacing: AppTheme.spacingLarge) {
                 SetupPlayerHeader(gameType: gameType)
+                    .staggeredEntrance(visible: contentVisible, index: 0)
 
-                if !recentNames.isEmpty {
-                    SavedPlayersBar(
-                        names: recentNames,
-                        cleanedNames: cleanedNames,
-                        onTap: addRosterNames
-                    )
-                }
-
-                PlayerNameFields(
-                    playerNames: $playerNames,
-                    focusedIndex: $focusedIndex,
-                    gameType: gameType
-                )
-
-                AddPlayerControls(
-                    gameType: gameType,
-                    playerCount: playerNames.count,
-                    onAdd: addPlayer,
-                    onRoster: { showRoster = true }
-                )
-
-                if let validationMessage {
-                    Text(validationMessage)
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.lacquer)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                responsiveForm
             }
             .padding(.horizontal, AppTheme.spacingMedium)
-            .padding(.top, 8)
-            .padding(.bottom, 96)
+            .padding(.top, AppTheme.spacingSmall)
+            .padding(.bottom, 112)
+            .pipCountPageContent(maxWidth: 980)
         }
         .appBackground()
-        .navigationTitle("Players")
+        .navigationTitle("players")
+        .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
-            AppActionButton(role: canStart ? .primary(ClubhouseTheme.blue) : .secondary, action: startGame) {
-                Label("Continue", systemImage: "arrow.right")
+            AppActionButton(
+                role: canStart ? .primary(ClubhouseTheme.blue) : .secondary,
+                action: startGame
+            ) {
+                Label("continue", systemImage: "arrow.right")
             }
             .accessibilityIdentifier("start_game_button")
             .disabled(!canStart)
@@ -96,6 +82,7 @@ struct PlayerSetupView: View {
             .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.bottom, AppTheme.spacingSmall)
+            .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
         }
         .sheet(isPresented: $showRoster) {
             PlayerRosterSheet { names in addRosterNames(names) }
@@ -105,28 +92,147 @@ struct PlayerSetupView: View {
                 .presentationDetents([.large])
         }
         .alert(
-            "Couldn’t save game",
+            "couldn’t save game",
             isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
             )
         ) {
-            Button("OK", role: .cancel) { saveError = nil }
+            Button("ok", role: .cancel) { saveError = nil }
         } message: {
-            Text(saveError ?? "Please try again.")
+            Text(saveError ?? "please try again")
+        }
+        .onAppear {
+            contentVisible = true
+            // Returning from configuration (or a popped flow) must release
+            // the start lock so Continue works again (PC17-004).
+            isStartingGame = false
+        }
+    }
+
+    @ViewBuilder
+    private var responsiveForm: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            stackedPlayerForm
+        } else {
+            // Use remaining detail width, not size class. A regular iPad
+            // still has a narrow column when the native sidebar is open.
+            ViewThatFits(in: .horizontal) {
+                sideBySidePlayerForm
+                stackedPlayerForm
+            }
+        }
+    }
+
+    private var sideBySidePlayerForm: some View {
+        HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
+            VStack(spacing: AppTheme.spacingMedium) {
+                if !recentNames.isEmpty {
+                    SavedPlayersBar(
+                        names: recentNames,
+                        cleanedNames: cleanedNames,
+                        onTap: addRosterNames
+                    )
+                    .staggeredEntrance(visible: contentVisible, index: 1)
+                }
+
+                PlayerNameFields(
+                    playerNames: $playerNames,
+                    focusedIndex: $focusedIndex,
+                    gameType: gameType
+                )
+                .staggeredEntrance(visible: contentVisible, index: 2)
+            }
+            .frame(minWidth: 280, maxWidth: .infinity)
+
+            VStack(spacing: AppTheme.spacingMedium) {
+                AddPlayerControls(
+                    gameType: gameType,
+                    playerCount: playerNames.count,
+                    onAdd: addPlayer,
+                    onRoster: { showRoster = true }
+                )
+
+                validationBanner
+            }
+            .frame(width: 330)
+            .layoutPriority(1)
+            .staggeredEntrance(visible: contentVisible, index: 3)
+        }
+    }
+
+    private var stackedPlayerForm: some View {
+        VStack(spacing: AppTheme.spacingMedium) {
+            if !recentNames.isEmpty {
+                SavedPlayersBar(
+                    names: recentNames,
+                    cleanedNames: cleanedNames,
+                    onTap: addRosterNames
+                )
+                .staggeredEntrance(visible: contentVisible, index: 1)
+            }
+
+            PlayerNameFields(
+                playerNames: $playerNames,
+                focusedIndex: $focusedIndex,
+                gameType: gameType
+            )
+            .staggeredEntrance(visible: contentVisible, index: 2)
+
+            AddPlayerControls(
+                gameType: gameType,
+                playerCount: playerNames.count,
+                onAdd: addPlayer,
+                onRoster: { showRoster = true }
+            )
+            .staggeredEntrance(visible: contentVisible, index: 3)
+
+            validationBanner
+                .staggeredEntrance(visible: contentVisible, index: 4)
+        }
+    }
+
+    @ViewBuilder
+    private var validationBanner: some View {
+        if let validationMessage {
+            HStack(spacing: AppTheme.spacingSmall) {
+                Rectangle()
+                    .fill(ClubhouseTheme.red)
+                    .frame(width: 8, height: 8)
+                    .rotationEffect(.degrees(45))
+
+                Text(validationMessage)
+                    .font(AppFonts.caption.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Spacer(minLength: 0)
+            }
+            .padding(AppTheme.spacingSmall)
+            .background(ClubhouseTheme.red.opacity(0.07), in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                    .strokeBorder(ClubhouseTheme.red.opacity(0.22), lineWidth: 1)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
     private func addPlayer() {
-        withAnimation {
+        withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
             playerNames.append("")
             focusedIndex = playerNames.count - 1
         }
     }
 
     private func startGame() {
+        // The start action both creates sessions and pushes navigation; a
+        // rapid second activation must not create a second game, stack a
+        // duplicate destination, or consume another free game (PC17-004).
+        guard !isStartingGame else { return }
+
         let names = playableNames
         if gameType == .generic || gameType == .phase10 {
+            isStartingGame = true
             router.push(.gameConfig(gameType, names))
         } else {
             guard storeManager.canStartNewGame else {
@@ -134,19 +240,26 @@ struct PlayerSetupView: View {
                 return
             }
 
-            guard let session = createSession(names: names) else { return }
+            isStartingGame = true
+
+            guard let session = createSession(names: names) else {
+                isStartingGame = false
+                return
+            }
             storeManager.recordGameStarted()
             router.push(.scoring(session.persistentModelID))
         }
     }
 
     private func addRosterNames(_ names: [String]) {
-        for name in names where playerNames.count <= gameType.maxPlayers {
-            guard !cleanedNames.contains(where: { $0.caseInsensitiveCompare(name) == .orderedSame }) else { continue }
-            if let emptyIndex = playerNames.firstIndex(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
-                playerNames[emptyIndex] = name
-            } else if playerNames.count < gameType.maxPlayers {
-                playerNames.append(name)
+        withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
+            for name in names where playerNames.count <= gameType.maxPlayers {
+                guard !cleanedNames.contains(where: { $0.caseInsensitiveCompare(name) == .orderedSame }) else { continue }
+                if let emptyIndex = playerNames.firstIndex(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
+                    playerNames[emptyIndex] = name
+                } else if playerNames.count < gameType.maxPlayers {
+                    playerNames.append(name)
+                }
             }
         }
     }
@@ -196,43 +309,66 @@ struct PlayerSetupView: View {
 
 private struct SetupPlayerHeader: View {
     let gameType: GameType
+
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
-        let layout = dynamicTypeSize.isAccessibilitySize
-            ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingMedium))
-            : AnyLayout(HStackLayout(alignment: .bottom, spacing: AppTheme.spacingMedium))
+        Group {
+            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+                HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
+                    copy
+                        .frame(maxWidth: 360, alignment: .leading)
 
-        layout {
-            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                Text("Add\nPlayers")
-                    .font(AppFonts.hero)
-                    .foregroundStyle(ClubhouseTheme.ink)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text("Build tonight's lineup.")
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-
-                Label(gameType.displayName, systemImage: gameType.icon)
-                    .font(AppFonts.caption.weight(.bold))
-                    .foregroundStyle(gameType.color)
-                    .padding(.top, 4)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            if !dynamicTypeSize.isAccessibilitySize {
-                ZStack {
-                    BauhausBlocksArtwork(compact: true)
-                        .frame(width: 176, height: 154)
-                    BauhausHalftone(color: ClubhouseTheme.ink)
-                        .frame(width: 72, height: 72)
-                        .offset(x: -54, y: 28)
+                    PipCountGeometricArtwork(scene: .playerSetup)
+                        .frame(maxWidth: 470)
+                        .frame(height: 290)
                 }
-                .frame(width: 176, height: 154)
+            } else if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                    copy
+                    PipCountGeometricArtwork(scene: .playerSetup)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 210)
+                }
+            } else {
+                HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
+                    copy
+                        .fixedSize(horizontal: true, vertical: false)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    PipCountGeometricArtwork(scene: .playerSetup)
+                        .aspectRatio(166.0 / 172.0, contentMode: .fit)
+                        .frame(maxWidth: 166, maxHeight: 172)
+                }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private var copy: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text("add\nplayers")
+                .font(AppFonts.hero)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text("build tonight's lineup")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+
+            HStack(spacing: 7) {
+                Rectangle()
+                    .fill(gameType.color)
+                    .frame(width: 9, height: 9)
+                    .rotationEffect(.degrees(45))
+
+                Text(gameType.displayName)
+                    .font(AppFonts.caption.weight(.bold))
+                    .foregroundStyle(gameType.color)
+            }
+            .padding(.top, 4)
+        }
     }
 }
 
@@ -244,8 +380,8 @@ private struct SavedPlayersBar: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             AppSectionHeader(
-                title: "Saved Players",
-                subtitle: "Tap names to fill the table faster.",
+                title: "saved players",
+                subtitle: "tap names to fill the table faster",
                 systemImage: "person.crop.circle.badge.plus"
             )
 
@@ -266,6 +402,8 @@ private struct SavedPlayersBar: View {
                 }
             }
         }
+        .padding(AppTheme.spacingMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 }
 
@@ -273,27 +411,52 @@ private struct PlayerNameFields: View {
     @Binding var playerNames: [String]
     var focusedIndex: FocusState<Int?>.Binding
     let gameType: GameType
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingSmall) {
-            ForEach(playerNames.indices, id: \.self) { index in
-                PlayerNameRow(
-                    name: $playerNames[index],
-                    index: index,
-                    canRemove: playerNames.count > 2,
-                    focusedIndex: focusedIndex,
-                    onRemove: { removePlayer(at: index) }
-                )
+        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            HStack {
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("tonight's players")
+                        .font(AppFonts.title)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                    Text("\(playerNames.count) of \(gameType.maxPlayers) seats filled")
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                }
+
+                Spacer()
+
+                Text("\(playerNames.count)")
+                    .font(AppFonts.scoreSmall)
+                    .monospacedDigit()
+                    .foregroundStyle(gameType.color)
+            }
+
+            VStack(spacing: 0) {
+                ForEach(playerNames.indices, id: \.self) { index in
+                    PlayerNameRow(
+                        name: $playerNames[index],
+                        index: index,
+                        canRemove: playerNames.count > 2,
+                        focusedIndex: focusedIndex,
+                        onRemove: { removePlayer(at: index) }
+                    )
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                }
             }
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+        .padding(AppTheme.spacingMedium)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
     }
 
     private func removePlayer(at index: Int) {
-        withAnimation {
+        if reduceMotion {
             _ = playerNames.remove(at: index)
+        } else {
+            withAnimation(AppMotion.state) {
+                _ = playerNames.remove(at: index)
+            }
         }
     }
 }
@@ -314,7 +477,7 @@ private struct PlayerNameRow: View {
                 showName: false
             )
 
-            TextField("Player \(index + 1)", text: $name)
+            TextField("player \(index + 1)", text: $name)
                 .font(AppFonts.headline)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .textFieldStyle(.plain)
@@ -329,7 +492,7 @@ private struct PlayerNameRow: View {
                 .accessibilityIdentifier("player_name_field_\(index)")
 
             if canRemove {
-                Button("Remove Player", systemImage: "minus.circle", action: onRemove)
+                Button("remove player", systemImage: "minus.circle", action: onRemove)
                     .labelStyle(.iconOnly)
                     .font(.title3)
                     .foregroundStyle(ClubhouseTheme.ink)
@@ -339,7 +502,7 @@ private struct PlayerNameRow: View {
                     .accessibilityIdentifier("remove_player_\(index)_button")
             }
         }
-        .frame(minHeight: 58)
+        .frame(minHeight: 62)
     }
 }
 
@@ -352,48 +515,51 @@ private struct AddPlayerControls: View {
     var body: some View {
         VStack(spacing: AppTheme.spacingSmall) {
             if playerCount < gameType.maxPlayers {
-                Button(action: onAdd) {
-                    HStack {
-                        Image(systemName: "plus")
-                            .font(.headline)
-                            .foregroundStyle(ClubhouseTheme.onPrimary)
-                            .frame(width: 36, height: 36)
-                            .background(ClubhouseTheme.blue, in: Circle())
-                        Text("Add Player")
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                    }
-                    .font(AppFonts.body.weight(.semibold))
-                    .foregroundStyle(ClubhouseTheme.ink)
-                    .padding(.horizontal, AppTheme.spacingMedium)
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 62)
-                    .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
-                }
-                .buttonStyle(PressableButtonStyle())
+                controlButton(
+                    title: "add player",
+                    systemImage: "plus",
+                    tint: ClubhouseTheme.blue,
+                    action: onAdd
+                )
                 .accessibilityIdentifier("add_player_button")
             }
 
-            Button(action: onRoster) {
-                HStack {
-                    Image(systemName: "person.2.fill")
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .frame(width: 36, height: 36)
-                        .background(ClubhouseTheme.yellow, in: Circle())
-                    Text("From Roster")
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                }
-                .font(AppFonts.body.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.ink)
-                .padding(.horizontal, AppTheme.spacingMedium)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 62)
-                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
-            }
-            .buttonStyle(PressableButtonStyle())
+            controlButton(
+                title: "from roster",
+                systemImage: "person.2.fill",
+                tint: ClubhouseTheme.yellow,
+                action: onRoster
+            )
             .accessibilityIdentifier("roster_button")
         }
         .frame(maxWidth: .infinity)
+    }
+
+    private func controlButton(
+        title: String,
+        systemImage: String,
+        tint: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: systemImage)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(tint == ClubhouseTheme.yellow ? ClubhouseTheme.ink : ClubhouseTheme.onPrimary)
+                    .frame(width: 38, height: 38)
+                    .background(tint, in: Circle())
+
+                Text(title)
+                Spacer()
+                Image(systemName: "arrow.right")
+            }
+            .font(AppFonts.body.weight(.bold))
+            .foregroundStyle(ClubhouseTheme.ink)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 66)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+        }
+        .buttonStyle(PressableButtonStyle())
     }
 }

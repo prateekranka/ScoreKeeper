@@ -1,0 +1,598 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PipCount score digit dataset manifest",
+  "description": "Metadata for a writer-disjoint, provenance-traceable score recognition corpus. Raw image files are not part of this repository.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "dataset",
+    "provenance",
+    "split_policy",
+    "reproducibility",
+    "quality_gates",
+    "writers",
+    "samples"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "dataset": {
+      "$ref": "#/$defs/dataset"
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "split_policy": {
+      "$ref": "#/$defs/splitPolicy"
+    },
+    "reproducibility": {
+      "$ref": "#/$defs/reproducibility"
+    },
+    "quality_gates": {
+      "$ref": "#/$defs/qualityGates"
+    },
+    "writers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/writer"
+      },
+      "uniqueItems": true
+    },
+    "samples": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sample"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "digit": {
+      "type": "string",
+      "enum": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ]
+    },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "version",
+        "description",
+        "classes"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "classes": {
+          "const": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "reject"
+          ]
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "collection_protocol",
+        "raw_samples_policy",
+        "privacy_review",
+        "sources"
+      ],
+      "properties": {
+        "collection_protocol": {
+          "type": "string",
+          "minLength": 1
+        },
+        "raw_samples_policy": {
+          "const": "outside-git"
+        },
+        "privacy_review": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "kind",
+        "name",
+        "version",
+        "license",
+        "license_url",
+        "rights_status",
+        "redistribution_allowed",
+        "derivative_model_use_allowed",
+        "attribution"
+      ],
+      "properties": {
+        "source_id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "first_party",
+            "public"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "license_url": {
+          "type": "string",
+          "format": "uri",
+          "minLength": 1
+        },
+        "rights_status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "redistribution_allowed": {
+          "type": "boolean"
+        },
+        "derivative_model_use_allowed": {
+          "type": "boolean"
+        },
+        "attribution": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "splitPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "seed",
+        "validation_fraction",
+        "augmentation_after_split",
+        "hash_algorithm",
+        "train_writer_ids",
+        "validation_writer_ids"
+      ],
+      "properties": {
+        "strategy": {
+          "const": "writer-disjoint"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "validation_fraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "exclusiveMaximum": 1
+        },
+        "augmentation_after_split": {
+          "const": true
+        },
+        "hash_algorithm": {
+          "const": "sha256"
+        },
+        "train_writer_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "uniqueItems": true
+        },
+        "validation_writer_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "reproducibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "seed",
+        "python_version",
+        "preprocessing_version",
+        "augmentation_version",
+        "deterministic"
+      ],
+      "properties": {
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "python_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preprocessing_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "augmentation_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "deterministic": {
+          "const": true
+        }
+      }
+    },
+    "qualityGates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "minimum_writers",
+        "minimum_digit_examples_per_writer",
+        "minimum_double_scores_per_writer",
+        "required_double_scores",
+        "required_reject_reasons",
+        "label_balance"
+      ],
+      "properties": {
+        "minimum_writers": {
+          "const": 12
+        },
+        "minimum_digit_examples_per_writer": {
+          "type": "integer",
+          "minimum": 2
+        },
+        "minimum_double_scores_per_writer": {
+          "type": "integer",
+          "minimum": 12
+        },
+        "required_double_scores": {
+          "type": "array",
+          "minItems": 10,
+          "items": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]$"
+          },
+          "uniqueItems": true
+        },
+        "required_reject_reasons": {
+          "const": [
+            "blank",
+            "scribble",
+            "partial_digit",
+            "touching_digits",
+            "unsupported_negative"
+          ]
+        },
+        "label_balance": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "minimum_examples_per_digit_per_split",
+            "maximum_digit_imbalance_ratio",
+            "minimum_reject_examples_per_split"
+          ],
+          "properties": {
+            "minimum_examples_per_digit_per_split": {
+              "type": "integer",
+              "minimum": 2
+            },
+            "maximum_digit_imbalance_ratio": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 2
+            },
+            "minimum_reject_examples_per_split": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    },
+    "writer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "writer_id",
+        "source_id",
+        "consent_status"
+      ],
+      "properties": {
+        "writer_id": {
+          "$ref": "#/$defs/id"
+        },
+        "source_id": {
+          "$ref": "#/$defs/id"
+        },
+        "consent_status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        }
+      }
+    },
+    "augmentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "is_augmented",
+        "parent_sample_id",
+        "operations"
+      ],
+      "properties": {
+        "is_augmented": {
+          "type": "boolean"
+        },
+        "parent_sample_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "translation",
+              "rotation",
+              "scale",
+              "width",
+              "antialiasing"
+            ]
+          },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "is_augmented": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "parent_sample_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "operations": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "parent_sample_id": {
+                "type": "null"
+              },
+              "operations": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sample_id",
+        "path",
+        "sha256",
+        "writer_id",
+        "split",
+        "source_id",
+        "kind",
+        "augmentation"
+      ],
+      "properties": {
+        "sample_id": {
+          "$ref": "#/$defs/id"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\/].*$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "writer_id": {
+          "$ref": "#/$defs/id"
+        },
+        "split": {
+          "type": "string",
+          "enum": [
+            "train",
+            "validation"
+          ]
+        },
+        "source_id": {
+          "$ref": "#/$defs/id"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "digit",
+            "score",
+            "reject"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "enum": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "reject"
+          ]
+        },
+        "score": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]$"
+        },
+        "reject_reason": {
+          "type": "string",
+          "enum": [
+            "blank",
+            "scribble",
+            "partial_digit",
+            "touching_digits",
+            "unsupported_negative"
+          ]
+        },
+        "augmentation": {
+          "$ref": "#/$defs/augmentation"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "digit"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "label"
+            ],
+            "properties": {
+              "label": {
+                "$ref": "#/$defs/digit"
+              },
+              "score": false,
+              "reject_reason": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "score"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "score"
+            ],
+            "properties": {
+              "label": false,
+              "score": {
+                "type": "string",
+                "pattern": "^[1-9][0-9]$"
+              },
+              "reject_reason": false
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "reject"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "label",
+              "reject_reason"
+            ],
+            "properties": {
+              "label": {
+                "const": "reject"
+              },
+              "score": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}

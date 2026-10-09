@@ -12,25 +12,13 @@ enum AppButtonRole {
     case destructive
 }
 
-struct AppSurface<Content: View>: View {
-    var cornerRadius: CGFloat = AppTheme.cornerRadiusMedium
-    var isInteractive = false
-    @ViewBuilder var content: Content
-
-    var body: some View {
-        ScorecardSurface(cornerRadius: cornerRadius, isInteractive: isInteractive) {
-            content
-        }
-    }
-}
-
 struct AppSectionHeader: View {
     let title: String
     var subtitle: String?
     var systemImage: String?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
+        VStack(alignment: .leading, spacing: 4) {
             if let systemImage {
                 Label(title, systemImage: systemImage)
                     .font(AppFonts.headline)
@@ -57,14 +45,22 @@ struct ReleaseSheetHeader<Trailing: View>: View {
     let systemImage: String
     var titleIdentifier: String?
     @ViewBuilder var trailing: Trailing
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(spacing: 12))
+        layout {
             Image(systemName: systemImage)
-                .font(.headline)
-                .foregroundStyle(ClubhouseTheme.felt)
-                .frame(width: 40, height: 40)
-                .background(ClubhouseTheme.felt.opacity(0.10), in: Circle())
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(ClubhouseTheme.blue)
+                .frame(width: 42, height: 42)
+                .background(ClubhouseTheme.blue.opacity(0.10), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .strokeBorder(ClubhouseTheme.blue.opacity(0.12), lineWidth: 1)
+                }
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {
@@ -75,7 +71,7 @@ struct ReleaseSheetHeader<Trailing: View>: View {
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
-            Spacer(minLength: AppTheme.spacingSmall)
+            if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: AppTheme.spacingSmall) }
             trailing
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -106,57 +102,52 @@ extension ReleaseSheetHeader where Trailing == EmptyView {
 
 struct AppActionButton<LabelContent: View>: View {
     @Environment(\.isEnabled) private var isEnabled
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let role: AppButtonRole
     let action: () -> Void
     @ViewBuilder var label: LabelContent
-    @State private var trigger = 0
 
     var body: some View {
-        Button {
-            trigger &+= 1
-            action()
-        } label: {
+        Button(action: action) {
             label
-                .font(AppFonts.headline)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .font(dynamicTypeSize.isAccessibilitySize ? .body.weight(.bold) : AppFonts.headline)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.72)
+                .fixedSize(horizontal: false, vertical: true)
+                .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
-                .frame(minHeight: 52)
+                .frame(minHeight: 56)
                 .padding(.horizontal, AppTheme.spacingMedium)
+                .padding(.vertical, dynamicTypeSize.isAccessibilitySize ? 9 : 0)
                 .foregroundStyle(foregroundStyle)
                 .background {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
                         .fill(backgroundStyle)
                         .shadow(
-                            color: role.isSecondary ? .clear : ClubhouseTheme.ink.opacity(0.14),
-                            radius: 0,
-                            x: 2,
-                            y: 3
+                            color: role.isSecondary ? ClubhouseTheme.paperShadow.opacity(0.45) : ClubhouseTheme.paperShadow,
+                            radius: role.isSecondary ? 8 : 12,
+                            x: 0,
+                            y: role.isSecondary ? 4 : 7
                         )
                 }
                 .overlay {
                     RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
-                        .strokeBorder(strokeStyle, lineWidth: role.isSecondary ? 1.25 : 0)
+                        .strokeBorder(strokeStyle, lineWidth: role.isSecondary ? 1 : 0.8)
+                }
+                .overlay(alignment: .top) {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium, style: .continuous)
+                        .trim(from: 0.53, to: 0.97)
+                        .stroke(ClubhouseTheme.warmHighlight.opacity(role.isSecondary ? 0.45 : 0.34), lineWidth: 1)
+                        .padding(1)
                 }
         }
         .buttonStyle(PressableButtonStyle())
-        .opacity(isEnabled ? 1 : 0.48)
-        .sensoryFeedback(buttonHaptic, trigger: trigger)
-    }
 
-    private var buttonHaptic: SensoryFeedback {
-        switch role {
-        case .primary:
-            return .impact(weight: .medium, intensity: 0.6)
-        case .secondary:
-            return .impact(weight: .light, intensity: 0.5)
-        case .destructive:
-            return .impact(weight: .heavy, intensity: 0.7)
-        }
     }
 
     private var foregroundStyle: Color {
-        switch role {
+        guard isEnabled else { return ClubhouseTheme.inkMuted }
+        return switch role {
         case .primary:
             ClubhouseTheme.onPrimary
         case .destructive:
@@ -167,18 +158,36 @@ struct AppActionButton<LabelContent: View>: View {
     }
 
     private var backgroundStyle: AnyShapeStyle {
-        switch role {
+        guard isEnabled else { return AnyShapeStyle(ClubhouseTheme.paperCard) }
+        return switch role {
         case .primary(let color):
-            AnyShapeStyle(color)
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: [color.opacity(0.98), color],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
         case .secondary:
             AnyShapeStyle(ClubhouseTheme.paperCard)
         case .destructive:
-            AnyShapeStyle(ClubhouseTheme.danger)
+            AnyShapeStyle(
+                LinearGradient(
+                    colors: [ClubhouseTheme.danger.opacity(0.92), ClubhouseTheme.danger],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
         }
     }
 
     private var strokeStyle: Color {
-        role.isSecondary ? ClubhouseTheme.panelBorder : .clear
+        switch role {
+        case .secondary:
+            ClubhouseTheme.panelBorder
+        default:
+            ClubhouseTheme.warmHighlight.opacity(0.26)
+        }
     }
 }
 
@@ -186,17 +195,6 @@ private extension AppButtonRole {
     var isSecondary: Bool {
         if case .secondary = self { return true }
         return false
-    }
-}
-
-struct EmptyStateView: View {
-    let title: String
-    let systemImage: String
-    let message: String
-
-    var body: some View {
-        ContentUnavailableView(title, systemImage: systemImage, description: Text(message))
-            .frame(maxWidth: .infinity, minHeight: 220)
     }
 }
 
@@ -227,16 +225,29 @@ func glassGroup<Content: View>(spacing: CGFloat = 8, @ViewBuilder content: () ->
 struct AppGlassModifier: ViewModifier {
     let cornerRadius: CGFloat
     let isInteractive: Bool
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     func body(content: Content) -> some View {
-        if #available(iOS 26.0, *) {
+        if reduceTransparency {
+            content
+                .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1)
+                }
+        } else if #available(iOS 26.0, *) {
             if isInteractive {
                 content.glassEffect(.regular.interactive(), in: .rect(cornerRadius: cornerRadius))
             } else {
                 content.glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
             }
         } else {
-            content.background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            content
+                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .strokeBorder(ClubhouseTheme.warmHighlight.opacity(0.52), lineWidth: 1)
+                }
         }
     }
 }
@@ -252,10 +263,12 @@ struct StaggeredEntranceModifier: ViewModifier {
         content
             .opacity(visible ? 1 : 0)
             .offset(y: visible || reduceMotion ? 0 : 10)
+            .scaleEffect(visible || reduceMotion ? 1 : 0.98)
+            .blur(radius: visible || reduceMotion ? 0 : 2.5)
             .animation(
                 reduceMotion
                     ? AppMotion.fade
-                    : AppMotion.page.delay(min(Double(index) * 0.045, 0.24)),
+                    : AppMotion.state.delay(min(Double(index) * 0.045, 0.22)),
                 value: visible
             )
     }
@@ -269,6 +282,10 @@ enum PipCountTab: String, CaseIterable {
     case players
     case more
 
+    var accessibilityIdentifier: String {
+        self == .more ? "legal_support_button" : "tab_\(rawValue)"
+    }
+
     var title: String {
         rawValue.capitalized
     }
@@ -281,59 +298,5 @@ enum PipCountTab: String, CaseIterable {
         case .more: return "ellipsis"
         }
     }
-}
 
-struct PipCountDock: View {
-    let selected: PipCountTab
-    let onSelect: (PipCountTab) -> Void
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(PipCountTab.allCases, id: \.rawValue) { tab in
-                Button {
-                    onSelect(tab)
-                } label: {
-                    VStack(spacing: 3) {
-                        Image(systemName: selected == tab ? selectedImage(for: tab) : tab.systemImage)
-                            .font(.system(size: 17, weight: selected == tab ? .bold : .medium))
-                        Text(tab.title)
-                            .font(.caption2.weight(selected == tab ? .bold : .medium))
-                    }
-                    .foregroundStyle(selected == tab ? ClubhouseTheme.blue : ClubhouseTheme.inkMuted)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel(tab == .more ? "Legal & Support" : tab.title)
-                .accessibilityHint(tab == .more ? "Opens privacy, legal, and support links" : "")
-                .accessibilityIdentifier(tab == .more ? "legal_support_button" : "tab_\(tab.rawValue)")
-                .accessibilityAddTraits(selected == tab ? .isSelected : [])
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(ClubhouseTheme.paperCard.opacity(0.97), in: Capsule())
-        .overlay {
-            Capsule()
-                .strokeBorder(Color.white.opacity(0.82), lineWidth: 1.5)
-        }
-        .overlay {
-            Capsule()
-                .inset(by: 1.5)
-                .strokeBorder(ClubhouseTheme.rule.opacity(0.8), lineWidth: 0.75)
-        }
-        .shadow(color: ClubhouseTheme.ink.opacity(0.15), radius: 18, y: 9)
-        .padding(.horizontal, 28)
-        .padding(.bottom, 6)
-    }
-
-    private func selectedImage(for tab: PipCountTab) -> String {
-        switch tab {
-        case .home: return "house.fill"
-        case .games: return "square.grid.2x2.fill"
-        case .players: return "person.2.fill"
-        case .more: return "ellipsis"
-        }
-    }
 }

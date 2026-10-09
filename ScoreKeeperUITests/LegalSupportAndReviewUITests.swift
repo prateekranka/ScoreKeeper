@@ -4,7 +4,7 @@ import XCTest
 final class LegalSupportAndReviewUITests: XCTestCase {
     private var app: XCUIApplication!
 
-    override func setUpWithError() throws {
+    override func setUp() async throws {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments = ["-in-memory-store", "-force-light-theme"]
@@ -17,17 +17,20 @@ final class LegalSupportAndReviewUITests: XCTestCase {
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
         app.terminate()
         app = nil
     }
 
     func testLegalSupportLinksAreReachable() throws {
-        let legalSupportButton = app.buttons["legal_support_button"]
+        let sidebarLegalSupportButton = app.buttons["sidebar_legal_support_button"]
+        let legalSupportButton = sidebarLegalSupportButton.waitForExistence(timeout: 1)
+            ? sidebarLegalSupportButton
+            : app.buttons["legal_support_button"]
         XCTAssertTrue(legalSupportButton.waitForExistence(timeout: 3))
         legalSupportButton.tap()
 
-        XCTAssertTrue(app.navigationBars["Legal & Support"].waitForExistence(timeout: 3))
+        XCTAssertTrue(app.navigationBars["more"].waitForExistence(timeout: 6))
 
         let privacyLink = app.descendants(matching: .any)["privacy_policy_link"]
         let supportLink = app.descendants(matching: .any)["support_link"]
@@ -54,17 +57,21 @@ final class LegalSupportAndReviewUITests: XCTestCase {
         }
         XCTAssertTrue(app.buttons["new_game_button"].waitForExistence(timeout: 3))
 
-        app.buttons["new_game_button"].tap()
+        ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         app.buttons["game_tile_generic"].tap()
-        fillPlayerNames(["Ada", "Ben"])
+        fillPlayerNames(["ada", "ben"])
         app.buttons["start_game_button"].tap()
         XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 2))
         app.buttons["start_game_button"].tap()
         XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 3))
 
         app.buttons["submit_round_button"].tap()
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
         app.buttons["end_game_button"].tap()
-        app.alerts.buttons["End Game"].tap()
+        app.alerts.buttons["end game"].tap()
 
         XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 3))
         XCTAssertFalse(app.buttons["review_ask_rate_button"].waitForExistence(timeout: 2))

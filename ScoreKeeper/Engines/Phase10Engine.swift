@@ -27,6 +27,23 @@ struct Phase10Engine: GameEngine {
         }
     }
 
+    /// Progress decides placement first: more completed stages always ranks
+    /// ahead of fewer. Within the same stage count, fewer leftover points
+    /// rank ahead — the same rule the winner calculation applies.
+    func ranksAhead(_ lhs: Player, of rhs: Player, in session: GameSession) -> Bool {
+        let lhsPhase = currentPhase(for: lhs.id, in: session)
+        let rhsPhase = currentPhase(for: rhs.id, in: session)
+        guard lhsPhase == rhsPhase else { return lhsPhase > rhsPhase }
+
+        let lhsPoints = lhs.totalScore(in: session)
+        let rhsPoints = rhs.totalScore(in: session)
+        return lhsPoints < rhsPoints
+    }
+
+    func rankingExplanation(session: GameSession) -> String {
+        "most stages wins. ties go to the fewest points"
+    }
+
     func winners(session: GameSession) -> [UUID] {
         let hasProgress = session.players.contains { player in
             currentPhase(for: player.id, in: session) > 0 || player.totalScore(in: session) != 0

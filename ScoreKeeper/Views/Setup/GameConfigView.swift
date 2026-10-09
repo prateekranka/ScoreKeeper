@@ -8,12 +8,15 @@ struct GameConfigView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
     @Environment(StoreManager.self) private var storeManager
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var winCondition: WinCondition = .highestScore
     @State private var phase10SkipOnFail = false
     @State private var targetScoreText = ""
     @State private var showPaywall = false
     @State private var saveError: String?
+    @State private var contentVisible = false
+    @State private var isStartingGame = false
 
     private var targetScoreError: String? {
         guard gameType == .generic else { return nil }
@@ -31,13 +34,19 @@ struct GameConfigView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
-                headerSection
-                configSection
+                GameConfigHero(gameType: gameType)
+                    .staggeredEntrance(visible: contentVisible, index: 0)
+
+                responsiveConfiguration
             }
-            .padding(AppTheme.spacingMedium)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.top, AppTheme.spacingSmall)
+            .padding(.bottom, 112)
+            .pipCountPageContent(maxWidth: 980)
         }
         .appBackground()
-        .navigationTitle("Game Settings")
+        .navigationTitle("game settings")
+        .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
             startButton
                 .padding(.vertical, AppTheme.spacingSmall)
@@ -45,88 +54,239 @@ struct GameConfigView: View {
                 .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.bottom, AppTheme.spacingSmall)
+                .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
         }
         .onAppear {
             winCondition = gameType.defaultWinCondition
+            contentVisible = true
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView(onUnlocked: startConfiguredGame)
                 .presentationDetents([.large])
         }
         .alert(
-            "Couldn’t save game",
+            "couldn’t save game",
             isPresented: Binding(
                 get: { saveError != nil },
                 set: { if !$0 { saveError = nil } }
             )
         ) {
-            Button("OK", role: .cancel) { saveError = nil }
+            Button("ok", role: .cancel) { saveError = nil }
         } message: {
-            Text(saveError ?? "Please try again.")
+            Text(saveError ?? "please try again")
         }
     }
 
-    private var headerSection: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: gameType.icon)
-                .font(.title2)
-                .foregroundStyle(gameType.color)
-            Text(gameType.displayName)
-                .font(AppFonts.title)
-                .foregroundStyle(ClubhouseTheme.ink)
+    @ViewBuilder
+    private var responsiveConfiguration: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            stackedConfiguration
+        } else {
+            // Use remaining detail width, not size class. Sidebar-open iPad
+            // portrait is still regular, but too narrow for two columns.
+            ViewThatFits(in: .horizontal) {
+                sideBySideConfiguration
+                stackedConfiguration
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
+    }
+
+    private var sideBySideConfiguration: some View {
+        HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
+            configSection
+                .frame(minWidth: 300, maxWidth: .infinity)
+                .staggeredEntrance(visible: contentVisible, index: 1)
+
+            lineupSection
+                .frame(width: 320)
+                .layoutPriority(1)
+                .staggeredEntrance(visible: contentVisible, index: 2)
+        }
+    }
+
+    private var stackedConfiguration: some View {
+        VStack(spacing: AppTheme.spacingMedium) {
+            configSection
+                .staggeredEntrance(visible: contentVisible, index: 1)
+            lineupSection
+                .staggeredEntrance(visible: contentVisible, index: 2)
+        }
     }
 
     private var configSection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-            if gameType == .generic {
-                Text("How to win?")
-                    .columnHeaderStyle()
+        VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("rules for tonight")
+                        .font(AppFonts.title)
+                        .foregroundStyle(ClubhouseTheme.ink)
 
-                Picker("Win Condition", selection: $winCondition) {
-                    Text("Highest Score Wins").tag(WinCondition.highestScore)
-                    Text("Lowest Score Wins").tag(WinCondition.lowestScore)
+                    Text("set this once. pipcount handles the rest")
+                        .font(AppFonts.caption)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
-                .pickerStyle(.segmented)
-                .accessibilityIdentifier("win_condition_picker")
+
+                Spacer()
+
+                Rectangle()
+                    .fill(gameType.color)
+                    .frame(width: 18, height: 18)
+                    .rotationEffect(.degrees(45))
+            }
+
+            if gameType == .generic {
+                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                    Text("how to win?")
+                        .columnHeaderStyle()
+
+                    // Native segmented labels do not grow with accessibility
+                    // text. Use full-size choices at those sizes; retain the
+                    // fitting native picker for standard text.
+                    if dynamicTypeSize.isAccessibilitySize {
+                        VStack(spacing: AppTheme.spacingSmall) {
+                            winConditionChoice(.highestScore)
+                            winConditionChoice(.lowestScore)
+                        }
+                    } else {
+                        ViewThatFits(in: .horizontal) {
+                            Picker("win condition", selection: $winCondition) {
+                                Text("highest score wins").tag(WinCondition.highestScore)
+                                Text("lowest score wins").tag(WinCondition.lowestScore)
+                            }
+                            .pickerStyle(.segmented)
+                            .accessibilityIdentifier("win_condition_picker")
+
+                            VStack(spacing: AppTheme.spacingSmall) {
+                                winConditionChoice(.highestScore)
+                                winConditionChoice(.lowestScore)
+                            }
+                        }
+                    }
+                }
+
+                Rectangle()
+                    .fill(ClubhouseTheme.rule)
+                    .frame(height: 1)
 
                 targetScoreSection
             }
 
             if gameType == .phase10 {
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                    Toggle("No repeat rounds", isOn: $phase10SkipOnFail)
-                        .font(AppFonts.body)
+                    Toggle("no repeat rounds", isOn: $phase10SkipOnFail)
+                        .font(AppFonts.body.weight(.semibold))
                         .tint(ClubhouseTheme.felt)
 
-                    Text("Players advance to the next stage every round, even when they do not complete the current stage.")
+                    Text("players advance to the next stage every round, even when they do not complete the current stage")
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
-        .padding(AppTheme.spacingMedium)
+        .padding(AppTheme.spacingLarge)
+        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+    }
+
+    private func winConditionChoice(_ condition: WinCondition) -> some View {
+        let isSelected = winCondition == condition
+        let title = condition == .highestScore ? "highest score wins" : "lowest score wins"
+
+        return Button {
+            winCondition = condition
+        } label: {
+            HStack(spacing: AppTheme.spacingSmall) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.inkMuted)
+
+                Text(title)
+                    .font(AppFonts.body.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Spacer(minLength: 0)
+            }
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(minHeight: 46)
+            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                    .strokeBorder(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.rule, lineWidth: isSelected ? 2 : 1)
+            }
+        }
+        .buttonStyle(PressableButtonStyle())
+        .accessibilityLabel(title)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier(condition == .highestScore ? "win_condition_choice_highest" : "win_condition_choice_lowest")
+    }
+
+    private var lineupSection: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("tonight's lineup")
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+
+                Text(playerNames.count.quantityText("player"))
+                    .font(AppFonts.caption)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+            }
+
+            VStack(spacing: 0) {
+                ForEach(Array(playerNames.enumerated()), id: \.offset) { index, name in
+                    HStack(spacing: AppTheme.spacingSmall) {
+                        PlayerColorPip(colorIndex: index, size: 18)
+                        Text(name)
+                            .font(AppFonts.body.weight(.semibold))
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(1)
+                        Spacer()
+                        Text("\(index + 1)")
+                            .columnHeaderStyle()
+                            .monospacedDigit()
+                    }
+                    .padding(.vertical, 12)
+                    .overlay(alignment: .bottom) {
+                        Rectangle()
+                            .fill(ClubhouseTheme.rule)
+                            .frame(height: 1)
+                    }
+                }
+            }
+
+            HStack(spacing: 7) {
+                Rectangle()
+                    .fill(ClubhouseTheme.green)
+                    .frame(width: 8, height: 8)
+                    .rotationEffect(.degrees(45))
+
+                Text("ready to score")
+                    .font(AppFonts.caption.weight(.bold))
+                    .foregroundStyle(ClubhouseTheme.green)
+            }
+        }
+        .padding(AppTheme.spacingLarge)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
     private var targetScoreSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("Target score (optional)")
-                .font(AppFonts.body)
+            Text("target score (optional)")
+                .font(AppFonts.body.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            TextField("Manual end only", text: $targetScoreText)
+            TextField("manual end only", text: $targetScoreText)
                 .font(AppFonts.body)
                 .keyboardType(.numberPad)
                 .textFieldStyle(.plain)
-                .padding(.vertical, AppTheme.spacingSmall)
-                .overlay(alignment: .bottom) {
-                    Rectangle()
-                        .fill(ClubhouseTheme.ruleStrong)
-                        .frame(height: 1)
+                .padding(.horizontal, AppTheme.spacingMedium)
+                .frame(minHeight: 56)
+                .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                        .strokeBorder(targetScoreError == nil ? ClubhouseTheme.rule : ClubhouseTheme.red, lineWidth: 1)
                 }
                 .accessibilityLabel("Target score, optional")
                 .accessibilityHint("Leave blank to end the game manually")
@@ -134,39 +294,50 @@ struct GameConfigView: View {
 
             if let targetScoreError {
                 Text(targetScoreError)
-                    .font(AppFonts.caption)
+                    .font(AppFonts.caption.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.lacquer)
                     .accessibilityIdentifier("target_score_error")
             } else if let targetScore {
-                Text(winCondition == .highestScore
-                     ? "The first player to reach \(targetScore) after a submitted round ends the game; highest total wins."
-                     : "When any player reaches \(targetScore) after a submitted round, the game ends; lowest total wins.")
+                Text(
+                    winCondition == .highestScore
+                        ? "the first player to reach \(targetScore) after a submitted round ends the game; highest total wins"
+                        : "when any player reaches \(targetScore) after a submitted round, the game ends; lowest total wins"
+                )
                 .font(AppFonts.caption)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
             } else {
-                Text("Leave blank for manual-only completion.")
+                Text("leave blank for manual-only completion")
                     .font(AppFonts.caption)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
-        .padding(.top, AppTheme.spacingSmall)
     }
 
     private var startButton: some View {
         AppActionButton(role: .primary(ClubhouseTheme.blue), action: startConfiguredGame) {
-            Label("Start Game", systemImage: "arrow.right.circle.fill")
+            Label("start game", systemImage: "arrow.right.circle.fill")
         }
         .accessibilityIdentifier("start_game_button")
-        .disabled(!canStart)
+        .disabled(!canStart || isStartingGame)
     }
 
     private func startConfiguredGame() {
+        // A second activation landing before the navigation transition
+        // completes must not create a second game or consume another free
+        // game; the lock releases only when creation fails (PC17-004).
+        guard !isStartingGame else { return }
+
         guard storeManager.canStartNewGame else {
             showPaywall = true
             return
         }
 
-        guard let session = createSession() else { return }
+        isStartingGame = true
+
+        guard let session = createSession() else {
+            isStartingGame = false
+            return
+        }
         storeManager.recordGameStarted()
         router.push(.scoring(session.persistentModelID))
     }
@@ -210,6 +381,67 @@ struct GameConfigView: View {
                 saved.gamesPlayed = 1
                 modelContext.insert(saved)
             }
+        }
+    }
+}
+
+private struct GameConfigHero: View {
+    let gameType: GameType
+
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        Group {
+            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+                HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
+                    copy
+                        .frame(maxWidth: 390, alignment: .leading)
+
+                    PipCountGeometricArtwork(scene: .gameSettings)
+                        .frame(maxWidth: 500)
+                        .frame(height: 290)
+                }
+            } else {
+                if dynamicTypeSize.isAccessibilitySize {
+                    copy
+                } else {
+                    ViewThatFits(in: .horizontal) {
+                        compactHero(artworkWidth: 168)
+                        compactHero(artworkWidth: 88)
+                        copy
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func compactHero(artworkWidth: CGFloat) -> some View {
+        HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
+            copy.fixedSize(horizontal: true, vertical: false)
+            PipCountGeometricArtwork(scene: .gameSettings)
+                .frame(width: artworkWidth, height: artworkWidth * 170 / 168)
+        }
+    }
+
+    private var copy: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Text(gameType.displayName)
+                .font(AppFonts.hero)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .lineLimit(2)
+                .minimumScaleFactor(0.78)
+
+            Text("calibrate the rules for tonight")
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Rectangle()
+                .fill(gameType.color)
+                .frame(width: 82, height: 4)
+                .padding(.top, 4)
         }
     }
 }

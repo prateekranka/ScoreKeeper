@@ -1,9 +1,12 @@
 # ScoreKeeper UI Screen Network
 
-Generated for a future Argent Lens redesign pass. This is a route and screen inventory only; it does not propose or implement UI changes.
+Canonical route and workflow inventory for the current PipCount Paper Bauhaus implementation.
 
 ## Artifacts
 
+- Editable major-workflow map: `docs/pipcount-screen-network.excalidraw`
+- Quick-view major-workflow SVG: `docs/pipcount-screen-network.svg`
+- Clickable source/dependency map: `docs/codemap/codemap.html`
 - Route-strip manifest: `docs/ui-screen-network-manifest.json`
 - Generated route-strip PNG: `docs/ui-screen-network-route-strips.png`
 - Source screenshot folder: `screenshots/app-screens`
@@ -23,6 +26,8 @@ Generated for a future Argent Lens redesign pass. This is a route and screen inv
 - `.gameHistory` -> `GameHistoryListView`
 - `.headToHead` -> `HeadToHeadView`
 - `.playerStats(String)` -> `PlayerStatsView`
+- `.players` -> `SavedPlayersView`
+- `.legalSupport` -> `LegalSupportView`
 
 `OnboardingView`, home tools, roster selection, scoring tools, and end-game confirmation are presented as covers, sheets, or alerts.
 
@@ -45,6 +50,8 @@ flowchart TD
     H -->|Head to Head| HH["HeadToHeadView"]
     H -->|Player stat chip| PV["PlayerStatsView"]
     HH -->|Player name| PV
+    H -->|Players dock tab| PL["SavedPlayersView"]
+    H -->|More dock tab| LS["LegalSupportView"]
     H -->|Timer / Dice / Starter / Undo| HT["HomeToolSheet"]
     PS -->|From Roster| RS["PlayerRosterSheet"]
     SC -->|Timer / Dice / Starter / Log| ST["ScoringToolSheet"]
@@ -61,6 +68,7 @@ flowchart TD
 - Resume and replay loops: Home active game -> scoring; Game Over -> Play Again -> scoring; Game Over -> Home.
 - Roster reuse: Player Setup -> Roster Sheet -> Player Setup.
 - Completed-game review and stats: Home recent games -> Game Details; Home See All -> Game History -> Game Details; Home stats -> Player Stats; Home stats -> Head to Head empty, selected, expanded, and Player Stats states.
+- Root utility routes: Home Players tab -> Saved Players; Home More tab -> Legal & Support -> privacy/support links.
 
 ## Screen Inventory
 
@@ -95,11 +103,13 @@ flowchart TD
 | Home starter sheet | Sheet | Home Game Night Tools / Starter | Done -> Home | `26-home-tool-starter.png` |
 | Home undo sheet | Sheet | Home Game Night Tools / Undo | Done -> Home | `27-home-tool-undo.png` |
 | `PlayerStatsView` | Pushed route | Home Stats player chip or Head-to-Head player name | Back -> previous stats surface | `29-player-stats.png` |
+| `SavedPlayersView` | Pushed route | Root dock Players tab | Start a new game or Back -> Home | Extended QA route coverage; current visual evidence in `screenshots/review-extended-20260823` |
+| `LegalSupportView` | Pushed route | Root dock More tab | Privacy/Support links or Back -> Home | Focused `LegalSupportAndReviewUITests` coverage |
 
 ## Redesign-Relevant Notes
 
 - `ScoringView` is a shell that switches between `GenericScoringView`, `WhatsForDinnerScoringView`, and `Phase10ScoringView` based on `GameSession.gameType`.
-- `ScoringScreenLayout` provides the shared scoring toolbar, score header, undo/submit bottom action bar, and scoring tool sheet loop. The current generic scoring WIP hides the shared scoreboard header with `showsScoreboardHeader: false`.
+- `ScoringScreenLayout` provides the shared compact game header, score content, duplicate-submit guard, undo/submit action shelf, and scoring-tool loop.
 - `PlayerSetupView` starts Scoreboard and Phase 10 by pushing `GameConfigView`, but starts What's for Dinner by creating a `GameSession` immediately and pushing `ScoringView`.
 - `GameHistoryListView` is in the router and the visible Home "See All" button appears whenever at least one completed game exists.
 - `HeadToHeadView` and `PlayerStatsView` are centralized `AppDestination` routes.

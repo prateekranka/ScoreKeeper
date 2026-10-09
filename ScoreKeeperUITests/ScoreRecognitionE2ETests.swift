@@ -1,0 +1,574 @@
+import XCTest
+
+@MainActor
+enum ScoreDeckUITestSupport {
+    static func dismissDeckTutorialIfPresent(in app: XCUIApplication) {
+        if app.buttons["got it"].waitForExistence(timeout: 2) {
+            app.buttons["got it"].tap()
+        } else if app.buttons["skip"].waitForExistence(timeout: 1) {
+            app.buttons["skip"].tap()
+        }
+    }
+
+    static func tapButtonInSafeArea(
+        _ element: XCUIElement,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let sidebarNewGame = app.buttons["sidebar_new_game_button"]
+        let target = element.identifier == "new_game_button" && sidebarNewGame.exists
+            ? sidebarNewGame
+            : element
+
+        guard target.waitForExistence(timeout: 3) else {
+            XCTFail("Button did not exist: \(target)", file: file, line: line)
+            return
+        }
+
+        let appFrame = app.frame
+        let safeTop: CGFloat = 80
+        let safeBottom = appFrame.height - 120
+        var safeTapPoint: CGPoint?
+
+        for _ in 0..<6 {
+            let frame = target.frame
+            let visibleTop = max(frame.minY, safeTop)
+            let visibleBottom = min(frame.maxY, safeBottom)
+            if target.exists && visibleBottom - visibleTop >= 44 {
+                safeTapPoint = CGPoint(x: frame.midX, y: (visibleTop + visibleBottom) / 2)
+                break
+            }
+            app.swipeUp(velocity: .fast)
+        }
+
+        guard let safeTapPoint else {
+            XCTFail("Button never exposed a safe 44-point tap area: \(target)", file: file, line: line)
+            return
+        }
+
+        let normalizedPoint = CGVector(
+            dx: (safeTapPoint.x - appFrame.minX) / appFrame.width,
+            dy: (safeTapPoint.y - appFrame.minY) / appFrame.height
+        )
+        app.coordinate(withNormalizedOffset: normalizedPoint).tap()
+    }
+
+    static func canvas(in app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any)["score_writing_canvas"]
+    }
+
+    static func drawPolyline(
+        _ normalizedPoints: [CGVector],
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        guard normalizedPoints.count > 1 else { return }
+        // During the player-card transition two canvases can coexist (the
+        // exiting card and the entering one); wait for a single canvas so
+        // strokes never land on a view that is about to be removed.
+        let canvases = app.descendants(matching: .any).matching(identifier: "score_writing_canvas")
+        let settleDeadline = Date().addingTimeInterval(3)
+        while canvases.count != 1 && Date() < settleDeadline {
+            usleep(100_000)
+        }
+        let canvas = canvas(in: app)
+        guard canvas.waitForExistence(timeout: 5) else {
+            XCTFail("score_writing_canvas never appeared", file: file, line: line)
+            return
+        }
+        let keyboardDeadline = Date().addingTimeInterval(3)
+        while app.keyboards.firstMatch.exists && Date() < keyboardDeadline {
+            usleep(100_000)
+        }
+        for index in 0..<(normalizedPoints.count - 1) {
+            let start = canvas.coordinate(withNormalizedOffset: normalizedPoints[index])
+            let end = canvas.coordinate(withNormalizedOffset: normalizedPoints[index + 1])
+            start.press(forDuration: 0.05, thenDragTo: end)
+        }
+    }
+
+    static func drawEllipseZero(
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        var points: [CGVector] = []
+        let segments = 12
+        for index in 0...segments {
+            let angle = (Double(index) / Double(segments)) * 2 * Double.pi - Double.pi / 2
+            points.append(CGVector(
+                dx: 0.5 + 0.20 * cos(angle),
+                dy: 0.5 + 0.32 * sin(angle)
+            ))
+        }
+        drawPolyline(points, in: app, file: file, line: line)
+    }
+
+    static func drawSeven(
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        drawPolyline([
+            CGVector(dx: 0.30, dy: 0.26),
+            CGVector(dx: 0.70, dy: 0.26),
+        ], in: app, file: file, line: line)
+        drawPolyline([
+            CGVector(dx: 0.70, dy: 0.26),
+            CGVector(dx: 0.44, dy: 0.80),
+        ], in: app, file: file, line: line)
+    }
+
+    static func drawZigzagScribble(
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        drawPolyline([
+            CGVector(dx: 0.14, dy: 0.76),
+            CGVector(dx: 0.30, dy: 0.24),
+            CGVector(dx: 0.46, dy: 0.76),
+            CGVector(dx: 0.62, dy: 0.24),
+            CGVector(dx: 0.78, dy: 0.76),
+            CGVector(dx: 0.90, dy: 0.30),
+        ], in: app, file: file, line: line)
+    }
+
+    static func acceptButton(in app: XCUIApplication) -> XCUIElement {
+        app.buttons
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'deck_accept_'"))
+            .firstMatch
+    }
+
+    static func manualUseButton(in app: XCUIApplication) -> XCUIElement {
+        app.buttons
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'deck_manual_use_'"))
+            .firstMatch
+    }
+
+    static func retryButton(in app: XCUIApplication) -> XCUIElement {
+        app.buttons
+            .matching(NSPredicate(format: "identifier BEGINSWITH 'deck_retry_'"))
+            .firstMatch
+    }
+
+    static func rejectionCard(in app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any)["deck_invalid_value"]
+    }
+
+    static func noInkHint(in app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any)["deck_no_ink_hint"]
+    }
+
+    static func acceptCurrentConfirmation(
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let accept = acceptButton(in: app)
+        guard accept.waitForExistence(timeout: 5) else {
+            XCTFail("No confirmation card to accept", file: file, line: line)
+            return
+        }
+        accept.tap()
+    }
+
+    static func useManualValue(
+        _ value: String,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let field = app.textFields["deck_manual_value"]
+        guard field.waitForExistence(timeout: 5) else {
+            XCTFail("deck_manual_value text field missing", file: file, line: line)
+            return
+        }
+        field.tap()
+        field.press(forDuration: 1)
+        if app.menuItems["Select All"].waitForExistence(timeout: 1) {
+            app.menuItems["Select All"].tap()
+        } else {
+            field.tap(withNumberOfTaps: 3, numberOfTouches: 1)
+            app.typeText(XCUIKeyboardKey.delete.rawValue)
+        }
+        app.typeText(value)
+        XCTAssertEqual(
+            field.value as? String,
+            value,
+            "Manual score field did not contain the requested value",
+            file: file,
+            line: line
+        )
+        let use = manualUseButton(in: app)
+        guard use.waitForExistence(timeout: 5) else {
+            XCTFail("deck_manual_use button missing", file: file, line: line)
+            return
+        }
+        XCTAssertTrue(use.isEnabled, "Use button stayed disabled for a valid score", file: file, line: line)
+        XCTAssertEqual(
+            use.label,
+            "Use \(value)",
+            "Use button did not identify the score it will submit",
+            file: file,
+            line: line
+        )
+        use.tap()
+    }
+
+    static func typeScoreForCurrentPlayer(
+        _ value: String,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let typeScore = app.buttons["deck_type_score_button"]
+        guard typeScore.waitForExistence(timeout: 10) else {
+            XCTFail("deck_type_score_button missing", file: file, line: line)
+            return
+        }
+        typeScore.tap()
+        useManualValue(value, in: app, file: file, line: line)
+    }
+
+    /// Draws a zero on the current player's canvas and commits it, handling
+    /// every terminal recognition state: confirmation is accepted, a rejection
+    /// card falls back to manual entry, and a no-ink hint (touch that failed
+    /// to register) redraws and retries once.
+    static func commitZeroForCurrentPlayer(
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let recognize = app.buttons["recognize_score_button"]
+        let accept = acceptButton(in: app)
+        let rejection = rejectionCard(in: app)
+        let hint = noInkHint(in: app)
+
+        for _ in 0..<2 {
+            drawEllipseZero(in: app, file: file, line: line)
+            guard recognize.waitForExistence(timeout: 10) else {
+                XCTFail("recognize_score_button missing", file: file, line: line)
+                return
+            }
+            recognize.tap()
+
+            let deadline = Date().addingTimeInterval(20)
+            while Date() < deadline {
+                if accept.exists || rejection.exists || hint.exists { break }
+                usleep(100_000)
+            }
+
+            if accept.exists {
+                accept.tap()
+                return
+            }
+            if rejection.exists {
+                useManualValue("0", in: app, file: file, line: line)
+                return
+            }
+            guard hint.exists else {
+                XCTFail("No terminal recognition state appeared", file: file, line: line)
+                return
+            }
+        }
+        XCTFail("Failed to commit a zero after redrawing", file: file, line: line)
+    }
+
+    static func waitForDeckToClose(
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let deck = app.descendants(matching: .any)["round_entry_deck"]
+        let deadline = Date().addingTimeInterval(10)
+        while deck.exists && Date() < deadline {
+            usleep(100_000)
+        }
+        XCTAssertFalse(deck.exists, "Score deck did not close", file: file, line: line)
+    }
+
+    static func playerPosition(_ position: Int, of total: Int, in app: XCUIApplication) -> XCUIElement {
+        app.staticTexts["\(position) / \(total)"]
+    }
+}
+
+@MainActor
+private extension XCTestCase {
+    func assertExistsWithDiagnostics(
+        _ element: XCUIElement,
+        timeout: TimeInterval,
+        message: String,
+        in app: XCUIApplication,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let exists = element.waitForExistence(timeout: timeout)
+        if !exists {
+            add(XCTAttachment(screenshot: app.screenshot()))
+            add(XCTAttachment(string: app.debugDescription))
+        }
+        XCTAssertTrue(exists, message, file: file, line: line)
+    }
+}
+
+@MainActor
+final class ScoreRecognitionE2ETests: XCTestCase {
+    var app: XCUIApplication!
+
+    override func setUp() async throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = ["-in-memory-store"]
+        app.launch()
+    }
+
+    override func tearDown() async throws {
+        app.terminate()
+        app = nil
+    }
+
+    func testRecognizeHandwrittenZero() {
+        startTwoPlayerGame()
+        openScoreDeck()
+
+        ScoreDeckUITestSupport.drawEllipseZero(in: app)
+        app.buttons["recognize_score_button"].tap()
+
+        let accept = ScoreDeckUITestSupport.acceptButton(in: app)
+        assertExistsWithDiagnostics(
+            accept,
+            timeout: 20,
+            message: "Confirmation card did not appear for handwritten zero",
+            in: app
+        )
+        XCTAssertTrue(app.staticTexts["is this right?"].exists)
+        XCTAssertTrue(app.staticTexts["0"].exists, "Confirmed value was not exactly 0")
+        XCTAssertEqual(accept.label, "Use 0")
+        XCTAssertEqual(ScoreDeckUITestSupport.retryButton(in: app).label, "Redraw score")
+        XCTAssertTrue(
+            app.descendants(matching: .any)["deck_source_thumbnail"].waitForExistence(timeout: 5),
+            "Confirmation did not keep the source drawing visible"
+        )
+        attachEvidenceScreenshot(named: "iphone-confirmation-use-zero")
+
+        accept.tap()
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Deck did not advance to player 2"
+        )
+    }
+
+    func testRecognizeHandwrittenSeven() {
+        startTwoPlayerGame()
+        openScoreDeck()
+
+        ScoreDeckUITestSupport.drawSeven(in: app)
+        app.buttons["recognize_score_button"].tap()
+
+        let accept = ScoreDeckUITestSupport.acceptButton(in: app)
+        assertExistsWithDiagnostics(
+            accept,
+            timeout: 20,
+            message: "Confirmation card did not appear for handwritten seven",
+            in: app
+        )
+        XCTAssertTrue(app.staticTexts["is this right?"].exists)
+        XCTAssertTrue(app.staticTexts["7"].exists, "Confirmed value was not exactly 7")
+        XCTAssertEqual(accept.label, "Use 7")
+
+        accept.tap()
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Deck did not advance to player 2"
+        )
+    }
+
+    func testBlankCanvasShowsInlineHintWithNoOverlay() {
+        startTwoPlayerGame()
+        openScoreDeck()
+
+        app.buttons["recognize_score_button"].tap()
+
+        let hint = ScoreDeckUITestSupport.noInkHint(in: app)
+        XCTAssertTrue(hint.waitForExistence(timeout: 15), "Inline no-ink hint did not appear")
+        XCTAssertTrue(app.staticTexts["draw the score first"].exists)
+
+        let reading = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == 'Reading score'"))
+        XCTAssertEqual(reading.count, 0, "Reading overlay persisted after the no-ink hint")
+
+        XCTAssertFalse(ScoreDeckUITestSupport.acceptButton(in: app).exists, "Confirmation card appeared without ink")
+        XCTAssertFalse(ScoreDeckUITestSupport.rejectionCard(in: app).exists, "Rejection card appeared without ink")
+        XCTAssertFalse(app.staticTexts["is this right?"].exists)
+        XCTAssertTrue(app.buttons["deck_type_score_button"].exists, "Typed entry was not available without drawing")
+    }
+
+    func testTypeScoreIsAvailableWithoutDrawing() {
+        startTwoPlayerGame()
+        openScoreDeck()
+
+        XCTAssertTrue(app.buttons["deck_type_score_button"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["couldn't read that"].exists)
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("12", in: app)
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Direct typed score did not advance to player 2"
+        )
+        XCTAssertFalse(app.staticTexts["couldn't read that"].exists)
+    }
+
+    func testManualZeroFromUnreadableScribbleEnablesUseZeroAndAdvancesPlayer() {
+        startTwoPlayerGame()
+        openScoreDeck()
+        enterManualFallbackFromUnreadableScribble()
+
+        ScoreDeckUITestSupport.useManualValue("0", in: app)
+
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Manual score 0 did not advance to player 2"
+        )
+    }
+
+    func testManualNinetyNineFromUnreadableScribbleEnablesUseNinetyNineAndAdvancesPlayer() {
+        startTwoPlayerGame()
+        openScoreDeck()
+        enterManualFallbackFromUnreadableScribble()
+
+        ScoreDeckUITestSupport.useManualValue("99", in: app)
+
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Manual score 99 did not advance to player 2"
+        )
+    }
+
+    func testUnreadableShowsManualEntry() {
+        startTwoPlayerGame()
+        openScoreDeck()
+
+        ScoreDeckUITestSupport.drawZigzagScribble(in: app)
+        app.buttons["recognize_score_button"].tap()
+
+        let rejection = ScoreDeckUITestSupport.rejectionCard(in: app)
+        XCTAssertTrue(rejection.waitForExistence(timeout: 20), "Rejection card did not appear for scribbled ink")
+        XCTAssertTrue(app.staticTexts["couldn't read that"].exists)
+        let use = ScoreDeckUITestSupport.manualUseButton(in: app)
+        XCTAssertTrue(use.waitForExistence(timeout: 5), "Manual Use button missing")
+        XCTAssertFalse(use.isEnabled, "Use button was enabled before a score was entered")
+        XCTAssertEqual(ScoreDeckUITestSupport.retryButton(in: app).label, "Redraw score")
+        attachEvidenceScreenshot(named: "iphone-manual-entry-empty")
+
+        let manualField = app.textFields["deck_manual_value"]
+        manualField.tap()
+        manualField.typeText("100")
+        XCTAssertFalse(use.isEnabled, "Use button was enabled for an out-of-range three-digit score")
+        XCTAssertTrue(
+            app.staticTexts["enter a score between 0 and 99"].waitForExistence(timeout: 2),
+            "Invalid typed score did not explain the 0 to 99 range"
+        )
+
+        ScoreDeckUITestSupport.useManualValue("25", in: app)
+
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.playerPosition(2, of: 2, in: app).waitForExistence(timeout: 10),
+            "Deck did not advance to player 2"
+        )
+
+        ScoreDeckUITestSupport.commitZeroForCurrentPlayer(in: app)
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
+
+        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 10))
+        let committedScore = app.staticTexts["25"]
+        assertExistsWithDiagnostics(
+            committedScore,
+            timeout: 5,
+            message: "Committed score 25 is not visible on the scoring screen",
+            in: app
+        )
+    }
+
+    func testRedrawClearsStrokesOnUnreadable() {
+        startTwoPlayerGame()
+        openScoreDeck()
+
+        ScoreDeckUITestSupport.drawZigzagScribble(in: app)
+        app.buttons["recognize_score_button"].tap()
+
+        let rejection = ScoreDeckUITestSupport.rejectionCard(in: app)
+        XCTAssertTrue(rejection.waitForExistence(timeout: 20), "Rejection card did not appear for scribbled ink")
+
+        ScoreDeckUITestSupport.retryButton(in: app).tap()
+
+        // Recognizing immediately after Redraw proves positively that the old
+        // scribble was cleared rather than relying on a timed absence check.
+        app.buttons["recognize_score_button"].tap()
+        XCTAssertTrue(
+            ScoreDeckUITestSupport.noInkHint(in: app).waitForExistence(timeout: 15),
+            "Redraw did not clear the canvas ink"
+        )
+        attachEvidenceScreenshot(named: "iphone-redraw-cleared")
+    }
+
+    private func startTwoPlayerGame(first: String = "alice", second: String = "bob") {
+        let newGame = app.buttons["new_game_button"]
+        XCTAssertTrue(newGame.waitForExistence(timeout: 5))
+        ScoreDeckUITestSupport.tapButtonInSafeArea(newGame, in: app)
+
+        let tile = app.buttons["game_tile_generic"]
+        XCTAssertTrue(tile.waitForExistence(timeout: 5))
+        ScoreDeckUITestSupport.tapButtonInSafeArea(tile, in: app)
+
+        let firstField = app.textFields["player_name_field_0"]
+        XCTAssertTrue(firstField.waitForExistence(timeout: 5))
+        firstField.tap()
+        firstField.typeText(first)
+
+        let secondField = app.textFields["player_name_field_1"]
+        XCTAssertTrue(secondField.waitForExistence(timeout: 5))
+        secondField.tap()
+        secondField.typeText(second)
+
+        app.buttons["start_game_button"].tap()
+        XCTAssertTrue(app.segmentedControls["win_condition_picker"].waitForExistence(timeout: 5))
+        app.buttons["start_game_button"].tap()
+        XCTAssertTrue(app.buttons["end_game_button"].waitForExistence(timeout: 5))
+    }
+
+    private func enterManualFallbackFromUnreadableScribble() {
+        ScoreDeckUITestSupport.drawZigzagScribble(in: app)
+        app.buttons["recognize_score_button"].tap()
+
+        let rejection = ScoreDeckUITestSupport.rejectionCard(in: app)
+        assertExistsWithDiagnostics(
+            rejection,
+            timeout: 20,
+            message: "Rejection card did not appear for deliberate unreadable scribble",
+            in: app
+        )
+        XCTAssertTrue(app.staticTexts["couldn't read that"].exists)
+        XCTAssertTrue(
+            app.textFields["deck_manual_value"].waitForExistence(timeout: 5),
+            "Manual fallback field did not appear after unreadable scribble"
+        )
+    }
+
+    private func openScoreDeck() {
+        app.buttons["submit_round_button"].tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10),
+            "Round entry deck did not open"
+        )
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+    }
+
+    private func attachEvidenceScreenshot(named name: String) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+}

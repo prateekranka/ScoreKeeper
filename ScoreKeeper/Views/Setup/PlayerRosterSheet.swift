@@ -17,29 +17,29 @@ struct PlayerRosterSheet: View {
             Group {
                 if savedPlayers.isEmpty {
                     ContentUnavailableView(
-                        "No Saved Players",
+                        "no saved players",
                         systemImage: "person.slash",
-                        description: Text("Play a game to save player names to your roster.")
+                        description: Text("play a game to save player names to your roster")
                     )
                 } else {
                     ScrollView {
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 140))], spacing: AppTheme.spacingSmall) {
+                        LazyVStack(spacing: 0) {
                             ForEach(savedPlayers) { player in
                                 rosterRow(player)
                             }
                         }
-                        .padding(AppTheme.spacingMedium)
+                        .padding(.horizontal, AppTheme.spacingMedium)
                     }
                 }
             }
-            .navigationTitle("Select Players")
+            .navigationTitle("select players")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Add (\(selectedNames.count))") {
+                    Button("add (\(selectedNames.count))") {
                         onSelect(Array(selectedNames))
                         dismiss()
                     }
@@ -47,27 +47,27 @@ struct PlayerRosterSheet: View {
                 }
             }
             .confirmationDialog(
-                "Delete saved player?",
+                "delete saved player?",
                 isPresented: $showDeleteConfirmation,
                 titleVisibility: .visible
             ) {
-                Button("Delete \(pendingDeleteName ?? "player")", role: .destructive) {
+                Button("delete \(SavedPlayer.displayName(for: pendingDeleteName ?? "player"))", role: .destructive) {
                     deletePendingPlayer()
                 }
-                Button("Cancel", role: .cancel) {}
+                Button("cancel", role: .cancel) {}
             } message: {
-                Text("This removes the name from your saved roster. Existing games are unchanged.")
+                Text("this removes the name from your saved roster. existing games are unchanged")
             }
             .alert(
-                "Couldn’t update saved roster",
+                "couldn’t update saved roster",
                 isPresented: Binding(
                     get: { saveError != nil },
                     set: { if !$0 { saveError = nil } }
                 )
             ) {
-                Button("OK", role: .cancel) { saveError = nil }
+                Button("ok", role: .cancel) { saveError = nil }
             } message: {
-                Text(saveError ?? "Please try again.")
+                Text(saveError ?? "please try again")
             }
         }
     }
@@ -81,24 +81,37 @@ struct PlayerRosterSheet: View {
                     selectedNames.insert(player.name)
                 }
             } label: {
-                VStack(spacing: AppTheme.spacingSmall) {
-                    PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small)
-                    Text("\(player.gamesPlayed) games")
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                HStack(spacing: AppTheme.spacingSmall) {
+                    PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small, showName: false)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(player.displayName)
+                            .font(AppFonts.body.weight(.semibold))
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .lineLimit(1)
+                        Text("\(player.gamesPlayed) games")
+                            .font(AppFonts.caption)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                    }
+                    Spacer(minLength: 0)
+                    Image(systemName: selectedNames.contains(player.name) ? "checkmark.circle.fill" : "circle")
+                        .foregroundStyle(selectedNames.contains(player.name) ? ClubhouseTheme.blue : ClubhouseTheme.inkMuted)
+                        .font(.title3)
+                        .accessibilityHidden(true)
                 }
-                .padding(AppTheme.spacingSmall)
+                .padding(.vertical, 10)
                 .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
                 .background(
                     selectedNames.contains(player.name)
-                        ? PlayerColors.lightColor(for: player.colorIndex)
-                        : Color.clear,
-                    in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                        ? PlayerColors.lightColor(for: player.colorIndex).opacity(0.35)
+                        : Color.clear
                 )
-                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
+                .overlay(alignment: .bottom) {
+                    Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
+                }
             }
             .buttonStyle(PressableButtonStyle())
-            .accessibilityLabel("\(player.name), \(player.gamesPlayed) games played")
+            .accessibilityLabel("\(player.displayName), \(player.gamesPlayed) games played")
             .accessibilityValue(selectedNames.contains(player.name) ? "Selected" : "Not selected")
             .accessibilityIdentifier("roster_player_\(player.name)")
 
@@ -112,7 +125,7 @@ struct PlayerRosterSheet: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(PressableButtonStyle())
-            .accessibilityLabel("Delete \(player.name) from saved roster")
+            .accessibilityLabel("Delete \(player.displayName) from saved roster")
             .accessibilityIdentifier("delete_roster_player_\(player.name)")
         }
     }

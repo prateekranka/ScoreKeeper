@@ -4,54 +4,57 @@ import SwiftData
 struct WhatsForDinnerScoringView: View {
     @Bindable var session: GameSession
     @Environment(\.modelContext) private var modelContext
-    @State private var handValues: [UUID: Int] = [:]
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var callerID: UUID?
     @State private var scoreHapticTrigger = 0
-    @State private var saveError: String?
+    @State private var showDeck = false
     private let engine = WhatsForDinnerEngine()
 
     var body: some View {
         ScoringScreenLayout(
             session: session,
             engine: engine,
-            actionTitle: "Submit",
-            actionSystemImage: "fork.knife",
-            action: submitRound
+            actionTitle: "score round",
+            actionSystemImage: "pencil.line",
+            showsScoreboardHeader: false,
+            headerStyle: .compact,
+            action: { showDeck = true }
         ) {
+            // Keep the totals in the content scroll area so the caller choices
+            // remain reachable beneath the fixed header and scoring actions.
+            ScoreboardHeader(session: session, engine: engine)
+
             RoundBanner(
                 icon: GameType.whatsForDinner.icon,
                 color: GameType.whatsForDinner.color,
-                title: "Round \(session.currentRoundNumber)",
-                subtitle: "Lowest total wins"
+                title: "round \(session.currentRoundNumber)",
+                subtitle: "lowest total wins"
             )
             mealRevealSection
-            playerHandsSection
         } footer: {
             RoundHistoryStrip(session: session)
         }
-        .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
-        .alert(
-            "Couldn’t save round",
-            isPresented: Binding(
-                get: { saveError != nil },
-                set: { if !$0 { saveError = nil } }
+        .fullScreenCover(isPresented: $showDeck) {
+            RoundEntryDeckView(
+                session: session,
+                onSubmit: { roundScores in
+                    submitRound(using: roundScores)
+                },
+                onCancel: { showDeck = false }
             )
-        ) {
-            Button("OK", role: .cancel) { saveError = nil }
-        } message: {
-            Text(saveError ?? "Please try again.")
         }
+        .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
     }
 
     private var mealRevealSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "Meal Reveal", subtitle: "Choose the player who called it", systemImage: "person.crop.circle.badge.checkmark")
+            AppSectionHeader(title: "meal reveal", subtitle: "choose the player who called it, then write every hand with the score deck", systemImage: "person.crop.circle.badge.checkmark")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: AppTheme.spacingSmall) {
                     ForEach(session.players, id: \.id) { player in
                         Button {
-                            withAnimation(AppMotion.state) {
+                            withAnimation(reduceMotion ? AppMotion.fade : AppMotion.state) {
                                 callerID = player.id
                             }
                         } label: {
@@ -64,10 +67,14 @@ struct WhatsForDinnerScoringView: View {
                                 )
 
                                 if callerID == player.id {
-                                    Image(systemName: "checkmark.circle.fill")
+                                    Label("caller", systemImage: "checkmark.circle.fill")
+                                        .font(AppFonts.caption)
                                         .foregroundStyle(ClubhouseTheme.felt)
-                                        .font(.caption)
-                                        .transition(.scale(scale: 0.96).combined(with: .opacity))
+                                        .transition(reduceMotion ? .opacity : .scale(scale: 0.96).combined(with: .opacity))
+                                } else {
+                                    Text("tap to pick")
+                                        .font(AppFonts.caption)
+                                        .foregroundStyle(ClubhouseTheme.inkMuted)
                                 }
                             }
                             .padding(AppTheme.spacingSmall)
@@ -88,42 +95,23 @@ struct WhatsForDinnerScoringView: View {
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
 
-    private var playerHandsSection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "Card Values", systemImage: "number")
-
-            ForEach(session.players, id: \.id) { player in
-                ScoreEntryRow(
-                    player: player,
-                    value: handValueBinding(for: player),
-                    range: 0...9999,
-                    title: "Hand value"
-                ) {
-                    if callerID == player.id {
-                        Label("Caller", systemImage: "checkmark.circle.fill")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.felt)
-                    } else {
-                        EmptyView()
-                    }
-                }
-            }
+    /// Returns nil after a successful save (the deck then dismisses); returns
+    /// a user-facing message when the round cannot be saved, so the deck can
+    /// stay open with the confirmed scores intact (PC17-003).
+    private func submitRound(using roundScores: [UUID: Int]) -> String? {
+        // The save boundary rejects incomplete dictionaries; it never
+        // substitutes zero for a player who did not confirm a score.
+        guard session.players.allSatisfy({ roundScores[$0.id] != nil }) else {
+            return "every player needs a confirmed score before this round can save"
         }
-    }
 
-    private func handValueBinding(for player: Player) -> Binding<Int> {
-        Binding(
-            get: { handValues[player.id] ?? 0 },
-            set: { handValues[player.id] = $0 }
-        )
-    }
-
-    private func submitRound() {
         let round = Round(roundNumber: session.currentRoundNumber)
         round.session = session
 
         for player in session.players {
-            let points = handValues[player.id] ?? 0
+            guard let points = roundScores[player.id] else {
+                return "every player needs a confirmed score before this round can save"
+            }
             let entry = ScoreEntry(playerID: player.id, points: points)
             entry.round = round
             round.entries.append(entry)
@@ -135,13 +123,12 @@ struct WhatsForDinnerScoringView: View {
         } catch {
             let message = error.localizedDescription
             modelContext.rollback()
-            saveError = message
-            return
+            return message
         }
 
-        handValues = [:]
+        showDeck = false
         callerID = nil
-
         scoreHapticTrigger += 1
+        return nil
     }
 }

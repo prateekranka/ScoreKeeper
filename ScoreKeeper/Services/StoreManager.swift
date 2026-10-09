@@ -48,7 +48,7 @@ final class StoreManager {
     var paywallPresentedThisSession = false
 
     var displayPrice: String {
-        product?.displayPrice ?? "Price unavailable"
+        product?.displayPrice ?? "price unavailable"
     }
 
     var canPurchase: Bool {
@@ -137,8 +137,8 @@ final class StoreManager {
         purchaseState = .loading
         do {
             guard let loadedProduct = try await productLoader.product(withID: Self.productID) else {
-                productState = .unavailable("PipCount Pro is unavailable right now.")
-                purchaseState = .failed("The unlock is unavailable right now.")
+                productState = .unavailable("pipcount pro is unavailable right now")
+                purchaseState = .failed("the unlock is unavailable right now")
                 return
             }
 
@@ -146,8 +146,8 @@ final class StoreManager {
             productState = .loaded
             purchaseState = .idle
         } catch {
-            productState = .unavailable("Unable to load PipCount Pro right now.")
-            purchaseState = .failed("Unable to load the unlock right now.")
+            productState = .unavailable("unable to load pipcount pro right now")
+            purchaseState = .failed("unable to load the unlock right now")
         }
     }
 
@@ -162,12 +162,12 @@ final class StoreManager {
         }
 
         guard let product else {
-            purchaseState = .failed("The unlock is not available right now.")
+            purchaseState = .failed("the unlock is not available right now")
             return false
         }
 
         guard case .loaded = productState else {
-            purchaseState = .failed("The unlock is not available right now.")
+            purchaseState = .failed("the unlock is not available right now")
             return false
         }
 
@@ -178,7 +178,7 @@ final class StoreManager {
             switch result {
             case .success(let verification):
                 guard let transaction = verifiedTransaction(from: verification) else {
-                    purchaseState = .failed("The purchase could not be verified.")
+                    purchaseState = .failed("the purchase could not be verified")
                     return false
                 }
 
@@ -187,13 +187,13 @@ final class StoreManager {
                 await transaction.finish()
                 return true
             case .pending:
-                purchaseState = .failed("The purchase is pending approval.")
+                purchaseState = .failed("the purchase is pending approval")
                 return false
             case .userCancelled:
                 purchaseState = .idle
                 return false
             @unknown default:
-                purchaseState = .failed("The purchase could not be completed.")
+                purchaseState = .failed("the purchase could not be completed")
                 return false
             }
         } catch {
@@ -213,11 +213,11 @@ final class StoreManager {
                 purchaseState = .success
                 return true
             } else {
-                purchaseState = .failed("No PipCount Pro purchase was found.")
+                purchaseState = .failed("no pipcount pro purchase was found")
                 return false
             }
         } catch {
-            purchaseState = .failed("Restore could not be completed.")
+            purchaseState = .failed("restore could not be completed")
             return false
         }
     }
@@ -249,7 +249,7 @@ final class StoreManager {
         if case StoreKitError.userCancelled = error {
             return .idle
         }
-        return .failed("The purchase could not be completed.")
+        return .failed("the purchase could not be completed")
     }
 
     func recordGameStarted() {

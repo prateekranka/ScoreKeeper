@@ -7,12 +7,16 @@
     "sim": "node scripts/serve-sim.mjs",
     "sim:serve": "npx serve-sim",
     "sim:serve:detach": "npx serve-sim --detach",
-    "sim:serve:kill": "npx serve-sim --kill"
+    "sim:serve:kill": "npx serve-sim --kill",
+    "test:e2e": "e2e run"
   },
   "devDependencies": {
+    "@e2e-dev/mobile": "^0.9.2",
+    "agent-device": "^0.21.20",
+    "e2e": "^0.17.0",
     "serve-sim": "^0.1.10"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22.12"
   }
 }
