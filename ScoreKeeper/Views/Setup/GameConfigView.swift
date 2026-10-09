@@ -396,18 +396,26 @@ private struct GameConfigHero: View {
                         .frame(height: 290)
                 }
             } else {
-                HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
+                if dynamicTypeSize.isAccessibilitySize {
                     copy
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                    if !dynamicTypeSize.isAccessibilitySize {
-                        PipCountGeometricArtwork(scene: .gameSettings)
-                            .frame(width: 168, height: 170)
+                } else {
+                    ViewThatFits(in: .horizontal) {
+                        compactHero(artworkWidth: 168)
+                        compactHero(artworkWidth: 88)
+                        copy
                     }
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func compactHero(artworkWidth: CGFloat) -> some View {
+        HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
+            copy.fixedSize(horizontal: true, vertical: false)
+            PipCountGeometricArtwork(scene: .gameSettings)
+                .frame(width: artworkWidth, height: artworkWidth * 170 / 168)
+        }
     }
 
     private var copy: some View {

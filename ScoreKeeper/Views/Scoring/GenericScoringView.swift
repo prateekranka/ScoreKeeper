@@ -5,7 +5,6 @@ struct GenericScoringView: View {
     @Bindable var session: GameSession
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationRouter.self) private var router
-    @State private var scores: [UUID: Int] = [:]
     @State private var scoreHapticTrigger = 0
     @State private var saveError: String?
     @State private var didRouteToGameOver = false
@@ -28,7 +27,7 @@ struct GenericScoringView: View {
         } footer: {
             RoundHistoryStrip(session: session)
         }
-        .fullScreenCover(isPresented: $showDeck) {
+        .fullScreenCover(isPresented: $showDeck, onDismiss: routeToGameOverIfComplete) {
             RoundEntryDeckView(
                 session: session,
                 onSubmit: { roundScores in
@@ -37,10 +36,15 @@ struct GenericScoringView: View {
                 onCancel: { showDeck = false }
             )
         }
+        .task { reconcileOnResume() }
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
-        .alert("couldn’t save round", isPresented: Binding(
+        .alert("couldn’t save game", isPresented: Binding(
             get: { saveError != nil }, set: { if !$0 { saveError = nil } }
         )) {
+            Button("try again") {
+                saveError = nil
+                reconcileOnResume()
+            }
             Button("ok", role: .cancel) { saveError = nil }
         } message: { Text(saveError ?? "please try again") }
     }
@@ -49,54 +53,105 @@ struct GenericScoringView: View {
     /// a user-facing message when the round cannot be saved, so the deck can
     /// stay open with the confirmed scores intact (PC17-003).
     private func submitRound(using roundScores: [UUID: Int]) -> String? {
-        // The save boundary rejects incomplete dictionaries; it never
-        // substitutes zero for a player who did not confirm a score.
-        guard session.players.allSatisfy({ roundScores[$0.id] != nil }) else {
-            return "every player needs a confirmed score before this round can save"
-        }
-
-        let round = Round(roundNumber: session.currentRoundNumber)
-        round.session = session
-        for player in session.players {
-            guard let points = roundScores[player.id] else {
-                return "every player needs a confirmed score before this round can save"
-            }
-            let entry = ScoreEntry(playerID: player.id, points: points)
-            entry.round = round
-            round.entries.append(entry)
-        }
-        session.rounds.append(round)
         do {
-            #if DEBUG
-            try RoundSaveFailureSeam.throwIfArmed()
-            #endif
-            try modelContext.save()
+            try GenericRoundPersistence.submit(session: session, scores: roundScores, context: modelContext) { context in
+                #if DEBUG
+                try RoundSaveFailureSeam.throwIfArmed()
+                #endif
+                try context.save()
+            }
         } catch {
-            let message = error.localizedDescription
-            modelContext.rollback()
-            return message
+            return error.localizedDescription
         }
         showDeck = false
-        scores = [:]
         scoreHapticTrigger += 1
-        if engine.isGameOver(session: session) { finishGame() }
         return nil
     }
 
-    private func finishGame() {
+    private func reconcileOnResume() {
         guard !didRouteToGameOver else { return }
-        session.isComplete = true
-        session.completedAt = .now
-        session.winnerID = engine.winners(session: session).first
         do {
-            try modelContext.save()
+            try GenericRoundPersistence.reconcile(session: session, context: modelContext)
+            routeToGameOverIfComplete()
         } catch {
             saveError = error.localizedDescription
-            modelContext.rollback()
-            return
         }
+    }
+
+    private func routeToGameOverIfComplete() {
+        guard session.isComplete, !showDeck, !didRouteToGameOver else { return }
         didRouteToGameOver = true
         router.push(.gameOver(session.persistentModelID))
+    }
+}
+
+@MainActor
+enum GenericRoundPersistence {
+    static func submit(
+        session: GameSession,
+        scores: [UUID: Int],
+        context: ModelContext,
+        save: (ModelContext) throws -> Void = { try $0.save() }
+    ) throws {
+        guard session.gameType == .generic, !session.isComplete else {
+            throw NSError(domain: "RoundPersistence", code: 1, userInfo: [NSLocalizedDescriptionKey: "this game is already complete or is not a scoreboard game"])
+        }
+        guard !session.players.isEmpty, session.players.allSatisfy({ scores[$0.id] != nil }) else {
+            throw NSError(domain: "RoundPersistence", code: 2, userInfo: [NSLocalizedDescriptionKey: "every player needs a confirmed score before this round can save"])
+        }
+        let autosaveEnabled = context.autosaveEnabled
+        context.autosaveEnabled = false
+        defer { context.autosaveEnabled = autosaveEnabled }
+        let originalRounds = session.rounds
+        let completion = (session.isComplete, session.completedAt, session.winnerID)
+        let round = Round(roundNumber: session.currentRoundNumber)
+        round.entries = session.players.map { player in
+            ScoreEntry(playerID: player.id, points: scores[player.id]!)
+        }
+        context.insert(round)
+        round.session = session
+        session.rounds = originalRounds + [round]
+        completeIfQualified(session)
+        do {
+            try save(context)
+        } catch {
+            session.isComplete = completion.0
+            session.completedAt = completion.1
+            session.winnerID = completion.2
+            session.rounds = originalRounds
+            round.session = nil
+            for entry in round.entries { context.delete(entry) }
+            context.delete(round)
+            throw error
+        }
+    }
+
+    static func reconcile(
+        session: GameSession,
+        context: ModelContext,
+        save: (ModelContext) throws -> Void = { try $0.save() }
+    ) throws {
+        guard session.gameType == .generic, !session.isComplete, GenericEngine().isGameOver(session: session) else { return }
+        let autosaveEnabled = context.autosaveEnabled
+        context.autosaveEnabled = false
+        defer { context.autosaveEnabled = autosaveEnabled }
+        let completion = (session.isComplete, session.completedAt, session.winnerID)
+        completeIfQualified(session)
+        do {
+            try save(context)
+        } catch {
+            session.isComplete = completion.0
+            session.completedAt = completion.1
+            session.winnerID = completion.2
+            throw error
+        }
+    }
+
+    private static func completeIfQualified(_ session: GameSession) {
+        guard GenericEngine().isGameOver(session: session) else { return }
+        session.isComplete = true
+        session.completedAt = session.completedAt ?? session.sortedRounds.last?.createdAt
+        session.winnerID = GenericEngine().winners(session: session).first
     }
 }
 
@@ -153,7 +208,7 @@ private struct GenericTotalsList: View {
 /// exercised on a disposable simulator. It is compiled out of release
 /// builds and never touches a real save path unless the argument is present.
 @MainActor
-private enum RoundSaveFailureSeam {
+enum RoundSaveFailureSeam {
     private static var remainingFailures = ProcessInfo.processInfo.arguments.contains("-fail-first-round-save") ? 1 : 0
 
     static func throwIfArmed() throws {

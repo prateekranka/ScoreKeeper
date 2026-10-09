@@ -6,6 +6,7 @@ on:
     branches:
       - app-dev/pipcount-b16-copy
       - app-dev/pipcount-bauhaus-motion
+      - app-dev/pipcount-handwriting-entry
   pull_request:
     branches:
       - app-dev/pipcount-b16-copy
@@ -19,6 +20,8 @@ concurrency:
 
 jobs:
   build-and-test:
+    # Preserve the job ID and check names until required checks can be verified.
+    # This job builds only; scheme-tests runs the unit and UI tests below.
     name: ${{ matrix.device }}
     runs-on: macos-latest
     timeout-minutes: 35
@@ -45,7 +48,7 @@ jobs:
             -scheme ScoreKeeper \
             -resolvePackageDependencies
 
-      - name: Build ${{ matrix.device }} production UI
+      - name: Build ${{ matrix.device }} production UI only (no tests)
         run: |
           set -o pipefail
           xcodebuild \

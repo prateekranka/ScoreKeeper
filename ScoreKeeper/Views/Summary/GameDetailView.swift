@@ -105,13 +105,19 @@ struct GameDetailView: View {
                         .frame(height: 230)
                 }
             } else {
-                HStack(alignment: .center, spacing: AppTheme.spacingLarge) {
-                    detailHeroCopy(session: session, engine: engine)
-                        .frame(maxWidth: 430, alignment: .leading)
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .center, spacing: AppTheme.spacingLarge) {
+                        detailHeroCopy(session: session, engine: engine)
+                            .fixedSize(horizontal: true, vertical: false)
+                            .frame(maxWidth: 430, alignment: .leading)
 
-                    PipCountGeometricArtwork(scene: .gameOver)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 285)
+                        PipCountGeometricArtwork(scene: .gameOver)
+                            .frame(minWidth: 168, maxWidth: .infinity)
+                            .frame(height: 285)
+                    }
+
+                    detailHeroCopy(session: session, engine: engine)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
         }
@@ -125,14 +131,13 @@ struct GameDetailView: View {
             Text(session.gameType.displayName)
                 .font(AppFonts.display)
                 .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(1)
-                .minimumScaleFactor(0.62)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityIdentifier("detail_game_title")
 
             Text(resultTitle(session: session, engine: engine))
                 .font(AppFonts.title)
                 .foregroundStyle(ClubhouseTheme.blue)
-                .lineLimit(1)
-                .minimumScaleFactor(0.72)
+                .fixedSize(horizontal: false, vertical: true)
 
             Text(completionDate(session))
                 .font(AppFonts.body)

@@ -423,19 +423,20 @@ private struct ScoringToolSheet: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: AppTheme.spacingLarge) {
-                ToolArtwork(tool: tool)
-                    .frame(width: 150, height: 120)
-                    .accessibilityHidden(true)
+            ScrollView {
+                VStack(spacing: tool == .log ? AppTheme.spacingMedium : AppTheme.spacingLarge) {
+                    ToolArtwork(tool: tool)
+                        .frame(width: tool == .log ? 100 : 150, height: tool == .log ? 80 : 120)
+                        .accessibilityHidden(true)
 
-                Text(tool.title)
-                    .font(AppFonts.title)
+                    Text(tool.title)
+                        .font(AppFonts.title)
 
-                toolContent
-
-                Spacer()
+                    toolContent
+                }
+                .frame(maxWidth: .infinity)
+                .padding(AppTheme.spacingLarge)
             }
-            .padding(AppTheme.spacingLarge)
             .appBackground()
             .navigationTitle(tool.title)
             .navigationBarTitleDisplayMode(.inline)
@@ -519,7 +520,20 @@ private struct ScoringToolSheet: View {
     private var roundLog: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             if session.sortedRounds.isEmpty {
-                ContentUnavailableView("no rounds yet", systemImage: "list.bullet.rectangle")
+                VStack(spacing: AppTheme.spacingSmall) {
+                    Text("no rounds yet")
+                        .font(AppFonts.headline)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                    Text("saved rounds appear here after you enter the scores")
+                        .font(AppFonts.body)
+                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(AppTheme.spacingMedium)
+                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium)
+                .accessibilityIdentifier("round_log_empty_state")
             } else {
                 ForEach(session.sortedRounds.reversed().prefix(8), id: \.id) { round in
                     HStack {

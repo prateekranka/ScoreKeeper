@@ -4,37 +4,30 @@ struct GameTypeTile: View {
     let gameType: GameType
     let action: () -> Void
     var accessibilityID: String? = nil
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 16) {
-                GamePickerArtwork(gameType: gameType)
-                    .frame(maxWidth: .infinity)
-                    .aspectRatio(4 / 3, contentMode: .fit)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                if !dynamicTypeSize.isAccessibilitySize {
+                    GamePickerArtwork(gameType: gameType)
+                        .frame(maxWidth: .infinity)
+                        .aspectRatio(4 / 3, contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                }
 
-                HStack(alignment: .bottom, spacing: 14) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(gameType.displayName)
-                            .font(AppFonts.tileTitle)
-                            .foregroundStyle(ClubhouseTheme.ink)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.78)
-
-                        Text(gameType.subtitle)
-                            .font(AppFonts.body)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(2)
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 12) {
+                        gameCopy
+                        playerCount
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-
-                    Text("\(gameType.minPlayers)–\(gameType.maxPlayers)")
-                        .font(AppFonts.columnHeader)
-                        .monospacedDigit()
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .padding(.bottom, 2)
+                } else {
+                    HStack(alignment: .bottom, spacing: 14) {
+                        gameCopy
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        playerCount
+                    }
                 }
             }
             .padding(20)
@@ -52,6 +45,33 @@ struct GameTypeTile: View {
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier(accessibilityID ?? "")
         .accessibilityLabel("\(gameType.displayName). \(gameType.subtitle). \(gameType.minPlayers) to \(gameType.maxPlayers) players.")
+    }
+
+    private var gameCopy: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(gameType.displayName)
+                .font(AppFonts.tileTitle)
+                .foregroundStyle(ClubhouseTheme.ink)
+                .multilineTextAlignment(.leading)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                .minimumScaleFactor(0.78)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(gameType.subtitle)
+                .font(AppFonts.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
+                .multilineTextAlignment(.leading)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var playerCount: some View {
+        Text("\(gameType.minPlayers)–\(gameType.maxPlayers)")
+            .font(AppFonts.columnHeader)
+            .monospacedDigit()
+            .foregroundStyle(ClubhouseTheme.ink)
+            .padding(.bottom, 2)
     }
 }
 

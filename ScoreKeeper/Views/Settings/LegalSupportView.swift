@@ -186,14 +186,16 @@ struct LegalSupportView: View {
         Group {
             if storeManager.isUnlocked {
                 HStack(spacing: AppTheme.spacingMedium) {
-                    ZStack {
-                        Circle()
-                            .fill(ClubhouseTheme.yellow)
-                            .frame(width: 68, height: 68)
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        ZStack {
+                            Circle()
+                                .fill(ClubhouseTheme.yellow)
+                                .frame(width: 68, height: 68)
 
-                        BauhausStarburst(color: ClubhouseTheme.ink, size: 38)
+                            BauhausStarburst(color: ClubhouseTheme.ink, size: 38)
+                        }
+                        .accessibilityHidden(true)
                     }
-                    .accessibilityHidden(true)
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text("pipcount pro")
@@ -205,6 +207,8 @@ struct LegalSupportView: View {
                             .foregroundStyle(ClubhouseTheme.inkMuted)
                             .fixedSize(horizontal: false, vertical: true)
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
 
                     Spacer(minLength: 0)
                 }
@@ -217,8 +221,10 @@ struct LegalSupportView: View {
                     showPaywall = true
                 } label: {
                     HStack(spacing: AppTheme.spacingMedium) {
-                        PipCountGeometricArtwork(scene: .paywall, ambientMotion: false)
-                            .frame(width: 104, height: 96)
+                        if !dynamicTypeSize.isAccessibilitySize {
+                            PipCountGeometricArtwork(scene: .paywall, ambientMotion: false)
+                                .frame(width: 104, height: 96)
+                        }
 
                         VStack(alignment: .leading, spacing: 3) {
                             Text("pipcount pro")
@@ -229,21 +235,25 @@ struct LegalSupportView: View {
                                 .font(AppFonts.caption)
                                 .foregroundStyle(ClubhouseTheme.inkMuted)
                                 .monospacedDigit()
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.72)
+                                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.72)
 
                             Text("unlock unlimited games forever")
                                 .font(AppFonts.caption.weight(.bold))
                                 .foregroundStyle(ClubhouseTheme.blue)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.72)
+                                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.72)
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .fixedSize(horizontal: false, vertical: true)
 
                         Spacer(minLength: 0)
 
-                        Image(systemName: "chevron.right")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                        if !dynamicTypeSize.isAccessibilitySize {
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.bold))
+                                .foregroundStyle(ClubhouseTheme.inkMuted)
+                        }
                     }
                     .padding(AppTheme.spacingMedium)
                     .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)

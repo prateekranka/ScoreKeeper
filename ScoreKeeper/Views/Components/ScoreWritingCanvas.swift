@@ -180,8 +180,7 @@ struct ScoreWritingCanvas: UIViewRepresentable {
             context.setFillColor(UIColor.white.cgColor)
             context.fill(outputRect)
             context.saveGState()
-            context.translateBy(x: 0, y: outputRect.height)
-            context.scaleBy(x: 1, y: -1)
+            // UIImage.draw uses UIKit coordinates, matching the canvas.
             uprightInk.draw(in: outputRect, blendMode: .destinationOut, alpha: 1)
             context.restoreGState()
             context.setBlendMode(.destinationOver)

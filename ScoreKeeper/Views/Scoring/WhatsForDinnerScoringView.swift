@@ -16,8 +16,14 @@ struct WhatsForDinnerScoringView: View {
             engine: engine,
             actionTitle: "score round",
             actionSystemImage: "pencil.line",
+            showsScoreboardHeader: false,
+            headerStyle: .compact,
             action: { showDeck = true }
         ) {
+            // Keep the totals in the content scroll area so the caller choices
+            // remain reachable beneath the fixed header and scoring actions.
+            ScoreboardHeader(session: session, engine: engine)
+
             RoundBanner(
                 icon: GameType.whatsForDinner.icon,
                 color: GameType.whatsForDinner.color,

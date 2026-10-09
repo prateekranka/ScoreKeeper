@@ -281,7 +281,7 @@ private struct HomeEmptyHero: View {
 
     var body: some View {
         Group {
-            if horizontalSizeClass == .regular {
+            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
                 HStack(spacing: AppTheme.spacingLarge) {
                     copy
                     PipCountGeometricArtwork(scene: .homeEmpty)
@@ -321,7 +321,7 @@ private struct HomeEmptyHero: View {
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .fixedSize(horizontal: false, vertical: true)
 
-            if horizontalSizeClass == .regular {
+            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
                 NewGameButton(action: action)
                     .padding(.top, 4)
             }
@@ -670,6 +670,7 @@ struct HomeRecentGamesSection: View {
 
 private struct RecentGameRow: View {
     let session: GameSession
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     private var resultText: String? {
         let engine = GameEngineFactory.engine(for: session.gameType)
@@ -694,21 +695,25 @@ private struct RecentGameRow: View {
                     Text(session.gameType.displayName)
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
+                        .accessibilityIdentifier("recent_game_title_\(session.gameType.rawValue)")
                     Spacer()
                     StampBadge(text: "final")
                 }
 
-                Text(resultText ?? session.players.count.quantityText("player"))
-                    .font(AppFonts.caption)
-                    .foregroundStyle(resultText == nil ? ClubhouseTheme.inkMuted : ClubhouseTheme.brass)
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: 3) {
+                        resultLabel
+                        completedDateLabel
+                    }
+                } else {
+                    HStack {
+                        resultLabel
+                        Spacer(minLength: AppTheme.spacingSmall)
+                        completedDateLabel
+                    }
+                }
             }
-
-            Spacer()
-
-            if let date = session.completedAt {
-                Text(date, style: .date)
-                    .columnHeaderStyle()
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Image(systemName: "chevron.right")
                 .font(.caption)
@@ -717,6 +722,20 @@ private struct RecentGameRow: View {
         .padding(.trailing, AppTheme.spacingSmall)
         .frame(minHeight: 76)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusSmall, isInteractive: true)
+    }
+
+    private var resultLabel: some View {
+        Text(resultText ?? session.players.count.quantityText("player"))
+            .font(AppFonts.caption)
+            .foregroundStyle(resultText == nil ? ClubhouseTheme.inkMuted : ClubhouseTheme.brass)
+    }
+
+    @ViewBuilder
+    private var completedDateLabel: some View {
+        if let date = session.completedAt {
+            Text(date, style: .date)
+                .columnHeaderStyle()
+        }
     }
 }
 
@@ -1116,9 +1135,11 @@ private struct PlayersLibraryHero: View {
             } else {
                 HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
                     copy
+                        .fixedSize(horizontal: true, vertical: false)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     PipCountGeometricArtwork(scene: .roster)
-                        .frame(width: 170, height: 180)
+                        .aspectRatio(170.0 / 180.0, contentMode: .fit)
+                        .frame(maxWidth: 170, maxHeight: 180)
                 }
             }
         }

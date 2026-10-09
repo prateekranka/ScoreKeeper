@@ -355,6 +355,7 @@ struct PipCountDock: View {
                                 .font(.system(size: 17, weight: selected == tab ? .bold : .medium))
                             Text(tab.title)
                                 .font(.caption2.weight(selected == tab ? .bold : .medium))
+                                .dynamicTypeSize(...DynamicTypeSize.xxxLarge)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.65)
                         }
@@ -405,6 +406,7 @@ struct PipCountSidebar: View {
 
     @Environment(StoreManager.self) private var storeManager
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var contentVisible = false
     @State private var showPaywall = false
 
@@ -412,24 +414,30 @@ struct PipCountSidebar: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
-                    brand
-                        .staggeredEntrance(visible: contentVisible, index: 0)
+                    if dynamicTypeSize.isAccessibilitySize {
+                        navigationRows
+                            .staggeredEntrance(visible: contentVisible, index: 0)
+                        newGameButton
+                            .staggeredEntrance(visible: contentVisible, index: 1)
+                        entitlementCard
+                            .staggeredEntrance(visible: contentVisible, index: 2)
+                        brand
+                            .staggeredEntrance(visible: contentVisible, index: 3)
+                    } else {
+                        brand
+                            .staggeredEntrance(visible: contentVisible, index: 0)
 
-                    PipCountGeometricArtwork(scene: .homeEmpty)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 178)
-                        .staggeredEntrance(visible: contentVisible, index: 1)
+                        PipCountGeometricArtwork(scene: .homeEmpty)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 178)
+                            .staggeredEntrance(visible: contentVisible, index: 1)
 
-                    AppActionButton(role: .primary(ClubhouseTheme.blue)) {
-                        onSelect(.games)
-                    } label: {
-                        Label("start new game", systemImage: "plus")
+                        newGameButton
+                            .staggeredEntrance(visible: contentVisible, index: 2)
+
+                        navigationRows
+                            .staggeredEntrance(visible: contentVisible, index: 3)
                     }
-                    .accessibilityIdentifier("sidebar_new_game_button")
-                    .staggeredEntrance(visible: contentVisible, index: 2)
-
-                    navigationRows
-                        .staggeredEntrance(visible: contentVisible, index: 3)
                 }
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.top, AppTheme.spacingLarge)
@@ -437,10 +445,12 @@ struct PipCountSidebar: View {
             }
             .scrollIndicators(.hidden)
 
-            entitlementCard
-                .padding(.horizontal, AppTheme.spacingMedium)
-                .padding(.bottom, AppTheme.spacingMedium)
-                .staggeredEntrance(visible: contentVisible, index: 4)
+            if !dynamicTypeSize.isAccessibilitySize {
+                entitlementCard
+                    .padding(.horizontal, AppTheme.spacingMedium)
+                    .padding(.bottom, AppTheme.spacingMedium)
+                    .staggeredEntrance(visible: contentVisible, index: 4)
+            }
         }
         .background(PipCountPaperBackground().ignoresSafeArea())
         .overlay(alignment: .trailing) {
@@ -461,6 +471,19 @@ struct PipCountSidebar: View {
                 }
             }
         }
+    }
+
+    private var newGameButton: some View {
+        AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+            onSelect(.games)
+        } label: {
+            if dynamicTypeSize.isAccessibilitySize {
+                Text("start new game")
+            } else {
+                Label("start new game", systemImage: "plus")
+            }
+        }
+        .accessibilityIdentifier("sidebar_new_game_button")
     }
 
     private var brand: some View {
@@ -492,17 +515,19 @@ struct PipCountSidebar: View {
                 Button {
                     onSelect(tab)
                 } label: {
-                    HStack(spacing: 12) {
+                    HStack(spacing: dynamicTypeSize.isAccessibilitySize ? 8 : 12) {
                         Image(systemName: selected == tab ? tab.selectedSystemImage : tab.systemImage)
                             .font(.system(size: 17, weight: selected == tab ? .bold : .semibold))
-                            .frame(width: 24)
+                            .frame(width: dynamicTypeSize.isAccessibilitySize ? 18 : 24)
 
                         Text(tab.sidebarTitle)
                             .font(AppFonts.body.weight(selected == tab ? .bold : .semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.78)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
-                        Spacer()
-
-                        if selected == tab {
+                        if selected == tab && !dynamicTypeSize.isAccessibilitySize {
                             Rectangle()
                                 .fill(ClubhouseTheme.green)
                                 .frame(width: 9, height: 9)
@@ -553,6 +578,7 @@ struct PipCountSidebar: View {
                         .font(AppFonts.caption)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
+                .fixedSize(horizontal: false, vertical: true)
 
                 Spacer(minLength: 0)
             }
@@ -564,8 +590,10 @@ struct PipCountSidebar: View {
                 showPaywall = true
             } label: {
                 HStack(spacing: AppTheme.spacingSmall) {
-                    PipCountGeometricArtwork(scene: .paywall, ambientMotion: false)
-                        .frame(width: 66, height: 62)
+                    if !dynamicTypeSize.isAccessibilitySize {
+                        PipCountGeometricArtwork(scene: .paywall, ambientMotion: false)
+                            .frame(width: 66, height: 62)
+                    }
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text("pipcount pro")
@@ -581,6 +609,10 @@ struct PipCountSidebar: View {
                             .font(AppFonts.caption.weight(.bold))
                             .foregroundStyle(ClubhouseTheme.blue)
                     }
+                    .lineLimit(nil)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                     Spacer(minLength: 0)
 

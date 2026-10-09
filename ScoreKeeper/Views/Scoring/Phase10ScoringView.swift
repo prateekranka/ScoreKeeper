@@ -23,13 +23,19 @@ struct Phase10ScoringView: View {
             actionSystemImage: "square.and.pencil",
             showsScoreboardHeader: false,
             headerStyle: .compact,
-            action: { showDeck = true }
+            action: {
+                completedPhase = [:]
+                showDeck = true
+            }
         ) {
             phaseOverview
         } footer: {
             RoundHistoryStrip(session: session)
         }
-        .fullScreenCover(isPresented: $showDeck, onDismiss: presentPendingGameCompleteAlert) {
+        .fullScreenCover(isPresented: $showDeck, onDismiss: {
+            completedPhase = [:]
+            presentPendingGameCompleteAlert()
+        }) {
             RoundEntryDeckView(
                 session: session,
                 accessory: { player in
@@ -38,7 +44,10 @@ struct Phase10ScoringView: View {
                 onSubmit: { roundScores in
                     submitRound(using: roundScores)
                 },
-                onCancel: { showDeck = false }
+                onCancel: {
+                    completedPhase = [:]
+                    showDeck = false
+                }
             )
         }
         .sensoryFeedback(.impact, trigger: scoreHapticTrigger)
@@ -192,6 +201,9 @@ struct Phase10ScoringView: View {
         session.rounds.append(round)
 
         do {
+            #if DEBUG
+            try RoundSaveFailureSeam.throwIfArmed()
+            #endif
             try modelContext.save()
         } catch {
             let message = error.localizedDescription

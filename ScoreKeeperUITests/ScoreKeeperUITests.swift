@@ -201,7 +201,18 @@ final class ScoreKeeperUITests: XCTestCase {
     func testWhatsForDinnerMealRevealFlow() throws {
         navigateToScoring(gameTileID: "game_tile_whatsForDinner", playerNames: ["mina", "nora", "omar"])
 
-        app.buttons["meal_reveal_mina"].tap()
+        let caller = app.buttons["meal_reveal_mina"]
+        let scoreButton = app.buttons["submit_round_button"]
+        let origin = app.coordinate(withNormalizedOffset: .zero)
+        for _ in 0..<4 {
+            if caller.frame.maxY <= scoreButton.frame.minY { break }
+            let footerTop = scoreButton.frame.minY
+            origin.withOffset(CGVector(dx: app.frame.midX, dy: footerTop - 30))
+                .press(forDuration: 0.1, thenDragTo: origin.withOffset(CGVector(dx: app.frame.midX, dy: footerTop - 150)))
+        }
+        XCTAssertLessThanOrEqual(caller.frame.maxY, scoreButton.frame.minY)
+        caller.tap()
+        XCTAssertFalse(app.descendants(matching: .any)["round_entry_deck"].exists)
         XCTAssertTrue(app.staticTexts["caller"].firstMatch.waitForExistence(timeout: 2))
 
         // Every game uses the handwriting deck for the round now.
@@ -450,6 +461,15 @@ final class ScoreKeeperUITests: XCTestCase {
     // MARK: - Test 17: Target score completes after a qualifying submitted round
 
     func testTargetScoreConfigurationCompletesGenericGame() throws {
+        playQualifyingGenericRound(expectSaveFailure: false)
+    }
+
+    func testQualifyingGenericRoundSaveFailureRetriesOnceAndFinishes() throws {
+        relaunch(arguments: ["-in-memory-store", "-fail-first-round-save"])
+        playQualifyingGenericRound(expectSaveFailure: true)
+    }
+
+    private func playQualifyingGenericRound(expectSaveFailure: Bool) {
         ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["new_game_button"], in: app)
         tapGameTile("game_tile_generic")
         fillPlayerNames(["alice", "bob"])
@@ -468,6 +488,13 @@ final class ScoreKeeperUITests: XCTestCase {
         ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
         ScoreDeckUITestSupport.typeScoreForCurrentPlayer("5", in: app)
         ScoreDeckUITestSupport.typeScoreForCurrentPlayer("0", in: app)
+        if expectSaveFailure {
+            let alert = app.alerts["couldn’t save round"]
+            XCTAssertTrue(alert.waitForExistence(timeout: 5))
+            XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].exists)
+            XCTAssertFalse(app.staticTexts["winner_text"].exists)
+            alert.buttons["try again"].tap()
+        }
         ScoreDeckUITestSupport.waitForDeckToClose(in: app)
 
         XCTAssertTrue(app.staticTexts["winner_text"].waitForExistence(timeout: 4))
@@ -614,6 +641,63 @@ final class ScoreKeeperUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 5))
     }
 
+    func testPhase10CancelledStageDraftDoesNotAdvanceOnNextSubmission() throws {
+        navigateToScoring(gameTileID: "game_tile_phase10", playerNames: ["alice", "bob"])
+        app.buttons["submit_round_button"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+        completeCurrentStageInDeck()
+        app.buttons["round_deck_cancel_button"].tap()
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
+
+        app.buttons["submit_round_button"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
+        XCTAssertEqual(app.switches.matching(NSPredicate(format: "identifier BEGINSWITH 'stage_toggle_'")).firstMatch.value as? String, "0")
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("7", in: app)
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("3", in: app)
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
+        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts.matching(identifier: "stage 0/10").count, 2)
+
+        app.buttons["submit_round_button"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
+        completeCurrentStageInDeck()
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("2", in: app)
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("0", in: app)
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
+        XCTAssertTrue(app.staticTexts["round 3"].waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts.matching(identifier: "stage 1/10").count, 1)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "stage 0/10").count, 1)
+    }
+
+    func testPhase10FailedSaveRetainsStageDraftAndAdvancesOnceOnRetry() throws {
+        relaunch(arguments: ["-in-memory-store", "-fail-first-round-save"])
+        navigateToScoring(gameTileID: "game_tile_phase10", playerNames: ["alice", "bob"])
+        app.buttons["submit_round_button"].tap()
+        XCTAssertTrue(app.descendants(matching: .any)["round_entry_deck"].waitForExistence(timeout: 10))
+        ScoreDeckUITestSupport.dismissDeckTutorialIfPresent(in: app)
+        completeCurrentStageInDeck()
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("7", in: app)
+        ScoreDeckUITestSupport.typeScoreForCurrentPlayer("3", in: app)
+        let alert = app.alerts["couldn’t save round"]
+        XCTAssertTrue(alert.waitForExistence(timeout: 5))
+        alert.buttons["try again"].tap()
+        ScoreDeckUITestSupport.waitForDeckToClose(in: app)
+        XCTAssertTrue(app.staticTexts["round 2"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["round 3"].exists)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "stage 1/10").count, 1)
+        XCTAssertEqual(app.staticTexts.matching(identifier: "stage 0/10").count, 1)
+    }
+
+    private func completeCurrentStageInDeck() {
+        let toggle = app.switches.matching(NSPredicate(format: "identifier BEGINSWITH 'stage_toggle_'")).firstMatch
+        XCTAssertTrue(toggle.waitForExistence(timeout: 3))
+        let control = toggle.switches.firstMatch
+        XCTAssertTrue(control.exists)
+        control.tap()
+        XCTAssertEqual(toggle.value as? String, "1")
+    }
+
     // MARK: - Helpers
 
     private func relaunch(arguments: [String]) {
@@ -674,9 +758,9 @@ final class ScoreKeeperUITests: XCTestCase {
         for (index, name) in names.enumerated() {
             if index >= 2 {
                 if app.keyboards.firstMatch.exists {
-                    app.keyboards.buttons["Return"].tap()
+                    app.textFields["player_name_field_\(index - 1)"].typeText("\n")
                 }
-                app.buttons["add_player_button"].tap()
+                ScoreDeckUITestSupport.tapButtonInSafeArea(app.buttons["add_player_button"], in: app)
             }
             let fieldIdentifier = "player_name_field_\(index)"
             let field = app.textFields[fieldIdentifier]

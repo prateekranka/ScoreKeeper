@@ -24,7 +24,7 @@ struct PlayerStatsView: View {
         completedSessions
             .filter { session in
                 session.players.contains { player in
-                    player.name.caseInsensitiveCompare(playerName) == .orderedSame
+                    player.name.matchesPlayerName(playerName)
                 }
             }
             .prefix(12)
@@ -41,11 +41,7 @@ struct PlayerStatsView: View {
     }
 
     private var matchups: [PlayerMatchup] {
-        let opponentNames = completedSessions
-            .flatMap { $0.players.map(\.name) }
-            .filter { !$0.isEmpty && $0.caseInsensitiveCompare(playerName) != .orderedSame }
-
-        return Array(Set(opponentNames))
+        return StatsCalculator.opponentNames(for: playerName, sessions: completedSessions)
             .map { name in
                 PlayerMatchup(
                     name: name,

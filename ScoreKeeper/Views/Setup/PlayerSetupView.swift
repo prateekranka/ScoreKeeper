@@ -45,7 +45,7 @@ struct PlayerSetupView: View {
         if playerNames.count > gameType.maxPlayers {
             return "this game supports up to \(gameType.maxPlayers) players"
         }
-        let lowercaseNames = filledNames.map { $0.lowercased() }
+        let lowercaseNames = playableNames.map { $0.lowercased() }
         if Set(lowercaseNames).count != lowercaseNames.count {
             return "player names must be unique"
         }
@@ -334,10 +334,12 @@ private struct SetupPlayerHeader: View {
             } else {
                 HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
                     copy
+                        .fixedSize(horizontal: true, vertical: false)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     PipCountGeometricArtwork(scene: .playerSetup)
-                        .frame(width: 166, height: 172)
+                        .aspectRatio(166.0 / 172.0, contentMode: .fit)
+                        .frame(maxWidth: 166, maxHeight: 172)
                 }
             }
         }

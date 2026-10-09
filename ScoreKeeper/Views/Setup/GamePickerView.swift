@@ -3,6 +3,7 @@ import SwiftUI
 struct GamePickerView: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var contentVisible = false
 
     private let gameTypes: [GameType] = [.generic, .phase10, .whatsForDinner]
@@ -39,7 +40,7 @@ struct GamePickerView: View {
     }
 
     private var gridColumns: [GridItem] {
-        if horizontalSizeClass == .regular {
+        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
             return [
                 GridItem(.flexible(), spacing: AppTheme.spacingLarge, alignment: .top),
                 GridItem(.flexible(), spacing: AppTheme.spacingLarge, alignment: .top)

@@ -50,6 +50,9 @@ enum StatsCalculator {
         var aWins = 0
         var bWins = 0
         var gamesTogether = 0
+        guard !a.matchesPlayerName(b) else {
+            return H2HRecord(playerA: a, playerB: b, gameType: gameType, aWins: 0, bWins: 0, gamesTogether: 0)
+        }
 
         for session in sessions {
             if let gameType, session.gameType != gameType { continue }
@@ -81,7 +84,8 @@ enum StatsCalculator {
     }
 
     static func gamesBetween(_ a: String, and b: String, gameType: GameType, sessions: [GameSession]) -> [GameSession] {
-        sessions.filter { session in
+        guard !a.matchesPlayerName(b) else { return [] }
+        return sessions.filter { session in
             session.gameType == gameType
                 && session.players.contains { $0.name.matchesPlayerName(a) }
                 && session.players.contains { $0.name.matchesPlayerName(b) }
@@ -89,7 +93,22 @@ enum StatsCalculator {
     }
 
     static func allPlayerNames(from sessions: [GameSession]) -> [String] {
-        Array(Set(sessions.flatMap { $0.players.map(\.name) })).sorted()
+        uniquePlayerNames(sessions.flatMap { $0.players.map(\.name) })
+    }
+
+    static func opponentNames(for name: String, sessions: [GameSession]) -> [String] {
+        allPlayerNames(from: sessions).filter { opponent in
+            !opponent.isEmpty && !opponent.matchesPlayerName(name)
+                && !headToHeadByGameType(name, vs: opponent, sessions: sessions).isEmpty
+        }
+    }
+
+    private static func uniquePlayerNames(_ names: [String]) -> [String] {
+        names.sorted().reduce(into: [String]()) { result, name in
+            if !result.contains(where: { $0.matchesPlayerName(name) }) {
+                result.append(name)
+            }
+        }
     }
 }
 

@@ -24,12 +24,12 @@ struct HeadToHeadView: View {
     }
 
     private var records: [H2HRecord] {
-        guard !playerA.isEmpty, !playerB.isEmpty, playerA != playerB else { return [] }
+        guard !playerA.isEmpty, !playerB.isEmpty, !playerA.matchesPlayerName(playerB) else { return [] }
         return StatsCalculator.headToHeadByGameType(playerA, vs: playerB, sessions: completedSessions)
     }
 
     private var hasValidSelection: Bool {
-        !playerA.isEmpty && !playerB.isEmpty && playerA != playerB
+        !playerA.isEmpty && !playerB.isEmpty && !playerA.matchesPlayerName(playerB)
     }
 
     var body: some View {
@@ -57,7 +57,7 @@ struct HeadToHeadView: View {
         }
         .onChange(of: playerA) { _, _ in
             expandedKeys = []
-            if playerA == playerB {
+            if playerA.matchesPlayerName(playerB) {
                 playerB = ""
             }
         }
@@ -140,7 +140,7 @@ struct HeadToHeadView: View {
                 playerPicker(
                     title: "player two",
                     selection: $playerB,
-                    names: playerNames.filter { $0.caseInsensitiveCompare(playerA) != .orderedSame },
+                    names: playerNames.filter { !$0.matchesPlayerName(playerA) },
                     colorIndex: 1
                 )
             }
