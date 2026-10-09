@@ -1,3 +1,7 @@
+# Archived design reference
+
+The standalone prototype code was removed after the native SwiftUI implementation. The reference images, design decisions, and attribution remain here.
+
 # PipCount scoring motion prototypes — 2026-08-23
 
 Interactive scoring exploration based on Emil Kowalski's prototype, animation, and Apple fluid-interface principles.

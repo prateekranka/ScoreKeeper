@@ -1,3 +1,7 @@
+# Archived design reference
+
+The standalone prototype code was removed after the native SwiftUI implementation. The reference images, design decisions, and attribution remain here.
+
 # ScoreKeeper Redesign Exploration V2
 
 Second exploration pass for ScoreKeeper, targeting iPhone 16 Pro on iOS 26+.

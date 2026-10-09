@@ -8,7 +8,7 @@ Game flows use the existing in-memory store and debug flags.
 ## Suites
 
 - `native-glass-tabs.e2e.ts`: four native tab identifiers on every width and their destinations.
-- `native-glass-no-sidebar.e2e.ts`: four wide root destinations, folded navigation, game-route preservation, and score-draft preservation across folding. `PIPCOUNT_SIDEBAR_BEFORE=1` selects the preserved baseline root capture.
+- `native-glass-no-sidebar.e2e.ts`: four wide root destinations, folded navigation, game-route preservation, and score-draft preservation across folding.
 - `native-glass-gallery.e2e.ts`: onboarding, all root screens, three game formats, handwriting, manual entry, statistics, history, results, and sharing.
 - `native-glass-extras.e2e.ts`: scoring utilities, Home utilities, and the Pro offer. It does not purchase or restore a purchase.
 - `native-glass-a11y.e2e.ts`: actual system AX5 plus real Reduce Transparency, long and multilingual names, keyboard access, utility actions, exact scores 7 and 9, and undo to zero.

@@ -309,52 +309,6 @@ struct BauhausStarburst: View {
     }
 }
 
-struct BauhausHalftone: View {
-    var color: Color = ClubhouseTheme.ink
-    var spacing: CGFloat = 8
-
-    var body: some View {
-        Canvas { context, size in
-            var x: CGFloat = 2
-            var column = 0
-            while x < size.width {
-                var y: CGFloat = column.isMultiple(of: 2) ? 2 : spacing / 2
-                while y < size.height {
-                    let dotSize = max(spacing * 0.18, 1.25)
-                    let dot = Path(ellipseIn: CGRect(x: x, y: y, width: dotSize, height: dotSize))
-                    context.fill(dot, with: .color(color.opacity(0.34)))
-                    y += spacing
-                }
-                column += 1
-                x += spacing
-            }
-        }
-        .accessibilityHidden(true)
-    }
-}
-
-struct BauhausTargetArtwork: View {
-    var accent: Color = ClubhouseTheme.red
-
-    var body: some View {
-        PipCountGeometricArtwork(scene: .scoring)
-            .overlay(alignment: .topTrailing) {
-                Circle()
-                    .fill(accent)
-                    .frame(width: 14, height: 14)
-                    .padding(8)
-            }
-    }
-}
-
-struct BauhausBlocksArtwork: View {
-    var compact = false
-
-    var body: some View {
-        PipCountGeometricArtwork(scene: compact ? .homeEmpty : .home)
-    }
-}
-
 // MARK: - Kinetic screen artwork
 
 enum PipCountArtworkScene {

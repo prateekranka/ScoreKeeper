@@ -3,16 +3,9 @@ name: PipCount Production Validation
 on:
   workflow_dispatch:
   push:
-    branches:
-      - app-dev/pipcount-b16-copy
-      - app-dev/pipcount-bauhaus-motion
-      - app-dev/pipcount-handwriting-entry
+    branches: [main]
   pull_request:
-    branches:
-      - app-dev/pipcount-b16-copy
-      - app-dev/pipcount-bauhaus-motion
-      - claude/show-claude-md-0Z8wn
-      - main
+    branches: [main]
 
 concurrency:
   group: pipcount-production-${{ github.workflow }}-${{ github.ref }}

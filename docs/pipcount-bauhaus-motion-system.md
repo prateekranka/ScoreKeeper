@@ -2,7 +2,7 @@
 
 Status: **shipping direction**  
 Decision date: 2026-08-23  
-Prototype: `design-explorations/pipcount-motion-prototype-20260823/scoring-picker.html`
+Archived design decision: `design-explorations/pipcount-motion-prototype-20260823/README.md`
 
 ## Product rule
 

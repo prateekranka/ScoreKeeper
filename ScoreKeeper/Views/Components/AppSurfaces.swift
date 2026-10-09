@@ -12,18 +12,6 @@ enum AppButtonRole {
     case destructive
 }
 
-struct AppSurface<Content: View>: View {
-    var cornerRadius: CGFloat = AppTheme.cornerRadiusMedium
-    var isInteractive = false
-    @ViewBuilder var content: Content
-
-    var body: some View {
-        ScorecardSurface(cornerRadius: cornerRadius, isInteractive: isInteractive) {
-            content
-        }
-    }
-}
-
 struct AppSectionHeader: View {
     let title: String
     var subtitle: String?
@@ -207,17 +195,6 @@ private extension AppButtonRole {
     var isSecondary: Bool {
         if case .secondary = self { return true }
         return false
-    }
-}
-
-struct EmptyStateView: View {
-    let title: String
-    let systemImage: String
-    let message: String
-
-    var body: some View {
-        ContentUnavailableView(title, systemImage: systemImage, description: Text(message))
-            .frame(maxWidth: .infinity, minHeight: 220)
     }
 }
 

@@ -1,6 +1,6 @@
-# ScoreKeeper
+# PipCount
 
-Native iOS scorekeeping app.
+Native iPhone and iPad scorekeeping app. Home, Games, Players, and More use native tabs at every window width.
 
 ## UI Screen Network
 
@@ -25,3 +25,15 @@ npm run sim:serve
 npm run sim:serve:detach
 npm run sim:serve:kill
 ```
+
+## Native build and app acceptance
+
+```sh
+xcodebuild -project ScoreKeeper.xcodeproj -scheme ScoreKeeper \
+  -configuration Debug -sdk iphonesimulator \
+  -destination 'generic/platform=iOS Simulator' \
+  -derivedDataPath .build/DerivedData CODE_SIGNING_ALLOWED=NO build
+npm ci
+```
+
+Use [TesterArmy e2e](tests/README.md) for app acceptance on a selected, already-booted simulator. The suites cover all native tabs, complete game flows, folding, and real system accessibility settings. Set `PIPCOUNT_APP` to the exact built bundle when it differs from `.build/DerivedData/Build/Products/Debug-iphonesimulator/ScoreKeeper.app`.

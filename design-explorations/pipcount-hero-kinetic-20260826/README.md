@@ -1,3 +1,7 @@
+# Archived design reference
+
+The standalone prototype code was removed after the native SwiftUI implementation. The reference images, design decisions, and attribution remain here.
+
 # PipCount hero kinetic artwork — black-disc reference system
 
 Date: 2026-08-26. Status: **implemented in SwiftUI, pending Mac compile check.**

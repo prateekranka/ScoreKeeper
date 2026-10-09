@@ -3,13 +3,9 @@ name: PipCount iOS Build
 on:
   workflow_dispatch:
   push:
-    branches:
-      - app-dev/pipcount-bauhaus-motion
+    branches: [main]
   pull_request:
-    branches:
-      - main
-      - claude/show-claude-md-0Z8wn
-      - app-dev/pipcount-bauhaus-motion
+    branches: [main]
 
 concurrency:
   group: pipcount-ios-${{ github.ref }}

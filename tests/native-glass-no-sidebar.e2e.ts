@@ -9,7 +9,6 @@ const bundle='com.icequeen.scorekeeper';
 const tabs=[['Home','tab_home','new_game_button'],['Games','tab_games','game_tile_generic'],['Players','tab_players','saved_player_maya'],['More','legal_support_button','theme_light_button']] as const;
 
 test('wide root destinations use native tabs without a persistent sidebar',{timeout:600000},async({app,screen,device})=>{
- const before=Boolean(process.env.PIPCOUNT_SIDEBAR_BEFORE);
  try{
   await device.installApp();
   await device.openApp(bundle,{relaunch:true,launchArguments:['-in-memory-store','-unlock-pro','-force-light-theme','-break-ui-data']});
@@ -17,30 +16,18 @@ test('wide root destinations use native tabs without a persistent sidebar',{time
   const initial=await captureState(app,'wide-initial-home','Demo data in the open Duo window');
   const png=await readFile(await screenshotPath(initial));expect({width:png.readUInt32BE(16),height:png.readUInt32BE(20)}).toEqual({width:951,height:669});
   for(const [name,id,marker] of tabs){
-   if(before){
-    const sidebar=screen.getByTestId(name==='More'?'sidebar_legal_support_button':`sidebar_tab_${name.toLowerCase()}`);
-    for(let attempt=0;attempt<12;attempt++){
-     const frame=await sidebar.isVisible()?await sidebar.boundingBox():null;
-     if(frame && frame.y>=90 && frame.y+frame.height<=500)break;
-     await screen.swipe({from:{x:125,y:460},to:{x:125,y:220}});
-    }
-    await tapNativeControl(screen,sidebar);
-   }else{
-    await expect(screen.getByTestId(/^sidebar_/)).toBeHidden();
-    await expect(screen.getByRole('button',/^(Show|Hide) Sidebar$/i)).toBeHidden();
-    await tapOpenDuoTab(app,screen,screen.getByTestId(id),name);
-   }
+   await expect(screen.getByTestId(/^sidebar_/)).toBeHidden();
+   await expect(screen.getByRole('button',/^(Show|Hide) Sidebar$/i)).toBeHidden();
+   await tapOpenDuoTab(app,screen,screen.getByTestId(id),name);
    const content=screen.getByTestId(marker);await scrollMainContent(screen,device,content,'down',true);
    await expect(content).toBeVisible();
-   await captureState(app,`wide-root-${name.toLowerCase()}`,`${name}: same Demo fixture and 951 by 669 window; ${before?'original sidebar':'native tabs with full content width'}`);
+   await captureState(app,`wide-root-${name.toLowerCase()}`,`${name}: same Demo fixture and 951 by 669 window; native tabs with full content width`);
   }
-  if(!before){
-   await tapOpenDuoTab(app,screen,screen.getByTestId('tab_home'),'Home');await expect(screen.getByTestId('new_game_button')).toBeVisible();
-   await device.fold('closed');
-   for(const [name,,marker] of tabs){
-    await tapTab(screen,name);const content=screen.getByTestId(marker);await scrollMainContent(screen,device,content);
-    await expect(content).toBeVisible();await captureState(app,`folded-root-${name.toLowerCase()}`,'Native tabs remain available after folding');
-   }
+  await tapOpenDuoTab(app,screen,screen.getByTestId('tab_home'),'Home');await expect(screen.getByTestId('new_game_button')).toBeVisible();
+  await device.fold('closed');
+  for(const [name,,marker] of tabs){
+   await tapTab(screen,name);const content=screen.getByTestId(marker);await scrollMainContent(screen,device,content);
+   await expect(content).toBeVisible();await captureState(app,`folded-root-${name.toLowerCase()}`,'Native tabs remain available after folding');
   }
  }finally{
   await device.fold('closed');
@@ -49,7 +36,6 @@ test('wide root destinations use native tabs without a persistent sidebar',{time
 });
 
 test('game route and manual score draft survive a Duo fold',{timeout:600000},async({app,screen,device})=>{
- if(process.env.PIPCOUNT_SIDEBAR_BEFORE)test.skip('Current-build state preservation check');
  try{
   await device.installApp();await device.openApp(bundle,{relaunch:true,launchArguments:['-in-memory-store','-unlock-pro','-force-light-theme','-break-ui-data','-hasSeenScoreDeckTutorial','YES']});
   const resume=screen.getByTestId(/^active_game_/).first();await scrollMainContent(screen,device,resume);
