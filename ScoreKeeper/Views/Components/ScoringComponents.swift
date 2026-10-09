@@ -37,10 +37,10 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                 ScrollView {
                     VStack(spacing: AppTheme.spacingMedium) {
                         scoringHeader(availableWidth: proxy.size.width)
+                        scoringActions
                         responsiveContent(availableWidth: proxy.size.width)
                             .padding(.horizontal, AppTheme.spacingMedium)
                             .pipCountPageContent(maxWidth: 980)
-                        scoringActions
                     }
                     .padding(.bottom, AppTheme.spacingLarge)
                 }

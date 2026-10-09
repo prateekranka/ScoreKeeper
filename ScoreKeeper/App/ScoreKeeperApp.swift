@@ -8,9 +8,6 @@ struct ScoreKeeperApp: App {
     @State private var storeManager = StoreManager()
     @State private var reviewAskManager = ReviewAskManager()
     @State private var containerResult = ScoreKeeperApp.makeModelContainer()
-    #if DEBUG
-    @State private var breakUISelection = "demo"
-    #endif
 
     var body: some Scene {
         WindowGroup {
@@ -23,13 +20,12 @@ struct ScoreKeeperApp: App {
                         .preferredColorScheme(themeManager.effectiveColorScheme)
                         .modelContainer(container)
                         #if DEBUG
-                        .id(breakUISelection)
+                        .id(ObjectIdentifier(container))
                         .overlay(alignment: .topTrailing) {
                             if BreakUIFixture.isEnabled {
                                 Menu {
                                     ForEach(BreakUIFixture.modes, id: \.self) { mode in
                                         Button(mode == "worst" ? "Worst case" : mode.capitalized) {
-                                            breakUISelection = mode
                                             containerResult = ScoreKeeperApp.makeModelContainer(fixtureMode: mode)
                                         }
                                         .accessibilityIdentifier("break_ui_data_\(mode)")

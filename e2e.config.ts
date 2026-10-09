@@ -15,7 +15,7 @@ export default {
     }),
     app: {
       bundleId: 'com.icequeen.scorekeeper',
-      appPath: process.env.PIPCOUNT_APP ?? '.build/native-glass-final15/Build/Products/Debug-iphonesimulator/ScoreKeeper.app',
+      appPath: process.env.PIPCOUNT_APP ?? '.build/break-ui-fix19/Build/Products/Debug-iphonesimulator/ScoreKeeper.app',
       launchArguments: ['-in-memory-store', '-force-light-theme'],
     },
   }],

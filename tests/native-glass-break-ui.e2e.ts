@@ -95,32 +95,47 @@ test('break-ui multilingual 15-player scorecard at AX5 in light and dark',{timeo
    const theme=screen.getByTestId(`theme_${appearance}_button`);await screen.scrollUntilVisible(theme);await tapNativeControl(screen,theme);
    await selectData(app,screen,'worst');
    await tapTab(screen,'Players');
-   if(!process.env.PIPCOUNT_BREAK_SCORE_ONLY) for(const name of [names[0],names[5],names[6],names[7],names[8],names[12],names[13]]){
-    const card=screen.getByTestId('saved_player_'+name);await screen.scrollUntilVisible(card);await expect(card).toBeVisible();
+   if(!process.env.PIPCOUNT_BREAK_SCORE_ONLY) for(const name of [names[0],names[5],names[6],names[7],names[8],names[12],names[13]].filter(value=>!process.env.PIPCOUNT_BREAK_CRITICAL_NAMES || value===names[0])){
+    const card=screen.getByTestId('saved_player_'+name);await scrollMainContent(screen,device,card,'down',false,true);await expect(card).toBeVisible();
+    if(name===names[0]){
+     const frame=await card.boundingBox();expect(frame?.height).toBeLessThan(450);
+    }
     await captureState(app,`break-worst-${appearance}-name-${names.indexOf(name)}`,'AX5 player row for '+name);
    }
    if(!process.env.PIPCOUNT_BREAK_SCORE_ONLY){
-    const missing=screen.getByTestId('saved_player_');await screen.scrollUntilVisible(missing);await expect(missing).toBeVisible();
-    await captureState(app,`break-worst-${appearance}-missing-name`,'Schema permits an empty stored name; observe its fallback');
+    const missing=screen.getByTestId('saved_player_');await scrollMainContent(screen,device,missing,'down',false,true,40);await expect(missing).toBeVisible();
+    await expect(screen.getByText('unnamed player',{exact:true}).last()).toBeVisible();
+    await captureState(app,`break-worst-${appearance}-missing-name`,'Empty stored name has the unnamed player fallback');
+    await tapNativeControl(screen,missing);await expect(screen.getByTestId('player_stats_view').last()).toBeVisible();
+    await expect(screen.getByText('unnamed player',{exact:true}).last()).toBeVisible();
+    await captureState(app,`break-worst-${appearance}-missing-name-history`,'The same fallback identifies the player history');
+    await selectData(app,screen,'worst');
    }
    if(process.env.PIPCOUNT_BREAK_ROSTER_ONLY)continue;
    await tapTab(screen,'Home');
    await resumeBySlide(screen,device);
    await expect(screen.getByTestId('scoring_accessible_scroll')).toBeVisible();
-   const high=screen.getByTestId('running_total_'+names[0]);await screen.getByTestId('scoring_accessible_scroll').scrollUntilVisible(high,{timeout:120000});await expect(high).toHaveText('4,950');
-   await captureState(app,`break-worst-${appearance}-total-4950`,'Fifteen players and 50 rounds; long name beside exact total 4950');
-   const submit=screen.getByTestId('submit_round_button').last();await screen.getByTestId('scoring_accessible_scroll').scrollUntilVisible(submit,{timeout:30000});await tapNativeControl(screen,submit);
+   const submit=screen.getByTestId('submit_round_button').last();await screen.getByTestId('scoring_accessible_scroll').scrollUntilVisible(submit,{timeout:30000});
+   await scrollMainContent(screen,device,submit,'down',false,true);
+   const submitFrame=await submit.boundingBox();expect(submitFrame?.width).toBeGreaterThanOrEqual(44);expect(submitFrame?.height).toBeGreaterThanOrEqual(44);
+   await captureState(app,`break-worst-${appearance}-score-round-reachable`,'Score Round is reachable before all 50 rounds of history');
+   await tapNativeControl(screen,submit);
    await expect(screen.getByTestId('round_entry_deck')).toBeVisible();
    const gotIt=screen.getByRole('button','got it',{exact:true});if(await gotIt.isVisible())await gotIt.tap();
-   const current=await visibleDeckPlayer(screen,names);
-   await tapNativeControl(screen,screen.getByTestId('deck_type_score_button'));
+   const typeScore=screen.getByTestId('deck_type_score_button');await scrollMainContent(screen,device,typeScore,'down',false,true,40);
+   await tapNativeControl(screen,typeScore);
    const field=screen.getByTestId('deck_manual_value');await enterKeyboardText(screen,field,'99');await expect(field).toHaveValue('99');
-   await expect(screen.getByTestId('deck_manual_use_'+current)).toBeEnabled();
+   const keyboardIdentity=await screen.getByTestId('deck_keyboard_player').textContent();
+   const current=names.find(name=>keyboardIdentity===`Score for ${name}`);if(!current)throw new Error('The keyboard does not identify a fixture player: '+keyboardIdentity);
    await captureState(app,`break-worst-${appearance}-keyboard-99`,'AX5 upper valid score boundary and full player identity');
    const done=screen.getByTestId('deck_keyboard_done');await tapNativeControl(screen,done);await expect(screen.getByTestId('inputView')).toBeHidden();
-   await tapNativeControl(screen,screen.getByTestId('round_deck_cancel_button'));
+   const use=screen.getByTestId('deck_manual_use_'+current);await scrollMainContent(screen,device,use,'down',false,true);await expect(use).toBeEnabled();
+   await captureState(app,`break-worst-${appearance}-use-99`,'The valid draft remains available after keyboard dismissal');
+   const cancel=screen.getByTestId('round_deck_cancel_button');await scrollMainContent(screen,device,cancel,'up',false,true,40);await tapNativeControl(screen,cancel);
    await expect(screen.getByTestId('round_entry_deck')).toBeHidden();
+   const high=screen.getByTestId('running_total_'+names[0]);
    await screen.getByTestId('scoring_accessible_scroll').scrollUntilVisible(high,{timeout:120000});await expect(high).toHaveText('4,950');
+   await captureState(app,`break-worst-${appearance}-total-4950`,'Fifteen players and 50 rounds; long name beside exact unchanged total 4950');
    await captureState(app,`break-worst-${appearance}-cancelled`,'Cancelling uncommitted score leaves the saved total unchanged');
   }
  }catch(error){
@@ -183,6 +198,10 @@ test('break-ui wide Duo data containers',{timeout:600000},async({app,screen,devi
   await openFixture(device,screen);await selectData(app,screen,'worst');await device.fold('open');
   await expect(screen.getByTestId('sidebar_tab_home')).toBeVisible();
   await captureState(app,'break-wide-worst-home','Actual widest available Duo container');
+  const title=screen.getByTestId(/^active_title_/).first();await scrollMainContent(screen,device,title,'down',true,true);
+  const titleFrame=await title.boundingBox();const statusFrame=await screen.getByTestId(/^active_status_/).first().boundingBox();
+  expect(titleFrame?.height).toBeLessThan(45);expect(statusFrame?.height).toBeLessThan(40);
+  await captureState(app,'break-wide-worst-active-game','Active-game title and status remain on one line with the sidebar open');
   const players=screen.getByTestId('sidebar_tab_players');
   for(let i=0;i<8;i++){
    const frame=await players.isVisible()?await players.boundingBox():null;

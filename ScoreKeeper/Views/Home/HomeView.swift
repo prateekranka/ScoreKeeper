@@ -42,17 +42,19 @@ struct HomeView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: AppTheme.spacingLarge) {
-                HomeHeader(subtitle: headerSubtitle)
-                    .staggeredEntrance(visible: sectionsVisible, index: 0)
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(spacing: AppTheme.spacingLarge) {
+                    HomeHeader(subtitle: headerSubtitle)
+                        .staggeredEntrance(visible: sectionsVisible, index: 0)
 
-                responsiveDashboard
+                    responsiveDashboard(availableWidth: min(proxy.size.width, AppTheme.contentMaxWidth) - AppTheme.spacingMedium * 2)
+                }
+                .padding(.horizontal, AppTheme.spacingMedium)
+                .padding(.top, AppTheme.spacingSmall)
+                .padding(.bottom, AppTheme.spacingXLarge)
+                .pipCountPageContent()
             }
-            .padding(.horizontal, AppTheme.spacingMedium)
-            .padding(.top, AppTheme.spacingSmall)
-            .padding(.bottom, AppTheme.spacingXLarge)
-            .pipCountPageContent()
         }
         .appBackground()
         .navigationTitle("")
@@ -92,8 +94,8 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private var responsiveDashboard: some View {
-        if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
+    private func responsiveDashboard(availableWidth: CGFloat) -> some View {
+        if availableWidth >= AppTheme.formMaxWidth && !dynamicTypeSize.isAccessibilitySize {
             HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
                 VStack(spacing: AppTheme.spacingMedium) {
                     gameActionSection
@@ -427,24 +429,32 @@ private struct HomeActiveGamesSection: View {
 }
 
 private struct ActiveGameRow: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let session: GameSession
     let onResume: () -> Void
     let onDelete: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
+            let headerLayout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
+                : AnyLayout(HStackLayout())
+            headerLayout {
                 Text(session.gameType.displayName)
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
-                Spacer()
+                    .accessibilityIdentifier("active_title_\(session.id.uuidString)")
+                if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                 Text("in progress")
                     .font(AppFonts.caption.weight(.bold))
                     .foregroundStyle(ClubhouseTheme.blue)
                     .padding(.horizontal, 10)
+                    .fixedSize(horizontal: true, vertical: false)
                     .frame(minHeight: 30)
                     .overlay { Capsule().strokeBorder(ClubhouseTheme.blue, lineWidth: 1) }
+                    .accessibilityIdentifier("active_status_\(session.id.uuidString)")
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             HStack(spacing: AppTheme.spacingSmall) {
                 Text(session.players.count.quantityText("player"))
@@ -1143,6 +1153,7 @@ private struct PlayersLibraryHero: View {
 
 private struct SavedPlayerCard: View {
     @Environment(NavigationRouter.self) private var router
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let player: SavedPlayer
     let index: Int
 
@@ -1150,23 +1161,32 @@ private struct SavedPlayerCard: View {
         Button {
             router.push(.playerStats(player.name))
         } label: {
-            HStack(spacing: AppTheme.spacingMedium) {
-                BauhausPlayerShape(colorIndex: player.colorIndex, size: 44)
+            Group {
+                if dynamicTypeSize.isAccessibilitySize {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                        playerName
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(player.name)
-                        .font(AppFonts.headline)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                    Text(player.gamesPlayed.quantityText("game"))
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                        HStack(spacing: AppTheme.spacingMedium) {
+                            BauhausPlayerShape(colorIndex: player.colorIndex, size: 44)
+                            gamesPlayed
+                            Spacer(minLength: 0)
+                            disclosureIndicator
+                        }
+                    }
+                } else {
+                    HStack(spacing: AppTheme.spacingMedium) {
+                        BauhausPlayerShape(colorIndex: player.colorIndex, size: 44)
+
+                        VStack(alignment: .leading, spacing: 3) {
+                            playerName
+                            gamesPlayed
+                        }
+
+                        Spacer()
+                        disclosureIndicator
+                    }
                 }
-
-                Spacer()
-
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
             .padding(AppTheme.spacingMedium)
             .frame(minHeight: 78)
@@ -1175,6 +1195,26 @@ private struct SavedPlayerCard: View {
         }
         .buttonStyle(PressableButtonStyle())
         .accessibilityIdentifier("saved_player_\(player.name)")
+    }
+
+    private var playerName: some View {
+        Text(player.displayName)
+            .font(AppFonts.headline)
+            .foregroundStyle(ClubhouseTheme.ink)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityIdentifier("saved_player_name_\(player.name)")
+    }
+
+    private var gamesPlayed: some View {
+        Text(player.gamesPlayed.quantityText("game"))
+            .font(AppFonts.caption)
+            .foregroundStyle(ClubhouseTheme.inkMuted)
+    }
+
+    private var disclosureIndicator: some View {
+        Image(systemName: "chevron.right")
+            .font(.caption.weight(.bold))
+            .foregroundStyle(ClubhouseTheme.inkMuted)
     }
 }
 

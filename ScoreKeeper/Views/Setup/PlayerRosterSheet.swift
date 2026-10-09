@@ -51,7 +51,7 @@ struct PlayerRosterSheet: View {
                 isPresented: $showDeleteConfirmation,
                 titleVisibility: .visible
             ) {
-                Button("delete \(pendingDeleteName ?? "player")", role: .destructive) {
+                Button("delete \(SavedPlayer.displayName(for: pendingDeleteName ?? "player"))", role: .destructive) {
                     deletePendingPlayer()
                 }
                 Button("cancel", role: .cancel) {}
@@ -84,7 +84,7 @@ struct PlayerRosterSheet: View {
                 HStack(spacing: AppTheme.spacingSmall) {
                     PlayerBadge(name: player.name, colorIndex: player.colorIndex, size: .small, showName: false)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(player.name)
+                        Text(player.displayName)
                             .font(AppFonts.body.weight(.semibold))
                             .foregroundStyle(ClubhouseTheme.ink)
                             .lineLimit(1)
@@ -111,7 +111,7 @@ struct PlayerRosterSheet: View {
                 }
             }
             .buttonStyle(PressableButtonStyle())
-            .accessibilityLabel("\(player.name), \(player.gamesPlayed) games played")
+            .accessibilityLabel("\(player.displayName), \(player.gamesPlayed) games played")
             .accessibilityValue(selectedNames.contains(player.name) ? "Selected" : "Not selected")
             .accessibilityIdentifier("roster_player_\(player.name)")
 
@@ -125,7 +125,7 @@ struct PlayerRosterSheet: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(PressableButtonStyle())
-            .accessibilityLabel("Delete \(player.name) from saved roster")
+            .accessibilityLabel("Delete \(player.displayName) from saved roster")
             .accessibilityIdentifier("delete_roster_player_\(player.name)")
         }
     }

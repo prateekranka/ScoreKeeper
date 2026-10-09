@@ -139,7 +139,7 @@ struct PlayerStatsView: View {
 
     private var heroCopy: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text(playerName)
+            Text(SavedPlayer.displayName(for: playerName))
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(2)
@@ -188,7 +188,7 @@ struct PlayerStatsView: View {
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text("finish a game with \(playerName) and their history will appear here")
+                Text("finish a game with \(SavedPlayer.displayName(for: playerName)) and their history will appear here")
                     .font(AppFonts.body)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .multilineTextAlignment(.center)

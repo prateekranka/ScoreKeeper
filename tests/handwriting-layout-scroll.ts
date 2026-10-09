@@ -2,7 +2,7 @@ import type { Device } from '@e2e-dev/mobile';
 import type { Locator, Screen } from 'e2e';
 
 /** Keep controls below navigation and above pinned actions with short, reversible drags. */
-export async function scrollMainContent(screen: Screen, device: Device, target: Locator, direction: 'up' | 'down' = 'down', openDuo = false, fullControl = false): Promise<void> {
+export async function scrollMainContent(screen: Screen, device: Device, target: Locator, direction: 'up' | 'down' = 'down', openDuo = false, fullControl = false, searchAttempts = 18): Promise<void> {
   const accessibleDeck = screen.getByTestId('round_deck_accessible_scroll').last();
   const inAccessibleDeck = await accessibleDeck.isVisible();
   const inAccessibleScoring = await screen.getByTestId('scoring_accessible_scroll').isVisible();
@@ -16,7 +16,7 @@ export async function scrollMainContent(screen: Screen, device: Device, target: 
     throw new Error('The frontmost deck control is outside its usable viewport');
   }
   let towardLaterRows = direction === 'down';
-  for (let attempt = 0; attempt < 18; attempt += 1) {
+  for (let attempt = 0; attempt < searchAttempts; attempt += 1) {
     const frames = [];
     if (inAccessibleDeck) {
       const bounds = await screen.getByTestId('round_entry_deck').boundingBox();
@@ -70,7 +70,7 @@ export async function scrollMainContent(screen: Screen, device: Device, target: 
       towardLaterRows = controlBottom > bottom;
       const overflow = towardLaterRows ? controlBottom - bottom : top - controlTop;
       distance = Math.min(distance, Math.max(56, overflow + 6));
-    } else if (attempt === 8 && direction === 'down') {
+    } else if (attempt === Math.floor(searchAttempts / 2) - 1 && direction === 'down') {
       // Off-screen rows can be absent from the tree. Search back if we passed one.
       towardLaterRows = !towardLaterRows;
     }
@@ -93,6 +93,6 @@ export async function scrollMainContent(screen: Screen, device: Device, target: 
       await screen.swipe({from:{x,y:start},to:{x,y:end}});
     } else await screen.swipe({ from: { x, y: fromY }, to: { x, y: toY } });
   }
-  throw new Error('The target did not reach a usable region after 18 short scrolls');
+  throw new Error(`The target did not reach a usable region after ${searchAttempts} short scrolls`);
 }
 
