@@ -41,6 +41,28 @@ Each case asserts the actual screenshot aspect ratio before testing the app.
 The default run checks the two compact cases. All app actions and assertions use e2e.
 Never run two sessions on the same device at the same time.
 
+On the beta Duo runner, the main page and a modal sheet use different input geometry.
+The landscape suite checks actual 951 by 669 captures. It uses e2e's native in-app
+navigation action on the utility sheet's live navigation bar, where Done is the
+only action. It requires the unique sheet content and Done controls to disappear.
+This avoids a stale projected viewport. Score-deck actions use each current native
+control's center. Other targets continue to use semantic native toolbar actions.
+
+The Settings setup waits for the exact named Larger Accessibility Sizes switch.
+A generic first-switch query can read the previous page during navigation.
+Landscape text input uses the visible software keyboard as its input anchor and
+requires the exact field value. Return uses its current native frame when visible.
+If the driver clips Return, Enter goes through e2e's keyboard route. A reported
+native Return error is accepted only after a fresh capture and verified keyboard
+dismissal; the test does not repeat that action.
+
+For a focused check, set `PIPCOUNT_A11Y_HOME_ONLY=1`, `PIPCOUNT_A11Y_CONFIG_ONLY=1`,
+or `PIPCOUNT_A11Y_DECK_ONLY=1`. `PIPCOUNT_A11Y_APPEARANCE=light` or `dark` narrows
+the appearance. These options do not replace the complete acceptance pass.
+If a diagnostic changed system settings, `PIPCOUNT_SETTINGS_RESTORE_FROM` accepts
+an absolute path to the same device's recorded original settings JSON. The suite
+restores and verifies those values before its original-state capture.
+
 For baseline Home utility captures, set `PIPCOUNT_HOME_TOOLS_ONLY=1` and select the baseline app bundle.
 For utility captures from an already-open game, set `PIPCOUNT_CAPTURE_EXISTING=1`.
 The full gallery saves its own fixture games and needs neither flag.

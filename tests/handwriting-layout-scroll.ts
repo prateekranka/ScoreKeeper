@@ -2,7 +2,7 @@ import type { Device } from '@e2e-dev/mobile';
 import type { Locator, Screen } from 'e2e';
 
 /** Keep controls below navigation and above pinned actions with short, reversible drags. */
-export async function scrollMainContent(screen: Screen, device: Device, target: Locator, direction: 'up' | 'down' = 'down', openDuo = false): Promise<void> {
+export async function scrollMainContent(screen: Screen, device: Device, target: Locator, direction: 'up' | 'down' = 'down', openDuo = false, fullControl = false): Promise<void> {
   const accessibleDeck = screen.getByTestId('round_deck_accessible_scroll').last();
   const inAccessibleDeck = await accessibleDeck.isVisible();
   const inAccessibleScoring = await screen.getByTestId('scoring_accessible_scroll').isVisible();
@@ -58,12 +58,12 @@ export async function scrollMainContent(screen: Screen, device: Device, target: 
       }
     }
     // Native ScrollView bounds include the area beneath the navigation bar.
-    const top = Math.max(inAccessibleDeck || inAccessibleScoring ? 24 : 96, frame.y + 24);
+    const top = Math.max(inAccessibleDeck || inAccessibleScoring ? 24 : fullControl ? 128 : 96, frame.y + 24);
     if (bottom - top < 60) throw new Error('The main scroll view has no clear drag region');
     const availableHeight = bottom - top;
     let distance = Math.min(180, availableHeight * 0.45);
     if (targetFrame) {
-      const fullControlFits = targetFrame.height <= Math.min(inAccessibleDeck || inAccessibleScoring ? availableHeight : 100, availableHeight);
+      const fullControlFits = targetFrame.height <= Math.min(inAccessibleDeck || inAccessibleScoring || fullControl ? availableHeight : 100, availableHeight);
       const controlTop = fullControlFits ? targetFrame.y : targetFrame.y + targetFrame.height / 2 - 22;
       const controlBottom = fullControlFits ? targetFrame.y + targetFrame.height : controlTop + 44;
       if (controlTop >= top && controlBottom <= bottom) return;

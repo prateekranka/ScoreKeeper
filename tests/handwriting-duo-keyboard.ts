@@ -14,10 +14,28 @@ export async function enterOpenDuoText(
 ): Promise<void> {
   if (!value || [...value].length > 80) throw new Error('Open Duo text must contain 1–80 characters');
   await tapOpenDuoControl(app, screen, field, `${label}-focus`);
-  const keyboardKey = /^\d+$/.test(value)
-    ? screen.getByText('9', { exact: true }).last()
-    : screen.getByTestId('Return', { visible: true }).last();
+  const keyboardKey = screen.getByTestId('inputView').last();
   await expect(keyboardKey).toBeVisible();
   for (const character of value) await keyboardKey.press(character);
   await expect(field).toHaveValue(value);
+}
+
+export async function submitOpenDuoName(app:CaptureApp,screen:Screen,label:string):Promise<void>{
+  const keyboard=screen.getByTestId('inputView').last();
+  await expect(keyboard).toBeVisible();
+  const key=screen.getByTestId('Return').last();
+  if(await key.isVisible()){
+    const frame=await key.boundingBox();
+    if(!frame) throw new Error('The visible Return key has no current frame');
+    await key.tap({position:{x:frame.width/2,y:frame.height/2}});
+  }else{
+    try{await keyboard.press('Enter');}
+    catch(error){
+      if(!(error instanceof Error)||!error.message.includes('XCTest recorded a failure while executing keyboardReturn')) throw error;
+      await app.screenshot(`${label}-return-result`);
+      await expect(keyboard).toBeHidden();
+      console.log('Native Return reported an error; actual keyboard dismissal verified without repeating the action',label);
+    }
+  }
+  await expect(keyboard).toBeHidden();
 }

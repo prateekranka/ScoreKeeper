@@ -139,20 +139,27 @@ struct GameConfigView: View {
                     Text("how to win?")
                         .columnHeaderStyle()
 
-                    // Segmented when both choices fit; stacked rows when the
-                    // column is too narrow (iPad split view, large text), so
-                    // the rule labels never truncate.
-                    ViewThatFits(in: .horizontal) {
-                        Picker("win condition", selection: $winCondition) {
-                            Text("highest score wins").tag(WinCondition.highestScore)
-                            Text("lowest score wins").tag(WinCondition.lowestScore)
-                        }
-                        .pickerStyle(.segmented)
-                        .accessibilityIdentifier("win_condition_picker")
-
+                    // Native segmented labels do not grow with accessibility
+                    // text. Use full-size choices at those sizes; retain the
+                    // fitting native picker for standard text.
+                    if dynamicTypeSize.isAccessibilitySize {
                         VStack(spacing: AppTheme.spacingSmall) {
                             winConditionChoice(.highestScore)
                             winConditionChoice(.lowestScore)
+                        }
+                    } else {
+                        ViewThatFits(in: .horizontal) {
+                            Picker("win condition", selection: $winCondition) {
+                                Text("highest score wins").tag(WinCondition.highestScore)
+                                Text("lowest score wins").tag(WinCondition.lowestScore)
+                            }
+                            .pickerStyle(.segmented)
+                            .accessibilityIdentifier("win_condition_picker")
+
+                            VStack(spacing: AppTheme.spacingSmall) {
+                                winConditionChoice(.highestScore)
+                                winConditionChoice(.lowestScore)
+                            }
                         }
                     }
                 }

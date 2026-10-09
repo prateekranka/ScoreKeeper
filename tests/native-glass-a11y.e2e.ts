@@ -3,7 +3,7 @@ import { expect } from 'e2e';
 import { captureState, tapNativeControl, enterKeyboardText, pressReturnKey, visibleDeckPlayer } from './handwriting-helpers';
 import { scrollMainContent } from './handwriting-layout-scroll';
 import { tapOpenDuoControl, screenshotPath } from './handwriting-duo-input';
-import { enterOpenDuoText } from './handwriting-duo-keyboard';
+import { enterOpenDuoText, submitOpenDuoName } from './handwriting-duo-keyboard';
 import { writeFile, readFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 
@@ -17,11 +17,13 @@ function systemContentSize(value?:string):string {
  }).trim();
 }
 async function setSystemSwitch(screen:any,control:any,checked:boolean){
+ await expect(control).toBeVisible();
  if(await control.isChecked()!==checked){
   const row=await control.boundingBox(); if(!row) throw new Error('System switch has no current frame');
   console.log('System switch row',row,'before',await control.inputValue());
   const y=row.y+row.height/2;
-  if(checked) await control.check(); else await control.uncheck();
+  if(checked) await control.tap({position:{x:row.width-25,y:row.height/2}});
+  else await screen.swipe({from:{x:row.x+row.width-16,y},to:{x:row.x+row.width-48,y}});
   console.log('System toggle after',await control.inputValue());
  }
  await expect(control).toBeChecked({checked});
@@ -77,6 +79,9 @@ async function openSystemTextPage(app:any,screen:any,device:any){
 const cases=[['compact','light'],['compact','dark'],['inner-portrait','light'],['inner-portrait','dark'],['inner-landscape','light'],['inner-landscape','dark']] as const;
 
 test('largest system text plus Reduce Transparency keeps every layout usable', {timeout:1_800_000}, async ({app,screen,device})=>{
+ const recordedOriginal=process.env.PIPCOUNT_SETTINGS_RESTORE_FROM
+  ? JSON.parse(await readFile(process.env.PIPCOUNT_SETTINGS_RESTORE_FROM,'utf8')):undefined;
+ if(recordedOriginal) systemContentSize(recordedOriginal.originalContentSize);
  const originalContentSize=systemContentSize();
  await device.installApp(); await app.open();
  if(!process.env.PIPCOUNT_PHONE) await device.fold('closed'); await device.setOrientation('portrait');
@@ -90,12 +95,20 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
  console.log('Display and Text Size page ready');
  const transparency=screen.getByRole('switch','Reduce Transparency',{exact:true});
  if(!(await transparency.isVisible())) await screen.scrollUntilVisible(transparency);
+ if(recordedOriginal) await setSystemSwitch(screen,transparency,recordedOriginal.originalTransparency);
  const originalTransparency=await transparency.isChecked();
  const larger=screen.getByTestId('LARGER_TEXT').last(); await screen.scrollUntilVisible(larger,{direction:'up'}); await larger.tap();
- const largerSwitch=screen.getByRole('switch').first();
+ const largerSwitch=screen.getByRole('switch','Larger Accessibility Sizes',{exact:true});
+ await expect(largerSwitch).toBeVisible();
+ if(recordedOriginal) await setSystemSwitch(screen,largerSwitch,recordedOriginal.originalLarger);
  const originalLarger=await largerSwitch.isChecked();
  const slider=screen.getByRole('slider').last();
  await expect(slider).toBeVisible();
+ if(recordedOriginal){
+  await setSystemSlider(screen,slider,Number.parseFloat(recordedOriginal.originalValue));
+  await expect(slider).toHaveValue(recordedOriginal.originalValue);
+  expect(systemContentSize()).toBe(recordedOriginal.originalContentSize);
+ }
  const originalValue=await slider.inputValue();
  await captureState(app,'system-text-size-original','Original system text slider and accessibility range');
  await writeFile(process.env.PIPCOUNT_SETTINGS_RECORD!,JSON.stringify({originalTransparency,originalLarger,originalValue,originalContentSize},null,2));
@@ -111,9 +124,12 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
   await expect(slider).toHaveValue('100%');
   console.log('Largest system slider',await slider.inputValue(),'actual category',systemContentSize());
   expect(systemContentSize()).toBe('accessibility-extra-extra-extra-large');
-  for(const [pose,appearance] of cases.filter(([pose])=>pose===(process.env.PIPCOUNT_A11Y_POSE??'compact'))){
+  for(const [pose,appearance] of cases.filter(([pose,appearance])=>pose===(process.env.PIPCOUNT_A11Y_POSE??'compact') && (!process.env.PIPCOUNT_A11Y_APPEARANCE || appearance===process.env.PIPCOUNT_A11Y_APPEARANCE))){
    const label=`combined-${pose}-${appearance}`;
    const openLandscape=pose==='inner-landscape';
+   // Open the target app before changing display shape. Folding Settings first
+   // can leave the beta runner's app clip inherited from the Settings window.
+   if(openLandscape) await device.openApp(bundle,{relaunch:false});
    if(!process.env.PIPCOUNT_PHONE) await device.fold(pose==='compact'?'closed':'open');
    // Device Hub sets the inner window pose; its actual PNG dimensions prove it.
    // Sending a redundant sensor rotation to the open beta simulator can block its runner.
@@ -127,9 +143,46 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
     console.log('Control frame',action,bounds);
     if(!bounds||(!action.startsWith('close-') && action!=='show-sidebar' && (bounds.width<44||bounds.height<44))) throw new Error(`${action} has less than a 44 by 44 point target`);
     if(action.startsWith('close-') || action.startsWith('utility-') || action.startsWith('tab-') || action==='show-sidebar') return control.tap();
+    if(openLandscape && await screen.getByTestId('round_entry_deck').isVisible()){
+     return control.tap({position:{x:bounds.width/2,y:bounds.height/2}});
+    }
     return openLandscape?tapOpenDuoControl(app,screen,control,`${label}-${action}`):tapNativeControl(screen,control);
    };
    const scroll=async(control:any)=>scrollMainContent(screen,device,control,'down',openLandscape);
+   // The beta runner can mark the sheet's trailing button hidden against a stale
+   // 669-point root even though the actual landscape capture is 951 points wide.
+   // A native selector retains this node. Require its fresh, screenshot-contained
+   // toolbar frame and verify dismissal; never apply this to another window size.
+   const sheetDone=()=>openLandscape?device.locator('role=button label=done').last():screen.getByRole('button',/^done$/i).last();
+   const checkSheetDone=async()=>{
+    const control=sheetDone();
+    if(!openLandscape){await expect(control).toBeVisible();return control;}
+    // A foreground-only open keeps the sheet and app data, and refreshes the
+    // beta runner's window context before resolving its trailing native button.
+    await device.openApp(bundle,{relaunch:false});
+    const png=await readFile(await screenshotPath(await app.screenshot(`${label}-sheet-toolbar-reference`)));
+    expect({width:png.readUInt32BE(16),height:png.readUInt32BE(20)}).toEqual({width:951,height:669});
+    if(await control.count()){
+     const bounds=await control.boundingBox();
+     if(!bounds || bounds.x<600 || bounds.x+bounds.width>951 || bounds.y<0 || bounds.y+bounds.height>100) throw new Error('Landscape sheet Done is outside its observed toolbar');
+     console.log('Landscape native Done frame',bounds);
+    }
+    return control;
+   };
+   const closeSheet=async(tool:string,marker:any)=>{
+    await expect(marker).toBeVisible();
+    const control=await checkSheetDone();
+    if(openLandscape){
+     // The native in-app back command acts on the live navigation bar directly.
+     // A utility sheet has one native bar action: Done. It avoids the clipped
+     // projected tree and requires the unique sheet content to disappear.
+     await device.back();
+     await expect.poll(async()=>await marker.count()).toBe(0);
+     await expect.poll(async()=>await sheetDone().count()).toBe(0);
+    }else{
+     await tap(control,`close-${tool}`); await expect(control).toBeHidden();
+    }
+   };
    const hideSidebar=async()=>{
     if(pose!=='inner-portrait') return;
     const hides=await screen.getByRole('button',/^Hide Sidebar$/i,{visible:true}).all();
@@ -159,17 +212,20 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
    console.log('Actual app viewport',label,viewport);
    expect(viewport.width>viewport.height).toBe(openLandscape);
 
-   for(const [title,tool] of [['open game timer','timer'],['roll dice','dice'],['pick a random starter','starter'],['learn about undo','undo']]) {
+   for(const [title,tool] of ((process.env.PIPCOUNT_A11Y_DECK_ONLY || process.env.PIPCOUNT_A11Y_CONFIG_ONLY) ? [] : [['open game timer','timer'],['roll dice','dice'],['pick a random starter','starter'],['learn about undo','undo']])) {
     const control=screen.getByRole('button',title,{exact:true}); await scroll(control); await tap(control,`home-${tool}`);
-    await expect(screen.getByRole('button',/^done$/i).last()).toBeVisible();
+    await checkSheetDone();
     await captureState(app,`${label}-tool-${tool}`,'Home utility sheet at largest text');
-    await tap(screen.getByRole('button',/^done$/i).last(),`close-${tool}`);
-    await expect(screen.getByRole('button',/^done$/i).last()).toBeHidden();
+    const headline=screen.getByText(({timer:'keep turns moving',dice:'roll a quick number',starter:'choose who starts',undo:'fix mistakes safely'} as Record<string,string>)[tool],{exact:true});
+    await closeSheet(tool,headline);
    }
+   if(process.env.PIPCOUNT_A11Y_HOME_ONLY) continue;
+   if(!process.env.PIPCOUNT_A11Y_DECK_ONLY && !process.env.PIPCOUNT_A11Y_CONFIG_ONLY){
    await tab('Players'); await captureState(app,`${label}-players`,'Saved players at largest text');
    await tab('More');
    const theme=screen.getByTestId('theme_system_button'); await scroll(theme); await tap(theme,'system-theme');
    await captureState(app,`${label}-more`,'More uses the requested system light or dark appearance');
+   }
    await tab('Games'); await captureState(app,`${label}-games`,'Games retains reachable navigation and game controls');
    const tile=screen.getByTestId('game_tile_generic'); await scroll(tile); await tap(tile,'game');
    const names=['Christopher Alexander Montgomery III','美咲'] as const;
@@ -177,11 +233,22 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
     const field=screen.getByTestId(`player_name_field_${i}`); await scroll(field);
     if(openLandscape) await enterOpenDuoText(app,screen,field,name,`${label}-name-${i}`);
     else await enterKeyboardText(screen,field,name);
-    await pressReturnKey(screen);
+    if(openLandscape) await submitOpenDuoName(app,screen,`${label}-name-return`);
+    else await pressReturnKey(screen);
    }
    await captureState(app,`${label}-setup`,'Long player names and Continue remain usable');
    await tap(screen.getByTestId('start_game_button').last(),'continue');
    await captureState(app,`${label}-settings`,'Game settings and Start remain usable');
+   for(const [choice,title] of [['lowest','lowest score wins'],['highest','highest score wins']]){
+    const control=screen.getByTestId(`win_condition_choice_${choice}`);await scrollMainContent(screen,device,control,'down',openLandscape,true);await tap(control,`win-${choice}`);
+    await expect(screen.getByRole('button',title,{exact:true,selected:true})).toBeVisible();
+    await scrollMainContent(screen,device,control,'down',openLandscape,true);
+    await captureState(app,`${label}-settings-${choice}`,'Full-size win condition choices are readable and change the selected rule');
+   }
+   const target=screen.getByTestId('target_score_field');await scroll(target);await expect(target).toBeVisible();
+   await captureState(app,`${label}-settings-target`,'Optional target score remains reachable by vertical scrolling');
+   if(process.env.PIPCOUNT_A11Y_CONFIG_ONLY) continue;
+   await scroll(screen.getByTestId('start_game_button').last());
    await tap(screen.getByTestId('start_game_button').last(),'start');
    const submit=screen.getByTestId('submit_round_button').last(); await scroll(submit); await expect(submit).toBeVisible();
    await captureState(app,`${label}-scoreboard`,'Opaque scorecard with accessible utility actions');
@@ -224,6 +291,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
     await scroll(readout); await expect(readout).toHaveText('0');
    }
    await captureState(app,`${label}-undo`,'Undo removes the saved round without changing player identity');
+   if(process.env.PIPCOUNT_A11Y_DECK_ONLY) continue;
    await device.openApp(bundle,{relaunch:true,launchArguments:['-in-memory-store','-unlock-pro','-themeMode','system']});
    await tab('Games');
    const phase=screen.getByTestId('game_tile_phase10'); await scroll(phase); await tap(phase,'phase');
@@ -231,7 +299,8 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
     const field=screen.getByTestId(`player_name_field_${i}`); await scroll(field);
     if(openLandscape) await enterOpenDuoText(app,screen,field,name,`${label}-phase-name-${i}`);
     else await enterKeyboardText(screen,field,name);
-    await pressReturnKey(screen);
+    if(openLandscape) await submitOpenDuoName(app,screen,`${label}-name-return`);
+    else await pressReturnKey(screen);
    }
    await scroll(screen.getByTestId('start_game_button').last()); await tap(screen.getByTestId('start_game_button').last(),'phase-continue');
    await scroll(screen.getByTestId('start_game_button').last()); await tap(screen.getByTestId('start_game_button').last(),'phase-start');
@@ -241,8 +310,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
     await scroll(action); await tap(action,`utility-${tool}-primary`);
     if(tool==='timer') {const pause=screen.getByRole('button','pause',{exact:true}); await expect(pause).toBeVisible(); await tap(pause,'timer-pause');}
     await captureState(app,`${label}-scoring-${tool}`,'Scoring utility primary action remains reachable at largest text');
-    await tap(screen.getByRole('button',/^done$/i).last(),`close-scoring-${tool}`);
-    await expect(screen.getByRole('button',/^done$/i).last()).toBeHidden();
+    await closeSheet(`scoring-${tool}`,screen.getByRole('button',tool==='timer'?'start':tool==='dice'?'roll':'pick starter',{exact:true}));
 
    }
 
@@ -257,7 +325,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
   if(!process.env.PIPCOUNT_PHONE) await device.fold('closed'); await device.setOrientation('portrait'); await device.setAppearance('light');
   await device.openApp('com.apple.Preferences',{relaunch:true});
   await openSystemTextPage(app,screen,device);
-  const toggle=screen.getByRole('switch').first(); await setSystemSwitch(screen,toggle,originalLarger);
+  const toggle=screen.getByRole('switch','Larger Accessibility Sizes',{exact:true}); await expect(toggle).toBeVisible(); await setSystemSwitch(screen,toggle,originalLarger);
   const size=screen.getByRole('slider').last();
   await setSystemSlider(screen,size,Number.parseFloat(originalValue));
   await expect(size).toHaveValue(originalValue);
