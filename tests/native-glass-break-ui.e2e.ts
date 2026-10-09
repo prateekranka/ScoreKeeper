@@ -1,5 +1,5 @@
 import {readFile} from 'node:fs/promises';
-import {screenshotPath} from './handwriting-duo-input';
+import {tapOpenDuoTab,screenshotPath} from './handwriting-duo-input';
 import {scrollMainContent} from './handwriting-layout-scroll';
 import {test, type Device} from '@e2e-dev/mobile';
 import {expect, type Screen} from 'e2e';
@@ -40,8 +40,7 @@ async function reduceTransparency(app:ScreenshotApp,screen:Screen,device:Device,
  const original=await toggle.isChecked();
  if(original!==checked){
   const frame=await toggle.boundingBox();if(!frame)throw new Error('Reduce Transparency has no current frame');
-  if(checked)await toggle.tap({position:{x:frame.width-25,y:frame.height/2}});
-  else await screen.swipe({from:{x:frame.x+frame.width-16,y:frame.y+frame.height/2},to:{x:frame.x+frame.width-48,y:frame.y+frame.height/2}});
+  await screen.swipe({from:{x:frame.x+frame.width-(checked?48:16),y:frame.y+frame.height/2},to:{x:frame.x+frame.width-(checked?16:48),y:frame.y+frame.height/2}});
  }
  await expect(toggle).toBeChecked({checked});await captureState(app,checked?'break-transparency-on':'break-transparency-restored','Actual iOS Reduce Transparency '+(checked?'On':'restored'));
  return original;
@@ -196,19 +195,15 @@ test('break-ui wide Duo data containers',{timeout:600000},async({app,screen,devi
  if(!process.env.PIPCOUNT_BREAK_WIDE) test.skip('Separate wide device run');
  try{
   await openFixture(device,screen);await selectData(app,screen,'worst');await device.fold('open');
-  await expect(screen.getByTestId('sidebar_tab_home')).toBeVisible();
-  await captureState(app,'break-wide-worst-home','Actual widest available Duo container');
+  await expect(screen.getByTestId('tab_home')).toBeVisible();
+  await expect(screen.getByTestId(/^sidebar_/)).toBeHidden();
+  await expect(screen.getByRole('button',/^Show Sidebar$/i)).toBeHidden();
+  await captureState(app,'break-wide-worst-home','Full-width native-tab Home in the widest available Duo container');
   const title=screen.getByTestId(/^active_title_/).first();await scrollMainContent(screen,device,title,'down',true,true);
   const titleFrame=await title.boundingBox();const statusFrame=await screen.getByTestId(/^active_status_/).first().boundingBox();
   expect(titleFrame?.height).toBeLessThan(45);expect(statusFrame?.height).toBeLessThan(40);
-  await captureState(app,'break-wide-worst-active-game','Active-game title and status remain on one line with the sidebar open');
-  const players=screen.getByTestId('sidebar_tab_players');
-  for(let i=0;i<8;i++){
-   const frame=await players.isVisible()?await players.boundingBox():null;
-   if(frame && frame.y>=90 && frame.y+frame.height<=500)break;
-   await screen.swipe({from:{x:125,y:460},to:{x:125,y:220}});
-  }
-  await expect(players).toBeVisible();await tapNativeControl(screen,players);
+  await captureState(app,'break-wide-worst-active-game','Active-game title and status remain on one line without a sidebar');
+  await tapOpenDuoTab(app,screen,screen.getByTestId('tab_players'),'Players');
   const first=screen.getByTestId('saved_player_'+names[0]);await screen.scrollUntilVisible(first);await expect(first).toBeVisible();
   await captureState(app,'break-wide-worst-players','Mixed long-name cards inside the actual wide detail container');
  }catch(error){
@@ -226,10 +221,13 @@ test('break-ui restore and verify original system settings',{timeout:300000},asy
  await reduceTransparency(app,screen,device,original.originalTransparency);
  const larger=screen.getByTestId('LARGER_TEXT').last();await screen.scrollUntilVisible(larger,{direction:'up'});await larger.tap();
  const toggle=screen.getByRole('switch','Larger Accessibility Sizes',{exact:true});await expect(toggle).toBeVisible();
+ await expect(screen.getByRole('slider').last()).toBeVisible();
  if(await toggle.isChecked()!==original.originalLarger){
-  const frame=await toggle.boundingBox();if(!frame)throw new Error('Larger Accessibility Sizes has no current frame');
-  if(original.originalLarger)await toggle.tap({position:{x:frame.width-25,y:frame.height/2}});
-  else await screen.swipe({from:{x:frame.x+frame.width-16,y:frame.y+frame.height/2},to:{x:frame.x+frame.width-48,y:frame.y+frame.height/2}});
+  const frame=await toggle.boundingBox();if(!frame || frame.width<64 || frame.height<=0)throw new Error('System switch has no current row frame');
+  const point={x:frame.x+frame.width-32,y:frame.y+frame.height/2};
+  console.log('Larger Accessibility Sizes row and trailing switch point',frame,point);
+  await captureState(app,'break-system-switch-before-restoration','Current native switch before restoring the recorded original setting');
+  await screen.tapAt(point);
  }
  await expect(toggle).toBeChecked({checked:original.originalLarger});
  await expect(screen.getByRole('slider').last()).toHaveValue(original.originalValue);

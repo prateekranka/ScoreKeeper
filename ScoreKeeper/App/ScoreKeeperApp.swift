@@ -13,7 +13,7 @@ struct ScoreKeeperApp: App {
         WindowGroup {
             Group {
                 if let container = containerResult.container {
-                    AdaptivePipCountRootView()
+                    PipCountRootView()
                         .environment(themeManager)
                         .environment(storeManager)
                         .environment(reviewAskManager)
@@ -164,112 +164,11 @@ private struct StartupRecoveryView: View {
     }
 }
 
-/// iPhone keeps the focused bottom-dock flow. Once onboarding is complete,
-/// regular-width iPads move into a persistent two-column application shell.
-///
-/// The shell only changes at a state-neutral point (the home route): crossing
-/// the size-class breakpoint mid-flow keeps the active shell, so the current
-/// route, entered values, and a presented deck survive the resize (PC17-008).
-private struct AdaptivePipCountRootView: View {
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
-    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
-
+private struct PipCountRootView: View {
     @State private var router = NavigationRouter()
-    @State private var shellIsTablet: Bool?
 
     var body: some View {
-        Group {
-            if resolvedShellIsTablet {
-                PipCountTabletRootView(router: router)
-            } else {
-                ContentView(router: router)
-            }
-        }
-        .onAppear { commitInitialShell() }
-        .onChange(of: horizontalSizeClass) { _, _ in resolveShell() }
-        .onChange(of: hasCompletedOnboarding) { _, _ in resolveShell() }
-        .onChange(of: router.path.count) { _, _ in resolveShell() }
-        .onChange(of: router.isPageExiting) { _, _ in resolveShell() }
-    }
-
-    /// Before the first commit, render the shell the environment asks for so
-    /// there is no one-frame flash.
-    private var resolvedShellIsTablet: Bool {
-        shellIsTablet ?? wantsTabletShell
-    }
-
-    private func commitInitialShell() {
-        guard shellIsTablet == nil else { return }
-        shellIsTablet = wantsTabletShell
-    }
-
-    private func resolveShell() {
-        let wantsTablet = wantsTabletShell
-        guard let current = shellIsTablet else {
-            shellIsTablet = wantsTablet
-            return
-        }
-        guard wantsTablet != current else { return }
-
-        // Swap only when no flow is active: a resize mid-game must not throw
-        // away the route, entered values, the active game, or a presented deck.
-        guard router.path.isEmpty, !router.isPageExiting else { return }
-        shellIsTablet = wantsTablet
-    }
-
-    private var wantsTabletShell: Bool {
-        guard horizontalSizeClass == .regular else { return false }
-
-        let arguments = ProcessInfo.processInfo.arguments
-        let resetsOnboarding = arguments.contains("-reset-onboarding")
-        let skipsOnboardingForTests = arguments.contains("-in-memory-store") && !resetsOnboarding
-        return hasCompletedOnboarding || skipsOnboardingForTests
-    }
-}
-
-private struct PipCountTabletRootView: View {
-    @Bindable var router: NavigationRouter
-
-    @Environment(ReviewAskManager.self) private var reviewAskManager
-    @Environment(\.requestReview) private var requestReview
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    @State private var columnVisibility: NavigationSplitViewVisibility = .all
-    @State private var containerWidth: CGFloat = 0
-
-    var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
-            PipCountSidebar(selected: router.selectedTab, onSelect: selectTab)
-                .navigationSplitViewColumnWidth(min: 248, ideal: 292, max: 330)
-        } detail: {
-            PipCountNavigationRoot(tab: router.selectedTab, router: router)
-                .id(router.selectedTab)
-        }
-        .navigationSplitViewStyle(.balanced)
-        .onGeometryChange(for: CGFloat.self) { proxy in
-            proxy.size.width
-        } action: { width in
-            containerWidth = width
-            columnVisibility = width >= 760 ? .all : .detailOnly
-        }
-        .environment(router)
-        .environment(\.pipCountPageIsExiting, router.isPageExiting)
-        .onChange(of: reviewAskManager.reviewRequestPending) { _, isPending in
-            guard isPending else { return }
-            reviewAskManager.consumeReviewRequest()
-            requestReview()
-        }
-        .onChange(of: reduceMotion) { _, newValue in
-            router.configure(reduceMotion: newValue)
-        }
-        .onAppear {
-            router.configure(reduceMotion: reduceMotion)
-        }
-    }
-
-    private func selectTab(_ tab: PipCountTab) {
-        router.selectedTab = tab
-        if containerWidth < 760 { columnVisibility = .detailOnly }
+        ContentView(router: router)
     }
 }
 

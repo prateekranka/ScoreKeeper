@@ -19,7 +19,7 @@ set -Eeuo pipefail
 export DEVELOPER_DIR=/Applications/Xcode-27.1-beta.app/Contents/Developer
 export PIPCOUNT_DEVICE=7AEFF457-CBA5-4485-A13D-896E75169E07
 export PIPCOUNT_SESSION=pipcount-break-review
-export PIPCOUNT_APP="$PWD/.build/break-ui-fix19/Build/Products/Debug-iphonesimulator/ScoreKeeper.app"
+export PIPCOUNT_APP="$PWD/.build/no-sidebar21/Build/Products/Debug-iphonesimulator/ScoreKeeper.app"
 export PIPCOUNT_JOURNEY_MANIFEST="$PWD/.e2e-break-review/manifest.jsonl"
 npx e2e run tests/native-glass-break-ui.e2e.ts --grep 'empty one|invalid manual' --output .e2e-break-review
 ```
@@ -36,6 +36,6 @@ Focused options:
 
 The multilingual test restores the original system text size. The transparency option uses the real iOS Settings switch and restores its original state. The wide test restores the folded device state.
 
-The 50-round Score Round assertion keeps its 30-second reachability budget. The action now precedes totals and history at accessibility sizes. The flow opens the deck, scrolls to Type score, identifies the current player from the keyboard, types 99, dismisses the keyboard, checks Use is enabled, cancels, and checks the saved total remains 4,950. The wide test checks Home and Players; wide scoring with this worst-case fixture is not verified.
+The 50-round Score Round assertion keeps its 30-second reachability budget. The action now precedes totals and history at accessibility sizes. The flow opens the deck, scrolls to Type score, identifies the current player from the keyboard, types 99, dismisses the keyboard, checks Use is enabled, cancels, and checks the saved total remains 4,950. The wide test checks native-tab Home and Players, including absence of sidebar controls; wide scoring with this worst-case fixture is not verified.
 
-Original audit screenshots, reports, and findings are in the task's `outputs/break-ui` directory. The fixes and new captures are in `outputs/break-ui-fixes`. Build 19 is the local validation iteration; the app's bundle version remains 19. The DEBUG fixture selector is retained, including repeated selection of the same dataset. Production name fallback never replaces the stored name or its identity.
+Original audit screenshots, reports, and findings are in the task's `outputs/break-ui` directory. The fixes and new captures are in `outputs/break-ui-fixes`. Build 21 is the current native-tab validation iteration; the app's bundle version remains 19. The DEBUG fixture selector is retained, including repeated selection of the same dataset. Production name fallback never replaces the stored name or its identity.

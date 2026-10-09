@@ -109,7 +109,6 @@ enum AppDestination: Hashable {
 }
 
 struct ContentView: View {
-    /// Owned by AdaptivePipCountRootView so the route survives a shell change.
     @Bindable var router: NavigationRouter
 
     @Environment(ReviewAskManager.self) private var reviewAskManager
@@ -130,6 +129,7 @@ struct ContentView: View {
                     .tag(tab)
             }
         }
+        .tabViewStyle(.tabBarOnly)
         .tint(ClubhouseTheme.blue)
         .environment(router)
         .environment(\.pipCountPageIsExiting, router.isPageExiting)
@@ -207,6 +207,18 @@ private struct NativeTabIdentifiers: UIViewControllerRepresentable {
             updateIdentifiers()
         }
 
+        override func viewDidLayoutSubviews() {
+            super.viewDidLayoutSubviews()
+            updateIdentifiers()
+        }
+
+        override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+            super.viewWillTransition(to: size, with: coordinator)
+            coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+                self?.updateIdentifiers()
+            }
+        }
+
         func updateIdentifiers() {
             var ancestor = parent
             while let controller = ancestor {
@@ -224,7 +236,6 @@ private struct NativeTabIdentifiers: UIViewControllerRepresentable {
     }
 }
 
-/// Both shells use the same tab routes. The router owns their paths across resizing.
 struct PipCountNavigationRoot: View {
     let tab: PipCountTab
     @Bindable var router: NavigationRouter

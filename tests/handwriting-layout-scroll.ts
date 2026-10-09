@@ -6,7 +6,7 @@ export async function scrollMainContent(screen: Screen, device: Device, target: 
   const accessibleDeck = screen.getByTestId('round_deck_accessible_scroll').last();
   const inAccessibleDeck = await accessibleDeck.isVisible();
   const inAccessibleScoring = await screen.getByTestId('scoring_accessible_scroll').isVisible();
-  const inOpenDuo = openDuo || await screen.getByTestId('sidebar_tab_games').isVisible();
+  const inOpenDuo = openDuo;
   if (await screen.getByTestId('round_entry_deck').isVisible() && !inAccessibleDeck) {
     const deck = await screen.getByTestId('round_entry_deck').boundingBox();
     const bounds = await target.boundingBox();

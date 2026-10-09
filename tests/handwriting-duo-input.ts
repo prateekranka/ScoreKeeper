@@ -76,3 +76,16 @@ export async function tapOpenDuoControl(
     })}\n`, 'utf8');
   }
 }
+
+export async function tapOpenDuoTab(app: CaptureApp, screen: Screen, control: Locator, name: string): Promise<void> {
+  await expect(control).toBeVisible();
+  const artifact = await screenshotPath(await app.screenshot(`wide-native-tab-${name.toLowerCase()}-reference`));
+  const png = await readFile(artifact);
+  expect({width:png.readUInt32BE(16),height:png.readUInt32BE(20)}).toEqual({width:951,height:669});
+  const bounds = await control.boundingBox();
+  if (!bounds || bounds.x < 0 || bounds.y < 0 || bounds.x + bounds.width > 951 || bounds.y + bounds.height > 669 || bounds.width < 44 || bounds.height < 44) {
+    throw new Error('Native tab is outside the observed Duo panel or has less than a 44 point target');
+  }
+  await control.tap({position:{x:bounds.width/2,y:bounds.height/2}});
+  await expect(screen.getByRole('button',name,{exact:true,selected:true})).toBeVisible();
+}

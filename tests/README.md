@@ -7,7 +7,8 @@ Game flows use the existing in-memory store and debug flags.
 
 ## Suites
 
-- `native-glass-tabs.e2e.ts`: four native phone tab identifiers and their destinations.
+- `native-glass-tabs.e2e.ts`: four native tab identifiers on every width and their destinations.
+- `native-glass-no-sidebar.e2e.ts`: four wide root destinations, folded navigation, game-route preservation, and score-draft preservation across folding. `PIPCOUNT_SIDEBAR_BEFORE=1` selects the preserved baseline root capture.
 - `native-glass-gallery.e2e.ts`: onboarding, all root screens, three game formats, handwriting, manual entry, statistics, history, results, and sharing.
 - `native-glass-extras.e2e.ts`: scoring utilities, Home utilities, and the Pro offer. It does not purchase or restore a purchase.
 - `native-glass-a11y.e2e.ts`: actual system AX5 plus real Reduce Transparency, long and multilingual names, keyboard access, utility actions, exact scores 7 and 9, and undo to zero.
@@ -46,7 +47,9 @@ The landscape suite checks actual 951 by 669 captures. It uses e2e's native in-a
 navigation action on the utility sheet's live navigation bar, where Done is the
 only action. It requires the unique sheet content and Done controls to disappear.
 This avoids a stale projected viewport. Score-deck actions use each current native
-control's center. Other targets continue to use semantic native toolbar actions.
+control's center. Wide native tabs use their documented local tap position after
+checking the actual panel and target frame. Each tap must select the requested tab.
+Other targets continue to use semantic native toolbar actions.
 
 The Settings setup waits for the exact named Larger Accessibility Sizes switch.
 A generic first-switch query can read the previous page during navigation.
@@ -57,7 +60,7 @@ native Return error is accepted only after a fresh capture and verified keyboard
 dismissal; the test does not repeat that action.
 
 For a focused check, set `PIPCOUNT_A11Y_HOME_ONLY=1`, `PIPCOUNT_A11Y_CONFIG_ONLY=1`,
-or `PIPCOUNT_A11Y_DECK_ONLY=1`. `PIPCOUNT_A11Y_APPEARANCE=light` or `dark` narrows
+`PIPCOUNT_A11Y_DECK_ONLY=1`, or `PIPCOUNT_A11Y_NAV_ONLY=1`. `PIPCOUNT_A11Y_APPEARANCE=light` or `dark` narrows
 the appearance. These options do not replace the complete acceptance pass.
 If a diagnostic changed system settings, `PIPCOUNT_SETTINGS_RESTORE_FROM` accepts
 an absolute path to the same device's recorded original settings JSON. The suite

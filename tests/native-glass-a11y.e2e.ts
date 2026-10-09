@@ -2,7 +2,7 @@ import { test } from '@e2e-dev/mobile';
 import { expect } from 'e2e';
 import { captureState, tapNativeControl, enterKeyboardText, pressReturnKey, visibleDeckPlayer } from './handwriting-helpers';
 import { scrollMainContent } from './handwriting-layout-scroll';
-import { tapOpenDuoControl, screenshotPath } from './handwriting-duo-input';
+import { tapOpenDuoControl, tapOpenDuoTab, screenshotPath } from './handwriting-duo-input';
 import { enterOpenDuoText, submitOpenDuoName } from './handwriting-duo-keyboard';
 import { writeFile, readFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
@@ -141,8 +141,9 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
     await expect(control).toBeVisible();
     const bounds=await control.boundingBox();
     console.log('Control frame',action,bounds);
-    if(!bounds||(!action.startsWith('close-') && action!=='show-sidebar' && (bounds.width<44||bounds.height<44))) throw new Error(`${action} has less than a 44 by 44 point target`);
-    if(action.startsWith('close-') || action.startsWith('utility-') || action.startsWith('tab-') || action==='show-sidebar') return control.tap();
+    if(!bounds||(!action.startsWith('close-') && (bounds.width<44||bounds.height<44))) throw new Error(`${action} has less than a 44 by 44 point target`);
+    if(openLandscape && action.startsWith('tab-')) return tapOpenDuoTab(app,screen,control,action.slice(4));
+    if(action.startsWith('close-') || action.startsWith('utility-') || action.startsWith('tab-')) return control.tap();
     if(openLandscape && await screen.getByTestId('round_entry_deck').isVisible()){
      return control.tap({position:{x:bounds.width/2,y:bounds.height/2}});
     }
@@ -183,36 +184,19 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
      await tap(control,`close-${tool}`); await expect(control).toBeHidden();
     }
    };
-   const hideSidebar=async()=>{
-    if(pose!=='inner-portrait') return;
-    const hides=await screen.getByRole('button',/^Hide Sidebar$/i,{visible:true}).all();
-    // A split view exposes a covered detail toggle as well as its frontmost sidebar toggle.
-    const frames=await Promise.all(hides.map(async(control:any)=>({control,bounds:await control.boundingBox()})));
-    console.log('Sidebar toggle candidates',frames.map(row=>row.bounds));
-    // The overlay's trailing toggle is in front of the covered detail's leading toggle.
-    const front=frames.filter(row=>row.bounds).sort((a,b)=>b.bounds!.x-a.bounds!.x)[0];
-    if(front) {console.log('Frontmost sidebar toggle',front.bounds); await front.control.tap(); await expect(screen.getByRole('button',/^Hide Sidebar$/i)).toBeHidden();}
-   };
    const tab=async(name:string)=>{
-    const primary=screen.getByTestId(name==='More'?'legal_support_button':`tab_${name.toLowerCase()}`,{visible:true}).last();
-    const sidebar=screen.getByTestId(name==='More'?'sidebar_legal_support_button':`sidebar_tab_${name.toLowerCase()}`,{visible:true}).last();
-    if(!(await primary.isVisible()) && !(await sidebar.isVisible())) {
-     const show=screen.getByRole('button',/^Show Sidebar$/i).first();
-     if(await show.isVisible()) await tap(show,'show-sidebar');
-    }
-    // Native tab metadata appears after the first UIKit layout of a fresh launch.
-    await expect.poll(async()=>await primary.isVisible()||await sidebar.isVisible(),{timeout:15_000}).toBe(true);
-    const control=await primary.isVisible()?primary:sidebar;
-    await tap(control,`tab-${name}`); await hideSidebar();
+    const control=screen.getByTestId(name==='More'?'legal_support_button':`tab_${name.toLowerCase()}`,{visible:true}).last();
+    await expect(control).toBeVisible();
+    await expect(screen.getByTestId(/^sidebar_/)).toBeHidden();
+    await tap(control,`tab-${name}`);
    };
-   await hideSidebar();
    const homeShot=await captureState(app,`${label}-home`,'Home at largest real system text with Reduce Transparency On');
    const homePng=await readFile(await screenshotPath(homeShot));
    const viewport={width:homePng.readUInt32BE(16),height:homePng.readUInt32BE(20)};
    console.log('Actual app viewport',label,viewport);
    expect(viewport.width>viewport.height).toBe(openLandscape);
 
-   for(const [title,tool] of ((process.env.PIPCOUNT_A11Y_DECK_ONLY || process.env.PIPCOUNT_A11Y_CONFIG_ONLY) ? [] : [['open game timer','timer'],['roll dice','dice'],['pick a random starter','starter'],['learn about undo','undo']])) {
+   for(const [title,tool] of ((process.env.PIPCOUNT_A11Y_DECK_ONLY || process.env.PIPCOUNT_A11Y_CONFIG_ONLY || process.env.PIPCOUNT_A11Y_NAV_ONLY) ? [] : [['open game timer','timer'],['roll dice','dice'],['pick a random starter','starter'],['learn about undo','undo']])) {
     const control=screen.getByRole('button',title,{exact:true}); await scroll(control); await tap(control,`home-${tool}`);
     await checkSheetDone();
     await captureState(app,`${label}-tool-${tool}`,'Home utility sheet at largest text');
@@ -227,6 +211,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
    await captureState(app,`${label}-more`,'More uses the requested system light or dark appearance');
    }
    await tab('Games'); await captureState(app,`${label}-games`,'Games retains reachable navigation and game controls');
+   if(process.env.PIPCOUNT_A11Y_NAV_ONLY) continue;
    const tile=screen.getByTestId('game_tile_generic'); await scroll(tile); await tap(tile,'game');
    const names=['Christopher Alexander Montgomery III','美咲'] as const;
    for(const [i,name] of names.entries()){
