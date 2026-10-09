@@ -109,7 +109,16 @@ export async function finishOnboarding(app: ScreenshotApp, screen: Screen): Prom
 export async function pressReturnKey(screen: Screen): Promise<void> {
   const returnKey = screen.getByTestId('Return');
   await expect(returnKey).toBeVisible();
-  await returnKey.tap();
+  const keyFrame = await returnKey.boundingBox();
+  const keyboardFrame = await screen.getByTestId('inputView').boundingBox();
+  if (!keyFrame || !keyboardFrame || keyFrame.x < keyboardFrame.x || keyFrame.y < keyboardFrame.y ||
+      keyFrame.x + keyFrame.width > keyboardFrame.x + keyboardFrame.width + 1 ||
+      keyFrame.y + keyFrame.height > keyboardFrame.y + keyboardFrame.height + 1) {
+    throw new Error('The Return key is not inside the current software keyboard');
+  }
+  // The native runner can misclassify a keyboard key as an app control covered by the keyboard.
+  // A documented local position taps the verified key frame; dismissal proves its result.
+  await returnKey.tap({ position: { x: keyFrame.width / 2, y: keyFrame.height / 2 } });
   await expect(returnKey).toBeHidden();
 }
 
