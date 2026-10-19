@@ -53,4 +53,5 @@ jobs:
           name: handwriting-preview-acceptance
           path: previews/handwriting/.local-preview-artifacts
           if-no-files-found: ignore
+          include-hidden-files: true
           retention-days: 7
