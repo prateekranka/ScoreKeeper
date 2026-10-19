@@ -1,0 +1,57 @@
+name: PipCount Handwriting Preview
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'previews/handwriting/**'
+      - '.github/workflows/pipcount-handwriting-preview.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'previews/handwriting/**'
+      - '.github/workflows/pipcount-handwriting-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: handwriting-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Build and accept handwriting preview
+    runs-on: macos-26
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: previews/handwriting
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.2'
+          cache: npm
+          cache-dependency-path: previews/handwriting/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: previews/handwriting/server/requirements.lock
+      - run: npm ci
+      - run: npm run setup:python
+      - run: npm run build
+      - run: npx --no-install e2e-web install chromium
+      - run: npm run test:e2e
+        env:
+          DO_NOT_TRACK: '1'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: handwriting-preview-acceptance
+          path: previews/handwriting/.local-preview-artifacts
+          if-no-files-found: ignore
+          include-hidden-files: true
+          retention-days: 7

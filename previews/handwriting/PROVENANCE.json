@@ -1,0 +1,60 @@
+{
+  "fetchedAtUTC": "2026-10-17T20:22:38.449871+00:00",
+  "officialDocs": [
+    "https://ui.shadcn.com/docs/components/base/dialog",
+    "https://ui.shadcn.com/docs/components/base/button",
+    "https://ui.shadcn.com/docs/components/base/input"
+  ],
+  "registryStyle": "base-nova",
+  "command": "npx shadcn add dialog button input field --yes",
+  "versions": {
+    "shadcn": "4.22.0",
+    "@base-ui/react": "1.9.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@fontsource-variable/manrope": "5.3.0",
+    "lucide-react": "1.59.0",
+    "tailwindcss": "4.3.3",
+    "vite": "8.3.4",
+    "typescript": "7.0.2",
+    "e2e": "0.21.2",
+    "@e2e-dev/web": "0.15.2",
+    "cn": "0.5.0",
+    "dialkit": "2.0.2",
+    "motion": "14.3.0"
+  },
+  "generatedComponentsSHA256": {
+    "src/components/ui/field.tsx": "8e54d2838051eeb741f6925863b690c98928b25bbb26f3cd26a5b75121d06acb",
+    "src/components/ui/label.tsx": "86232709f634da7f357a8aaec0e815f3f562604bb67202c88997fae97659b450",
+    "src/components/ui/dialog.tsx": "e1a331d1617ef6381511f537c5652b13e1f9a4d627a25d80853d6171b7e8b8a5",
+    "src/components/ui/separator.tsx": "9a80ff8c110e0c55489509f4f82ebcc929c0174b59544047147b7134f86a54e7",
+    "src/components/ui/button.tsx": "313353436d0fcc8e44ab470adb614b9fd013d28626f624328ea0d66d41a6c81b",
+    "src/components/ui/input.tsx": "dab990dfefa0ba78854ab6602ad074270dba9d7d1262184d9bfbb62bd990903b"
+  },
+  "fontSource": "@fontsource-variable/manrope, bundled WOFF2, SIL Open Font License",
+  "dialkit": {
+    "source": "https://github.com/joshpuckett/dialkit",
+    "workflow": "Interface Craft DialKit",
+    "entry": "src/TuningPanel.tsx",
+    "configuration": "src/score-tuning.ts",
+    "scope": "Separate web design preview"
+  },
+  "scoreEntry": {
+    "version": "digits-6",
+    "canvas": "Real SVG pointer strokes with PNG capture for recognition",
+    "recogniser": "Two local digit CNNs using ONNX Runtime and Apple Core ML on the Mac CPU",
+    "frameworks": [
+      "ONNX Runtime",
+      "Core ML",
+      "Pillow",
+      "SciPy"
+    ],
+    "copy": "Single inline reading, one save action, total toast and Undo",
+    "state": "Separate player drafts and round-score replacement in local browser storage",
+    "numericRange": "0 to 99",
+    "limitations": [
+      "Conservative recognition; some handwriting needs keyboard correction",
+      "Not native iOS acceptance"
+    ]
+  }
+}

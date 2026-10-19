@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.runtime/
+.e2e/
+.capture-artifacts/
+.local-*/
+logs/
+__pycache__/
+*.pyc
+*.tsbuildinfo
+*.sqlite3*
+.env
+.env.*
+!.env.example

@@ -1,0 +1,22 @@
+{
+  "name": "ONNX Model Zoo MNIST-12",
+  "source": "https://github.com/onnx/models/tree/main/validated/vision/classification/mnist",
+  "download": "https://media.githubusercontent.com/media/onnx/models/main/validated/vision/classification/mnist/model/mnist-12.onnx",
+  "sha256": "5c688690f8bacf667d4c2074af5ad0646ca328d7ab03eccf944a65b320171bdd",
+  "modelLicense": "MIT as declared in the source model README",
+  "repositoryLicense": "Apache-2.0",
+  "downloadedAt": "2026-10-18",
+  "training": "Official pretrained weights, no training or fitting to user screenshots",
+  "input": "float32 [1, 1, 28, 28], white ink on black background, values from 0 to 1",
+  "output": "10 logits before softmax",
+  "independentModel": {
+    "name": "Apple MNISTClassifier 1.0",
+    "author": "Apple Inc.",
+    "source": "https://developer.apple.com/machine-learning/models/",
+    "download": "https://ml-assets.apple.com/coreml/models/Image/DrawingClassification/MNISTClassifier/MNISTClassifier.mlmodel",
+    "sha256": "816d1a222d5272109166ffc819d7ce44aff923a673884e34d982aa74985ba587",
+    "license": "MIT, copyright 2019 Apple Inc.",
+    "licenseFile": "APPLE-LICENSE-MIT.txt",
+    "inference": "Local Core ML CPU, independent three-layer CNN"
+  }
+}
