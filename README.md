@@ -4,6 +4,10 @@ PipCount is a native iPhone and iPad app for keeping score at game night. It sup
 
 The app uses SwiftUI and SwiftData. Its Xcode project, scheme, and app bundle retain the name `ScoreKeeper`.
 
+## Current handwriting prototype
+
+The current score-entry web prototype is in [previews/handwriting](previews/handwriting/README.md). It includes the Bauhaus dialog, local digits-6 recognition, prompted sample collection and optional Jev evaluation. Start with [the review guide](previews/handwriting/REVIEW_GUIDE.md) when reviewing that version. It runs separately from the native app described below.
+
 ## Game formats
 
 | Format | Scoring |

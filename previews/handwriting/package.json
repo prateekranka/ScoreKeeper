@@ -1,0 +1,43 @@
+{
+  "name": "pipcount-shadcn-manrope",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": "^22.22.3 || >=24.8.0"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "setup:python": "python3 tools/setup.py",
+    "start": ".runtime/digits-env/bin/python -u server/preview.py --port 4191",
+    "test:e2e": "e2e run tests/inline-scoring.e2e.ts tests/handwriting-link.e2e.ts tests/server-origin.e2e.ts --config recognition-preview.e2e.config.ts --target preview"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.9.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cn": "^0.5.0",
+    "dialkit": "^2.0.2",
+    "lucide-react": "^1.59.0",
+    "motion": "^14.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "^4.3.3",
+    "tw-animate-css": "^1.4.0"
+  },
+  "devDependencies": {
+    "@e2e-dev/web": "^0.15.2",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "e2e": "^0.21.2",
+    "shadcn": "^4.22.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
+  }
+}
