@@ -26,6 +26,12 @@ test('wide roots use one bottom trailing island and folded roots use native tabs
    await expect(screen.getByTestId(/^sidebar_/)).toBeHidden();
    await expect(screen.getByRole('button',/^(Show|Hide) Sidebar$/i)).toBeHidden();
    await tapOpenDuoTab(app,screen,screen.getByTestId(id),name);
+   if(name==='More') {
+    await expect(screen.getByTestId('theme_light_button')).toBeVisible();
+    await expect(screen.getByText('PipCount Pro',{exact:true})).toBeHidden();
+    await expect(screen.getByTestId('more_upgrade_button')).toBeHidden();
+    await expect(screen.getByTestId('pro_unlocked_status')).toBeHidden();
+   }
    const primary=name==='Home'?screen.getByTestId(/^active_game_/).first()
     :screen.getByTestId(name==='Games'?'game_tile_generic':name==='Players'?'add_new_player_button':'theme_light_button');
    await assertClearOfIsland(screen,primary);

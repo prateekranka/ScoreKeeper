@@ -219,28 +219,27 @@ struct LegalSupportView: View {
         .accessibilityIdentifier("theme_\(mode)_button")
     }
 
+    @ViewBuilder
     private var proPanel: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Button {
-                if storeManager.isPro {
-                    AppEntryPoint.shared.open(.proManagement)
-                } else {
+        if !storeManager.isPro {
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                Button {
                     storeManager.presentPaywall()
+                } label: {
+                    Label("PipCount Pro", systemImage: "infinity")
+                        .font(AppFonts.title)
+                        .foregroundStyle(ClubhouseTheme.brass)
+                        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                        .padding(AppTheme.spacingMedium)
+                        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
                 }
-            } label: {
-                Label("PipCount Pro", systemImage: storeManager.isPro ? "checkmark.seal" : "infinity")
-                    .font(AppFonts.title)
-                    .foregroundStyle(storeManager.isPro ? ClubhouseTheme.ink : ClubhouseTheme.brass)
-                    .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
-                    .padding(AppTheme.spacingMedium)
-                    .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
-            }
-            .buttonStyle(PressableButtonStyle())
-            .accessibilityIdentifier(storeManager.isPro ? "pro_unlocked_status" : "more_upgrade_button")
-            if storeManager.shouldShowFreeGamesSignal {
-                Text("\(storeManager.remainingFreeGames.quantityText("free game")) left")
-                    .font(.subheadline)
-                    .foregroundStyle(ClubhouseTheme.ink)
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityIdentifier("more_upgrade_button")
+                if storeManager.shouldShowFreeGamesSignal {
+                    Text("\(storeManager.remainingFreeGames.quantityText("free game")) left")
+                        .font(.subheadline)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                }
             }
         }
     }

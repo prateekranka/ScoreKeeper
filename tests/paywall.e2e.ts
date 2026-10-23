@@ -1,6 +1,6 @@
 import { beforeEach, test } from '@e2e-dev/mobile';
 import { expect, type Locator, type Screen } from 'e2e';
-import { captureState } from './handwriting-helpers';
+import { captureState, tapTab } from './handwriting-helpers';
 import { assertClearOfIsland } from './handwriting-duo-input';
 
 const bundleId = 'com.icequeen.scorekeeper';
@@ -80,12 +80,29 @@ test('fresh install shows onboarding, main paywall, one exit gift, then Home', a
   await screen.getByTestId('paywall_close_button').tap();
   await expect(start).toBeVisible();
   await expect(screen.getByTestId('paywall_gift')).toBeHidden();
+  await tapTab(screen, 'More');
+  await expect(screen.getByTestId('theme_light_button')).toBeVisible();
+  await expect(screen.getByTestId('more_upgrade_button')).toBeVisible();
+  await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
+  await captureState(app, 'paywall-fresh-more', 'Fresh users see the upgrade offer without any free-game count');
+  await screen.getByTestId('theme_dark_button').tap();
+  await expect(screen.getByTestId('more_upgrade_button')).toBeVisible();
+  await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
+  await captureState(app, 'paywall-fresh-more-dark', 'Fresh users see no free-game count in dark appearance');
 });
 
-test('converted user can start a game without a paywall', async ({ screen, device }) => {
+test('converted user can start a game without a paywall', async ({ app, screen, device }) => {
   await device.openApp(bundleId, { relaunch: true, launchArguments: [...baseArguments, '-unlock-pro'] });
   await expect(screen.getByTestId('new_game_button')).toBeVisible();
   await expect(screen.getByTestId('paywall_main')).toBeHidden();
+  await tapTab(screen, 'More');
+  await expect(screen.getByTestId('theme_light_button')).toBeVisible();
+  await expect(screen.getByTestId('more_upgrade_button')).toBeHidden();
+  await expect(screen.getByTestId('pro_unlocked_status')).toBeHidden();
+  await expect(screen.getByText('PipCount Pro', { exact: true })).toBeHidden();
+  await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
+  await captureState(app, 'paywall-pro-more', 'Legacy Pro users see no upgrade or subscription-management row');
+  await tapTab(screen, 'Home');
   await screen.getByTestId('new_game_button').tap();
   const tile = screen.getByTestId('game_tile_generic');
   await screen.scrollUntilVisible(tile);
@@ -107,10 +124,39 @@ test('grandfathered user keeps remaining starts and exhausted user keeps Home', 
   await expect(screen.getByTestId('new_game_button')).toBeVisible();
 });
 
+test('More shows free-game counts only at the grandfathered three-game threshold', async ({ app, screen, device }) => {
+  for (const started of [21, 22, 24, 25]) {
+    await device.openApp(bundleId, { relaunch: true, launchArguments: [...baseArguments, '-grandfathered', String(started)] });
+    await expect(screen.getByTestId('new_game_button')).toBeVisible();
+    await tapTab(screen, 'More');
+    await expect(screen.getByTestId('theme_light_button')).toBeVisible();
+    await expect(screen.getByTestId('more_upgrade_button')).toBeVisible();
+    const count = screen.getByText(/^\d+ free games? left$/);
+    const remaining = 25 - started;
+    if (remaining <= 3) {
+      await expect(count).toHaveText(`${remaining} free ${remaining === 1 ? 'game' : 'games'} left`);
+    } else {
+      await expect(count).toBeHidden();
+    }
+    await captureState(app, `paywall-grandfathered-more-${remaining}`, 'Only grandfathered users with three or fewer free games see a count');
+  }
+  await device.openApp(bundleId, { relaunch: true, launchArguments: [...baseArguments, '-grandfathered', '25', '-unlock-pro'] });
+  await expect(screen.getByTestId('new_game_button')).toBeVisible();
+  await tapTab(screen, 'More');
+  await expect(screen.getByTestId('theme_light_button')).toBeVisible();
+  await expect(screen.getByTestId('more_upgrade_button')).toBeHidden();
+  await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
+});
+
 test('active trial grants access and gift launch opens only the gift paywall', async ({ app, screen, device }) => {
   await device.openApp(bundleId, { relaunch: true, launchArguments: [...baseArguments, '-trial-active'] });
   await expect(screen.getByTestId('new_game_button')).toBeVisible();
   await expect(screen.getByTestId('paywall_main')).toBeHidden();
+  await tapTab(screen, 'More');
+  await expect(screen.getByTestId('theme_light_button')).toBeVisible();
+  await expect(screen.getByTestId('more_upgrade_button')).toBeHidden();
+  await expect(screen.getByText('PipCount Pro', { exact: true })).toBeHidden();
+  await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
   await device.openApp(bundleId, { relaunch: true, launchArguments: [...baseArguments, '-open-gift'] });
   await expect(screen.getByTestId('paywall_gift')).toBeVisible();
   const restore = screen.getByTestId('paywall_restore_button');

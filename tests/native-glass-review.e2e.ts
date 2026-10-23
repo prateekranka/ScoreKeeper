@@ -89,8 +89,9 @@ test('empty Home has no zero statistics or floating upgrade and dark paywall is 
   await device.installApp();
   await device.setAppearance('dark');
   try {
-    await device.openApp(bundle, { relaunch: true, launchArguments: ['-in-memory-store', '-grandfathered', '25', '-exit-offer-seen', '-themeMode', 'system', '-UIPreferredContentSizeCategoryName', 'UICTContentSizeCategoryL'] });
-    if (await screen.getByTestId('paywall_main').isVisible()) await screen.getByTestId('paywall_close_button').tap();
+    await device.openApp(bundle, { relaunch: true, launchArguments: ['-in-memory-store', '-exit-offer-seen', '-themeMode', 'system', '-UIPreferredContentSizeCategoryName', 'UICTContentSizeCategoryL'] });
+    await expect(screen.getByTestId('paywall_main')).toBeVisible();
+    await screen.getByTestId('paywall_close_button').tap();
     await expect(screen.getByTestId('new_game_button')).toBeVisible();
     await expect(screen.getByText('games', { exact: true })).toBeHidden();
     await expect(screen.getByText('active', { exact: true })).toBeHidden();
@@ -99,7 +100,8 @@ test('empty Home has no zero statistics or floating upgrade and dark paywall is 
     await captureState(app, 'review-dark-home-empty', 'Empty Home hides the zero metrics and floating upgrade label');
     await tapTab(screen, 'More');
     await expect(screen.getByTestId('more_upgrade_button')).toHaveCount(1);
-    await captureState(app, 'review-dark-upgrade-row', 'One high-contrast upgrade row in More for non-Pro users');
+    await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
+    await captureState(app, 'review-dark-upgrade-row', 'One high-contrast upgrade row in More for new non-Pro users, without a free-game count');
     await screen.getByTestId('more_upgrade_button').tap();
     await expect(screen.getByTestId(/^paywall_(primary|retry)_button$/)).toBeEnabled({ timeout: 30_000 });
     await captureState(app, 'review-dark-main-paywall', 'Main paywall in dark appearance on the open Duo');
