@@ -85,7 +85,8 @@ export async function scrollMainContent(screen: Screen, device: Device, target: 
       // Off-screen rows can be absent from the tree. Search back if we passed one.
       towardLaterRows = !towardLaterRows;
     }
-    const x = hasIsland ? frame.x + Math.min(200, frame.width * 0.35)
+    const x = hasIsland && !inAccessibleDeck && !inAccessibleScoring ? frame.x + 8
+      : hasIsland ? frame.x + Math.min(200, frame.width * 0.35)
       : inOpenDuo ? Math.max(340, Math.min(680, frame.x + frame.width / 2 - 80)) : frame.x + frame.width / 2;
     const centerY = top + availableHeight / 2;
     const fromY = centerY + (towardLaterRows ? distance / 2 : -distance / 2);

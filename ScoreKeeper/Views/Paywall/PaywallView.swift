@@ -4,9 +4,17 @@ struct PaywallView: View {
     let route: PaywallRoute
     @Environment(StoreManager.self) private var storeManager
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @State private var selectedPlan: ProProduct = .yearly
+    @Environment(\.pipCountRailInset) private var railInset
+    @State private var selectedPlan: ProProduct?
 
-    private var plan: ProProduct { route == .gift ? .gift : selectedPlan }
+    private var availablePlans: [ProProduct] {
+        (route == .gift ? [.gift] : [.yearly, .lifetime]).filter { storeManager.products[$0] != nil }
+    }
+
+    private var plan: ProProduct? {
+        if let selectedPlan, availablePlans.contains(selectedPlan) { return selectedPlan }
+        return availablePlans.first
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,10 +29,13 @@ struct PaywallView: View {
                         .frame(width: 48, height: 48)
                         .contentShape(Rectangle())
                 }
+                .buttonStyle(.plain)
                 .accessibilityLabel("Close")
                 .accessibilityIdentifier("paywall_close_button")
             }
+            .frame(maxWidth: .infinity, alignment: .trailing)
             .padding(.horizontal, AppTheme.spacingMedium)
+            .padding(.trailing, railInset)
             .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
 
             ScrollView {
@@ -39,6 +50,8 @@ struct PaywallView: View {
                         .font(AppFonts.hero)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
+                        .padding(.trailing, railInset)
+                        .frame(minHeight: railInset > 0 ? 108 : 0, alignment: .topLeading)
                         .accessibilityIdentifier("paywall_title")
 
                     if route == .main {
@@ -47,10 +60,11 @@ struct PaywallView: View {
                             benefit("All three formats", symbol: "square.grid.2x2")
                             benefit("Stats & history", symbol: "chart.bar")
                         }
-                        planButton(.yearly, title: "Yearly", identifier: "paywall_plan_yearly")
-                        planButton(.lifetime, title: "Lifetime", identifier: "paywall_plan_lifetime")
-                    } else {
-                        Text("PipCount Pro · \(priceText(for: .gift))")
+                        ForEach(availablePlans, id: \.self) { option in
+                            planButton(option, title: option == .yearly ? "Yearly" : "Lifetime", identifier: option == .yearly ? "paywall_plan_yearly" : "paywall_plan_lifetime")
+                        }
+                    } else if let plan, let price = priceText(for: plan) {
+                        Text("PipCount Pro · \(price)")
                             .font(AppFonts.title)
                             .foregroundStyle(ClubhouseTheme.ink)
                     }
@@ -59,14 +73,6 @@ struct PaywallView: View {
                         Text(message)
                             .font(.subheadline)
                             .foregroundStyle(ClubhouseTheme.ink)
-                    }
-                    if storeManager.products[plan] == nil && storeManager.productState != .loading {
-                        Button("Retry") {
-                            Task { await storeManager.loadProducts(forceRetry: true) }
-                        }
-                        .font(.subheadline.weight(.semibold))
-                        .frame(minWidth: 44, minHeight: 44)
-                        .accessibilityIdentifier("paywall_retry_button")
                     }
                     if case .failed(let message) = storeManager.purchaseState {
                         Text(message)
@@ -82,13 +88,23 @@ struct PaywallView: View {
             .accessibilityIdentifier("paywall_content_scroll")
 
             VStack(spacing: AppTheme.spacingSmall) {
-                AppActionButton(role: .primary(ClubhouseTheme.blue)) {
-                    Task { await storeManager.purchase(plan) }
-                } label: {
-                    Text(storeManager.isBusy ? "Please wait" : primaryTitle)
+                if let plan {
+                    AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+                        Task { await storeManager.purchase(plan) }
+                    } label: {
+                        Text(storeManager.isBusy ? "Please wait" : primaryTitle(for: plan))
+                    }
+                    .disabled(!storeManager.canPurchase(plan))
+                    .accessibilityIdentifier("paywall_primary_button")
+                } else {
+                    AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+                        Task { await storeManager.loadProducts(forceRetry: true) }
+                    } label: {
+                        Text(storeManager.productState == .loading ? "Please wait" : "Retry")
+                    }
+                    .disabled(storeManager.productState == .loading)
+                    .accessibilityIdentifier("paywall_retry_button")
                 }
-                .disabled(!storeManager.canPurchase(plan))
-                .accessibilityIdentifier("paywall_primary_button")
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
@@ -114,7 +130,7 @@ struct PaywallView: View {
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier(route == .main ? "paywall_main" : "paywall_gift")
         .interactiveDismissDisabled()
-        .task { await storeManager.loadProducts() }
+        .task(id: route) { await storeManager.loadProducts() }
     }
 
     private func benefit(_ title: String, symbol: String) -> some View {
@@ -129,7 +145,7 @@ struct PaywallView: View {
             selectedPlan = option
         } label: {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                Label("\(title) · \(priceText(for: option))", systemImage: selectedPlan == option ? "checkmark.circle.fill" : "circle")
+                Label("\(title) · \(priceText(for: option) ?? "")", systemImage: plan == option ? "checkmark.circle.fill" : "circle")
                     .font(AppFonts.headline)
                 if let period = storeManager.trialPeriodText(for: option) {
                     Text("\(period) free")
@@ -143,21 +159,21 @@ struct PaywallView: View {
             .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
             .overlay {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
-                    .strokeBorder(selectedPlan == option ? ClubhouseTheme.ink : ClubhouseTheme.ruleStrong, lineWidth: selectedPlan == option ? 2 : 1)
+                    .strokeBorder(plan == option ? ClubhouseTheme.ink : ClubhouseTheme.ruleStrong, lineWidth: plan == option ? 2 : 1)
             }
         }
         .buttonStyle(.plain)
-        .accessibilityAddTraits(selectedPlan == option ? .isSelected : [])
+        .accessibilityAddTraits(plan == option ? .isSelected : [])
         .accessibilityIdentifier(identifier)
     }
 
-    private func priceText(for plan: ProProduct) -> String {
-        guard let product = storeManager.products[plan] else { return "Price unavailable" }
+    private func priceText(for plan: ProProduct) -> String? {
+        guard let product = storeManager.products[plan] else { return nil }
         return plan == .lifetime ? product.displayPrice : "\(product.displayPrice)/year"
     }
 
     private var legalText: String? {
-        guard let product = storeManager.products[plan] else { return nil }
+        guard let plan, let product = storeManager.products[plan] else { return nil }
         if plan == .lifetime { return "\(product.displayPrice) once. Lifetime access." }
         if let period = storeManager.trialPeriodText(for: plan) {
             return "\(period) free, then \(product.displayPrice)/year. Cancel anytime."
@@ -165,7 +181,7 @@ struct PaywallView: View {
         return "\(product.displayPrice)/year. Cancel anytime."
     }
 
-    private var primaryTitle: String {
+    private func primaryTitle(for plan: ProProduct) -> String {
         if plan == .lifetime { return "Buy Lifetime" }
         return storeManager.trialPeriodText(for: plan) == nil ? "Subscribe" : "Start free trial"
     }

@@ -1,6 +1,7 @@
 import { type Device } from '@e2e-dev/mobile';
 import { expect, type Screen } from 'e2e';
 import {
+  foldIfSupported,
   enterKeyboardText,
   captureState,
   drawSeven,
@@ -87,7 +88,7 @@ export async function launchFreshJourney(
       ...extraArguments,
     ],
   });
-  if (!process.env.PIPCOUNT_NO_FOLD) await device.fold('closed');
+  await foldIfSupported(device, 'closed');
   await device.setOrientation('portrait');
   await finishOnboarding(app, screen);
   await tapTab(screen, 'Home');
@@ -150,7 +151,7 @@ export async function startGameFromHome(
 
   await addPlayers(app, screen, players, prefix, options.duplicateValidation ?? false);
   if (kind !== 'whatsForDinner') {
-    await expect(screen.getByText('game settings', { exact: true })).toBeVisible();
+    await expect(screen.getByText('rules for tonight', { exact: true })).toBeVisible();
     if (kind === 'generic') {
       const targetField = screen.getByTestId('target_score_field');
       await expect(targetField).toBeVisible();

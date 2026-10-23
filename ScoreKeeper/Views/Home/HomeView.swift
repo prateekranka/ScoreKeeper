@@ -4,6 +4,7 @@ import SwiftData
 struct HomeView: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.pipCountRailInset) private var railInset
     @Environment(NavigationRouter.self) private var router
     @Environment(StoreManager.self) private var storeManager
     @Environment(\.modelContext) private var modelContext
@@ -131,6 +132,10 @@ struct HomeView: View {
     @ViewBuilder
     private var gameActionSection: some View {
         if !inProgressGames.isEmpty {
+            if railInset > 0 {
+                NewGameButton(action: startNewGame)
+                    .staggeredEntrance(visible: sectionsVisible, index: 1)
+            }
             HomeActiveGamesSection(
                 sessions: inProgressGames,
                 onGameTap: { router.push(.scoring($0.persistentModelID)) },
@@ -138,8 +143,10 @@ struct HomeView: View {
             )
             .staggeredEntrance(visible: sectionsVisible, index: 1)
 
-            NewGameButton(action: startNewGame)
-                .staggeredEntrance(visible: sectionsVisible, index: 2)
+            if railInset == 0 {
+                NewGameButton(action: startNewGame)
+                    .staggeredEntrance(visible: sectionsVisible, index: 2)
+            }
         } else if completedGames.isEmpty {
             HomeEmptyHero(action: startNewGame)
                 .staggeredEntrance(visible: sectionsVisible, index: 1)
@@ -199,6 +206,7 @@ struct HomeView: View {
 private struct HomeHeader: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.pipCountRailInset) private var railInset
 
     var body: some View {
         VStack(spacing: AppTheme.spacingMedium) {
@@ -210,7 +218,7 @@ private struct HomeHeader: View {
                 // so the first action card stays above the fold (dogfood pass 1).
                 PipCountGeometricArtwork(scene: .home)
                     .frame(maxWidth: .infinity)
-                    .frame(height: AppTheme.heroArtHeight)
+                    .frame(height: railInset > 0 ? 88 : AppTheme.heroArtHeight)
             }
         }
         .padding(.top, 2)
@@ -383,6 +391,7 @@ private struct HomeActiveGamesSection: View {
 
 private struct ActiveGameRow: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.pipCountRailInset) private var railInset
     let session: GameSession
     let onResume: () -> Void
     let onDelete: () -> Void
@@ -417,50 +426,57 @@ private struct ActiveGameRow: View {
             .font(AppFonts.body)
             .foregroundStyle(ClubhouseTheme.inkMuted)
 
+            if railInset > 0 { resumeControls }
+
             VStack(spacing: 0) {
                 ForEach(Array(session.players.prefix(4).enumerated()), id: \.element.id) { _, player in
                     LedgerRow(player: player, score: player.totalScore(in: session))
                 }
             }
 
-            GeometryReader { geometry in
-                let availableWidth = max(0, geometry.size.width - AppTheme.spacingSmall - 44)
-
-                HStack(spacing: AppTheme.spacingSmall) {
-                    ResumeGameSlider(
-                        accessibilityLabel: "Resume \(session.gameType.displayName), round \(session.currentRoundNumber)",
-                        accessibilityIdentifier: "active_game_\(session.id.uuidString)",
-                        action: onResume
-                    )
-                    .frame(width: availableWidth)
-
-                    Button(role: .destructive, action: onDelete) {
-                        Image(systemName: "trash")
-                            .font(.body.weight(.bold))
-                            .foregroundStyle(ClubhouseTheme.red)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(
-                                ClubhouseTheme.paperSunken,
-                                in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                            )
-                            .overlay {
-                                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
-                                    .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
-                            }
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(PressableButtonStyle())
-                    .accessibilityLabel("Delete active \(session.gameType.displayName) game")
-                    .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
-                    .frame(width: 44)
-                }
-            }
-            .frame(height: dynamicTypeSize.isAccessibilitySize ? 88 : 62)
+            if railInset == 0 { resumeControls }
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
     }
+
+    private var resumeControls: some View {
+        GeometryReader { geometry in
+            let availableWidth = max(0, geometry.size.width - AppTheme.spacingSmall - 44)
+
+            HStack(spacing: AppTheme.spacingSmall) {
+                ResumeGameSlider(
+                    accessibilityLabel: "Resume \(session.gameType.displayName), round \(session.currentRoundNumber)",
+                    accessibilityIdentifier: "active_game_\(session.id.uuidString)",
+                    action: onResume
+                )
+                .frame(width: availableWidth)
+
+                Button(role: .destructive, action: onDelete) {
+                    Image(systemName: "trash")
+                        .font(.body.weight(.bold))
+                        .foregroundStyle(ClubhouseTheme.red)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(
+                            ClubhouseTheme.paperSunken,
+                            in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                        )
+                        .overlay {
+                            RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
+                                .strokeBorder(ClubhouseTheme.rule, lineWidth: 1)
+                        }
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityLabel("Delete active \(session.gameType.displayName) game")
+                .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
+                .frame(width: 44)
+            }
+        }
+        .frame(height: dynamicTypeSize.isAccessibilitySize ? 88 : 62)
+    }
+
 }
 
 private struct ResumeGameSlider: View {
@@ -999,6 +1015,14 @@ struct SavedPlayersView: View {
                     .pipCountRailHeader()
                     .staggeredEntrance(visible: contentVisible, index: 0)
 
+                AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+                    showAddPlayer = true
+                } label: {
+                    Text("add player")
+                }
+                .accessibilityIdentifier("add_new_player_button")
+                .staggeredEntrance(visible: contentVisible, index: 2)
+
                 Text("saved players")
                     .columnHeaderStyle()
                     .foregroundStyle(ClubhouseTheme.blue)
@@ -1022,14 +1046,6 @@ struct SavedPlayersView: View {
                     }
                     .staggeredEntrance(visible: contentVisible, index: 1)
                 }
-
-                AppActionButton(role: .primary(ClubhouseTheme.blue)) {
-                    showAddPlayer = true
-                } label: {
-                    Text("add player")
-                }
-                .accessibilityIdentifier("add_new_player_button")
-                .staggeredEntrance(visible: contentVisible, index: 2)
 
                 if !completedGames.isEmpty {
                     HomeStatsSection(sessions: completedGames)

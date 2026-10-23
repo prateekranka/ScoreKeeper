@@ -4,7 +4,7 @@ import {scrollMainContent} from './handwriting-layout-scroll';
 import {test, type Device} from '@e2e-dev/mobile';
 import {expect, type Screen} from 'e2e';
 import {execFileSync} from 'node:child_process';
-import {captureState, tapTab, tapNativeControl, enterKeyboardText, visibleDeckPlayer, pressReturnKey, type ScreenshotApp} from './handwriting-helpers';
+import {foldIfSupported,captureState, tapTab, tapNativeControl, enterKeyboardText, visibleDeckPlayer, pressReturnKey, type ScreenshotApp} from './handwriting-helpers';
 import {openRoundDeck, manualScoreForCurrentPlayer} from './native-glass-flows';
 
 const bundle='com.icequeen.scorekeeper';
@@ -203,7 +203,7 @@ test('break-ui invalid manual values and recoverable store failure',{timeout:600
 test('break-ui wide Duo data containers',{timeout:600000},async({app,screen,device})=>{
  if(!process.env.PIPCOUNT_BREAK_WIDE) test.skip('Separate wide device run');
  try{
-  await openFixture(device,screen);await selectData(app,screen,'worst');await device.fold('open');
+  await openFixture(device,screen);await selectData(app,screen,'worst');await foldIfSupported(device, 'open');
   await expect(screen.getByTestId('tab_home')).toBeVisible();
   await expect(screen.getByTestId(/^sidebar_/)).toBeHidden();
   await expect(screen.getByRole('button',/^Show Sidebar$/i)).toBeHidden();
@@ -218,7 +218,7 @@ test('break-ui wide Duo data containers',{timeout:600000},async({app,screen,devi
  }catch(error){
   await captureState(app,'break-wide-failure-before-restoration',String(error));throw error;
  }finally{
-  await device.fold('closed');
+  await foldIfSupported(device, 'closed');
   await device.openApp(bundle,{relaunch:true,launchArguments:['-in-memory-store','-force-light-theme','-unlock-pro','-break-ui-data']});
  }
 });

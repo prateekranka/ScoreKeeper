@@ -1,6 +1,6 @@
 import { test } from '@e2e-dev/mobile';
 import { expect } from 'e2e';
-import { captureState, tapNativeControl, enterKeyboardText, pressReturnKey, visibleDeckPlayer } from './handwriting-helpers';
+import { foldIfSupported, captureState, tapNativeControl, enterKeyboardText, pressReturnKey, visibleDeckPlayer } from './handwriting-helpers';
 import { scrollMainContent } from './handwriting-layout-scroll';
 import { tapOpenDuoControl, tapOpenDuoTab, screenshotPath } from './handwriting-duo-input';
 import { enterOpenDuoText, submitOpenDuoName } from './handwriting-duo-keyboard';
@@ -84,7 +84,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
  if(recordedOriginal) systemContentSize(recordedOriginal.originalContentSize);
  const originalContentSize=systemContentSize();
  await device.installApp(); await app.open();
- if(!process.env.PIPCOUNT_PHONE) await device.fold('closed'); await device.setOrientation('portrait');
+ if(!process.env.PIPCOUNT_PHONE) await foldIfSupported(device, 'closed'); await device.setOrientation('portrait');
  await device.openApp('com.apple.Preferences',{relaunch:true});
  console.log('Opened system Settings');
  const rootBack=screen.getByTestId('BackButton').first(); for(let i=0;i<4 && await rootBack.isVisible();i++) await rootBack.tap();
@@ -130,7 +130,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
    // Open the target app before changing display shape. Folding Settings first
    // can leave the beta runner's app clip inherited from the Settings window.
    if(openLandscape) await device.openApp(bundle,{relaunch:false});
-   if(!process.env.PIPCOUNT_PHONE) await device.fold(pose==='compact'?'closed':'open');
+   if(!process.env.PIPCOUNT_PHONE) await foldIfSupported(device, pose==='compact'?'closed':'open');
    // Device Hub sets the inner window pose; its actual PNG dimensions prove it.
    // Sending a redundant sensor rotation to the open beta simulator can block its runner.
    if(pose==='compact') await device.setOrientation('portrait');
@@ -290,7 +290,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
  } finally {
   systemContentSize(originalContentSize);
   expect(systemContentSize()).toBe(originalContentSize);
-  if(!process.env.PIPCOUNT_PHONE) await device.fold('closed'); await device.setOrientation('portrait'); await device.setAppearance('light');
+  if(!process.env.PIPCOUNT_PHONE) await foldIfSupported(device, 'closed'); await device.setOrientation('portrait'); await device.setAppearance('light');
   await device.openApp('com.apple.Preferences',{relaunch:true});
   await openSystemTextPage(app,screen,device);
   const toggle=screen.getByRole('switch','Larger Accessibility Sizes',{exact:true}); await expect(toggle).toBeVisible(); await setSystemSwitch(screen,toggle,originalLarger);

@@ -117,6 +117,7 @@ struct ContentView: View {
     @State private var entryPoint = AppEntryPoint.shared
     @State private var showProManagement = false
     @State private var pendingProManagement = false
+    @State private var statusCapsule = PipCountStatusCapsuleController()
     @Environment(ReviewAskManager.self) private var reviewAskManager
     @Environment(\.requestReview) private var requestReview
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -125,10 +126,7 @@ struct ContentView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
-        GeometryReader { proxy in
-            let railInset = proxy.safeAreaInsets.trailing >= 60 && proxy.safeAreaInsets.leading <= 1
-                ? proxy.safeAreaInsets.trailing : 0
-            let usesIsland = horizontalSizeClass == .regular || railInset > 0
+        PipCountRootSurface(statusCapsule: statusCapsule) {
             TabView(selection: $router.selectedTab) {
                 ForEach(PipCountTab.allCases, id: \.self) { tab in
                     PipCountNavigationRoot(tab: tab, router: router)
@@ -141,21 +139,17 @@ struct ContentView: View {
                 }
             }
             .tabViewStyle(.tabBarOnly)
-            .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
-            .environment(\.pipCountUsesIsland, usesIsland)
-            .environment(\.pipCountRailInset, railInset)
         }
         .appBackground()
         .tint(ClubhouseTheme.blue)
         .environment(router)
         .environment(\.pipCountPageIsExiting, router.isPageExiting)
         .fullScreenCover(isPresented: presentationBinding, onDismiss: presentationDidDismiss) {
-            Group {
+            PipCountRootSurface(statusCapsule: statusCapsule, priority: 1) {
                 if shouldShowOnboarding {
                     OnboardingView { hasCompletedOnboarding = true }
                 } else if let route = storeManager.paywallRoute {
                     PaywallView(route: route)
-                        .id(route)
                 }
             }
             .environment(\.pipCountPageIsExiting, false)
@@ -242,6 +236,172 @@ struct ContentView: View {
 
         didApplyOnboardingReset = true
         hasCompletedOnboarding = false
+    }
+}
+
+private enum PipCountRailMetrics {
+    // Measured on the iPhone Duo 27.1 simulator, through the Wi-Fi glyph.
+    static let statusCapsuleHeight: CGFloat = 156
+}
+
+private struct PipCountRootSurface<Content: View>: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    let statusCapsule: PipCountStatusCapsuleController
+    var priority = 0
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        GeometryReader { proxy in
+            let railInset = proxy.safeAreaInsets.trailing >= 60 && proxy.safeAreaInsets.leading <= 1
+                ? proxy.safeAreaInsets.trailing : 0
+            content
+                .environment(\.pipCountUsesIsland, horizontalSizeClass == .regular || railInset > 0)
+                .environment(\.pipCountRailInset, railInset)
+                .background {
+                    PipCountStatusCapsuleHost(controller: statusCapsule, priority: priority, railInset: railInset, colorScheme: colorScheme, reduceTransparency: reduceTransparency)
+                }
+                .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
+        }
+    }
+}
+
+private struct PipCountStatusCapsule: View {
+    let railInset: CGFloat
+    let colorScheme: ColorScheme
+    let reduceTransparency: Bool
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            Color.clear
+            Group {
+                if reduceTransparency {
+                    Capsule()
+                        .fill(ClubhouseTheme.paperCard)
+                        .overlay { Capsule().strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1) }
+                } else {
+                    Color.clear.appGlass(cornerRadius: 30)
+                }
+            }
+                .frame(width: 60, height: PipCountRailMetrics.statusCapsuleHeight)
+                .padding(.trailing, max(0, (railInset - 60) / 2))
+        }
+        .ignoresSafeArea()
+        .environment(\.colorScheme, colorScheme)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
+private struct PipCountStatusCapsuleHost: UIViewRepresentable {
+    let controller: PipCountStatusCapsuleController
+    let priority: Int
+    let railInset: CGFloat
+    let colorScheme: ColorScheme
+    let reduceTransparency: Bool
+
+    func makeUIView(context: Context) -> HostView { HostView() }
+
+    func updateUIView(_ view: HostView, context: Context) {
+        view.controller = controller
+        view.priority = priority
+        view.capsule = PipCountStatusCapsule(railInset: railInset, colorScheme: colorScheme, reduceTransparency: reduceTransparency)
+        view.updateOverlay()
+    }
+
+    static func dismantleUIView(_ view: HostView, coordinator: ()) { view.removeOverlay() }
+
+    final class HostView: UIView {
+        var controller: PipCountStatusCapsuleController?
+        var priority = 0
+        var capsule: PipCountStatusCapsule?
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            updateOverlay()
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            updateOverlay()
+        }
+
+        func updateOverlay() {
+            guard let capsule else { return }
+            controller?.update(owner: ObjectIdentifier(self), source: window, capsule: capsule, priority: priority)
+        }
+
+        func removeOverlay() {
+            controller?.remove(owner: ObjectIdentifier(self))
+        }
+    }
+}
+
+@MainActor
+private final class PipCountStatusCapsuleController {
+    private struct Surface {
+        let scene: UIWindowScene
+        let frame: CGRect
+        let capsule: PipCountStatusCapsule
+        let priority: Int
+    }
+
+    private final class OverlayWindow: UIWindow {
+        override var canBecomeKey: Bool { false }
+        override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? { nil }
+    }
+
+    private var surfaces: [ObjectIdentifier: Surface] = [:]
+    private var overlay: OverlayWindow?
+    private var displayedCapsule: PipCountStatusCapsule?
+
+    func update(owner: ObjectIdentifier, source: UIWindow?, capsule: PipCountStatusCapsule, priority: Int) {
+        guard let scene = source?.windowScene ?? surfaces[owner]?.scene,
+              let frame = source?.frame ?? surfaces[owner]?.frame else { return }
+        if let previous = surfaces[owner], previous.scene === scene,
+           previous.frame == frame, previous.priority == priority,
+           sameStyle(previous.capsule, capsule) { return }
+        surfaces[owner] = Surface(scene: scene, frame: frame, capsule: capsule, priority: priority)
+        refresh()
+    }
+
+    func remove(owner: ObjectIdentifier) {
+        surfaces.removeValue(forKey: owner)
+        refresh()
+    }
+
+    private func refresh() {
+        guard let surface = surfaces.values.max(by: { $0.priority < $1.priority }), surface.capsule.railInset > 0 else {
+            overlay?.isHidden = true
+            overlay = nil
+            displayedCapsule = nil
+            return
+        }
+        if overlay?.windowScene !== surface.scene {
+            overlay?.isHidden = true
+            let controller = UIHostingController(rootView: surface.capsule)
+            controller.view.backgroundColor = .clear
+            controller.view.accessibilityElementsHidden = true
+            let overlay = OverlayWindow(windowScene: surface.scene)
+            overlay.backgroundColor = .clear
+            overlay.isUserInteractionEnabled = false
+            overlay.windowLevel = .normal + 1
+            overlay.rootViewController = controller
+            self.overlay = overlay
+            displayedCapsule = surface.capsule
+        }
+        if overlay?.frame != surface.frame { overlay?.frame = surface.frame }
+        if !sameStyle(displayedCapsule, surface.capsule) {
+            (overlay?.rootViewController as? UIHostingController<PipCountStatusCapsule>)?.rootView = surface.capsule
+            displayedCapsule = surface.capsule
+        }
+        if overlay?.isHidden == true { overlay?.isHidden = false }
+    }
+
+    private func sameStyle(_ first: PipCountStatusCapsule?, _ second: PipCountStatusCapsule) -> Bool {
+        first?.railInset == second.railInset && first?.colorScheme == second.colorScheme &&
+            first?.reduceTransparency == second.reduceTransparency
     }
 }
 
@@ -394,6 +554,7 @@ private struct OnboardingView: View {
     let finish: () -> Void
     @State private var selectedPage = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.pipCountRailInset) private var railInset
 
     private let pages = OnboardingPage.allCases
 
@@ -410,15 +571,31 @@ private struct OnboardingView: View {
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
+            .padding(.trailing, railInset)
             .pipCountPageContent()
 
-            TabView(selection: $selectedPage) {
-                ForEach(Array(pages.enumerated()), id: \.element.id) { index, page in
-                    OnboardingPageView(page: page, highlightsVisible: selectedPage == index)
-                        .tag(index)
+            GeometryReader { proxy in
+                ScrollView(.horizontal) {
+                    HStack(spacing: 0) {
+                        ForEach(Array(pages.enumerated()), id: \.element.id) { index, page in
+                            OnboardingPageView(page: page, highlightsVisible: selectedPage == index)
+                                .frame(width: proxy.size.width, height: proxy.size.height)
+                                .accessibilityHidden(selectedPage != index)
+                                .id(index)
+                        }
+                    }
+                    .scrollTargetLayout()
                 }
+                .scrollTargetBehavior(.paging)
+                .scrollPosition(id: Binding<Int?>(
+                    get: { selectedPage },
+                    set: { if let page = $0 { selectedPage = page } }
+                ))
+                .scrollIndicators(.hidden)
+                .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
+                .frame(width: proxy.size.width, height: proxy.size.height)
+                .clipped()
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
 
             VStack(spacing: AppTheme.spacingMedium) {
                 OnboardingPageDots(count: pages.count, selectedPage: selectedPage)
@@ -471,6 +648,7 @@ private struct OnboardingPageView: View {
                 if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
                     HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
                         onboardingCopy
+                            .pipCountRailHeader()
                             .frame(maxWidth: 360, alignment: .leading)
 
                         OnboardingArtwork(page: page, isVisible: highlightsVisible)
@@ -480,6 +658,7 @@ private struct OnboardingPageView: View {
                 } else {
                     VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
                         onboardingCopy
+                            .pipCountRailHeader()
 
                         OnboardingArtwork(page: page, isVisible: highlightsVisible)
                             .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 390 : 430)

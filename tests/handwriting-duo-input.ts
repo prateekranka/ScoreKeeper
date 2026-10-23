@@ -12,7 +12,7 @@ export async function screenshotPath(artifact: string): Promise<string> {
   if (!manifest || !isAbsolute(manifest) || artifact.split(/[\\/]/).includes('..')) {
     throw new Error('A run-local absolute manifest is required to resolve this screenshot');
   }
-  const root = resolve(manifest, '..', 'artifacts');
+  const root = resolve(manifest, '..', 'results');
   const suffix = sep + artifact.split(/[\\/]/).join(sep);
   const matches: string[] = [];
   let entriesSeen = 0;
@@ -68,13 +68,14 @@ export async function assertIslandLayout(screen: Screen, scroll: Locator, expect
   if (!bounds || !viewport) throw new Error('The island or content scroll view has no native frame');
   const trailingGap = viewport.x + viewport.width - bounds.x - bounds.width;
   const bottomGap = viewport.y + viewport.height - bounds.y - bounds.height;
-  if (trailingGap < -1 || trailingGap > 24 || bottomGap < -1 || bottomGap > 24 ||
+  const homeIndicatorInset = 34;
+  if (trailingGap < -1 || trailingGap > 24 || bottomGap < -1 || bottomGap > 24 + homeIndicatorInset ||
       bounds.x < viewport.x || bounds.y < viewport.y || Math.min(bounds.width, bounds.height) > 84) {
     throw new Error(`The island is not compact and bottom-trailing: ${JSON.stringify({bounds, viewport})}`);
   }
   if (expectedWidth !== undefined) {
     expect(viewport.width).toBeCloseTo(expectedWidth, 0);
-    expect(bounds.height).toBeGreaterThan(bounds.width);
+    expect(bounds.width).toBeGreaterThan(bounds.height);
   }
   console.log('Island and full-width content frames', {bounds, viewport, trailingGap, bottomGap});
 }

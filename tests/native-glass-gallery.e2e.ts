@@ -42,7 +42,7 @@ test('capture every PipCount destination for the design comparison', {timeout:90
  await expect(screen.getByTestId('history_card_0')).toBeVisible();
  await captureState(app,'gallery-history','Completed game history');
  await tapNativeControl(screen,screen.getByTestId('history_card_0'));
- await expect(screen.getByTestId('game_detail_view')).toBeVisible();
+ await expect(screen.getByTestId('game_detail_view').filter({has:screen.getByText('at a glance',{exact:true})})).toBeVisible();
  await captureState(app,'gallery-game-detail','Completed game detail');
  const share=screen.getByTestId('share_game_detail_button').last(); await screen.scrollUntilVisible(share); await tapNativeControl(screen,share);
  await captureState(app,'gallery-share','Native result share sheet');

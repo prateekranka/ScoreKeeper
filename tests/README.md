@@ -29,6 +29,10 @@ export PIPCOUNT_JOURNEY_MANIFEST="$PWD/.e2e-selected-run/manifest.jsonl"
 npx e2e run tests/native-glass-gallery.e2e.ts --output .e2e-selected-run --reporter list,markdown --video off
 ```
 
+Set `PIPCOUNT_NO_FOLD=1` to run in the current pose when the host cannot stream the hinge angle.
+This skips pose changes and folded-only assertions. It does not verify fold transitions.
+Keep `actionTimeout` at 20 seconds or more when folds are enabled; e2e 0.21 waits for the pose.
+
 For accessibility, also set `PIPCOUNT_SETTINGS_RECORD` to an absolute JSON output path.
 The suite records the original system settings and restores them in `finally`.
 It verifies AX5 through the native simulator category and the Settings slider.
@@ -46,8 +50,8 @@ Never run two sessions on the same device at the same time.
 
 For the no-sidebar suite, the default is `PIPCOUNT_DUO_POSE=default`. Arrange the
 Duo's default compact open pose before the run. The first case leaves that pose
-unchanged and checks a 466-point native content width, a vertical island, and
-hidden native tabs. `PIPCOUNT_DUO_WINDOW_WIDTH` can set a different measured
+unchanged and checks a 466-point native content width, a horizontal navigation island, and
+hidden native tabs. Inspect the saved PNGs for the vertical status capsule. `PIPCOUNT_DUO_WINDOW_WIDTH` can set a different measured
 logical window width. Run the tabs suite with `PIPCOUNT_DUO_POSE=default` to
 include the same initial geometry check before its folded/open cases.
 

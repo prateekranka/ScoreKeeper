@@ -20,7 +20,7 @@ Shared memory for the ScoreKeeper Codex team. Keep this concise, factual, and du
 - Persistent gameplay state centers on `GameSession`, `Player`, `Round`, and `ScoreEntry` models under `ScoreKeeper/Models`.
 - Scoring behavior is split through engines under `ScoreKeeper/Engines`.
 - SwiftData route loaders should resolve stored `PersistentIdentifier` values with typed fetches against `persistentModelID`; do not use `ModelContext.model(for:)` as an optional existence check because missing or invalid IDs can trap when a faulted model property is accessed.
-- UI test coverage exists in `ScoreKeeperUITests/ScoreKeeperUITests.swift` and uses `-in-memory-store`.
+- App verification uses TesterArmy `tests/*.e2e.ts` with `-in-memory-store`.
 - Simulator preview/control tooling is available through `npm run sim`, which launches ScoreKeeper and serves the simulator at `http://localhost:3200`.
 - Project environment: native SwiftUI/SwiftData, scheme `ScoreKeeper`, iOS 26.0+, bundle id `com.icequeen.scorekeeper`, team `4JRB53LG5C` (Debug automatic signing; Release manual App Store profile).
 

@@ -25,12 +25,15 @@ test('capture utility sheets and the Pro offer',{timeout:360_000},async({app,scr
  await tapTab(screen,'More');
  const upgrade=screen.getByTestId('more_upgrade_button'); await screen.scrollUntilVisible(upgrade); await tapNativeControl(screen,upgrade);
  await expect(screen.getByTestId('paywall_title')).toBeVisible();
- const retry=screen.getByTestId('paywall_retry_button');
- const unlock=screen.getByTestId('paywall_primary_button');
- await expect.poll(async()=>await retry.isVisible()||await unlock.isEnabled(),{timeout:30_000}).toBe(true);
+ await expect(screen.getByTestId(/^paywall_(primary|retry)_button$/)).toBeEnabled({timeout:30_000});
  await captureState(app,'gallery-paywall','Pro offer after StoreKit loads or reports unavailable');
+ const mainCloseFrame=await screen.getByTestId('paywall_close_button').boundingBox();
  await tapNativeControl(screen,screen.getByTestId('paywall_close_button'));
  await expect(screen.getByTestId('paywall_gift')).toBeVisible();
+  await captureState(app,'gallery-gift-at-presentation','Gift chrome immediately after closing the main offer');
+  await expect(screen.getByTestId('paywall_main')).not.toBeVisible();
+  await expect(screen.getByTestId('paywall_close_button')).toBeVisible();
+  expect(await screen.getByTestId('paywall_close_button').boundingBox()).toEqual(mainCloseFrame);
  await captureState(app,'gallery-gift-paywall','Gift offer after closing the main paywall');
  await tapNativeControl(screen,screen.getByTestId('paywall_close_button'));
 });

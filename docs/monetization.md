@@ -60,9 +60,9 @@ All access launch hooks require `-in-memory-store`. They use isolated preference
 
 Use these access-state arguments separately. `-force-review-ask` remains the existing review-request hook.
 
-Swift Testing covers entitlement, conversion, grandfathering, persistent exit-offer state, scheduling, and quick-action policy. Existing StoreManager tests cover loading, retries, allowance migration, and review-request rules. `ThemeContrastTests` remains unchanged. TesterArmy `tests/paywall.e2e.ts` covers the new journey, returning start gate, converted access, grandfathering, trial/gift routing, and largest Dynamic Type. It does not fold the device. The extras suite captures both paywalls.
+TesterArmy `tests/paywall.e2e.ts` covers the new journey, returning start gate, converted access, grandfathering, trial/gift routing, and largest Dynamic Type. It does not fold the device. The extras suite captures both paywalls.
 
-Reviewer gates: build, `ScoreKeeperTests`, e2e on the current device pose, local StoreKit purchase/restore/pending/cancel/refund/renewal/grace tests, real local-notification delivery, cold/warm Home Screen quick action, and light/dark AX5 inspection. Source parsing and test discovery do not prove these runtime behaviors.
+Reviewer gates: build, TesterArmy e2e on the current device pose, local StoreKit purchase/restore/pending/cancel/refund/renewal/grace tests, real local-notification delivery, cold/warm Home Screen quick action, and light/dark AX5 inspection. Source parsing and test discovery do not prove these runtime behaviors.
 
 ## App Store Connect checklist
 
