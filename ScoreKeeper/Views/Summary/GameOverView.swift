@@ -16,17 +16,12 @@ struct GameOverView: View {
     private var completedGames: [GameSession]
 
     @State private var contentVisible = false
-    @State private var showPaywall = false
     @State private var didEvaluateReviewAsk = false
     @State private var saveError: String?
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
             gameOverContent(session)
-                .sheet(isPresented: $showPaywall) {
-                    PaywallView(onUnlocked: { playAgain(session) })
-                        .presentationDetents([.large])
-                }
                 .task(id: session.persistentModelID) {
                     try? await Task.sleep(for: .milliseconds(750))
                     evaluateReviewAskIfNeeded()
@@ -431,7 +426,7 @@ struct GameOverView: View {
 
     private func playAgain(_ session: GameSession) {
         guard storeManager.canStartNewGame else {
-            showPaywall = true
+            storeManager.presentPaywall(afterPurchase: { playAgain(session) })
             return
         }
 

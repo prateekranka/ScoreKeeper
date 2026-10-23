@@ -9,8 +9,8 @@ struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var selectedTool: HomeTool?
+    @State private var startAfterToolDismissal = false
     @State private var sectionsVisible = false
-    @State private var showPaywall = false
     @State private var pendingDeletionID: PersistentIdentifier?
     @State private var showDeleteConfirmation = false
     @State private var saveError: String?
@@ -52,13 +52,14 @@ struct HomeView: View {
         .appBackground()
         .navigationTitle("")
         .toolbar(horizontalSizeClass == .regular ? .visible : .hidden, for: .navigationBar)
-        .sheet(item: $selectedTool) { tool in
-            HomeToolSheet(tool: tool, activeGame: inProgressGames.first)
+        .sheet(item: $selectedTool, onDismiss: {
+            if startAfterToolDismissal {
+                startAfterToolDismissal = false
+                startNewGame()
+            }
+        }) { tool in
+            HomeToolSheet(tool: tool, activeGame: inProgressGames.first, onStartNewGame: { startAfterToolDismissal = true })
                 .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
-        }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView()
-                .presentationDetents([.large])
         }
         .confirmationDialog(
             "delete active game?",
@@ -137,15 +138,23 @@ struct HomeView: View {
             )
             .staggeredEntrance(visible: sectionsVisible, index: 1)
 
-            NewGameButton(action: { router.push(.gamePicker) })
+            NewGameButton(action: startNewGame)
                 .staggeredEntrance(visible: sectionsVisible, index: 2)
         } else if completedGames.isEmpty {
-            HomeEmptyHero(action: { router.push(.gamePicker) })
+            HomeEmptyHero(action: startNewGame)
                 .staggeredEntrance(visible: sectionsVisible, index: 1)
         } else {
-            NewGameButton(action: { router.push(.gamePicker) })
+            NewGameButton(action: startNewGame)
                 .staggeredEntrance(visible: sectionsVisible, index: 2)
         }
+    }
+
+    private func startNewGame() {
+        guard storeManager.canStartNewGame else {
+            storeManager.presentPaywall(afterPurchase: { router.push(.gamePicker) })
+            return
+        }
+        router.push(.gamePicker)
     }
 
     @ViewBuilder
@@ -153,11 +162,11 @@ struct HomeView: View {
         if storeManager.shouldShowFreeGamesSignal {
             FreeGamesNote(
                 remainingFreeGames: storeManager.remainingFreeGames,
-                onUnlock: { showPaywall = true }
+                onUnlock: { storeManager.presentPaywall() }
             )
             .staggeredEntrance(visible: sectionsVisible, index: 3)
-        } else if !storeManager.isUnlocked {
-            PipCountUpgradeEntry(onUpgrade: { showPaywall = true })
+        } else if !storeManager.isPro {
+            PipCountUpgradeEntry(onUpgrade: { storeManager.presentPaywall() })
                 .staggeredEntrance(visible: sectionsVisible, index: 3)
         }
     }
@@ -315,21 +324,11 @@ private struct PipCountUpgradeEntry: View {
     let onUpgrade: () -> Void
 
     var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Text("25 free games included")
-                .font(AppFonts.label)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .accessibilityIdentifier("home_upgrade_entry")
-
-            Spacer(minLength: AppTheme.spacingSmall)
-
-            Button("upgrade to pipcount pro", action: onUpgrade)
-                .font(AppFonts.label.weight(.bold))
-                .foregroundStyle(ClubhouseTheme.brass)
-                .frame(minHeight: 44)
-                .accessibilityLabel("Upgrade to PipCount Pro")
-                .accessibilityIdentifier("home_upgrade_button")
-        }
+        Button("PipCount Pro", action: onUpgrade)
+            .font(AppFonts.label.weight(.bold))
+            .foregroundStyle(ClubhouseTheme.brass)
+            .frame(minHeight: 44)
+            .accessibilityIdentifier("home_upgrade_button")
     }
 }
 
@@ -844,6 +843,7 @@ private enum HomeTool: String, CaseIterable, Identifiable {
 private struct HomeToolSheet: View {
     let tool: HomeTool
     let activeGame: GameSession?
+    let onStartNewGame: () -> Void
 
     @Environment(\.pipCountUsesIsland) private var usesIsland
     @Environment(\.dismiss) private var dismiss
@@ -880,6 +880,7 @@ private struct HomeToolSheet: View {
                 ToolSheetContent(
                     tool: tool,
                     activeGame: activeGame,
+                    onStartNewGame: onStartNewGame,
                     dieRoll: $dieRoll,
                     selectedStarter: $selectedStarter
                 )
@@ -911,6 +912,7 @@ private struct HomeToolSheet: View {
 private struct ToolSheetContent: View {
     let tool: HomeTool
     let activeGame: GameSession?
+    let onStartNewGame: () -> Void
     @Binding var dieRoll: Int
     @Binding var selectedStarter: Player?
     @Environment(NavigationRouter.self) private var router
@@ -921,11 +923,12 @@ private struct ToolSheetContent: View {
         switch tool {
         case .timer, .undo:
             AppActionButton(role: .primary(ClubhouseTheme.blue)) {
-                dismiss()
                 if let activeGame {
+                    dismiss()
                     router.push(.scoring(activeGame.persistentModelID))
                 } else {
-                    router.push(.gamePicker)
+                    onStartNewGame()
+                    dismiss()
                 }
             } label: {
                 Label(activeGame == nil ? "start new game" : "resume game", systemImage: "play.fill")

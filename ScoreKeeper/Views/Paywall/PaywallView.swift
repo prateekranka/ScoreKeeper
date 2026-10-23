@@ -1,485 +1,194 @@
 import SwiftUI
 
 struct PaywallView: View {
+    let route: PaywallRoute
     @Environment(StoreManager.self) private var storeManager
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @State private var selectedPlan: ProProduct = .yearly
 
-    var onUnlocked: (() -> Void)?
-
-    @State private var isCompleting = false
-    @State private var contentVisible = false
-    @State private var isExiting = false
-    @State private var exitTask: Task<Void, Never>?
+    private var plan: ProProduct { route == .gift ? .gift : selectedPlan }
 
     var body: some View {
         VStack(spacing: 0) {
-            sheetHeader
-                .pipCountPageContent()
+            HStack {
+                Spacer()
+                Button {
+                    storeManager.closePaywall()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.headline)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .frame(width: 48, height: 48)
+                        .contentShape(Rectangle())
+                }
+                .accessibilityLabel("Close")
+                .accessibilityIdentifier("paywall_close_button")
+            }
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
 
-            GeometryReader { proxy in
-                ScrollView {
-                    if shouldUseTabletLayout(width: proxy.size.width) {
-                        tabletContent
+            ScrollView {
+                VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
+                    if route == .gift {
+                        Image(systemName: "gift")
+                            .font(.largeTitle)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .accessibilityHidden(true)
+                    }
+                    Text(route == .gift ? "50% off" : "PipCount Pro")
+                        .font(AppFonts.hero)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("paywall_title")
+
+                    if route == .main {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                            benefit("Unlimited games", symbol: "infinity")
+                            benefit("All three formats", symbol: "square.grid.2x2")
+                            benefit("Stats & history", symbol: "chart.bar")
+                        }
+                        planButton(.yearly, title: "Yearly", identifier: "paywall_plan_yearly")
+                        planButton(.lifetime, title: "Lifetime", identifier: "paywall_plan_lifetime")
                     } else {
-                        phoneContent
+                        Text("PipCount Pro · \(priceText(for: .gift))")
+                            .font(AppFonts.title)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                    }
+
+                    if case .unavailable(let message) = storeManager.productState {
+                        Text(message)
+                            .font(.subheadline)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                    }
+                    if storeManager.products[plan] == nil && storeManager.productState != .loading {
+                        Button("Retry") {
+                            Task { await storeManager.loadProducts(forceRetry: true) }
+                        }
+                        .font(.subheadline.weight(.semibold))
+                        .frame(minWidth: 44, minHeight: 44)
+                        .accessibilityIdentifier("paywall_retry_button")
+                    }
+                    if case .failed(let message) = storeManager.purchaseState {
+                        Text(message)
+                            .font(.subheadline)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .accessibilityIdentifier("paywall_purchase_status")
                     }
                 }
-                .scrollIndicators(.hidden)
-            }
-
-            purchaseFooter
+                .padding(AppTheme.spacingMedium)
                 .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
+            }
+            .accessibilityIdentifier("paywall_content_scroll")
+
+            VStack(spacing: AppTheme.spacingSmall) {
+                AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+                    Task { await storeManager.purchase(plan) }
+                } label: {
+                    Text(storeManager.isBusy ? "Please wait" : primaryTitle)
+                }
+                .disabled(!storeManager.canPurchase(plan))
+                .accessibilityIdentifier("paywall_primary_button")
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                        if let legalText {
+                            Text(legalText)
+                                .font(.subheadline)
+                                .foregroundStyle(ClubhouseTheme.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .accessibilityIdentifier("paywall_legal_text")
+                        }
+                        legalLinks
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(height: dynamicTypeSize.isAccessibilitySize ? 180 : 110)
+                .accessibilityIdentifier("paywall_legal_scroll")
+            }
+            .padding(AppTheme.spacingMedium)
+            .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
         }
         .appBackground()
-        .opacity(isExiting ? 0 : 1)
-        .scaleEffect(isExiting && !reduceMotion ? 0.985 : 1)
-        .offset(y: isExiting && !reduceMotion ? 10 : 0)
-        .animation(reduceMotion ? AppMotion.fade : AppMotion.artExit, value: isExiting)
-        .sensoryFeedback(.success, trigger: storeManager.isUnlocked)
-        .onAppear {
-            storeManager.paywallPresentedThisSession = true
-            contentVisible = true
-            Task { await storeManager.loadProduct() }
-        }
-        .onDisappear {
-            exitTask?.cancel()
-        }
-        .onChange(of: storeManager.isUnlocked) { _, isUnlocked in
-            if isUnlocked {
-                completeUnlockFlow()
-            }
-        }
+        .tint(ClubhouseTheme.ink)
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier(route == .main ? "paywall_main" : "paywall_gift")
+        .interactiveDismissDisabled()
+        .task { await storeManager.loadProducts() }
     }
 
-    private var phoneContent: some View {
-        VStack(spacing: AppTheme.spacingMedium) {
-            paywallHero
-                .staggeredEntrance(visible: contentVisible, index: 0)
-
-            benefitsPanel
-                .staggeredEntrance(visible: contentVisible, index: 1)
-
-            unlockSummary
-                .staggeredEntrance(visible: contentVisible, index: 2)
-        }
-        .padding(.horizontal, AppTheme.spacingMedium)
-        .padding(.bottom, AppTheme.spacingLarge)
-        .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
-    }
-
-    private var tabletContent: some View {
-        HStack(alignment: .top, spacing: AppTheme.spacingXLarge) {
-            VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
-                paywallHero
-                    .staggeredEntrance(visible: contentVisible, index: 0)
-
-                unlockSummary
-                    .staggeredEntrance(visible: contentVisible, index: 2)
-            }
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-
-            benefitsPanel
-                .frame(maxWidth: 460, alignment: .top)
-                .padding(AppTheme.spacingMedium)
-                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-                .staggeredEntrance(visible: contentVisible, index: 1)
-        }
-        .padding(.horizontal, AppTheme.spacingXLarge)
-        .padding(.top, AppTheme.spacingSmall)
-        .padding(.bottom, AppTheme.spacingXLarge)
-        .pipCountPageContent(maxWidth: 1_100)
-    }
-
-    private var sheetHeader: some View {
-        HStack(spacing: 6) {
-            Text("pipcount")
-                .font(AppFonts.title)
-                .foregroundStyle(ClubhouseTheme.ink)
-
-            Text("pro")
-                .font(AppFonts.headline)
-                .foregroundStyle(ClubhouseTheme.red)
-                .accessibilityIdentifier("paywall_title")
-
-            Spacer()
-
-            closeButton
-        }
-        .padding(.horizontal, AppTheme.spacingMedium)
-        .padding(.vertical, AppTheme.spacingSmall)
-    }
-
-    private var paywallHero: some View {
-        Group {
-            if shouldStackHero {
-                VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                    heroCopy
-
-                    PipCountGeometricArtwork(scene: .paywall)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: dynamicTypeSize.isAccessibilitySize ? 230 : 300)
-                }
-            } else {
-                HStack(alignment: .center, spacing: AppTheme.spacingLarge) {
-                    heroCopy
-                        .frame(maxWidth: 420, alignment: .leading)
-
-                    PipCountGeometricArtwork(scene: .paywall)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: horizontalSizeClass == .regular ? 380 : 230)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var heroCopy: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("unlock\nunlimited\ngame night")
-                .font(AppFonts.hero)
-                .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(3)
-                .minimumScaleFactor(0.82)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Rectangle()
-                .fill(ClubhouseTheme.blue)
-                .frame(width: 76, height: 4)
-
-            VStack(alignment: .leading, spacing: 0) {
-                Text("more games.\nmore moments")
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-
-                Text("yours forever")
-                    .foregroundStyle(ClubhouseTheme.red)
-            }
+    private func benefit(_ title: String, symbol: String) -> some View {
+        Label(title, systemImage: symbol)
             .font(AppFonts.body)
-        }
+            .foregroundStyle(ClubhouseTheme.ink)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
-    private var unlockSummary: some View {
-        Group {
-            if dynamicTypeSize.isAccessibilitySize {
-                VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                    priceCopy
-                    decorativeUnlimitedMark
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                }
-            } else {
-                HStack(spacing: AppTheme.spacingMedium) {
-                    priceCopy
-
-                    Rectangle()
-                        .fill(ClubhouseTheme.ruleStrong)
-                        .frame(width: 1, height: 72)
-
-                    decorativeUnlimitedMark
-                }
-            }
-        }
-        .padding(AppTheme.spacingMedium)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-    }
-
-    private var priceCopy: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text("one-time purchase")
-                .font(AppFonts.headline)
-                .foregroundStyle(ClubhouseTheme.ink)
-
-            Text(storeManager.displayPrice)
-                .font(AppFonts.scoreDisplay)
-                .monospacedDigit()
-                .foregroundStyle(ClubhouseTheme.ink)
-                .accessibilityLabel("\(storeManager.displayPrice), one-time purchase")
-
-            Text("no subscription. no recurring fee")
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var decorativeUnlimitedMark: some View {
-        ZStack {
-            Circle()
-                .trim(from: 0.25, to: 0.75)
-                .fill(ClubhouseTheme.blue)
-                .frame(width: 74, height: 74)
-                .rotationEffect(.degrees(90))
-
-            Circle()
-                .fill(ClubhouseTheme.yellow)
-                .frame(width: 40, height: 40)
-                .offset(x: 34, y: 20)
-
-            Rectangle()
-                .fill(ClubhouseTheme.green)
-                .frame(width: 22, height: 22)
-                .rotationEffect(.degrees(45))
-                .offset(x: 38, y: -25)
-        }
-        .frame(width: 110, height: 88)
-        .accessibilityHidden(true)
-    }
-
-    private var benefitsPanel: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            benefitRow(
-                colorIndex: 0,
-                title: "25 games free",
-                detail: "try every part of pipcount before you upgrade"
-            )
-
-            divider
-
-            benefitRow(
-                colorIndex: 1,
-                title: "then \(storeManager.displayPrice) once",
-                detail: "a single purchase unlocks the full app"
-            )
-
-            divider
-
-            benefitRow(
-                colorIndex: 2,
-                title: "unlimited games forever",
-                detail: "all current and future game formats"
-            )
-
-            divider
-
-            benefitRow(
-                colorIndex: 3,
-                title: "no subscription",
-                detail: "no monthly fees. ever"
-            )
-        }
-        .padding(.horizontal, 2)
-    }
-
-    private var divider: some View {
-        Rectangle()
-            .fill(ClubhouseTheme.rule)
-            .frame(height: 1)
-            .padding(.leading, 54)
-    }
-
-    private var purchaseFooter: some View {
-        glassGroup(spacing: AppTheme.spacingSmall) {
-            VStack(spacing: AppTheme.spacingSmall) {
-                statusText
-
-                AppActionButton(role: .primary(ClubhouseTheme.felt)) {
-                    Task {
-                        if await storeManager.purchase() {
-                            completeUnlockFlow()
-                        }
-                    }
-                } label: {
-                    purchaseButtonLabel
-                }
-                .accessibilityIdentifier("paywall_unlock_button")
-                .disabled(isPurchaseButtonDisabled)
-
-                Button("restore purchase") {
-                    Task {
-                        if await storeManager.restore() {
-                            completeUnlockFlow()
-                        }
-                    }
-                }
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .frame(minHeight: 44)
-                .accessibilityIdentifier("paywall_restore_button")
-                .disabled(isRestoreButtonDisabled)
-
-                Label("secure one-time purchase. your progress is saved", systemImage: "lock")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .padding(AppTheme.spacingSmall)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusLarge)
-        }
-        .padding(.horizontal, AppTheme.spacingMedium)
-        .padding(.bottom, AppTheme.spacingSmall)
-    }
-
-    private var closeButton: some View {
+    private func planButton(_ option: ProProduct, title: String, identifier: String) -> some View {
         Button {
-            dismissWithAnimation()
+            selectedPlan = option
         } label: {
-            Image(systemName: "xmark")
-                .font(.body.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.ink)
-                .frame(width: 44, height: 44)
-                .appGlass(cornerRadius: 22, isInteractive: true)
-        }
-        .buttonStyle(PressableButtonStyle())
-        .accessibilityLabel("Close")
-        .accessibilityIdentifier("paywall_close_button")
-    }
-
-    @ViewBuilder
-    private var statusText: some View {
-        switch storeManager.productState {
-        case .unavailable(let message):
-            VStack(spacing: AppTheme.spacingSmall) {
-                Text(message)
-                    .statusStyle(color: ClubhouseTheme.lacquer)
-
-                Button("retry loading purchase details") {
-                    Task { await storeManager.retryProductLoad() }
-                }
-                .font(AppFonts.caption.weight(.semibold))
-                .foregroundStyle(ClubhouseTheme.ink)
-                .frame(minHeight: 44)
-                .accessibilityIdentifier("paywall_retry_button")
-            }
-
-        case .notLoaded, .loading, .loaded:
-            switch storeManager.purchaseState {
-            case .idle:
-                EmptyView()
-            case .loading:
-                Text("loading purchase details…")
-                    .statusStyle()
-            case .purchasing:
-                Text("unlocking pipcount pro…")
-                    .statusStyle()
-            case .restoring:
-                Text("checking past purchases…")
-                    .statusStyle()
-            case .success:
-                Text("unlocked. starting your game…")
-                    .statusStyle(color: ClubhouseTheme.felt)
-            case .failed(let message):
-                Text(message)
-                    .statusStyle(color: ClubhouseTheme.lacquer)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var purchaseButtonLabel: some View {
-        switch storeManager.productState {
-        case .unavailable:
-            Label("unlock unavailable", systemImage: "exclamationmark.triangle")
-
-        case .notLoaded, .loading, .loaded:
-            switch storeManager.purchaseState {
-            case .loading, .purchasing, .restoring:
-                HStack(spacing: AppTheme.spacingSmall) {
-                    ProgressView()
-                        .tint(ClubhouseTheme.onFelt)
-                    Text("please wait")
-                }
-            case .success:
-                Label("pro unlocked", systemImage: "checkmark.seal.fill")
-            case .idle, .failed:
-                if storeManager.product == nil {
-                    Label("unlock unavailable", systemImage: "exclamationmark.triangle")
-                } else {
-                    // Price stays on its own line, and the action wraps instead
-                    // of truncating, so the localized price is always visible
-                    // and the action stays readable at the largest
-                    // accessibility text sizes (PC17-006, dogfood pass 1).
-                    VStack(spacing: 2) {
-                        Label("unlock forever", systemImage: "arrow.right.circle.fill")
-                            .fixedSize(horizontal: false, vertical: true)
-                        Text(storeManager.displayPrice)
-                            .font(AppFonts.caption)
-                    }
-                }
-            }
-        }
-    }
-
-    private var isPurchaseButtonDisabled: Bool {
-        !storeManager.canPurchase || isCompleting
-    }
-
-    private var isRestoreButtonDisabled: Bool {
-        if isCompleting { return true }
-
-        switch storeManager.purchaseState {
-        case .purchasing, .restoring:
-            return true
-        case .loading, .idle, .success, .failed:
-            return false
-        }
-    }
-
-    private var shouldStackHero: Bool {
-        dynamicTypeSize.isAccessibilitySize || horizontalSizeClass != .regular
-    }
-
-    private func shouldUseTabletLayout(width: CGFloat) -> Bool {
-        width >= 820 && horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize
-    }
-
-    private func benefitRow(colorIndex: Int, title: String, detail: String) -> some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            BauhausPlayerShape(colorIndex: colorIndex, size: 46)
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                Label("\(title) · \(priceText(for: option))", systemImage: selectedPlan == option ? "checkmark.circle.fill" : "circle")
                     .font(AppFonts.headline)
-                    .foregroundStyle(ClubhouseTheme.ink)
-
-                Text(detail)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .fixedSize(horizontal: false, vertical: true)
+                if let period = storeManager.trialPeriodText(for: option) {
+                    Text("\(period) free")
+                        .font(.subheadline.weight(.semibold))
+                }
             }
-
-            Spacer(minLength: 0)
+            .foregroundStyle(ClubhouseTheme.ink)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
+            .padding(AppTheme.spacingMedium)
+            .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium))
+            .overlay {
+                RoundedRectangle(cornerRadius: AppTheme.cornerRadiusMedium)
+                    .strokeBorder(selectedPlan == option ? ClubhouseTheme.ink : ClubhouseTheme.ruleStrong, lineWidth: selectedPlan == option ? 2 : 1)
+            }
         }
-        .padding(.vertical, 12)
-        .accessibilityElement(children: .combine)
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(selectedPlan == option ? .isSelected : [])
+        .accessibilityIdentifier(identifier)
     }
 
-    private func completeUnlockFlow() {
-        guard storeManager.isUnlocked, !isCompleting else { return }
-
-        isCompleting = true
-        dismissWithAnimation {
-            onUnlocked?()
-        }
+    private func priceText(for plan: ProProduct) -> String {
+        guard let product = storeManager.products[plan] else { return "Price unavailable" }
+        return plan == .lifetime ? product.displayPrice : "\(product.displayPrice)/year"
     }
 
-    private func dismissWithAnimation(completion: (() -> Void)? = nil) {
-        guard !isExiting else { return }
-        exitTask?.cancel()
-
-        if reduceMotion {
-            dismiss()
-            completion?()
-            return
+    private var legalText: String? {
+        guard let product = storeManager.products[plan] else { return nil }
+        if plan == .lifetime { return "\(product.displayPrice) once. Lifetime access." }
+        if let period = storeManager.trialPeriodText(for: plan) {
+            return "\(period) free, then \(product.displayPrice)/year. Cancel anytime."
         }
-
-        isExiting = true
-        exitTask = Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(190))
-            guard !Task.isCancelled else { return }
-            dismiss()
-            completion?()
-        }
+        return "\(product.displayPrice)/year. Cancel anytime."
     }
-}
 
-private extension Text {
-    func statusStyle(color: Color = ClubhouseTheme.inkMuted) -> some View {
-        self
-            .font(AppFonts.caption)
-            .foregroundStyle(color)
-            .multilineTextAlignment(.center)
+    private var primaryTitle: String {
+        if plan == .lifetime { return "Buy Lifetime" }
+        return storeManager.trialPeriodText(for: plan) == nil ? "Subscribe" : "Start free trial"
+    }
+
+    private var legalLinks: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: AppTheme.spacingMedium) { linkControls }
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) { linkControls }
+        }
+        .font(.subheadline.weight(.semibold))
+        .foregroundStyle(ClubhouseTheme.ink)
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var linkControls: some View {
+        Button("Restore") { Task { await storeManager.restore() } }
+            .disabled(storeManager.isBusy)
+            .frame(minWidth: 44, minHeight: 44)
+            .accessibilityIdentifier("paywall_restore_button")
+        Link("Terms", destination: LegalSupportLinks.terms)
+            .frame(minWidth: 44, minHeight: 44)
+        Link("Privacy", destination: LegalSupportLinks.privacyPolicy)
+            .frame(minWidth: 44, minHeight: 44)
     }
 }

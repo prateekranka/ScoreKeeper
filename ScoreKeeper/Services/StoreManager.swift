@@ -17,297 +17,372 @@ struct LiveStoreProductLoader: StoreProductLoading {
 @MainActor
 @Observable
 final class StoreManager {
-    // This identifier matches the existing Non-Consumable PipCount Pro
-    // product in App Store Connect.
-    static let productID = "com.icequeen.scorekeeper.unlimited"
-    static let freeGameLimit = 25
+    static let freeGameLimit = GameAccessPolicy.freeGameLimit
 
     enum PurchaseState: Equatable {
-        case idle
-        case loading
-        case purchasing
-        case restoring
-        case success
+        case idle, loading, purchasing, restoring, success
         case failed(String)
     }
 
     enum ProductState: Equatable {
-        case notLoaded
-        case loading
-        case loaded
+        case notLoaded, loading, loaded
         case unavailable(String)
     }
 
-    var product: Product?
-    var productState: ProductState = .notLoaded
-    var purchaseState: PurchaseState = .idle
-    var isUnlocked: Bool {
-        didSet { defaults.set(isUnlocked, forKey: Keys.proUnlocked) }
-    }
+    private(set) var products: [ProProduct: Product] = [:]
+    private(set) var trialEligibleProducts: Set<ProProduct> = []
+    private(set) var productState: ProductState = .notLoaded
+    private(set) var purchaseState: PurchaseState = .idle
+    private(set) var entitlement: ProEntitlement
     private(set) var gamesStartedCount: Int
+    private(set) var paywallRoute: PaywallRoute?
+    private(set) var hasPreparedLaunch = false
     var paywallPresentedThisSession = false
 
-    var displayPrice: String {
-        product?.displayPrice ?? "price unavailable"
+    var isPro: Bool { currentEntitlement.isPro }
+    var hasConverted: Bool { currentEntitlement.hasConverted }
+    private var currentEntitlement: ProEntitlement {
+        var snapshot = entitlement
+        snapshot.evaluatedAt = Date()
+        return snapshot
     }
-
-    var canPurchase: Bool {
-        guard product != nil else { return false }
-        guard case .loaded = productState else { return false }
-        switch purchaseState {
-        case .loading, .purchasing, .restoring:
-            return false
-        case .idle, .success, .failed:
-            return true
-        }
+    var isGrandfathered: Bool {
+        preferences.value(.accessPolicy) == 2 || (preferences.value(.accessPolicy) == 0 && gamesStartedCount > 0)
     }
-
-    var remainingFreeGames: Int {
-        max(0, Self.freeGameLimit - gamesStartedCount)
+    var accessPolicy: GameAccessPolicy {
+        GameAccessPolicy(isGrandfathered: isGrandfathered, gamesStartedCount: gamesStartedCount)
     }
-
-    var canStartNewGame: Bool {
-        isUnlocked || remainingFreeGames > 0
-    }
-
-    var shouldShowFreeGamesSignal: Bool {
-        !isUnlocked && gamesStartedCount >= Self.freeGameLimit - 3
-    }
+    var remainingFreeGames: Int { accessPolicy.remainingFreeGames }
+    var canStartNewGame: Bool { accessPolicy.canStartNewGame(isPro: isPro) }
+    var shouldShowFreeGamesSignal: Bool { accessPolicy.showsRemainingCount(isPro: isPro) }
+    var isBusy: Bool { purchaseState == .purchasing || purchaseState == .restoring }
 
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let allowanceStorage: any GameAllowanceStorage
     @ObservationIgnored private let productLoader: any StoreProductLoading
+    @ObservationIgnored let preferences: MonetizationPreferences
+    @ObservationIgnored let notificationScheduler: NotificationScheduler
+    @ObservationIgnored private let isInMemoryStore: Bool
+    @ObservationIgnored private let launchArguments: [String]
     @ObservationIgnored private var transactionUpdatesTask: Task<Void, Never>?
+    @ObservationIgnored private var expirationTask: Task<Void, Never>?
+    @ObservationIgnored private var afterPurchase: (() -> Void)?
 
     init(
-        defaults: UserDefaults = .standard,
+        defaults: UserDefaults? = nil,
         allowanceStorage: (any GameAllowanceStorage)? = nil,
         productLoader: (any StoreProductLoading)? = nil,
-        startStoreKitTasks: Bool = true
+        preferences: MonetizationPreferences? = nil,
+        notificationCenter: (any LocalNotificationCenter)? = nil,
+        startStoreKitTasks: Bool = true,
+        arguments: [String] = ProcessInfo.processInfo.arguments
     ) {
-        self.defaults = defaults
-        self.isUnlocked = defaults.bool(forKey: Keys.proUnlocked)
-        let isInMemoryStore = ProcessInfo.processInfo.arguments.contains("-in-memory-store")
-        let resolvedAllowanceStorage = allowanceStorage
-            ?? (isInMemoryStore ? InMemoryGameAllowanceStorage() : KeychainGameAllowanceStorage())
-        self.allowanceStorage = resolvedAllowanceStorage
+        let inMemory = arguments.contains("-in-memory-store")
+        let resolvedDefaults = defaults ?? (inMemory ? UserDefaults(suiteName: "PipCount.UI.\(UUID().uuidString)")! : .standard)
+        let resolvedPreferences = preferences ?? MonetizationPreferences(defaults: resolvedDefaults, ephemeral: inMemory || !startStoreKitTasks)
+        let resolvedAllowance = allowanceStorage ?? (inMemory ? InMemoryGameAllowanceStorage() : KeychainGameAllowanceStorage())
+        self.defaults = resolvedDefaults
+        self.preferences = resolvedPreferences
+        self.allowanceStorage = resolvedAllowance
         self.productLoader = productLoader ?? LiveStoreProductLoader()
-
-        if isInMemoryStore && allowanceStorage == nil {
-            // UI tests must never read/write the user's persistent Keychain or
-            // carry a prior device allowance into an in-memory launch.
-            self.gamesStartedCount = 0
-            resolvedAllowanceStorage.writeCount(0)
-            defaults.set(0, forKey: Keys.gamesStartedCount)
-        } else {
-            self.gamesStartedCount = GameAllowanceMigration.migrate(
-                defaults: defaults,
-                storage: resolvedAllowanceStorage,
-                defaultsKey: Keys.gamesStartedCount
-            )
-        }
-
+        self.isInMemoryStore = inMemory
+        self.launchArguments = arguments
+        self.notificationScheduler = NotificationScheduler(
+            center: notificationCenter ?? (inMemory || !startStoreKitTasks ? SilentLocalNotificationCenter() : SystemLocalNotificationCenter()),
+            preferences: resolvedPreferences
+        )
+        self.gamesStartedCount = GameAllowanceMigration.migrate(defaults: resolvedDefaults, storage: resolvedAllowance)
+        self.entitlement = ProEntitlement(legacyUnlock: resolvedDefaults.bool(forKey: "proUnlocked"))
         applyLaunchArguments()
-
-        guard startStoreKitTasks else { return }
-
-        if !isInMemoryStore {
+        if startStoreKitTasks && !inMemory {
             transactionUpdatesTask = Task { [weak self] in
-                await self?.listenForTransactionUpdates()
-            }
-        }
-
-        Task { [weak self] in
-            await self?.loadProduct()
-            if !isInMemoryStore {
-                await self?.refreshEntitlements()
+                for await result in Transaction.updates {
+                    guard !Task.isCancelled else { return }
+                    guard case .verified(let transaction) = result,
+                          ProProduct(rawValue: transaction.productID) != nil else { continue }
+                    await self?.refreshEntitlements()
+                    await transaction.finish()
+                }
             }
         }
     }
 
     deinit {
         transactionUpdatesTask?.cancel()
+        expirationTask?.cancel()
     }
 
-    func loadProduct(forceRetry: Bool = false) async {
-        guard product == nil, productState != .loading || forceRetry else { return }
-
-        product = nil
-        productState = .loading
-        purchaseState = .loading
-        do {
-            guard let loadedProduct = try await productLoader.product(withID: Self.productID) else {
-                productState = .unavailable("pipcount pro is unavailable right now")
-                purchaseState = .failed("the unlock is unavailable right now")
-                return
-            }
-
-            product = loadedProduct
-            productState = .loaded
-            purchaseState = .idle
-        } catch {
-            productState = .unavailable("unable to load pipcount pro right now")
-            purchaseState = .failed("unable to load the unlock right now")
+    func prepareForLaunch(hasSavedGames: Bool) async {
+        guard !hasPreparedLaunch else { return }
+        preferences.establishAccessPolicy(usedStarts: gamesStartedCount, hasSavedGames: hasSavedGames)
+        if !isInMemoryStore { await refreshEntitlements() }
+        hasPreparedLaunch = true
+        if isInMemoryStore && launchArguments.contains("-open-gift") && !isPro {
+            presentPaywall(.gift)
+        } else if !isPro && !isGrandfathered {
+            presentPaywall()
         }
+        await synchronizeServices()
     }
 
-    func retryProductLoad() async {
-        await loadProduct(forceRetry: true)
+    func foreground() async {
+        guard hasPreparedLaunch else { return }
+        if !isInMemoryStore { await refreshEntitlements() }
+        await synchronizeServices()
+    }
+
+    func loadProducts(forceRetry: Bool = false) async {
+        guard productState != .loading else { return }
+        if !forceRetry && productState == .loaded {
+            productState = .loading
+            trialEligibleProducts.removeAll()
+            await refreshTrialEligibility()
+            productState = .loaded
+            return
+        }
+        productState = .loading
+        var loaded: [ProProduct: Product] = [:]
+        var lookupFailed = false
+        for plan in ProProduct.allCases {
+            do {
+                if let product = try await productLoader.product(withID: plan.rawValue) {
+                    loaded[plan] = product
+                }
+            } catch {
+                lookupFailed = true
+            }
+        }
+        products = loaded
+        await refreshTrialEligibility()
+        productState = loaded.isEmpty
+            ? .unavailable(lookupFailed ? "Unable to load PipCount Pro right now." : "PipCount Pro is unavailable right now.")
+            : .loaded
+    }
+
+    func canPurchase(_ plan: ProProduct) -> Bool { productState == .loaded && products[plan] != nil && !isBusy }
+
+    func trialPeriodText(for plan: ProProduct) -> String? {
+        guard trialEligibleProducts.contains(plan), let offer = products[plan]?.subscription?.introductoryOffer,
+              offer.paymentMode == .freeTrial else { return nil }
+        let period = offer.period
+        let unit: String
+        switch period.unit {
+        case .day: unit = "day"
+        case .week: unit = "week"
+        case .month: unit = "month"
+        case .year: unit = "year"
+        @unknown default: return nil
+        }
+        let count = period.value * offer.periodCount
+        return "\(count) \(unit)\(count == 1 ? "" : "s")"
     }
 
     @discardableResult
-    func purchase() async -> Bool {
-        if product == nil {
-            await loadProduct()
-        }
-
-        guard let product else {
-            purchaseState = .failed("the unlock is not available right now")
+    func purchase(_ plan: ProProduct) async -> Bool {
+        guard !isBusy else { return false }
+        guard canPurchase(plan), let product = products[plan] else {
+            purchaseState = .failed("The purchase is not available right now.")
             return false
         }
-
-        guard case .loaded = productState else {
-            purchaseState = .failed("the unlock is not available right now")
-            return false
-        }
-
         purchaseState = .purchasing
-
         do {
-            let result = try await product.purchase()
-            switch result {
-            case .success(let verification):
-                guard let transaction = verifiedTransaction(from: verification) else {
-                    purchaseState = .failed("the purchase could not be verified")
+            switch try await product.purchase() {
+            case .success(let result):
+                guard case .verified(let transaction) = result else {
+                    purchaseState = .failed("The purchase could not be verified.")
                     return false
                 }
-
-                isUnlocked = true
-                purchaseState = .success
+                await refreshEntitlements()
                 await transaction.finish()
+                guard isPro else {
+                    purchaseState = .failed("The purchase could not be verified. Try Restore.")
+                    return false
+                }
+                purchaseState = .success
+                if entitlement.trialEnd != nil && !hasConverted {
+                    await notificationScheduler.askPermissionIfNeeded(entitlement: entitlement)
+                    await synchronizeServices()
+                }
+                paywallRoute = nil
                 return true
             case .pending:
-                purchaseState = .failed("the purchase is pending approval")
-                return false
+                purchaseState = .failed("The purchase is pending approval.")
             case .userCancelled:
                 purchaseState = .idle
-                return false
             @unknown default:
-                purchaseState = .failed("the purchase could not be completed")
-                return false
+                purchaseState = .failed("The purchase could not be completed.")
             }
         } catch {
             purchaseState = Self.purchaseState(for: error)
-            return false
         }
+        return false
     }
 
     @discardableResult
     func restore() async -> Bool {
+        guard !isBusy else { return false }
         purchaseState = .restoring
-
         do {
             try await AppStore.sync()
             await refreshEntitlements()
-            if isUnlocked {
+            if isPro {
                 purchaseState = .success
+                paywallRoute = nil
                 return true
-            } else {
-                purchaseState = .failed("no pipcount pro purchase was found")
-                return false
             }
+            purchaseState = .failed("No PipCount Pro purchase was found.")
         } catch {
-            purchaseState = .failed("restore could not be completed")
-            return false
+            purchaseState = .failed("Restore could not be completed.")
         }
+        return false
     }
 
     func refreshEntitlements() async {
-        var hasActiveEntitlement = false
-
+        var snapshot = ProEntitlement(legacyUnlock: defaults.bool(forKey: "proUnlocked"))
         for await result in Transaction.currentEntitlements {
-            guard let transaction = verifiedTransaction(from: result),
-                  transaction.productID == Self.productID else {
-                continue
-            }
-
-            if transaction.revocationDate == nil {
-                hasActiveEntitlement = true
+            guard case .verified(let transaction) = result,
+                  let plan = ProProduct(rawValue: transaction.productID),
+                  transaction.revocationDate == nil, !transaction.isUpgraded else { continue }
+            if plan == .lifetime {
+                snapshot.lifetime = true
+            } else if let expiration = transaction.expirationDate {
+                let status = await transaction.subscriptionStatus
+                var state: ProEntitlement.Subscription.State = .active
+                var validUntil = expiration
+                if let status {
+                    guard case .verified = status.transaction,
+                          case .verified(let renewal) = status.renewalInfo else { continue }
+                    switch status.state {
+                    case .subscribed: state = .active
+                    case .inGracePeriod:
+                        state = .gracePeriod
+                        validUntil = renewal.gracePeriodExpirationDate ?? expiration
+                    case .revoked: state = .revoked
+                    default: state = .expired
+                    }
+                }
+                let freeTrial = transaction.offer?.type == .introductory && transaction.offer?.paymentMode == .freeTrial
+                snapshot.subscriptions.append(.init(state: state, validUntil: validUntil, isFreeTrial: freeTrial, trialEnd: freeTrial ? expiration : nil))
             }
         }
-
-        applyEntitlementSnapshot(hasActiveEntitlement: hasActiveEntitlement)
+        snapshot.evaluatedAt = Date()
+        applyEntitlementSnapshot(snapshot)
+        await synchronizeServices()
     }
 
-    // StoreKit's verified entitlement cache is the source of truth, including
-    // when a refund or revocation removes a previously cached unlock.
-    func applyEntitlementSnapshot(hasActiveEntitlement: Bool) {
-        isUnlocked = hasActiveEntitlement
-    }
-
-    static func purchaseState(for error: Error) -> PurchaseState {
-        if case StoreKitError.userCancelled = error {
-            return .idle
+    func applyEntitlementSnapshot(_ snapshot: ProEntitlement) {
+        entitlement = snapshot
+        if snapshot.hasConverted { preferences.set(.converted) }
+        updateQuickAction()
+        if snapshot.isPro {
+            trialEligibleProducts.removeAll()
+            paywallRoute = nil
         }
-        return .failed("the purchase could not be completed")
+        expirationTask?.cancel()
+        if !isInMemoryStore, let next = snapshot.subscriptions.filter({ $0.isActive(at: snapshot.evaluatedAt) }).map(\.validUntil).min() {
+            expirationTask = Task { [weak self] in
+                do { try await Task.sleep(for: .seconds(max(1, next.timeIntervalSinceNow))) }
+                catch { return }
+                await self?.refreshEntitlements()
+            }
+        }
+    }
+
+    func presentPaywall(_ route: PaywallRoute = .main, afterPurchase: (() -> Void)? = nil) {
+        guard !isPro else { afterPurchase?(); return }
+        self.afterPurchase = afterPurchase
+        purchaseState = .idle
+        paywallPresentedThisSession = true
+        if route == .gift { preferences.set(.exitOfferSeen) }
+        paywallRoute = route
+    }
+
+    func closePaywall() {
+        guard let route = paywallRoute else { return }
+        preferences.set(.paywallDismissed)
+        updateQuickAction()
+        if route == .main && !isPro && preferences.claimExitOffer() {
+            purchaseState = .idle
+            paywallRoute = .gift
+        } else {
+            paywallRoute = nil
+            if route == .gift && !hasConverted {
+                preferences.setDateOnce(.exitOfferClosedAt, date: Date())
+                Task { [weak self] in
+                    guard let self else { return }
+                    if self.entitlement.trialEnd == nil {
+                        await self.notificationScheduler.askPermissionIfNeeded(entitlement: self.entitlement)
+                    }
+                    await self.synchronizeServices()
+                }
+            }
+        }
+    }
+
+    func dismissPaywallForNavigation() {
+        afterPurchase = nil
+        paywallRoute = nil
+    }
+
+    func paywallDidDismiss() {
+        let action = isPro ? afterPurchase : nil
+        afterPurchase = nil
+        action?()
     }
 
     func recordGameStarted() {
-        let persistedCount = max(0, allowanceStorage.readCount() ?? 0)
-        setGamesStartedCount(max(gamesStartedCount, persistedCount) + 1)
+        preferences.establishAccessPolicy(usedStarts: gamesStartedCount, hasSavedGames: false)
+        let next = max(gamesStartedCount, allowanceStorage.readCount() ?? 0) + 1
+        gamesStartedCount = next
+        allowanceStorage.writeCount(next)
+        defaults.set(next, forKey: "gamesStartedCount")
     }
 
-    private func listenForTransactionUpdates() async {
-        for await result in Transaction.updates {
-            guard let transaction = verifiedTransaction(from: result),
-                  transaction.productID == Self.productID else {
-                continue
+    static func purchaseState(for error: Error) -> PurchaseState {
+        if case StoreKitError.userCancelled = error { return .idle }
+        return .failed("The purchase could not be completed.")
+    }
+
+    private func refreshTrialEligibility() async {
+        var eligible: Set<ProProduct> = []
+        for (plan, product) in products {
+            if let subscription = product.subscription, await subscription.isEligibleForIntroOffer {
+                eligible.insert(plan)
             }
-
-            isUnlocked = transaction.revocationDate == nil
-            await transaction.finish()
         }
+        trialEligibleProducts = eligible
     }
 
-    private func verifiedTransaction(from result: VerificationResult<Transaction>) -> Transaction? {
-        switch result {
-        case .verified(let transaction):
-            return transaction
-        case .unverified:
-            return nil
-        }
+    private func synchronizeServices() async {
+        updateQuickAction()
+        await notificationScheduler.synchronize(entitlement: currentEntitlement)
+    }
+
+    private func updateQuickAction() {
+        guard !isInMemoryStore else { return }
+        AppEntryPoint.shared.updateQuickAction(isPro: isPro, hasDismissedPaywall: preferences.value(.paywallDismissed) > 0)
     }
 
     private func applyLaunchArguments() {
-        let arguments = ProcessInfo.processInfo.arguments
-        guard arguments.contains("-in-memory-store") else { return }
-
-        isUnlocked = false
-        setGamesStartedCount(0)
-
-        if arguments.contains("-free-games-exhausted") {
-            setGamesStartedCount(Self.freeGameLimit)
+        guard isInMemoryStore else { return }
+        if let index = launchArguments.firstIndex(of: "-grandfathered"), launchArguments.indices.contains(index + 1) {
+            gamesStartedCount = max(0, Int(launchArguments[index + 1]) ?? 0)
+            preferences.set(.accessPolicy, to: 2)
         }
-
-        if arguments.contains("-unlock-pro") {
-            isUnlocked = true
+        if launchArguments.contains("-free-games-exhausted") {
+            gamesStartedCount = Self.freeGameLimit
+            preferences.set(.accessPolicy, to: 2)
         }
-
+        if launchArguments.contains("-fresh-install") {
+            gamesStartedCount = 0
+        }
+        allowanceStorage.writeCount(gamesStartedCount)
+        if launchArguments.contains("-exit-offer-seen") { preferences.set(.exitOfferSeen) }
+        entitlement = ProEntitlement()
+        if launchArguments.contains("-trial-active") {
+            let end = Date().addingTimeInterval(3 * 24 * 60 * 60)
+            entitlement.subscriptions = [.init(state: .active, validUntil: end, isFreeTrial: true, trialEnd: end)]
+        }
+        if launchArguments.contains("-unlock-pro") { entitlement.legacyUnlock = true }
     }
-
-    private func setGamesStartedCount(_ proposedCount: Int) {
-        let currentCount = max(0, gamesStartedCount)
-        let storedCount = max(0, allowanceStorage.readCount() ?? 0)
-        let nextCount = max(max(currentCount, storedCount), proposedCount)
-
-        gamesStartedCount = nextCount
-        allowanceStorage.writeCount(nextCount)
-        // Keep the legacy mirror for compatibility with older app builds.
-        defaults.set(nextCount, forKey: Keys.gamesStartedCount)
-    }
-}
-
-private enum Keys {
-    static let proUnlocked = "proUnlocked"
-    static let gamesStartedCount = "gamesStartedCount"
 }

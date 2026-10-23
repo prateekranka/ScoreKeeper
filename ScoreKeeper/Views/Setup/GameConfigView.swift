@@ -14,7 +14,6 @@ struct GameConfigView: View {
     @State private var winCondition: WinCondition = .highestScore
     @State private var phase10SkipOnFail = false
     @State private var targetScoreText = ""
-    @State private var showPaywall = false
     @State private var saveError: String?
     @State private var contentVisible = false
     @State private var isStartingGame = false
@@ -76,10 +75,6 @@ struct GameConfigView: View {
         .onAppear {
             winCondition = gameType.defaultWinCondition
             contentVisible = true
-        }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(onUnlocked: startConfiguredGame)
-                .presentationDetents([.large])
         }
         .alert(
             "couldn’t save game",
@@ -324,7 +319,7 @@ struct GameConfigView: View {
         guard !isStartingGame else { return }
 
         guard storeManager.canStartNewGame else {
-            showPaywall = true
+            storeManager.presentPaywall(afterPurchase: startConfiguredGame)
             return
         }
 

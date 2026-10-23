@@ -111,6 +111,12 @@ enum AppDestination: Hashable {
 struct ContentView: View {
     @Bindable var router: NavigationRouter
 
+    @Environment(StoreManager.self) private var storeManager
+    @Environment(\.scenePhase) private var scenePhase
+    @Query private var savedGames: [GameSession]
+    @State private var entryPoint = AppEntryPoint.shared
+    @State private var showProManagement = false
+    @State private var pendingProManagement = false
     @Environment(ReviewAskManager.self) private var reviewAskManager
     @Environment(\.requestReview) private var requestReview
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -143,11 +149,33 @@ struct ContentView: View {
         .tint(ClubhouseTheme.blue)
         .environment(router)
         .environment(\.pipCountPageIsExiting, router.isPageExiting)
-        .fullScreenCover(isPresented: onboardingBinding) {
-            OnboardingView {
-                hasCompletedOnboarding = true
+        .fullScreenCover(isPresented: presentationBinding, onDismiss: presentationDidDismiss) {
+            Group {
+                if shouldShowOnboarding {
+                    OnboardingView { hasCompletedOnboarding = true }
+                } else if let route = storeManager.paywallRoute {
+                    PaywallView(route: route)
+                        .id(route)
+                }
             }
             .environment(\.pipCountPageIsExiting, false)
+        }
+        .manageSubscriptionsSheet(isPresented: $showProManagement)
+        .task {
+            await storeManager.prepareForLaunch(hasSavedGames: !savedGames.isEmpty)
+            handleEntryPoint()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                Task {
+                    await storeManager.foreground()
+                    handleEntryPoint()
+                }
+            }
+        }
+        .onChange(of: entryPoint.destination) { _, _ in handleEntryPoint() }
+        .onChange(of: hasCompletedOnboarding) { _, completed in
+            if completed { handleEntryPoint() }
         }
         .onChange(of: reviewAskManager.reviewRequestPending) { _, isPending in
             guard isPending else { return }
@@ -163,26 +191,52 @@ struct ContentView: View {
         }
     }
 
-    private var onboardingBinding: Binding<Bool> {
+    private var presentationBinding: Binding<Bool> {
         Binding(
-            get: { shouldShowOnboarding },
-            set: { isPresented in
-                if !isPresented {
-                    hasCompletedOnboarding = true
-                }
-            }
+            get: { shouldShowOnboarding || storeManager.paywallRoute != nil },
+            set: { _ in }
         )
+    }
+
+    private func presentationDidDismiss() {
+        storeManager.paywallDidDismiss()
+        if pendingProManagement {
+            pendingProManagement = false
+            showProManagement = true
+        }
+    }
+
+    private func handleEntryPoint() {
+        guard storeManager.hasPreparedLaunch, !shouldShowOnboarding,
+              let destination = entryPoint.destination else { return }
+        entryPoint.destination = nil
+        switch destination {
+        case .gift:
+            storeManager.presentPaywall(.gift)
+        case .home:
+            storeManager.dismissPaywallForNavigation()
+            router.goHome()
+        case .proManagement:
+            router.push(.legalSupport)
+            if storeManager.paywallRoute != nil {
+                pendingProManagement = true
+                storeManager.dismissPaywallForNavigation()
+            } else {
+                showProManagement = true
+            }
+        }
     }
 
     private var shouldShowOnboarding: Bool {
         let arguments = ProcessInfo.processInfo.arguments
-        let isOnboardingTest = arguments.contains("-reset-onboarding")
+        let isOnboardingTest = arguments.contains("-reset-onboarding") || arguments.contains("-fresh-install")
         return !hasCompletedOnboarding && (!arguments.contains("-in-memory-store") || isOnboardingTest)
     }
 
     private func resetOnboardingIfRequested() {
         guard !didApplyOnboardingReset,
-              ProcessInfo.processInfo.arguments.contains("-reset-onboarding") else {
+              ProcessInfo.processInfo.arguments.contains("-in-memory-store"),
+              (ProcessInfo.processInfo.arguments.contains("-reset-onboarding") || ProcessInfo.processInfo.arguments.contains("-fresh-install")) else {
             return
         }
 

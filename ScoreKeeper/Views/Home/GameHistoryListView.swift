@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct GameHistoryListView: View {
+    @Environment(StoreManager.self) private var storeManager
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -124,7 +125,11 @@ struct GameHistoryListView: View {
             }
 
             AppActionButton(role: .primary(ClubhouseTheme.blue)) {
-                router.push(.gamePicker)
+                if storeManager.canStartNewGame {
+                    router.push(.gamePicker)
+                } else {
+                    storeManager.presentPaywall(afterPurchase: { router.push(.gamePicker) })
+                }
             } label: {
                 Label("start a new game", systemImage: "plus")
             }

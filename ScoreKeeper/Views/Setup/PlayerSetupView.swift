@@ -15,7 +15,6 @@ struct PlayerSetupView: View {
     @State private var playerNames: [String] = ["", ""]
     @FocusState private var focusedIndex: Int?
     @State private var showRoster = false
-    @State private var showPaywall = false
     @State private var saveError: String?
     @State private var contentVisible = false
     @State private var isStartingGame = false
@@ -96,10 +95,6 @@ struct PlayerSetupView: View {
         }
         .sheet(isPresented: $showRoster) {
             PlayerRosterSheet { names in addRosterNames(names) }
-        }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(onUnlocked: startGame)
-                .presentationDetents([.large])
         }
         .alert(
             "couldn’t save game",
@@ -240,16 +235,16 @@ struct PlayerSetupView: View {
         // duplicate destination, or consume another free game (PC17-004).
         guard !isStartingGame else { return }
 
+        guard storeManager.canStartNewGame else {
+            storeManager.presentPaywall(afterPurchase: startGame)
+            return
+        }
+
         let names = playableNames
         if gameType == .generic || gameType == .phase10 {
             isStartingGame = true
             router.push(.gameConfig(gameType, names))
         } else {
-            guard storeManager.canStartNewGame else {
-                showPaywall = true
-                return
-            }
-
             isStartingGame = true
 
             guard let session = createSession(names: names) else {

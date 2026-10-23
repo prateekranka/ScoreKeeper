@@ -20,7 +20,7 @@ Players can resume active games, undo the last round, review results, compare pl
 
 Scoreboard handwriting uses Apple Vision on the device. Players confirm each suggested score before saving it. Typed entry remains available.
 
-The app includes 25 free game starts and an optional one-time Unlimited Games purchase through StoreKit.
+New installs show a paywall after onboarding. PipCount Pro offers a yearly subscription with a 3-day free trial for eligible Apple Accounts, plus Lifetime access. Existing Lifetime buyers stay unlocked. Existing users keep their remaining allowance of 25 game starts. See [monetization](docs/monetization.md).
 
 ## Navigation and accessibility
 

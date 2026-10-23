@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GamePickerView: View {
+    @Environment(StoreManager.self) private var storeManager
     @Environment(NavigationRouter.self) private var router
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -19,7 +20,13 @@ struct GamePickerView: View {
                     ForEach(Array(gameTypes.enumerated()), id: \.element.id) { index, gameType in
                         GameTypeTile(
                             gameType: gameType,
-                            action: { router.push(.playerSetup(gameType)) },
+                            action: {
+                                if storeManager.canStartNewGame {
+                                    router.push(.playerSetup(gameType))
+                                } else {
+                                    storeManager.presentPaywall(afterPurchase: { router.push(.playerSetup(gameType)) })
+                                }
+                            },
                             accessibilityID: "game_tile_\(gameType.rawValue)"
                         )
                         .staggeredEntrance(visible: contentVisible, index: index + 1)

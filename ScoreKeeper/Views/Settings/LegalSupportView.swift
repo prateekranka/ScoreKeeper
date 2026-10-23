@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 enum LegalSupportLinks {
+    static let terms = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
     static let privacyPolicy = URL(string: "https://privacy.contenthelper.in")!
     static let support = URL(string: "https://support.contenthelper.in")!
 }
@@ -22,7 +23,6 @@ struct LegalSupportView: View {
     private var completedGames: [GameSession]
 
     @State private var contentVisible = false
-    @State private var showPaywall = false
 
     var body: some View {
         ScrollView {
@@ -64,10 +64,6 @@ struct LegalSupportView: View {
         .appBackground()
         .navigationTitle("more")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showPaywall) {
-            PaywallView()
-                .presentationDetents([.large])
-        }
         .onAppear {
             if reduceMotion {
                 contentVisible = true
@@ -214,82 +210,27 @@ struct LegalSupportView: View {
     }
 
     private var proPanel: some View {
-        Group {
-            if storeManager.isUnlocked {
-                HStack(spacing: AppTheme.spacingMedium) {
-                    if !dynamicTypeSize.isAccessibilitySize {
-                        ZStack {
-                            Circle()
-                                .fill(ClubhouseTheme.yellow)
-                                .frame(width: 68, height: 68)
-
-                            BauhausStarburst(color: ClubhouseTheme.ink, size: 38)
-                        }
-                        .accessibilityHidden(true)
-                    }
-
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("pipcount pro")
-                            .font(AppFonts.title)
-                            .foregroundStyle(ClubhouseTheme.ink)
-
-                        Text("unlimited game nights are unlocked on this apple id")
-                            .font(AppFonts.body)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                    Spacer(minLength: 0)
+        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+            Button {
+                if storeManager.isPro {
+                    AppEntryPoint.shared.open(.proManagement)
+                } else {
+                    storeManager.presentPaywall()
                 }
-                .padding(AppTheme.spacingMedium)
-                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("pro_unlocked_status")
-            } else {
-                Button {
-                    showPaywall = true
-                } label: {
-                    HStack(spacing: AppTheme.spacingMedium) {
-                        if !dynamicTypeSize.isAccessibilitySize {
-                            PipCountGeometricArtwork(scene: .paywall, ambientMotion: false)
-                                .frame(width: 104, height: 96)
-                        }
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("pipcount pro")
-                                .font(AppFonts.title)
-                                .foregroundStyle(ClubhouseTheme.ink)
-
-                            Text("\(storeManager.remainingFreeGames.quantityText("free game")) remaining")
-                                .font(AppFonts.label)
-                                .foregroundStyle(ClubhouseTheme.inkMuted)
-                                .monospacedDigit()
-                                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-
-                            Text("unlock unlimited games forever")
-                                .font(AppFonts.label.weight(.bold))
-                                .foregroundStyle(ClubhouseTheme.blue)
-                                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                        Spacer(minLength: 0)
-
-                        if !dynamicTypeSize.isAccessibilitySize {
-                            Image(systemName: "chevron.right")
-                                .font(.body.weight(.bold))
-                                .foregroundStyle(ClubhouseTheme.inkMuted)
-                        }
-                    }
+            } label: {
+                Label("PipCount Pro", systemImage: storeManager.isPro ? "checkmark.seal" : "infinity")
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.ink)
+                    .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
                     .padding(AppTheme.spacingMedium)
                     .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
-                }
-                .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel("Upgrade to PipCount Pro")
-                .accessibilityIdentifier("more_upgrade_button")
+            }
+            .buttonStyle(PressableButtonStyle())
+            .accessibilityIdentifier(storeManager.isPro ? "pro_unlocked_status" : "more_upgrade_button")
+            if storeManager.shouldShowFreeGamesSignal {
+                Text("\(storeManager.remainingFreeGames.quantityText("free game")) left")
+                    .font(.subheadline)
+                    .foregroundStyle(ClubhouseTheme.ink)
             }
         }
     }

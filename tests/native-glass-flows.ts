@@ -87,7 +87,7 @@ export async function launchFreshJourney(
       ...extraArguments,
     ],
   });
-  await device.fold('closed');
+  if (!process.env.PIPCOUNT_NO_FOLD) await device.fold('closed');
   await device.setOrientation('portrait');
   await finishOnboarding(app, screen);
   await tapTab(screen, 'Home');

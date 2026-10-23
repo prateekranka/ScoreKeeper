@@ -4,6 +4,7 @@ import StoreKit
 
 @main
 struct ScoreKeeperApp: App {
+    @UIApplicationDelegateAdaptor(PipCountAppDelegate.self) private var appDelegate
     @State private var themeManager = ThemeManager()
     @State private var storeManager = StoreManager()
     @State private var reviewAskManager = ReviewAskManager()
