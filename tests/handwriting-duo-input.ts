@@ -1,4 +1,4 @@
-import { appendFile, readFile, readdir } from 'node:fs/promises';
+import { appendFile, readdir } from 'node:fs/promises';
 import { isAbsolute, join, resolve, sep } from 'node:path';
 import { expect, type Locator, type Screen } from 'e2e';
 
@@ -29,63 +29,76 @@ export async function screenshotPath(artifact: string): Promise<string> {
   return matches[0];
 }
 
-/**
- * Temporary, bounded compatibility for this Duo's open landscape-left pose.
- * The installed native runner rotates input with an 871-wide app window while
- * its inner panel capture is 951 wide. The final score assertion proves where
- * the one corrected input landed. Never apply this to another size or pose.
- */
 export async function tapOpenDuoControl(
   app: CaptureApp, screen: Screen, control: Locator, label: string,
   verifyUncertainResult?: () => Promise<void>,
 ): Promise<void> {
   await expect(control).toBeVisible();
   const artifact = await screenshotPath(await app.screenshot(`${label}-input-reference`));
-  const png = await readFile(artifact);
-  const size = { width: png.readUInt32BE(16), height: png.readUInt32BE(20) };
-  if (size.width !== 951 || size.height !== 669) {
-    throw new Error('The open Duo input correction requires the observed 951×669 panel');
-  }
   const bounds = await control.boundingBox();
-  if (!bounds) throw new Error('The open Duo control has no current bounds');
-  const point = { x: bounds.x + bounds.width / 2 - 80, y: bounds.y + bounds.height / 2 };
-  if (point.x < 0 || point.x >= 871 || point.y < 0 || point.y >= 669) {
-    throw new Error('The corrected input point is outside this app window');
+  if (!bounds || bounds.width <= 0 || bounds.height <= 0) {
+    throw new Error('The open Duo control has no current native frame');
   }
   const manifest = process.env.PIPCOUNT_JOURNEY_MANIFEST;
   if (manifest) await appendFile(manifest, `${JSON.stringify({
-    label: `${label}-input-reference`, state: 'open Duo control before the measured input correction',
-    artifact, inputGeometry: { bounds, point, panel: size, appWindowWidth: 871, correction: -80 },
+    label: `${label}-input-reference`, state: 'native locator input in the full-width window',
+    artifact, inputGeometry: { bounds, input: 'native locator' },
   })}\n`, 'utf8');
   try {
-    await screen.tapAt(point);
+    await control.tap();
   } catch (error) {
     if (!verifyUncertainResult || !(error instanceof Error) ||
         !error.message.includes('XCTest recorded a failure while executing tap')) throw error;
-    // XCTest can report a failure after the app accepted this action. Read a
-    // fresh state and require the caller's exact postcondition. Never retap.
     const after = await app.screenshot(`${label}-uncertain-result`);
-    try { await verifyUncertainResult(); }
-    catch (verificationError) {
-      throw new Error(`The uncertain native tap did not pass its postcondition: ${verificationError instanceof Error ? verificationError.message : String(verificationError)}`, { cause: error });
-    }
+    await verifyUncertainResult();
     if (manifest) await appendFile(manifest, `${JSON.stringify({
       label: `${label}-uncertain-result`, artifact: after,
-      state: 'native tap returned an error; the exact app postcondition passed without repeating the action',
+      state: 'native tap reported an error; the exact postcondition passed without a repeated action',
       actionResult: 'verified-after-uncertain-error',
     })}\n`, 'utf8');
   }
 }
 
-export async function tapOpenDuoTab(app: CaptureApp, screen: Screen, control: Locator, name: string): Promise<void> {
-  await expect(control).toBeVisible();
-  const artifact = await screenshotPath(await app.screenshot(`wide-native-tab-${name.toLowerCase()}-reference`));
-  const png = await readFile(artifact);
-  expect({width:png.readUInt32BE(16),height:png.readUInt32BE(20)}).toEqual({width:951,height:669});
-  const bounds = await control.boundingBox();
-  if (!bounds || bounds.x < 0 || bounds.y < 0 || bounds.x + bounds.width > 951 || bounds.y + bounds.height > 669 || bounds.width < 44 || bounds.height < 44) {
-    throw new Error('Native tab is outside the observed Duo panel or has less than a 44 point target');
+export async function assertIslandLayout(screen: Screen, scroll: Locator, expectedWidth?: number): Promise<void> {
+  const island = screen.getByTestId('navigation_island');
+  await expect(island).toHaveCount(1);
+  await expect(island).toBeVisible();
+  const bounds = await island.boundingBox();
+  const viewport = await scroll.boundingBox();
+  if (!bounds || !viewport) throw new Error('The island or content scroll view has no native frame');
+  const trailingGap = viewport.x + viewport.width - bounds.x - bounds.width;
+  const bottomGap = viewport.y + viewport.height - bounds.y - bounds.height;
+  if (trailingGap < -1 || trailingGap > 24 || bottomGap < -1 || bottomGap > 24 ||
+      bounds.x < viewport.x || bounds.y < viewport.y || Math.min(bounds.width, bounds.height) > 84) {
+    throw new Error(`The island is not compact and bottom-trailing: ${JSON.stringify({bounds, viewport})}`);
   }
-  await control.tap({position:{x:bounds.width/2,y:bounds.height/2}});
-  await expect(screen.getByRole('button',name,{exact:true,selected:true})).toBeVisible();
+  if (expectedWidth !== undefined) {
+    expect(viewport.width).toBeCloseTo(expectedWidth, 0);
+    expect(bounds.height).toBeGreaterThan(bounds.width);
+  }
+  console.log('Island and full-width content frames', {bounds, viewport, trailingGap, bottomGap});
+}
+
+export async function assertClearOfIsland(screen: Screen, control: Locator): Promise<void> {
+  await expect(control).toBeVisible();
+  const bounds = await control.boundingBox();
+  const island = await screen.getByTestId('navigation_island').boundingBox();
+  if (!bounds || !island) throw new Error('The content control or island has no native frame');
+  if (bounds.x < island.x + island.width && bounds.x + bounds.width > island.x &&
+      bounds.y < island.y + island.height && bounds.y + bounds.height > island.y) {
+    throw new Error('The content control is covered by the island');
+  }
+}
+
+export async function tapOpenDuoTab(app: CaptureApp, screen: Screen, control: Locator, name: string): Promise<void> {
+  const scroll = screen.getByTestId(/^(home|games|players|more)_content_scroll$/, {visible: true});
+  await assertIslandLayout(screen, scroll);
+  await expect(control).toBeVisible();
+  const bounds = await control.boundingBox();
+  if (!bounds || bounds.width < 44 || bounds.height < 44) {
+    throw new Error('The island control has less than a 44 point target');
+  }
+  await app.screenshot(`wide-island-${name.toLowerCase()}-reference`);
+  await control.tap();
+  await expect(screen.getByRole('button', name, { exact: true, selected: true })).toBeVisible();
 }

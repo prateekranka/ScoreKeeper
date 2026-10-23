@@ -19,6 +19,12 @@ export async function tapNativeControl(screen: Screen, locator: Locator): Promis
   });
 }
 
+export async function tapScoringTool(screen: Screen, title: string): Promise<void> {
+  const menu = screen.getByTestId('scoring_tools_button');
+  if (await menu.isVisible()) await tapNativeControl(screen, menu);
+  await tapNativeControl(screen, screen.getByRole('button', title, { exact: true }));
+}
+
 export async function tapTab(screen: Screen, name: string): Promise<void> {
   const identifier = {
     Home: 'tab_home',

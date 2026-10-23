@@ -1,6 +1,6 @@
 import {test} from '@e2e-dev/mobile';
 import {expect} from 'e2e';
-import {captureState,tapNativeControl,tapTab,scrollControlAboveTabDock} from './handwriting-helpers';
+import {captureState,tapNativeControl,tapScoringTool,tapTab,scrollControlAboveTabDock} from './handwriting-helpers';
 import {launchFreshJourney,startGameFromHome} from './native-glass-flows';
 
 test('capture utility sheets and the Pro offer',{timeout:360_000},async({app,screen,device})=>{
@@ -8,7 +8,7 @@ test('capture utility sheets and the Pro offer',{timeout:360_000},async({app,scr
  if(process.env.PIPCOUNT_CAPTURE_EXISTING) await device.openApp('com.icequeen.scorekeeper',{relaunch:false});
  else {await launchFreshJourney(app,screen,device,['-unlock-pro']); await startGameFromHome(app,screen,'phase10',['Maya','Leo'],'gallery-extras');}
  for(const tool of ['timer','dice','starter']){
-  await tapNativeControl(screen,screen.getByRole('button',tool,{exact:true}));
+  await tapScoringTool(screen,tool);
   const action=screen.getByRole('button',tool==='timer'?'start':tool==='dice'?'roll':'pick starter',{exact:true});
   await screen.scrollUntilVisible(action);
   await captureState(app,`gallery-tool-${tool}`,`${tool} scoring utility sheet`);

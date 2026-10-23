@@ -4,6 +4,7 @@ import SwiftUI
 struct GameDetailView: View {
     let sessionID: PersistentIdentifier
 
+    @Environment(\.pipCountUsesIsland) private var usesIsland
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var contentVisible = false
@@ -21,6 +22,10 @@ struct GameDetailView: View {
                     }
                 }
                 .scrollIndicators(.hidden)
+            }
+            .pipCountIsland {
+                PipCountBackButton()
+                shareButton(session: session, engine: engine)
             }
             .accessibilityIdentifier("game_detail_view")
             .appBackground()
@@ -41,6 +46,7 @@ struct GameDetailView: View {
     private func phoneLayout(session: GameSession, engine: GameEngine) -> some View {
         VStack(spacing: AppTheme.spacingMedium) {
             detailHero(session: session, engine: engine)
+                .pipCountRailHeader()
                 .staggeredEntrance(visible: contentVisible, index: 0)
 
             standingsPanel(session: session, engine: engine)
@@ -52,13 +58,16 @@ struct GameDetailView: View {
             RoundBreakdownSection(session: session)
                 .staggeredEntrance(visible: contentVisible, index: 3)
 
-            shareButton(session: session, engine: engine)
-                .staggeredEntrance(visible: contentVisible, index: 4)
+            if !usesIsland {
+                shareButton(session: session, engine: engine)
+                    .staggeredEntrance(visible: contentVisible, index: 4)
+            }
         }
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.top, AppTheme.spacingSmall)
         .padding(.bottom, AppTheme.spacingLarge)
         .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
+        .pipCountScrollContent()
     }
 
     private func tabletLayout(
@@ -68,6 +77,7 @@ struct GameDetailView: View {
     ) -> some View {
         VStack(spacing: AppTheme.spacingLarge) {
             detailHero(session: session, engine: engine)
+                .pipCountRailHeader()
                 .staggeredEntrance(visible: contentVisible, index: 0)
 
             HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
@@ -78,8 +88,10 @@ struct GameDetailView: View {
                     summaryPanel(session: session, engine: engine)
                         .staggeredEntrance(visible: contentVisible, index: 2)
 
-                    shareButton(session: session, engine: engine)
-                        .staggeredEntrance(visible: contentVisible, index: 4)
+                    if !usesIsland {
+                        shareButton(session: session, engine: engine)
+                            .staggeredEntrance(visible: contentVisible, index: 4)
+                    }
                 }
                 .frame(width: min(max(availableWidth * 0.34, 340), 430), alignment: .top)
 
@@ -93,6 +105,7 @@ struct GameDetailView: View {
         .padding(.bottom, AppTheme.spacingXLarge)
         .frame(maxWidth: min(availableWidth, 1_180), alignment: .top)
         .frame(maxWidth: .infinity)
+        .pipCountScrollContent()
     }
 
     private func detailHero(session: GameSession, engine: GameEngine) -> some View {
@@ -126,7 +139,6 @@ struct GameDetailView: View {
 
     private func detailHeroCopy(session: GameSession, engine: GameEngine) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            StampBadge(text: "final")
 
             Text(session.gameType.displayName)
                 .font(AppFonts.display)
@@ -154,12 +166,10 @@ struct GameDetailView: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
             VStack(alignment: .leading, spacing: 3) {
                 Text("final standings")
+                        .accessibilityHint(Text(engine.rankingExplanation(session: session)))
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text(engine.rankingExplanation(session: session))
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
             StandingsList(title: "scores", standings: session.standings(using: engine))
@@ -204,24 +214,29 @@ struct GameDetailView: View {
         }
     }
 
+    @ViewBuilder
     private var shareLabel: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: "square.and.arrow.up")
-                .font(.headline.weight(.semibold))
+        if usesIsland {
+            PipCountIslandLabel(title: "share final scorecard", systemImage: "square.and.arrow.up")
+        } else {
+            HStack(spacing: AppTheme.spacingSmall) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.headline.weight(.semibold))
 
-            Text("share final scorecard")
-                .font(AppFonts.headline)
+                Text("share final scorecard")
+                    .font(AppFonts.headline)
 
-            Spacer()
+                Spacer()
 
-            Image(systemName: "arrow.up.right")
-                .font(.caption.weight(.bold))
+                Image(systemName: "arrow.up.right")
+                    .font(.body.weight(.bold))
+            }
+            .foregroundStyle(ClubhouseTheme.ink)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 58)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
         }
-        .foregroundStyle(ClubhouseTheme.ink)
-        .padding(.horizontal, AppTheme.spacingMedium)
-        .frame(maxWidth: .infinity)
-        .frame(minHeight: 58)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
     }
 
     private func resultTitle(session: GameSession, engine: GameEngine) -> String {
@@ -259,13 +274,11 @@ struct GameDetailView: View {
             DetailMetric(
                 title: "rounds",
                 value: "\(session.sortedRounds.count)",
-                detail: "played",
                 tint: ClubhouseTheme.blue
             ),
             DetailMetric(
                 title: "players",
                 value: "\(session.players.count)",
-                detail: "at the table",
                 tint: ClubhouseTheme.red
             ),
             DetailMetric(
@@ -277,7 +290,6 @@ struct GameDetailView: View {
             DetailMetric(
                 title: "duration",
                 value: durationText(duration),
-                detail: "game time",
                 tint: ClubhouseTheme.ink
             )
         ]
@@ -323,9 +335,6 @@ private struct RoundBreakdownSection: View {
                             .font(AppFonts.title)
                             .foregroundStyle(ClubhouseTheme.ink)
 
-                        Text("every submitted score, in order")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
                     }
 
                     Spacer()
@@ -395,14 +404,14 @@ private struct RoundCard: View {
                         BauhausPlayerShape(colorIndex: player.colorIndex, size: 18)
 
                         Text(player.name)
-                            .font(AppFonts.caption.weight(.semibold))
+                            .font(AppFonts.label.weight(.semibold))
                             .foregroundStyle(ClubhouseTheme.ink)
                             .lineLimit(1)
 
                         Spacer()
 
                         Text(points > 0 ? "+\(points)" : "\(points)")
-                            .font(AppFonts.caption.weight(.bold))
+                            .font(AppFonts.label.weight(.bold))
                             .monospacedDigit()
                             .foregroundStyle(ClubhouseTheme.ink)
                             .contentTransition(.numericText(value: Double(points)))
@@ -438,7 +447,7 @@ private struct RoundCard: View {
 private struct DetailMetric: Identifiable {
     let title: String
     let value: String
-    let detail: String
+    var detail = ""
     let tint: Color
 
     var id: String { title }
@@ -459,17 +468,18 @@ private struct DetailMetricCard: View {
                 .monospacedDigit()
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
-                .minimumScaleFactor(0.58)
 
             Text(metric.title)
-                .font(AppFonts.caption.weight(.bold))
+                .font(AppFonts.label.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(2)
 
-            Text(metric.detail)
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .lineLimit(1)
+            if !metric.detail.isEmpty {
+                Text(metric.detail)
+                    .font(AppFonts.label)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .lineLimit(1)
+            }
         }
         .padding(AppTheme.spacingSmall)
         .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)

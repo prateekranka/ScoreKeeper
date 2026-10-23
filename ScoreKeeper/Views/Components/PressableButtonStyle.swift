@@ -8,7 +8,6 @@ struct PressableButtonStyle: ButtonStyle {
             .scaleEffect(configuration.isPressed && !reduceMotion ? 0.975 : 1)
             .offset(y: configuration.isPressed && !reduceMotion ? 1.5 : 0)
             .brightness(configuration.isPressed ? -0.025 : 0)
-            .opacity(configuration.isPressed ? 0.94 : 1)
             .animation(
                 reduceMotion ? AppMotion.fade : configuration.isPressed ? AppMotion.pressIn : AppMotion.pressOut,
                 value: configuration.isPressed

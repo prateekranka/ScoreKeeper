@@ -48,7 +48,7 @@ struct WhatsForDinnerScoringView: View {
 
     private var mealRevealSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            AppSectionHeader(title: "meal reveal", subtitle: "choose the player who called it, then write every hand with the score deck", systemImage: "person.crop.circle.badge.checkmark")
+            AppSectionHeader(title: "meal reveal", systemImage: "person.crop.circle.badge.checkmark")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: AppTheme.spacingSmall) {
@@ -66,16 +66,10 @@ struct WhatsForDinnerScoringView: View {
                                     showName: true
                                 )
 
-                                if callerID == player.id {
-                                    Label("caller", systemImage: "checkmark.circle.fill")
-                                        .font(AppFonts.caption)
-                                        .foregroundStyle(ClubhouseTheme.felt)
-                                        .transition(reduceMotion ? .opacity : .scale(scale: 0.96).combined(with: .opacity))
-                                } else {
-                                    Text("tap to pick")
-                                        .font(AppFonts.caption)
-                                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                                }
+                                Image(systemName: callerID == player.id ? "checkmark.circle.fill" : "circle")
+                                    .font(AppFonts.label)
+                                    .foregroundStyle(ClubhouseTheme.felt)
+                                    .accessibilityHidden(true)
                             }
                             .padding(AppTheme.spacingSmall)
                             .background(
@@ -85,6 +79,7 @@ struct WhatsForDinnerScoringView: View {
                             )
                         }
                         .buttonStyle(PressableButtonStyle())
+                        .accessibilityAddTraits(callerID == player.id ? .isSelected : [])
                         .accessibilityIdentifier("meal_reveal_\(player.name)")
                         .accessibilityLabel("\(player.name) called Meal Reveal")
                     }

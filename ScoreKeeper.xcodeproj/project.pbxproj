@@ -98,6 +98,7 @@
 		AA000000000000000100071D /* recording-91.png in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100061C /* recording-91.png */; };
 		AA000000000000000100071E /* recording-72.png in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100061D /* recording-72.png */; };
 		AA000000000000000100071F /* recording-27.png in Resources */ = {isa = PBXBuildFile; fileRef = AA000000000000000100061E /* recording-27.png */; };
+		AB1111111111111111111101 /* ThemeContrastTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1111111111111111111102 /* ThemeContrastTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -212,6 +213,7 @@
 		AA000000000000000100061C /* recording-91.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-91.png; sourceTree = "<group>"; };
 		AA000000000000000100061D /* recording-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-72.png; sourceTree = "<group>"; };
 		AA000000000000000100061E /* recording-27.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = recording-27.png; sourceTree = "<group>"; };
+		AB1111111111111111111102 /* ThemeContrastTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeContrastTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -431,6 +433,7 @@
 		AA000000000000000100035A /* ScoreKeeperTests */ = {
 			isa = PBXGroup;
 			children = (
+				AB1111111111111111111102 /* ThemeContrastTests.swift */,
 				AA0000000000000001000357 /* StoreManagerStoreKitTests.swift */,
 				AA0000000000000001000621 /* ScoreWritingCanvasTests.swift */,
 				AA000000000000000100040A /* TargetScoreEngineTests.swift */,
@@ -747,6 +750,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB1111111111111111111101 /* ThemeContrastTests.swift in Sources */,
 				AA0000000000000001000354 /* StoreManagerStoreKitTests.swift in Sources */,
 				AA0000000000000001000620 /* ScoreWritingCanvasTests.swift in Sources */,
 				AA000000000000000100040B /* TargetScoreEngineTests.swift in Sources */,

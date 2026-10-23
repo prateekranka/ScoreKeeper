@@ -168,7 +168,7 @@ private struct GenericTotalsList: View {
             layout {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("running totals").font(AppFonts.title).foregroundStyle(ClubhouseTheme.ink)
-                    Text("add this round with handwriting").font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted)
+.font(AppFonts.label).foregroundStyle(ClubhouseTheme.inkMuted)
                 }
                 if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                 Text(session.winCondition == .highestScore ? "highest wins" : "lowest wins")
@@ -185,7 +185,7 @@ private struct GenericTotalsList: View {
                             .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                             .fixedSize(horizontal: false, vertical: true)
                         Text(lastRoundText(lastEntry))
-                            .font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted).monospacedDigit()
+                            .font(AppFonts.label).foregroundStyle(ClubhouseTheme.inkMuted).monospacedDigit()
                     }
                     if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                     Text("\(player.totalScore(in: session))").font(AppFonts.scoreMedium).monospacedDigit().foregroundStyle(ClubhouseTheme.ink)

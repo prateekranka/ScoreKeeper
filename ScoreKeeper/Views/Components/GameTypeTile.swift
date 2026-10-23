@@ -57,12 +57,6 @@ struct GameTypeTile: View {
                 .minimumScaleFactor(0.78)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text(gameType.subtitle)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .multilineTextAlignment(.leading)
-                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
-                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

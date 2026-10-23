@@ -44,7 +44,8 @@ export async function returnToPlayersDock(screen: Screen): Promise<void> {
   const playersTab = screen.getByTestId('tab_players');
   for (let attempt = 0; attempt < 3; attempt += 1) {
     if (await playersTab.isVisible() || await screen.getByTestId('add_new_player_button').isVisible()) return;
-    const backButton = screen.getByTestId('BackButton');
+    const islandBack = screen.getByTestId('island_back_button');
+    const backButton = await islandBack.isVisible() ? islandBack : screen.getByTestId('BackButton');
     await expect(backButton).toBeVisible();
     await tapNativeControl(screen, backButton);
   }
@@ -272,6 +273,8 @@ export async function scoreManualRound(
 }
 
 export async function finishCurrentGame(app: ScreenshotApp, screen: Screen, winner: string, prefix: string): Promise<void> {
+  const tools = screen.getByTestId('scoring_tools_button');
+  if (await tools.isVisible()) await tapNativeControl(screen, tools);
   await tapNativeControl(screen, screen.getByTestId('end_game_button').last());
   await screen.getByRole('button', 'end game', { exact: true }).last().tap();
   await expect(screen.getByTestId('winner_text').first()).toContainText(winner.toLowerCase());

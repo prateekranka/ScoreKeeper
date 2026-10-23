@@ -22,6 +22,7 @@ struct GameHistoryListView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
                     hero(width: proxy.size.width)
+                        .pipCountRailHeader()
                         .historyEntrance(contentVisible, index: 0, reduceMotion: reduceMotion)
 
                     if completedSessions.isEmpty {
@@ -36,6 +37,7 @@ struct GameHistoryListView: View {
                 .padding(.vertical, AppTheme.spacingMedium)
                 .frame(maxWidth: 1180)
                 .frame(maxWidth: .infinity, alignment: .topLeading)
+                .pipCountScrollContent()
             }
             .scrollIndicators(.hidden)
         }
@@ -96,16 +98,10 @@ struct GameHistoryListView: View {
 
     private var heroCopy: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("every night\nbecomes history")
+            Text("game history")
                 .font(AppFonts.display)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(2)
-                .minimumScaleFactor(0.6)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Text("final scores, rematches, and the story of your table — saved automatically")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
                 .fixedSize(horizontal: false, vertical: true)
 
             Rectangle()
@@ -125,10 +121,6 @@ struct GameHistoryListView: View {
                     .font(AppFonts.hero)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text("complete a game and its recap will appear here")
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .multilineTextAlignment(.center)
             }
 
             AppActionButton(role: .primary(ClubhouseTheme.blue)) {
@@ -171,14 +163,14 @@ struct GameHistoryListView: View {
                             .lineLimit(2)
 
                         Text(completedDate(session))
-                            .font(AppFonts.caption)
+                            .font(AppFonts.label)
                             .foregroundStyle(ClubhouseTheme.inkMuted)
                     }
 
                     Spacer(minLength: 4)
 
                     Image(systemName: "chevron.right")
-                        .font(.caption.weight(.bold))
+                        .font(.body.weight(.bold))
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .padding(.top, 4)
                 }
@@ -195,7 +187,7 @@ struct GameHistoryListView: View {
                             .lineLimit(2)
 
                         Text("\(session.sortedRounds.count) \(session.sortedRounds.count == 1 ? "round" : "rounds") • \(session.players.count) players")
-                            .font(AppFonts.caption)
+                            .font(AppFonts.label)
                             .foregroundStyle(ClubhouseTheme.inkMuted)
                     }
 

@@ -1,7 +1,7 @@
 import {scrollMainContent} from './handwriting-layout-scroll';
 import {test} from '@e2e-dev/mobile';
 import {expect} from 'e2e';
-import {captureState,tapNativeControl,tapTab} from './handwriting-helpers';
+import {captureState,tapNativeControl,tapScoringTool,tapTab} from './handwriting-helpers';
 import {launchFreshJourney,startGameFromHome,openRoundDeck,scoreManualRound,finishCurrentGame,tapGameOverAction,addSavedPlayer,chooseHeadToHeadPlayers,scorePhaseRound,startDinnerRoundWithInk,returnToPlayersDock} from './native-glass-flows';
 
 test('capture every PipCount destination for the design comparison', {timeout:900_000}, async ({app,screen,device})=>{
@@ -51,7 +51,7 @@ test('capture every PipCount destination for the design comparison', {timeout:90
  await startGameFromHome(app,screen,'phase10',names,'gallery-ten-phases');
  await scorePhaseRound(app,screen,names,'gallery-phase-round',false);
  for(const tool of ['timer','dice','starter']) {
-  await tapNativeControl(screen,screen.getByRole('button',tool,{exact:true}));
+  await tapScoringTool(screen,tool);
   const action=screen.getByRole('button',tool==='timer'?'start':tool==='dice'?'roll':'pick starter',{exact:true});
   await screen.scrollUntilVisible(action);
   await captureState(app,`gallery-tool-${tool}`,`${tool} utility sheet with reachable controls`);

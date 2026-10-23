@@ -24,7 +24,9 @@ The app includes 25 free game starts and an optional one-time Unlimited Games pu
 
 ## Navigation and accessibility
 
-Home, Games, Players, and More use native tabs at every window width, including iPad and the open iPhone Duo. Each tab keeps its own navigation stack. Folding preserves the active game route and score-entry draft.
+Home, Games, Players, and More use native tabs on a folded iPhone. A regular horizontal size class or an asymmetric trailing safe area of at least 60 points with a leading inset of at most 1 point enables one bottom-trailing Liquid Glass island. This includes the Duo's default compact open window. The native tab bar is hidden there. Pushed screens replace the root buttons with back and screen actions. Each destination keeps the same navigation stack across width changes.
+
+The island keeps the existing accessibility identifiers. A filled symbol and selected trait identify the current destination. Its buttons stack vertically inside the Duo rail, with a horizontal capsule in regular windows that have no rail. Content extends under the trailing safe area; headers reserve the camera/status area. The island overlays the bottom-trailing corner, and measured padding at the end of scrolling content keeps the last item reachable. Paper fills the bottom safe area. See [the Twin Islands report](docs/twin-islands-task-a.md) for SDK findings and validation limits.
 
 The interface combines paper-style content with native glass controls. Text scales with Dynamic Type. Controls use solid backgrounds when Reduce Transparency is enabled, and motion responds to Reduce Motion.
 
@@ -73,6 +75,8 @@ Start with the native-tab check on a compact phone:
 export PIPCOUNT_DEVICE="<already-booted-simulator-udid>"
 export PIPCOUNT_APP="$PWD/.build/DerivedData/Build/Products/Debug-iphonesimulator/ScoreKeeper.app"
 export PIPCOUNT_SESSION="pipcount-tabs-$(date +%s)"
+export AGENT_DEVICE_STATE_DIR="$PWD/.build/device-state/$PIPCOUNT_SESSION"
+mkdir -p -m 700 "$AGENT_DEVICE_STATE_DIR"
 export PIPCOUNT_JOURNEY_MANIFEST="$PWD/.e2e-$PIPCOUNT_SESSION/manifest.jsonl"
 npx e2e run tests/native-glass-tabs.e2e.ts \
   --output ".e2e-$PIPCOUNT_SESSION" --reporter list,markdown --video=off
@@ -92,7 +96,7 @@ PIPCOUNT_PHONE=1 PIPCOUNT_A11Y_POSE=compact \
 
 This suite changes the real system settings, records their original values, and restores them after the pass. It runs both light and dark cases. Review the captures for readable controls, unclipped names, reachable actions, and usable scoring with the keyboard open.
 
-Use separate Duo runs for `inner-portrait` and `inner-landscape`, following the testing guide. The gallery, utilities, folding, and adversarial suites cover additional flows. A successful build alone does not confirm UI acceptance.
+Use separate Duo runs for the default compact open pose, `inner-portrait`, and `inner-landscape`, following the testing guide. The gallery, utilities, folding, and adversarial suites cover additional flows. With `-break-ui-data`, the fixture selector is inside More. A successful build alone does not confirm UI acceptance.
 
 ## Optional browser preview
 
@@ -114,7 +118,7 @@ Handwriting recognition and scorecard creation run on the device. Sharing uses t
 
 | Location | Purpose |
 | --- | --- |
-| `ScoreKeeper/App/` | App startup, native tabs, navigation, and debug fixtures. |
+| `ScoreKeeper/App/` | App startup, adaptive navigation, and debug fixtures. |
 | `ScoreKeeper/Models/` | SwiftData models and game configuration. |
 | `ScoreKeeper/Engines/` | Rules for the three game formats. |
 | `ScoreKeeper/Views/` | Setup, scoring, results, statistics, and settings screens. |

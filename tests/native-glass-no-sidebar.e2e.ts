@@ -3,28 +3,42 @@ import {test} from '@e2e-dev/mobile';
 import {expect} from 'e2e';
 import {captureState,tapNativeControl,tapTab,enterKeyboardText,visibleDeckPlayer} from './handwriting-helpers';
 import {scrollMainContent} from './handwriting-layout-scroll';
-import {tapOpenDuoTab,screenshotPath} from './handwriting-duo-input';
+import {tapOpenDuoTab,screenshotPath,assertIslandLayout,assertClearOfIsland} from './handwriting-duo-input';
 
 const bundle='com.icequeen.scorekeeper';
+const pose=process.env.PIPCOUNT_DUO_POSE ?? 'default';
+const openSize=pose==='default'?undefined:pose==='inner-portrait'?{width:669,height:951}:{width:951,height:669};
 const tabs=[['Home','tab_home','new_game_button'],['Games','tab_games','game_tile_generic'],['Players','tab_players','saved_player_maya'],['More','legal_support_button','theme_light_button']] as const;
 
-test('wide root destinations use native tabs without a persistent sidebar',{timeout:600000},async({app,screen,device})=>{
+test('wide roots use one bottom trailing island and folded roots use native tabs',{timeout:600000},async({app,screen,device})=>{
  try{
   await device.installApp();
   await device.openApp(bundle,{relaunch:true,launchArguments:['-in-memory-store','-unlock-pro','-force-light-theme','-break-ui-data']});
-  await device.fold('open');
+  if(pose!=='default') await device.fold('open');
   const initial=await captureState(app,'wide-initial-home','Demo data in the open Duo window');
-  const png=await readFile(await screenshotPath(initial));expect({width:png.readUInt32BE(16),height:png.readUInt32BE(20)}).toEqual({width:951,height:669});
+  const png=await readFile(await screenshotPath(initial));
+  if(openSize) expect({width:png.readUInt32BE(16),height:png.readUInt32BE(20)}).toEqual(openSize);
+  await expect(screen.getByTestId('break_ui_data_toggle')).toBeHidden();
+  if(pose==='default') await assertIslandLayout(screen,screen.getByTestId('home_content_scroll'),Number(process.env.PIPCOUNT_DUO_WINDOW_WIDTH ?? '466'));
   for(const [name,id,marker] of tabs){
+   await expect(screen.getByTestId('navigation_island')).toHaveCount(1);
+   await expect(screen.getByRole('tablist')).toBeHidden();
    await expect(screen.getByTestId(/^sidebar_/)).toBeHidden();
    await expect(screen.getByRole('button',/^(Show|Hide) Sidebar$/i)).toBeHidden();
    await tapOpenDuoTab(app,screen,screen.getByTestId(id),name);
    const content=screen.getByTestId(marker);await scrollMainContent(screen,device,content,'down',true);
    await expect(content).toBeVisible();
-   await captureState(app,`wide-root-${name.toLowerCase()}`,`${name}: same Demo fixture and 951 by 669 window; native tabs with full content width`);
+   const lastControl=name==='Home'?screen.getByRole('button','learn about undo',{exact:true})
+    :screen.getByTestId(name==='Games'?'game_tile_whatsForDinner':name==='Players'?'add_new_player_button':'support_link');
+   await scrollMainContent(screen,device,lastControl,'down',true,true);
+   await assertClearOfIsland(screen,lastControl);
+   await captureState(app,`wide-root-${name.toLowerCase()}`,`${name}: same Demo fixture and selected open pose; bottom trailing island with native tabs hidden`);
   }
-  await tapOpenDuoTab(app,screen,screen.getByTestId('tab_home'),'Home');await expect(screen.getByTestId('new_game_button')).toBeVisible();
+  await tapOpenDuoTab(app,screen,screen.getByTestId('tab_home'),'Home');
+  await scrollMainContent(screen,device,screen.getByTestId('new_game_button'),'up',true);
+  await expect(screen.getByTestId('new_game_button')).toBeVisible();
   await device.fold('closed');
+  await expect(screen.getByTestId('navigation_island')).toBeHidden();
   for(const [name,,marker] of tabs){
    await tapTab(screen,name);const content=screen.getByTestId(marker);await scrollMainContent(screen,device,content);
    await expect(content).toBeVisible();await captureState(app,`folded-root-${name.toLowerCase()}`,'Native tabs remain available after folding');
@@ -46,6 +60,12 @@ test('game route and manual score draft survive a Duo fold',{timeout:600000},asy
   await device.fold('open');await expect(screen.getByTestId('submit_round_button').last()).toBeVisible();
   await expect(screen.getByTestId('running_total_maya')).toHaveText('7');await expect(screen.getByTestId('running_total_leo')).toHaveText('9');
   await expect(screen.getByTestId(/^sidebar_/)).toBeHidden();
+  await expect(screen.getByTestId('navigation_island')).toHaveCount(1);
+  await expect(screen.getByTestId('tab_home')).toBeHidden();
+  await expect(screen.getByTestId('island_back_button')).toBeVisible();
+  await expect(screen.getByTestId('scoring_tools_button')).toBeVisible();
+  await expect(screen.getByTestId('undo_last_round_button')).toBeVisible();
+  await assertIslandLayout(screen,screen.getByTestId('scoring_content_scroll'));
   await captureState(app,'wide-active-game','The same game route and saved totals survive opening the Duo');
   await device.fold('closed');await expect(screen.getByTestId('submit_round_button').last()).toBeVisible();
   await tapNativeControl(screen,screen.getByTestId('submit_round_button').last());await expect(screen.getByTestId('round_entry_deck')).toBeVisible();
@@ -61,6 +81,15 @@ test('game route and manual score draft survive a Duo fold',{timeout:600000},asy
   await tapNativeControl(screen,screen.getByTestId('round_deck_cancel_button'));await expect(screen.getByTestId('round_entry_deck')).toBeHidden();
   await expect(screen.getByTestId('running_total_maya')).toHaveText('7');await expect(screen.getByTestId('running_total_leo')).toHaveText('9');
   await captureState(app,'fold-cancel-unchanged-totals','Cancel leaves the original saved round unchanged');
+  await device.fold('open');
+  await screen.getByTestId('scoring_tools_button').tap();
+  await screen.getByTestId('end_game_button').tap();
+  await screen.getByRole('button','end game',{exact:true}).last().tap();
+  await expect(screen.getByTestId('winner_text')).toBeVisible();
+  await assertIslandLayout(screen,screen.getByTestId('game_over_content_scroll'));
+  for(const id of ['home_button','play_again_button','share_game_recap_button']) await expect(screen.getByTestId(id)).toBeVisible();
+  await expect(screen.getByTestId('tab_home')).toBeHidden();
+  await captureState(app,'wide-game-over-island','Back, rematch and share replace root destinations in the trailing island');
  }finally{
   await device.fold('closed');await device.openApp(bundle,{relaunch:true,launchArguments:['-in-memory-store','-unlock-pro','-force-light-theme','-break-ui-data']});
  }

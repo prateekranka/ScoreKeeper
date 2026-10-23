@@ -21,26 +21,10 @@ struct ScoreKeeperApp: App {
                         .modelContainer(container)
                         #if DEBUG
                         .id(ObjectIdentifier(container))
-                        .overlay(alignment: .topTrailing) {
-                            if BreakUIFixture.isEnabled {
-                                Menu {
-                                    ForEach(BreakUIFixture.modes, id: \.self) { mode in
-                                        Button(mode == "worst" ? "Worst case" : mode.capitalized) {
-                                            containerResult = ScoreKeeperApp.makeModelContainer(fixtureMode: mode)
-                                        }
-                                        .accessibilityIdentifier("break_ui_data_\(mode)")
-                                    }
-                                } label: {
-                                    Text("Demo data / Worst case")
-                                        .font(.system(size: 11))
-                                        .padding(6)
-                                        .background(.regularMaterial, in: Capsule())
-                                }
-                                .accessibilityIdentifier("break_ui_data_toggle")
-                                .padding(.top, 54)
-                                .padding(.trailing, 8)
-                            }
-                        }
+                        .environment(\.pipCountDebugFixtures, BreakUIFixture.isEnabled ? PipCountDebugFixtures(
+                            modes: BreakUIFixture.modes,
+                            select: { mode in containerResult = ScoreKeeperApp.makeModelContainer(fixtureMode: mode) }
+                        ) : nil)
                         #endif
                 } else {
                     StartupRecoveryView(message: containerResult.message) {
@@ -135,8 +119,8 @@ private struct StartupRecoveryView: View {
 
                 if let message {
                     Text(message)
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.lacquer)
+                        .font(AppFonts.label)
+                        .foregroundStyle(ClubhouseTheme.red)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -150,7 +134,7 @@ private struct StartupRecoveryView: View {
                 .frame(maxWidth: 420)
 
                 Text("if this keeps happening, restart the app. your saved games stay on this device.")
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)

@@ -114,22 +114,32 @@ struct ContentView: View {
     @Environment(ReviewAskManager.self) private var reviewAskManager
     @Environment(\.requestReview) private var requestReview
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var didApplyOnboardingReset = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
-        TabView(selection: $router.selectedTab) {
-            ForEach(PipCountTab.allCases, id: \.self) { tab in
-                PipCountNavigationRoot(tab: tab, router: router)
-                    .background(NativeTabIdentifiers().frame(width: 0, height: 0))
-                    .tabItem {
-                        Label(tab.title.capitalized, systemImage: tab.systemImage)
-                            .accessibilityIdentifier(tab.accessibilityIdentifier)
-                    }
-                    .tag(tab)
+        GeometryReader { proxy in
+            let railInset = proxy.safeAreaInsets.trailing >= 60 && proxy.safeAreaInsets.leading <= 1
+                ? proxy.safeAreaInsets.trailing : 0
+            let usesIsland = horizontalSizeClass == .regular || railInset > 0
+            TabView(selection: $router.selectedTab) {
+                ForEach(PipCountTab.allCases, id: \.self) { tab in
+                    PipCountNavigationRoot(tab: tab, router: router)
+                        .background(NativeTabIdentifiers().frame(width: 0, height: 0))
+                        .tabItem {
+                            Label(tab.title, systemImage: tab.systemImage)
+                                .accessibilityIdentifier(tab.accessibilityIdentifier)
+                        }
+                        .tag(tab)
+                }
             }
+            .tabViewStyle(.tabBarOnly)
+            .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
+            .environment(\.pipCountUsesIsland, usesIsland)
+            .environment(\.pipCountRailInset, railInset)
         }
-        .tabViewStyle(.tabBarOnly)
+        .appBackground()
         .tint(ClubhouseTheme.blue)
         .environment(router)
         .environment(\.pipCountPageIsExiting, router.isPageExiting)
@@ -239,14 +249,45 @@ private struct NativeTabIdentifiers: UIViewControllerRepresentable {
 struct PipCountNavigationRoot: View {
     let tab: PipCountTab
     @Bindable var router: NavigationRouter
+    @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
 
     var body: some View {
         NavigationStack(path: router.pathBinding(for: tab)) {
             root
+                .pipCountIsland {
+                    ForEach(PipCountTab.allCases, id: \.self) { destination in
+                        PipCountIslandButton(
+                            title: destination.title,
+                            systemImage: router.selectedTab == destination ? selectedSymbol(for: destination) : destination.systemImage,
+                            identifier: destination.accessibilityIdentifier,
+                            isSelected: router.selectedTab == destination
+                        ) {
+                            router.selectedTab = destination
+                        }
+                    }
+                }
+                .toolbarVisibility(usesIsland ? .hidden : .automatic, for: .tabBar)
+                .toolbarVisibility(usesIsland || tab != .more ? .hidden : .automatic, for: .navigationBar)
                 .navigationDestination(for: AppDestination.self) { destination in
                     destinationView(destination)
-                        .toolbar(.hidden, for: .tabBar)
+                        .pipCountIsland(isPresented: !destination.hasIslandActions) {
+                            PipCountBackButton()
+                        }
+                        .toolbarVisibility(.hidden, for: .tabBar)
+                        .toolbarVisibility(usesIsland || destination.hidesNavigationBar ? .hidden : .automatic, for: .navigationBar)
                 }
+        }
+        .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
+        .appBackground()
+    }
+
+    private func selectedSymbol(for tab: PipCountTab) -> String {
+        switch tab {
+        case .home: "house.fill"
+        case .games: "square.grid.2x2.fill"
+        case .players: "person.2.fill"
+        case .more: "ellipsis.circle.fill"
         }
     }
 
@@ -275,6 +316,20 @@ struct PipCountNavigationRoot: View {
         case .headToHead: HeadToHeadView()
         case .playerStats(let playerName): PlayerStatsView(playerName: playerName)
         case .legalSupport: LegalSupportView()
+        }
+    }
+}
+
+private extension AppDestination {
+    var hidesNavigationBar: Bool {
+        if case .gameOver = self { return true }
+        return false
+    }
+
+    var hasIslandActions: Bool {
+        switch self {
+        case .scoring, .gameOver, .gameDetail, .playerSetup, .gameConfig: true
+        default: false
         }
     }
 }
@@ -392,13 +447,7 @@ private struct OnboardingPageView: View {
                 .foregroundStyle(ClubhouseTheme.ink)
                 .multilineTextAlignment(.leading)
                 .accessibilityIdentifier("onboarding_page_title")
-                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 0.78 : 1)
-
-            Text(page.message)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityHint(Text(page.accessibilityHint))
 
             Rectangle()
                 .fill(page.tint)
@@ -513,9 +562,7 @@ private struct OnboardingArtwork: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("final scores")
                             .columnHeaderStyle()
-                        Text("game night archive")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
+
                     }
 
                     Spacer()
@@ -545,10 +592,9 @@ private struct OnboardingGameCover: View {
                 .frame(height: 42)
 
             Text(gameType.displayName)
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.ink)
                 .lineLimit(1)
-                .minimumScaleFactor(0.62)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 82)
@@ -648,7 +694,7 @@ private struct OnboardingStatsLine: View {
         HStack(spacing: AppTheme.spacingSmall) {
             PlayerColorPip(colorIndex: 0, size: 12)
             Text("mina leads head-to-head")
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
             Spacer()
@@ -703,14 +749,11 @@ private enum OnboardingPage: CaseIterable, Identifiable {
         }
     }
 
-    var message: String {
+    var accessibilityHint: String {
         switch self {
-        case .scoreFast:
-            return "pipcount replaces the notes app, napkin, and 'who's winning?'"
-        case .setupFast:
-            return "pick a game, add your crew once, reuse them every night"
-        case .toolsAndHistory:
-            return "final scores, stats, and rematches — saved automatically"
+        case .scoreFast: "pipcount replaces the notes app, napkin, and 'who's winning?'"
+        case .setupFast: "pick a game, add your crew once, reuse them every night"
+        case .toolsAndHistory: "final scores, stats, and rematches — saved automatically"
         }
     }
 

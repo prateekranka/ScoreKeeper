@@ -36,6 +36,7 @@ struct HeadToHeadView: View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
                 comparisonHero
+                    .pipCountRailHeader()
                     .staggeredEntrance(visible: contentVisible, index: 0)
 
                 selectionPanel
@@ -48,6 +49,7 @@ struct HeadToHeadView: View {
             .padding(.top, AppTheme.spacingSmall)
             .padding(.bottom, AppTheme.spacingLarge)
             .pipCountPageContent(maxWidth: 1_080)
+            .pipCountScrollContent()
         }
         .appBackground()
         .navigationTitle("head to head")
@@ -99,11 +101,6 @@ struct HeadToHeadView: View {
                 .foregroundStyle(ClubhouseTheme.ink)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("see how two regulars have finished against each other")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .fixedSize(horizontal: false, vertical: true)
-
             Rectangle()
                 .fill(ClubhouseTheme.red)
                 .frame(width: 82, height: 4)
@@ -118,9 +115,6 @@ struct HeadToHeadView: View {
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text("pipcount compares completed games shared by both players")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
             let layout = horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize
@@ -189,8 +183,8 @@ struct HeadToHeadView: View {
                 .frame(width: 42, height: 42)
 
             Text("vs")
-                .font(AppFonts.caption.weight(.black))
-                .foregroundStyle(ClubhouseTheme.ink)
+                .font(AppFonts.label.weight(.black))
+                .foregroundStyle(ClubhouseTheme.onYellow)
         }
         .frame(minWidth: 48, minHeight: 48)
         .accessibilityHidden(true)
@@ -232,15 +226,6 @@ struct HeadToHeadView: View {
                 .font(AppFonts.title)
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            Text(
-                hasValidSelection
-                    ? "\(playerA) and \(playerB) do not have a completed matchup yet"
-                    : "their shared record will appear here, separated by game type"
-            )
-            .font(AppFonts.body)
-            .foregroundStyle(ClubhouseTheme.inkMuted)
-            .multilineTextAlignment(.center)
-            .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity)
         .padding(AppTheme.spacingLarge)
@@ -261,7 +246,7 @@ struct HeadToHeadView: View {
                         .lineLimit(1)
 
                     Text(record.gamesTogether.quantityText("game") + " together")
-                        .font(AppFonts.caption)
+                        .font(AppFonts.label)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
@@ -320,13 +305,12 @@ struct HeadToHeadView: View {
                 Text("\(wins)")
                     .font(AppFonts.scoreMedium)
                     .monospacedDigit()
-                    .foregroundStyle(PlayerColors.color(for: colorIndex))
+                    .foregroundStyle(ClubhouseTheme.ink)
 
                 Text("\(wins.quantityText("win")) • \(String(format: "%.0f%%", rate * 100))")
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.72)
             }
             .frame(maxWidth: .infinity)
             .contentShape(Rectangle())
@@ -379,11 +363,11 @@ struct HeadToHeadView: View {
                 Spacer()
 
                 Text("recent games")
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
 
                 Image(systemName: isExpanded(player: name, record: record) ? "chevron.down" : "chevron.right")
-                    .font(.caption.weight(.bold))
+                    .font(.body.weight(.bold))
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
             .padding(.horizontal, AppTheme.spacingSmall)
@@ -436,13 +420,13 @@ struct HeadToHeadView: View {
                 .rotationEffect(.degrees(45))
 
             Text(ShortDate.string(from: session.completedAt ?? session.createdAt))
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
 
             Spacer()
 
             Text(outcome)
-                .font(AppFonts.caption.weight(.bold))
+                .font(AppFonts.label.weight(.bold))
                 .foregroundStyle(isWinner ? ClubhouseTheme.green : ClubhouseTheme.inkMuted)
 
             if let player {
@@ -453,7 +437,7 @@ struct HeadToHeadView: View {
             }
 
             Image(systemName: "chevron.right")
-                .font(.caption2.weight(.bold))
+                .font(.body.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.inkMuted)
         }
         .padding(.vertical, 8)

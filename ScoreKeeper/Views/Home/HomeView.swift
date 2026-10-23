@@ -23,16 +23,6 @@ struct HomeView: View {
            sort: \GameSession.createdAt, order: .reverse)
     private var completedGames: [GameSession]
 
-    private var headerSubtitle: String {
-        if inProgressGames.count == 1, let activeGame = inProgressGames.first {
-            return "round \(activeGame.currentRoundNumber) is waiting"
-        }
-        if inProgressGames.count > 1 {
-            return "\(inProgressGames.count) active games are waiting"
-        }
-        return completedGames.isEmpty ? "ready to play?" : completedGames.count.quantityText("completed game")
-    }
-
     private var uniquePlayerCount: Int {
         let names = completedGames
             .flatMap(\.players)
@@ -45,7 +35,8 @@ struct HomeView: View {
         GeometryReader { proxy in
             ScrollView {
                 VStack(spacing: AppTheme.spacingLarge) {
-                    HomeHeader(subtitle: headerSubtitle)
+                    HomeHeader()
+                        .pipCountRailHeader()
                         .staggeredEntrance(visible: sectionsVisible, index: 0)
 
                     responsiveDashboard(availableWidth: min(proxy.size.width, AppTheme.contentMaxWidth) - AppTheme.spacingMedium * 2)
@@ -54,7 +45,9 @@ struct HomeView: View {
                 .padding(.top, AppTheme.spacingSmall)
                 .padding(.bottom, AppTheme.spacingXLarge)
                 .pipCountPageContent()
+                .pipCountScrollContent()
             }
+            .accessibilityIdentifier("home_content_scroll")
         }
         .appBackground()
         .navigationTitle("")
@@ -169,8 +162,6 @@ struct HomeView: View {
         }
     }
 
-
-
     private func requestDelete(_ session: GameSession) {
         pendingDeletionID = session.persistentModelID
         showDeleteConfirmation = true
@@ -197,8 +188,6 @@ struct HomeView: View {
 // MARK: - Home hero
 
 private struct HomeHeader: View {
-    let subtitle: String
-
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -207,29 +196,7 @@ private struct HomeHeader: View {
             brandCopy
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
-                HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
-                    VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                        Text("every night\nbecomes history")
-                            .font(AppFonts.hero)
-                            .foregroundStyle(ClubhouseTheme.ink)
-
-                        Text("track any game. add your crew. see the story build over time")
-                            .font(AppFonts.body)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                            .fixedSize(horizontal: false, vertical: true)
-
-                        Rectangle()
-                            .fill(ClubhouseTheme.red)
-                            .frame(width: 82, height: 4)
-                    }
-                    .frame(maxWidth: 390, alignment: .leading)
-
-                    PipCountGeometricArtwork(scene: .home)
-                        .frame(maxWidth: 520)
-                        .frame(height: AppTheme.regularHeroArtHeight)
-                }
-            } else if !dynamicTypeSize.isAccessibilitySize {
+            if !dynamicTypeSize.isAccessibilitySize {
                 // Decorative art yields to content at accessibility text sizes,
                 // so the first action card stays above the fold (dogfood pass 1).
                 PipCountGeometricArtwork(scene: .home)
@@ -250,14 +217,6 @@ private struct HomeHeader: View {
                 BauhausStarburst(color: ClubhouseTheme.blue, size: 20)
             }
 
-            Text("game night, organized")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.ink)
-
-            Text(subtitle.uppercased())
-                .columnHeaderStyle()
-                .foregroundStyle(ClubhouseTheme.blue)
-                .padding(.top, 4)
         }
     }
 }
@@ -305,11 +264,6 @@ private struct HomeEmptyHero: View {
                 .font(AppFonts.title)
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            Text("start something new or bring your regular crew back to the table")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .fixedSize(horizontal: false, vertical: true)
-
             if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
                 NewGameButton(action: action)
                     .padding(.top, 4)
@@ -339,7 +293,7 @@ private struct FreeGamesNote: View {
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
             Text("\(remainingFreeGames.quantityText("free game")) left")
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .monospacedDigit()
                 .accessibilityIdentifier("free_games_note")
@@ -347,7 +301,7 @@ private struct FreeGamesNote: View {
             Spacer(minLength: AppTheme.spacingSmall)
 
             Button("upgrade to pipcount pro", action: onUnlock)
-                .font(AppFonts.caption.weight(.bold))
+                .font(AppFonts.label.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.brass)
                 .frame(minHeight: 44)
                 .accessibilityIdentifier("home_upgrade_button")
@@ -363,14 +317,14 @@ private struct PipCountUpgradeEntry: View {
     var body: some View {
         HStack(spacing: AppTheme.spacingSmall) {
             Text("25 free games included")
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .accessibilityIdentifier("home_upgrade_entry")
 
             Spacer(minLength: AppTheme.spacingSmall)
 
             Button("upgrade to pipcount pro", action: onUpgrade)
-                .font(AppFonts.caption.weight(.bold))
+                .font(AppFonts.label.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.brass)
                 .frame(minHeight: 44)
                 .accessibilityLabel("Upgrade to PipCount Pro")
@@ -394,7 +348,7 @@ private struct HomeActiveGamesSection: View {
                     .accessibilityIdentifier("active_games_list")
                 Spacer()
                 Text("\(sessions.count)")
-                    .font(AppFonts.caption.weight(.bold))
+                    .font(AppFonts.label.weight(.bold))
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.felt)
                     .accessibilityLabel("\(sessions.count) active games")
@@ -446,7 +400,7 @@ private struct ActiveGameRow: View {
                     .accessibilityIdentifier("active_title_\(session.id.uuidString)")
                 if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                 Text("in progress")
-                    .font(AppFonts.caption.weight(.bold))
+                    .font(AppFonts.label.weight(.bold))
                     .foregroundStyle(ClubhouseTheme.blue)
                     .padding(.horizontal, 10)
                     .fixedSize(horizontal: true, vertical: false)
@@ -471,7 +425,7 @@ private struct ActiveGameRow: View {
             }
 
             GeometryReader { geometry in
-                let availableWidth = max(0, geometry.size.width - AppTheme.spacingSmall)
+                let availableWidth = max(0, geometry.size.width - AppTheme.spacingSmall - 44)
 
                 HStack(spacing: AppTheme.spacingSmall) {
                     ResumeGameSlider(
@@ -479,11 +433,11 @@ private struct ActiveGameRow: View {
                         accessibilityIdentifier: "active_game_\(session.id.uuidString)",
                         action: onResume
                     )
-                    .frame(width: availableWidth * 0.90)
+                    .frame(width: availableWidth)
 
                     Button(role: .destructive, action: onDelete) {
                         Image(systemName: "trash")
-                            .font(.caption2.weight(.bold))
+                            .font(.body.weight(.bold))
                             .foregroundStyle(ClubhouseTheme.red)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
                             .background(
@@ -499,10 +453,10 @@ private struct ActiveGameRow: View {
                     .buttonStyle(PressableButtonStyle())
                     .accessibilityLabel("Delete active \(session.gameType.displayName) game")
                     .accessibilityIdentifier("delete_active_game_\(session.id.uuidString)")
-                    .frame(width: availableWidth * 0.10)
+                    .frame(width: 44)
                 }
             }
-            .frame(height: 62)
+            .frame(height: dynamicTypeSize.isAccessibilitySize ? 88 : 62)
         }
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -515,6 +469,7 @@ private struct ResumeGameSlider: View {
     let accessibilityIdentifier: String
     let action: () -> Void
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dragOffset: CGFloat = 0
 
@@ -529,14 +484,15 @@ private struct ResumeGameSlider: View {
                 RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous)
                     .fill(ClubhouseTheme.blue)
 
+                if !dynamicTypeSize.isAccessibilitySize {
                 Text("resume game")
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.onPrimary)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.72)
                     .frame(maxWidth: .infinity)
                     .padding(.leading, thumbDiameter + 10)
                     .padding(.trailing, 12)
+                }
 
                 Circle()
                     .fill(ClubhouseTheme.paperCard)
@@ -624,7 +580,7 @@ private struct HomeMetric: View {
                     .accessibilityHidden(true)
 
                 Text(title)
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
@@ -713,8 +669,8 @@ private struct RecentGameRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundStyle(.tertiary)
+                .font(.body)
+                .foregroundStyle(ClubhouseTheme.inkMuted)
         }
         .padding(.trailing, AppTheme.spacingSmall)
         .frame(minHeight: 76)
@@ -723,7 +679,7 @@ private struct RecentGameRow: View {
 
     private var resultLabel: some View {
         Text(resultText ?? session.players.count.quantityText("player"))
-            .font(AppFonts.caption)
+            .font(AppFonts.label)
             .foregroundStyle(resultText == nil ? ClubhouseTheme.inkMuted : ClubhouseTheme.brass)
     }
 
@@ -770,7 +726,7 @@ private struct QuietLinkRow: View {
                 .foregroundStyle(ClubhouseTheme.ink)
             Spacer()
             Image(systemName: "chevron.right")
-                .font(.caption)
+                .font(.body)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -821,13 +777,12 @@ private struct HomeToolButton: View {
                     .frame(width: dynamicTypeSize.isAccessibilitySize ? 44 : 38, height: dynamicTypeSize.isAccessibilitySize ? 44 : 38)
                     .background(ClubhouseTheme.paperCard.opacity(0.76), in: Circle())
                     .overlay { Circle().stroke(ClubhouseTheme.rule, lineWidth: 1) }
-                    .foregroundStyle(tool.tint)
+                    .foregroundStyle(ClubhouseTheme.ink)
 
                 Text(tool.title)
-                    .font(AppFonts.caption.weight(.semibold))
+                    .font(AppFonts.label.weight(.semibold))
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                     .multilineTextAlignment(.center)
-                    .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.8)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity)
@@ -890,6 +845,7 @@ private struct HomeToolSheet: View {
     let tool: HomeTool
     let activeGame: GameSession?
 
+    @Environment(\.pipCountUsesIsland) private var usesIsland
     @Environment(\.dismiss) private var dismiss
     @State private var dieRoll = 1
     @State private var selectedStarter: Player?
@@ -910,18 +866,15 @@ private struct HomeToolSheet: View {
 
                     Image(systemName: tool.systemImage)
                         .font(.system(size: 34, weight: .bold, design: .default))
-                        .foregroundStyle(tool == .dice ? ClubhouseTheme.ink : ClubhouseTheme.onPrimary)
+                        .foregroundStyle(ClubhouseTheme.onButton(tool.tint))
                 }
                 .accessibilityHidden(true)
 
                 VStack(spacing: AppTheme.spacingSmall) {
-                    Text(toolTitle)
+                    Text(tool.title)
                         .font(AppFonts.title)
-                    Text(toolMessage)
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("home_tool_title")
+
                 }
 
                 ToolSheetContent(
@@ -934,39 +887,25 @@ private struct HomeToolSheet: View {
             }
             .frame(maxWidth: .infinity)
             .padding(AppTheme.spacingLarge)
+            .pipCountScrollContent()
             }
             .appBackground()
             .navigationTitle(tool.title)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarVisibility(usesIsland ? .hidden : .automatic, for: .navigationBar)
+            .pipCountIsland {
+                PipCountIslandButton(title: "done", systemImage: "xmark", identifier: "home_tool_done_button") { dismiss() }
+            }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("done") { dismiss() }
+                if !usesIsland {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("done") { dismiss() }
+                    }
                 }
             }
         }
     }
 
-    private var toolTitle: String {
-        switch tool {
-        case .timer: return "keep turns moving"
-        case .dice: return "roll a quick number"
-        case .starter: return "choose who starts"
-        case .undo: return "fix mistakes safely"
-        }
-    }
-
-    private var toolMessage: String {
-        switch tool {
-        case .timer:
-            return "a visible timer reduces table drift without leaving the score sheet"
-        case .dice:
-            return "use a fast 1–6 roll when a game needs a tie-breaker or random choice"
-        case .starter:
-            return activeGame == nil ? "start or resume a game to pick from its player list" : "randomly pick from the current players"
-        case .undo:
-            return "scorekeeping mistakes happen. the live sheet keeps undo close to the submit button"
-        }
-    }
 }
 
 private struct ToolSheetContent: View {
@@ -974,17 +913,28 @@ private struct ToolSheetContent: View {
     let activeGame: GameSession?
     @Binding var dieRoll: Int
     @Binding var selectedStarter: Player?
+    @Environment(NavigationRouter.self) private var router
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         switch tool {
-        case .timer:
-            Label("use the live scoring toolbar timer during a game", systemImage: "timer")
-                .font(AppFonts.body)
+        case .timer, .undo:
+            AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+                dismiss()
+                if let activeGame {
+                    router.push(.scoring(activeGame.persistentModelID))
+                } else {
+                    router.push(.gamePicker)
+                }
+            } label: {
+                Label(activeGame == nil ? "start new game" : "resume game", systemImage: "play.fill")
+            }
+            .accessibilityHint(tool == .timer ? "Open the scoring tools to use the timer" : "Open scoring to undo the last round")
         case .dice:
             VStack(spacing: AppTheme.spacingSmall) {
                 Text("\(dieRoll)")
-                    .font(.system(size: 72, weight: .black, design: .default))
+                    .font(AppFonts.display)
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.ink)
                     .contentTransition(.numericText(value: Double(dieRoll)))
@@ -1005,9 +955,6 @@ private struct ToolSheetContent: View {
                 }
                 .disabled(activeGame?.players.isEmpty ?? true)
             }
-        case .undo:
-            Label("during scoring, tap undo last before submitting the next round", systemImage: "arrow.uturn.backward")
-                .font(AppFonts.body)
         }
     }
 
@@ -1046,6 +993,7 @@ struct SavedPlayersView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
                 PlayersLibraryHero()
+                    .pipCountRailHeader()
                     .staggeredEntrance(visible: contentVisible, index: 0)
 
                 Text("saved players")
@@ -1057,9 +1005,7 @@ struct SavedPlayersView: View {
                         Text("no players saved yet")
                             .font(AppFonts.title)
                             .foregroundStyle(ClubhouseTheme.ink)
-                        Text("players are saved automatically after you start your first game")
-                            .font(AppFonts.body)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
+
                     }
                     .padding(AppTheme.spacingLarge)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -1091,7 +1037,9 @@ struct SavedPlayersView: View {
             .padding(.top, AppTheme.spacingSmall)
             .padding(.bottom, AppTheme.spacingXLarge)
             .pipCountPageContent()
+            .pipCountScrollContent()
         }
+        .accessibilityIdentifier("players_content_scroll")
         .appBackground()
         .navigationTitle("")
         .toolbar(horizontalSizeClass == .regular ? .visible : .hidden, for: .navigationBar)
@@ -1106,7 +1054,6 @@ struct SavedPlayersView: View {
             ? [GridItem(.flexible()), GridItem(.flexible())]
             : [GridItem(.flexible())]
     }
-
 
 }
 
@@ -1207,13 +1154,13 @@ private struct SavedPlayerCard: View {
 
     private var gamesPlayed: some View {
         Text(player.gamesPlayed.quantityText("game"))
-            .font(AppFonts.caption)
+            .font(AppFonts.label)
             .foregroundStyle(ClubhouseTheme.inkMuted)
     }
 
     private var disclosureIndicator: some View {
         Image(systemName: "chevron.right")
-            .font(.caption.weight(.bold))
+            .font(.body.weight(.bold))
             .foregroundStyle(ClubhouseTheme.inkMuted)
     }
 }
@@ -1259,7 +1206,7 @@ private struct AddSavedPlayerSheet: View {
 
                 if isDuplicate {
                     Text("that name is already saved")
-                        .font(AppFonts.caption.weight(.semibold))
+                        .font(AppFonts.label.weight(.semibold))
                         .foregroundStyle(ClubhouseTheme.red)
                 }
             }

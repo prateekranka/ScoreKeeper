@@ -59,7 +59,7 @@ struct PipCountArtworkCatalogPreview: View {
                                 VStack(spacing: 8) {
                                     BauhausPlayerShape(colorIndex: index, size: 44)
                                     Text("\(index + 1)")
-                                        .font(AppFonts.caption)
+                                        .font(AppFonts.label)
                                         .foregroundStyle(ClubhouseTheme.inkMuted)
                                 }
                             }
@@ -100,7 +100,7 @@ struct PipCountArtworkCatalogPreview: View {
             content()
                 .frame(maxWidth: .infinity)
             Text(title)
-                .font(AppFonts.caption.weight(.semibold))
+                .font(AppFonts.label.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.inkMuted)
         }
         .padding(14)

@@ -8,18 +8,24 @@ struct ClubhouseTheme {
     static let paperSunken = Color(light: 0xECE7DC, dark: 0x15171B)
     static let paperElevated = Color(light: 0xFFFFFF, dark: 0x202228)
     static let ink = Color(light: 0x0B0B0B, dark: 0xF7F3E9)
-    static let inkMuted = Color(light: 0x756F65, dark: 0xAAA49B)
+    static let inkMuted = Color(light: 0x5B554D, dark: 0xC2BCB2)
 
     // MARK: PipCount Bauhaus palette
 
-    static let blue = Color(light: 0x0D47D9, dark: 0x6F96FF)
-    static let blueDeep = Color(light: 0x07349F, dark: 0x4F73D4)
-    static let red = Color(light: 0xEF3340, dark: 0xFF6E78)
+    static let blue = Color(light: 0x0C42CD, dark: 0x7DA1FF)
+    static let blueDeep = Color(light: 0x07349F, dark: 0x7DA1FF)
+    static let red = Color(light: 0xA51124, dark: 0xFF929B)
     static let yellow = Color(light: 0xFFB512, dark: 0xFFD45D)
-    static let green = Color(light: 0x0A8F4B, dark: 0x59C987)
+    static let green = Color(light: 0x005D2D, dark: 0x76D69D)
     static let sky = Color(light: 0xD7E7F7, dark: 0x243246)
     static let coral = Color(light: 0xFF775E, dark: 0xFF9A85)
     static let lilac = Color(light: 0xA79AD1, dark: 0xC8BDF0)
+
+    static func onButton(_ color: Color) -> Color {
+        if color == ink { return paperCard }
+        if color == yellow { return onYellow }
+        return onPrimary
+    }
 
     static let palette: [Color] = [blue, red, yellow, green, ink]
 
@@ -28,7 +34,8 @@ struct ClubhouseTheme {
     static let felt = blue
     static let feltDeep = blueDeep
     static let lacquer = red
-    static let brass = Color(light: 0x9A6900, dark: 0xFFD45D)
+    static let brass = Color(light: 0x704A00, dark: 0xFFD45D)
+    static let onYellow = Color(light: 0x0B0B0B, dark: 0x0B0B0B)
     static let onFelt = Color(light: 0xFFFFFF, dark: 0x10131A)
     static let primaryFill = blue
     static let onPrimary = Color(light: 0xFFFFFF, dark: 0x0B0E16)

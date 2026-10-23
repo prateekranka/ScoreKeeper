@@ -15,10 +15,17 @@ function contentSize(value?:string):string {
 async function openFixture(device:Device,screen:Screen){
  await device.installApp();
  await device.openApp(bundle,{relaunch:true,launchArguments:['-in-memory-store','-unlock-pro','-force-light-theme','-break-ui-data','-hasSeenScoreDeckTutorial','YES']});
- await expect(screen.getByTestId('break_ui_data_toggle')).toBeVisible();
+ await expect(screen.getByTestId('tab_home')).toBeVisible();
 }
 async function selectData(app:ScreenshotApp,screen:Screen,mode:string){
- await tapNativeControl(screen,screen.getByTestId('break_ui_data_toggle'));
+ for(let attempt=0;attempt<4 && !(await screen.getByTestId('legal_support_button').isVisible());attempt++){
+  const islandBack=screen.getByTestId('island_back_button');
+  await tapNativeControl(screen,await islandBack.isVisible()?islandBack:screen.getByTestId('BackButton').first());
+ }
+ await tapTab(screen,'More');
+ const menu=screen.getByTestId('break_ui_data_toggle');
+ await screen.scrollUntilVisible(menu);
+ await tapNativeControl(screen,menu);
  await expect(screen.getByTestId(`break_ui_data_${mode}`)).toBeVisible();
  await screen.getByTestId(`break_ui_data_${mode}`).tap();
  await expect(screen.getByTestId('tab_home')).toBeVisible();
@@ -113,8 +120,10 @@ test('break-ui multilingual 15-player scorecard at AX5 in light and dark',{timeo
    if(process.env.PIPCOUNT_BREAK_ROSTER_ONLY)continue;
    await tapTab(screen,'Home');
    await resumeBySlide(screen,device);
-   await expect(screen.getByTestId('scoring_accessible_scroll')).toBeVisible();
-   const submit=screen.getByTestId('submit_round_button').last();await screen.getByTestId('scoring_accessible_scroll').scrollUntilVisible(submit,{timeout:30000});
+   const scoringScroll=screen.getByTestId(/^scoring_(accessible|content)_scroll$/, {visible:true});
+   await expect(scoringScroll).toBeVisible();
+   const submit=screen.getByTestId('submit_round_button').last();
+   if(!(await screen.getByTestId('navigation_island').isVisible())) await scoringScroll.scrollUntilVisible(submit,{timeout:30000});
    await scrollMainContent(screen,device,submit,'down',false,true);
    const submitFrame=await submit.boundingBox();expect(submitFrame?.width).toBeGreaterThanOrEqual(44);expect(submitFrame?.height).toBeGreaterThanOrEqual(44);
    await captureState(app,`break-worst-${appearance}-score-round-reachable`,'Score Round is reachable before all 50 rounds of history');
@@ -133,7 +142,7 @@ test('break-ui multilingual 15-player scorecard at AX5 in light and dark',{timeo
    const cancel=screen.getByTestId('round_deck_cancel_button');await scrollMainContent(screen,device,cancel,'up',false,true,40);await tapNativeControl(screen,cancel);
    await expect(screen.getByTestId('round_entry_deck')).toBeHidden();
    const high=screen.getByTestId('running_total_'+names[0]);
-   await screen.getByTestId('scoring_accessible_scroll').scrollUntilVisible(high,{timeout:120000});await expect(high).toHaveText('4,950');
+   await scoringScroll.scrollUntilVisible(high,{timeout:120000});await expect(high).toHaveText('4,950');
    await captureState(app,`break-worst-${appearance}-total-4950`,'Fifteen players and 50 rounds; long name beside exact unchanged total 4950');
    await captureState(app,`break-worst-${appearance}-cancelled`,'Cancelling uncommitted score leaves the saved total unchanged');
   }
