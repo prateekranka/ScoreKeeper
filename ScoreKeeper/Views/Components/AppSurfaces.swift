@@ -404,14 +404,15 @@ struct PipCountBackButton: View {
 private struct PipCountIslandOverlay<Actions: View>: ViewModifier {
     @Environment(\.pipCountUsesIsland) private var usesIsland
     @Environment(\.pipCountRailInset) private var railInset
-    @State private var islandHeight: CGFloat = 0
+    @State private var islandHeight: CGFloat = 68
     var isPresented: Bool
     @ViewBuilder var actions: Actions
 
     func body(content: Content) -> some View {
         let isVisible = usesIsland && isPresented
         content
-            .environment(\.pipCountIslandClearance, isVisible ? islandHeight + 16 : 0)
+            .environment(\.pipCountIslandClearance, isVisible ? 8 : 0)
+            .padding(.bottom, isVisible ? islandHeight + 16 : 0)
             .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
             .overlay(alignment: .bottomTrailing) {
                 if isVisible {

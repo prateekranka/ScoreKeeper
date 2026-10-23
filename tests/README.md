@@ -10,6 +10,8 @@ Game flows use the existing in-memory store and debug flags.
 - `native-glass-tabs.e2e.ts`: the same four destination identifiers in folded native tabs and the open Duo island.
 - `native-glass-no-sidebar.e2e.ts`: one bottom-trailing island, full-width content in the default compact rail pose, reachable last controls, four root destinations, folded native navigation, scoring and Game Over actions, game-route preservation, and score-draft preservation across folding.
 - `native-glass-gallery.e2e.ts`: onboarding, all root screens, three game formats, handwriting, manual entry, statistics, history, results, and sharing.
+- `native-glass-review.e2e.ts`: at-rest row and score clearance, timer presets and Reset, light/dark Home, scoring and Game Over, empty statistics, and the dark main paywall.
+- `paywall.e2e.ts`: onboarding, the one-time gift, Pro and trial access, remaining starts, and AX5 benefit/action/legal layout.
 - `native-glass-extras.e2e.ts`: scoring utilities, Home utilities, and the Pro offer. It does not purchase or restore a purchase.
 - `native-glass-a11y.e2e.ts`: actual system AX5 plus real Reduce Transparency, long and multilingual names, keyboard access, utility actions, exact scores 7 and 9, and undo to zero.
 

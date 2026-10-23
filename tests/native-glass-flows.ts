@@ -1,4 +1,5 @@
 import { type Device } from '@e2e-dev/mobile';
+import { scrollMainContent } from './handwriting-layout-scroll';
 import { expect, type Screen } from 'e2e';
 import {
   foldIfSupported,
@@ -140,11 +141,12 @@ export async function startGameFromHome(
   kind: GameKind,
   players: TwoPlayers,
   prefix: string,
-  options: { duplicateValidation?: boolean; stopAfterSettings?: boolean; targetScore?: string } = {},
+  options: { duplicateValidation?: boolean; stopAfterSettings?: boolean; targetScore?: string; device?: Device } = {},
 ): Promise<void> {
   await tapTab(screen, 'Games');
   const tile = screen.getByTestId(gameTiles[kind]);
-  await scrollControlAboveTabDock(screen, tile, 'tab_games', `${kind} game tile`);
+  if (options.device) await scrollMainContent(screen, options.device, tile, 'down');
+  else await scrollControlAboveTabDock(screen, tile, 'tab_games', `${kind} game tile`);
   await expect(tile).toBeVisible();
   await captureState(app, `${prefix}-game-picker`, `game picker before ${kind}`);
   await tile.tap();

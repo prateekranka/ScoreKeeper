@@ -30,6 +30,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @ViewBuilder var footer: Footer
 
     @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
     @Environment(\.pipCountEndGame) private var endGame
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -113,7 +114,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
         }
         .sheet(item: $selectedTool) { tool in
             ScoringToolSheet(tool: tool, session: session)
-                .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
+                .presentationDetents(dynamicTypeSize.isAccessibilitySize || railInset > 0 ? [.large] : [.medium, .large])
         }
         .alert(
             "couldn’t update rounds",
@@ -304,9 +305,6 @@ private struct CompactScoringGameHeader: View {
                     .monospacedDigit()
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
 
-                Text(session.players.count.quantityText("player").uppercased())
-                    .columnHeaderStyle()
-                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
             }
 
             Spacer(minLength: AppTheme.spacingSmall)
@@ -488,6 +486,7 @@ private struct ScoringToolSheet: View {
     let session: GameSession
 
     @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -501,7 +500,7 @@ private struct ScoringToolSheet: View {
             ScrollView {
                 VStack(spacing: tool == .log ? AppTheme.spacingMedium : AppTheme.spacingLarge) {
                     ToolArtwork(tool: tool)
-                        .frame(width: tool == .log ? 100 : 150, height: tool == .log ? 80 : 120)
+                        .frame(width: tool == .log || railInset > 0 ? 100 : 150, height: tool == .log || railInset > 0 ? 80 : 120)
                         .accessibilityHidden(true)
 
                     Text(tool.title)
@@ -511,8 +510,10 @@ private struct ScoringToolSheet: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(AppTheme.spacingLarge)
+                .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
                 .pipCountScrollContent()
             }
+            .accessibilityIdentifier("scoring_tool_content_scroll")
             .appBackground()
             .navigationTitle(tool.title)
             .navigationBarTitleDisplayMode(.inline)
@@ -800,7 +801,6 @@ struct RoundHistoryStrip: View {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 AppSectionHeader(
                     title: "rounds",
-                    subtitle: "\(session.sortedRounds.count) submitted",
                     systemImage: "clock.arrow.circlepath"
                 )
 

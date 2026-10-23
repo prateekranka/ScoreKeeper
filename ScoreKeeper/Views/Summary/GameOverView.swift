@@ -6,6 +6,7 @@ struct GameOverView: View {
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
     @Environment(NavigationRouter.self) private var router
     @Environment(StoreManager.self) private var storeManager
     @Environment(ReviewAskManager.self) private var reviewAskManager
@@ -142,20 +143,28 @@ struct GameOverView: View {
 
     private func completionHeader(_ session: GameSession) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            ViewThatFits(in: .horizontal) {
-                HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
+            if railInset > 0 && !dynamicTypeSize.isAccessibilitySize {
+                HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
                     completionText(session)
-                        .frame(maxWidth: 300, alignment: .leading)
-
-                    Spacer(minLength: AppTheme.spacingSmall)
-
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     completionArtwork
                 }
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
+                        completionText(session)
+                            .frame(maxWidth: 300, alignment: .leading)
 
-                VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                    completionText(session)
-                    completionArtwork
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        Spacer(minLength: AppTheme.spacingSmall)
+
+                        completionArtwork
+                    }
+
+                    VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                        completionText(session)
+                        completionArtwork
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
                 }
             }
 
@@ -181,8 +190,8 @@ struct GameOverView: View {
 
     private var completionArtwork: some View {
         PipCountGeometricArtwork(scene: .gameOver)
-            .frame(minWidth: 160, idealWidth: 220, maxWidth: 260)
-            .frame(height: 210)
+            .frame(minWidth: railInset > 0 ? 100 : 160, idealWidth: railInset > 0 ? 130 : 220, maxWidth: railInset > 0 ? 150 : 260)
+            .frame(height: railInset > 0 ? 120 : 210)
     }
 
     private func resultHero(_ session: GameSession) -> some View {

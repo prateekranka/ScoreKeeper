@@ -7,7 +7,7 @@ import {launchFreshJourney,startGameFromHome,openRoundDeck,scoreManualRound,fini
 test('capture every PipCount destination for the design comparison', {timeout:900_000}, async ({app,screen,device})=>{
  const names=['Maya','Leo'] as const;
  await launchFreshJourney(app,screen,device,['-unlock-pro','-hasSeenScoreDeckTutorial','NO']);
- await startGameFromHome(app,screen,'generic',names,'gallery-scoreboard');
+ await startGameFromHome(app,screen,'generic',names,'gallery-scoreboard',{device});
  await openRoundDeck(app,screen,names,'gallery-handwriting');
  await scoreManualRound(app,screen,names,{maya:7,leo:9},'gallery-manual');
  await expect(screen.getByTestId('undo_last_round_button')).toBeEnabled();
@@ -23,7 +23,7 @@ test('capture every PipCount destination for the design comparison', {timeout:90
  const maya=screen.getByTestId('saved_player_maya'); await screen.scrollUntilVisible(maya); await maya.tap();
  await expect(screen.getByTestId('player_stats_view').last()).toBeVisible();
  await captureState(app,'gallery-player-history','Player history and statistics');
- const compare=screen.getByRole('button','compare',{exact:true}); await screen.scrollUntilVisible(compare); await tapNativeControl(screen,compare);
+ const compare=screen.getByRole('button','compare',{exact:true}); await scrollMainContent(screen,device,compare,'down',true,true); await tapNativeControl(screen,compare);
  await expect(screen.getByText('choose the matchup',{exact:true})).toBeVisible();
  await captureState(app,'gallery-head-to-head-picker','Head to head selection');
  await chooseHeadToHeadPlayers(screen,'maya','leo');
@@ -48,7 +48,7 @@ test('capture every PipCount destination for the design comparison', {timeout:90
  await captureState(app,'gallery-share','Native result share sheet');
  // Each other format uses fresh data, but the same actual player and scoring controls.
  await launchFreshJourney(app,screen,device,['-unlock-pro']);
- await startGameFromHome(app,screen,'phase10',names,'gallery-ten-phases');
+ await startGameFromHome(app,screen,'phase10',names,'gallery-ten-phases',{device});
  await scorePhaseRound(app,screen,names,'gallery-phase-round',false);
  for(const tool of ['timer','dice','starter']) {
   await tapScoringTool(screen,tool);
@@ -59,6 +59,6 @@ test('capture every PipCount destination for the design comparison', {timeout:90
  }
 
  await launchFreshJourney(app,screen,device,['-unlock-pro']);
- await startGameFromHome(app,screen,'whatsForDinner',names,'gallery-dinner');
+ await startGameFromHome(app,screen,'whatsForDinner',names,'gallery-dinner',{device});
  await startDinnerRoundWithInk(app,screen,names,'gallery-dinner-round');
 });

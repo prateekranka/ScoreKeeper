@@ -1,5 +1,5 @@
 import { beforeEach, test } from '@e2e-dev/mobile';
-import { expect, type Screen } from 'e2e';
+import { expect, type Locator, type Screen } from 'e2e';
 import { captureState } from './handwriting-helpers';
 import { assertClearOfIsland } from './handwriting-duo-input';
 
@@ -10,24 +10,29 @@ beforeEach(async ({ device }) => {
   await device.installApp();
 });
 
-async function revealRestore(screen: Screen): Promise<void> {
-  const scroll = screen.getByTestId('paywall_legal_scroll');
-  const restore = screen.getByTestId('paywall_restore_button');
+async function revealContent(screen: Screen, restore: Locator): Promise<void> {
+  const scroll = screen.getByTestId('paywall_content_scroll');
   await scroll.scrollUntilVisible(restore);
   for (let attempt = 0; attempt < 6; attempt += 1) {
     const viewport = await scroll.boundingBox();
     const control = await restore.boundingBox();
     if (!viewport || !control) throw new Error('Paywall legal controls have no current frame');
     const overflow = control.y + control.height - viewport.y - viewport.height + 8;
-    if (control.y >= viewport.y && overflow <= 0) return;
-    const distance = Math.min(120, Math.max(24, overflow));
+    const topOverflow = viewport.y + 8 - control.y;
+    if (topOverflow <= 0 && overflow <= 0) return;
+    const distance = Math.min(120, Math.max(24, topOverflow > 0 ? topOverflow : overflow));
+    const startY = topOverflow > 0 ? viewport.y + 16 : viewport.y + viewport.height - 16;
     await screen.swipe({
-      from: { x: viewport.x + 8, y: viewport.y + viewport.height - 8 },
-      to: { x: viewport.x + 8, y: viewport.y + viewport.height - 8 - distance },
+      from: { x: viewport.x + 8, y: startY },
+      to: { x: viewport.x + 8, y: startY + (topOverflow > 0 ? distance : -distance) },
       duration: 500,
     });
   }
-  throw new Error('Restore remained clipped inside the legal scroll view');
+  throw new Error('Paywall content remained clipped inside the scroll viewport');
+}
+
+async function revealRestore(screen: Screen): Promise<void> {
+  await revealContent(screen, screen.getByTestId('paywall_restore_button'));
 }
 
 test('fresh install shows onboarding, main paywall, one exit gift, then Home', async ({ app, screen, device }) => {
@@ -126,16 +131,35 @@ test('largest Dynamic Type keeps paywall primary, close and restore reachable', 
   await expect(screen.getByTestId('paywall_main')).toBeVisible();
   const primary = screen.getByTestId('paywall_primary_button');
   const retry = screen.getByTestId('paywall_retry_button');
-  await expect.poll(async () => await primary.isVisible() || await retry.isVisible()).toBe(true);
+  const benefit = screen.getByText('Stats & history', { exact: true });
+  const scroll = screen.getByTestId('paywall_content_scroll');
+  await revealContent(screen, benefit);
+  const benefitFrame = await benefit.boundingBox();
+  const viewport = await scroll.boundingBox();
+  if (!benefitFrame || !viewport) throw new Error('Paywall benefit has no current frame');
+  expect(benefitFrame.x + benefitFrame.width).toBeLessThanOrEqual(viewport.x + viewport.width);
+  expect(benefitFrame.y).toBeGreaterThanOrEqual(viewport.y);
+  expect(benefitFrame.y + benefitFrame.height).toBeLessThanOrEqual(viewport.y + viewport.height);
+  await captureState(app, 'paywall-largest-benefits', 'Wrapped benefits remain inside the scroll viewport below the status capsule');
   const lifetime = screen.getByTestId('paywall_plan_lifetime');
-  if (await primary.isVisible()) {
-    await screen.getByTestId('paywall_content_scroll').scrollUntilVisible(lifetime);
+  await scroll.scrollUntilVisible(screen.getByTestId(/^paywall_(plan_lifetime|retry_button)$/));
+  if (await lifetime.isVisible()) {
+    await scroll.scrollUntilVisible(lifetime);
     await lifetime.tap();
   }
   const restore = screen.getByTestId('paywall_restore_button');
   await revealRestore(screen);
   await expect(restore).toBeVisible();
   await expect.poll(async () => await primary.isVisible() || await retry.isVisible()).toBe(true);
+  if (await primary.isVisible()) {
+    await revealContent(screen, primary);
+    const action = await primary.boundingBox();
+    const legal = await screen.getByTestId('paywall_legal_text').boundingBox();
+    if (!action || !legal) throw new Error('Purchase action or legal text has no current frame');
+    expect(action.y).toBeGreaterThanOrEqual(viewport.y);
+    expect(action.y + action.height).toBeLessThanOrEqual(legal.y);
+    expect(legal.y + legal.height).toBeLessThanOrEqual((await restore.boundingBox())!.y);
+  }
   await expect(screen.getByTestId('paywall_close_button')).toBeVisible();
   await captureState(app, 'paywall-largest-text', 'Primary action, Close and Restore remain reachable at largest Dynamic Type');
   await screen.getByTestId('paywall_close_button').tap();

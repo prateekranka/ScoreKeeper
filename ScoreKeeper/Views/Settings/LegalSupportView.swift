@@ -9,6 +9,7 @@ enum LegalSupportLinks {
 
 struct LegalSupportView: View {
     @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
     #if DEBUG
     @Environment(\.pipCountDebugFixtures) private var debugFixtures
     #endif
@@ -26,12 +27,15 @@ struct LegalSupportView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
+            VStack(alignment: .leading, spacing: railInset > 0 ? AppTheme.spacingMedium : AppTheme.spacingLarge) {
                 if usesIsland {
-                    Text("more")
-                        .font(AppFonts.hero)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .pipCountRailHeader()
+                    VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                        Text("more")
+                            .font(AppFonts.hero)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                        if railInset > 0 { proPanel }
+                    }
+                    .pipCountRailHeader()
                 }
                 #if DEBUG
                 if let debugFixtures {
@@ -93,8 +97,10 @@ struct LegalSupportView: View {
     private var sideBySideContent: some View {
         HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
             VStack(spacing: AppTheme.spacingMedium) {
-                proPanel
-                    .staggeredEntrance(visible: contentVisible, index: 0)
+                if railInset == 0 {
+                    proPanel
+                        .staggeredEntrance(visible: contentVisible, index: 0)
+                }
 
                 recentGamesSection
 
@@ -111,8 +117,10 @@ struct LegalSupportView: View {
 
     private var stackedContent: some View {
         VStack(spacing: AppTheme.spacingMedium) {
-            proPanel
-                .staggeredEntrance(visible: contentVisible, index: 0)
+            if railInset == 0 {
+                proPanel
+                    .staggeredEntrance(visible: contentVisible, index: 0)
+            }
 
             recentGamesSection
 
@@ -138,11 +146,13 @@ struct LegalSupportView: View {
 
     private var appearancePanel: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            panelHeader(
-                title: "appearance",
-                systemImage: "circle.lefthalf.filled",
-                compact: true
-            )
+            if railInset == 0 || dynamicTypeSize.isAccessibilitySize {
+                panelHeader(
+                    title: "appearance",
+                    systemImage: "circle.lefthalf.filled",
+                    compact: true
+                )
+            }
 
             let layout = dynamicTypeSize.isAccessibilitySize
                 ? AnyLayout(VStackLayout(spacing: AppTheme.spacingSmall))
@@ -220,7 +230,7 @@ struct LegalSupportView: View {
             } label: {
                 Label("PipCount Pro", systemImage: storeManager.isPro ? "checkmark.seal" : "infinity")
                     .font(AppFonts.title)
-                    .foregroundStyle(ClubhouseTheme.ink)
+                    .foregroundStyle(storeManager.isPro ? ClubhouseTheme.ink : ClubhouseTheme.brass)
                     .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
                     .padding(AppTheme.spacingMedium)
                     .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)

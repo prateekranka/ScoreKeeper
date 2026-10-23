@@ -6,7 +6,7 @@ import {launchFreshJourney,startGameFromHome} from './native-glass-flows';
 test('capture utility sheets and the Pro offer',{timeout:360_000},async({app,screen,device})=>{
  if(!process.env.PIPCOUNT_HOME_TOOLS_ONLY){
  if(process.env.PIPCOUNT_CAPTURE_EXISTING) await device.openApp('com.icequeen.scorekeeper',{relaunch:false});
- else {await launchFreshJourney(app,screen,device,['-unlock-pro']); await startGameFromHome(app,screen,'phase10',['Maya','Leo'],'gallery-extras');}
+ else {await launchFreshJourney(app,screen,device,['-unlock-pro']); await startGameFromHome(app,screen,'phase10',['Maya','Leo'],'gallery-extras',{device});}
  for(const tool of ['timer','dice','starter']){
   await tapScoringTool(screen,tool);
   const action=screen.getByRole('button',tool==='timer'?'start':tool==='dice'?'roll':'pick starter',{exact:true});

@@ -24,7 +24,7 @@ struct PaywallView: View {
                     storeManager.closePaywall()
                 } label: {
                     Image(systemName: "xmark")
-                        .font(.headline)
+                        .font(.system(size: 20, weight: .semibold))
                         .foregroundStyle(ClubhouseTheme.ink)
                         .frame(width: 48, height: 48)
                         .contentShape(Rectangle())
@@ -33,97 +33,78 @@ struct PaywallView: View {
                 .accessibilityLabel("Close")
                 .accessibilityIdentifier("paywall_close_button")
             }
-            .frame(maxWidth: .infinity, alignment: .trailing)
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.trailing, railInset)
+            .frame(height: max(48, railInset * 2), alignment: .top)
             .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
-                    if route == .gift {
-                        Image(systemName: "gift")
-                            .font(.largeTitle)
-                            .foregroundStyle(ClubhouseTheme.ink)
-                            .accessibilityHidden(true)
-                    }
-                    Text(route == .gift ? "50% off" : "PipCount Pro")
-                        .font(AppFonts.hero)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.trailing, railInset)
-                        .frame(minHeight: railInset > 0 ? 108 : 0, alignment: .topLeading)
-                        .accessibilityIdentifier("paywall_title")
-
-                    if route == .main {
-                        VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                            benefit("Unlimited games", symbol: "infinity")
-                            benefit("All three formats", symbol: "square.grid.2x2")
-                            benefit("Stats & history", symbol: "chart.bar")
+            GeometryReader { proxy in
+                ScrollView {
+                    VStack(alignment: route == .gift ? .center : .leading, spacing: AppTheme.spacingMedium) {
+                        if route == .gift {
+                            Image(systemName: "gift")
+                                .font(.largeTitle)
+                                .foregroundStyle(ClubhouseTheme.ink)
+                                .accessibilityHidden(true)
                         }
-                        ForEach(availablePlans, id: \.self) { option in
-                            planButton(option, title: option == .yearly ? "Yearly" : "Lifetime", identifier: option == .yearly ? "paywall_plan_yearly" : "paywall_plan_lifetime")
-                        }
-                    } else if let plan, let price = priceText(for: plan) {
-                        Text("PipCount Pro · \(price)")
-                            .font(AppFonts.title)
-                            .foregroundStyle(ClubhouseTheme.ink)
-                    }
-
-                    if case .unavailable(let message) = storeManager.productState {
-                        Text(message)
-                            .font(.subheadline)
-                            .foregroundStyle(ClubhouseTheme.ink)
-                    }
-                    if case .failed(let message) = storeManager.purchaseState {
-                        Text(message)
-                            .font(.subheadline)
+                        Text(route == .gift ? "50% off" : "PipCount Pro")
+                            .font(AppFonts.hero)
                             .foregroundStyle(ClubhouseTheme.ink)
                             .fixedSize(horizontal: false, vertical: true)
-                            .accessibilityIdentifier("paywall_purchase_status")
-                    }
-                }
-                .padding(AppTheme.spacingMedium)
-                .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
-            }
-            .accessibilityIdentifier("paywall_content_scroll")
+                            .accessibilityIdentifier("paywall_title")
 
-            VStack(spacing: AppTheme.spacingSmall) {
-                if let plan {
-                    AppActionButton(role: .primary(ClubhouseTheme.blue)) {
-                        Task { await storeManager.purchase(plan) }
-                    } label: {
-                        Text(storeManager.isBusy ? "Please wait" : primaryTitle(for: plan))
-                    }
-                    .disabled(!storeManager.canPurchase(plan))
-                    .accessibilityIdentifier("paywall_primary_button")
-                } else {
-                    AppActionButton(role: .primary(ClubhouseTheme.blue)) {
-                        Task { await storeManager.loadProducts(forceRetry: true) }
-                    } label: {
-                        Text(storeManager.productState == .loading ? "Please wait" : "Retry")
-                    }
-                    .disabled(storeManager.productState == .loading)
-                    .accessibilityIdentifier("paywall_retry_button")
-                }
+                        if route == .main {
+                            VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                                benefit("Unlimited games", symbol: "infinity")
+                                benefit("All three formats", symbol: "square.grid.2x2")
+                                benefit("Stats & history", symbol: "chart.bar")
+                            }
+                            ForEach(availablePlans, id: \.self) { option in
+                                planButton(option, title: option == .yearly ? "Yearly" : "Lifetime", identifier: option == .yearly ? "paywall_plan_yearly" : "paywall_plan_lifetime")
+                            }
+                        } else if let plan, let price = priceText(for: plan) {
+                            Text("PipCount Pro · \(price)")
+                                .font(AppFonts.title)
+                                .foregroundStyle(ClubhouseTheme.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                        if let legalText {
-                            Text(legalText)
+                        if case .unavailable(let message) = storeManager.productState {
+                            Text(message)
                                 .font(.subheadline)
                                 .foregroundStyle(ClubhouseTheme.ink)
                                 .fixedSize(horizontal: false, vertical: true)
-                                .accessibilityIdentifier("paywall_legal_text")
                         }
-                        legalLinks
+                        if case .failed(let message) = storeManager.purchaseState {
+                            Text(message)
+                                .font(.subheadline)
+                                .foregroundStyle(ClubhouseTheme.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .accessibilityIdentifier("paywall_purchase_status")
+                        }
+
+                        purchaseAction
+
+                        VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
+                            if let legalText {
+                                Text(legalText)
+                                    .font(.subheadline)
+                                    .foregroundStyle(ClubhouseTheme.ink)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                    .accessibilityIdentifier("paywall_legal_text")
+                            }
+                            legalLinks
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityElement(children: .contain)
+                        .accessibilityIdentifier("paywall_legal_scroll")
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(AppTheme.spacingMedium)
+                    .frame(minHeight: route == .gift ? proxy.size.height : 0)
+                    .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
                 }
-                .frame(height: dynamicTypeSize.isAccessibilitySize ? 180 : 110)
-                .accessibilityIdentifier("paywall_legal_scroll")
+                .accessibilityIdentifier("paywall_content_scroll")
             }
-            .padding(AppTheme.spacingMedium)
-            .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
         }
         .appBackground()
         .tint(ClubhouseTheme.ink)
@@ -133,11 +114,37 @@ struct PaywallView: View {
         .task(id: route) { await storeManager.loadProducts() }
     }
 
+    @ViewBuilder
+    private var purchaseAction: some View {
+        if let plan {
+            AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+                Task { await storeManager.purchase(plan) }
+            } label: {
+                Text(storeManager.isBusy ? "Please wait" : primaryTitle(for: plan))
+            }
+            .disabled(!storeManager.canPurchase(plan))
+            .accessibilityIdentifier("paywall_primary_button")
+        } else {
+            AppActionButton(role: .primary(ClubhouseTheme.blue)) {
+                Task { await storeManager.loadProducts(forceRetry: true) }
+            } label: {
+                Text(storeManager.productState == .loading ? "Please wait" : "Retry")
+            }
+            .disabled(storeManager.productState == .loading)
+            .accessibilityIdentifier("paywall_retry_button")
+        }
+    }
+
     private func benefit(_ title: String, symbol: String) -> some View {
-        Label(title, systemImage: symbol)
-            .font(AppFonts.body)
-            .foregroundStyle(ClubhouseTheme.ink)
-            .fixedSize(horizontal: false, vertical: true)
+        HStack(alignment: .firstTextBaseline, spacing: AppTheme.spacingSmall) {
+            Image(systemName: symbol)
+            Text(title)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .font(AppFonts.body)
+        .foregroundStyle(ClubhouseTheme.ink)
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private func planButton(_ option: ProProduct, title: String, identifier: String) -> some View {

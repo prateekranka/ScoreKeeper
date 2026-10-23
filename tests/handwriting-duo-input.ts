@@ -67,9 +67,8 @@ export async function assertIslandLayout(screen: Screen, scroll: Locator, expect
   const viewport = await scroll.boundingBox();
   if (!bounds || !viewport) throw new Error('The island or content scroll view has no native frame');
   const trailingGap = viewport.x + viewport.width - bounds.x - bounds.width;
-  const bottomGap = viewport.y + viewport.height - bounds.y - bounds.height;
-  const homeIndicatorInset = 34;
-  if (trailingGap < -1 || trailingGap > 24 || bottomGap < -1 || bottomGap > 24 + homeIndicatorInset ||
+  const bottomGap = bounds.y - viewport.y - viewport.height;
+  if (trailingGap < -1 || trailingGap > 24 || bottomGap < -1 || bottomGap > 24 ||
       bounds.x < viewport.x || bounds.y < viewport.y || Math.min(bounds.width, bounds.height) > 84) {
     throw new Error(`The island is not compact and bottom-trailing: ${JSON.stringify({bounds, viewport})}`);
   }

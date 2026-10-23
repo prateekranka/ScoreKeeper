@@ -60,7 +60,7 @@ struct HomeView: View {
             }
         }) { tool in
             HomeToolSheet(tool: tool, activeGame: inProgressGames.first, onStartNewGame: { startAfterToolDismissal = true })
-                .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
+                .presentationDetents(dynamicTypeSize.isAccessibilitySize || railInset > 0 ? [.large] : [.medium, .large])
         }
         .confirmationDialog(
             "delete active game?",
@@ -94,17 +94,11 @@ struct HomeView: View {
             HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
                 VStack(spacing: AppTheme.spacingMedium) {
                     gameActionSection
-                    upgradeSection
                 }
                 .frame(maxWidth: .infinity)
 
                 VStack(spacing: AppTheme.spacingMedium) {
-                    HomeDashboardRow(
-                        gamesCount: completedGames.count,
-                        activeCount: inProgressGames.count,
-                        playersCount: uniquePlayerCount
-                    )
-                    .staggeredEntrance(visible: sectionsVisible, index: 4)
+                    dashboardMetrics
 
                     HomeQuickToolsRow(selectedTool: $selectedTool)
                         .staggeredEntrance(visible: sectionsVisible, index: 5)
@@ -114,14 +108,8 @@ struct HomeView: View {
         } else {
             VStack(spacing: AppTheme.spacingMedium) {
                 gameActionSection
-                upgradeSection
 
-                HomeDashboardRow(
-                    gamesCount: completedGames.count,
-                    activeCount: inProgressGames.count,
-                    playersCount: uniquePlayerCount
-                )
-                .staggeredEntrance(visible: sectionsVisible, index: 4)
+                dashboardMetrics
 
                 HomeQuickToolsRow(selectedTool: $selectedTool)
                     .staggeredEntrance(visible: sectionsVisible, index: 5)
@@ -165,16 +153,14 @@ struct HomeView: View {
     }
 
     @ViewBuilder
-    private var upgradeSection: some View {
-        if storeManager.shouldShowFreeGamesSignal {
-            FreeGamesNote(
-                remainingFreeGames: storeManager.remainingFreeGames,
-                onUnlock: { storeManager.presentPaywall() }
+    private var dashboardMetrics: some View {
+        if !completedGames.isEmpty || !inProgressGames.isEmpty {
+            HomeDashboardRow(
+                gamesCount: completedGames.count,
+                activeCount: inProgressGames.count,
+                playersCount: uniquePlayerCount
             )
-            .staggeredEntrance(visible: sectionsVisible, index: 3)
-        } else if !storeManager.isPro {
-            PipCountUpgradeEntry(onUpgrade: { storeManager.presentPaywall() })
-                .staggeredEntrance(visible: sectionsVisible, index: 3)
+            .staggeredEntrance(visible: sectionsVisible, index: 4)
         }
     }
 
@@ -243,6 +229,7 @@ private struct HomeEmptyHero: View {
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.pipCountRailInset) private var railInset
 
     var body: some View {
         Group {
@@ -264,14 +251,14 @@ private struct HomeEmptyHero: View {
                         HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
                             copy
                             PipCountGeometricArtwork(scene: .homeEmpty)
-                                .frame(width: 118, height: 138)
+                                .frame(width: railInset > 0 ? 88 : 118, height: railInset > 0 ? 94 : 138)
                         }
                         NewGameButton(action: action)
                     }
                 }
             }
         }
-        .padding(AppTheme.spacingLarge)
+        .padding(railInset > 0 ? AppTheme.spacingMedium : AppTheme.spacingLarge)
         .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
     }
 
@@ -298,45 +285,6 @@ private struct NewGameButton: View {
             Label("start new game", systemImage: "plus")
         }
         .accessibilityIdentifier("new_game_button")
-    }
-}
-
-// MARK: - Entitlement signal
-
-private struct FreeGamesNote: View {
-    let remainingFreeGames: Int
-    let onUnlock: () -> Void
-
-    var body: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Text("\(remainingFreeGames.quantityText("free game")) left")
-                .font(AppFonts.label)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .monospacedDigit()
-                .accessibilityIdentifier("free_games_note")
-
-            Spacer(minLength: AppTheme.spacingSmall)
-
-            Button("upgrade to pipcount pro", action: onUnlock)
-                .font(AppFonts.label.weight(.bold))
-                .foregroundStyle(ClubhouseTheme.brass)
-                .frame(minHeight: 44)
-                .accessibilityIdentifier("home_upgrade_button")
-                .accessibilityLabel("Upgrade to PipCount Pro")
-        }
-        .padding(.horizontal, 2)
-    }
-}
-
-private struct PipCountUpgradeEntry: View {
-    let onUpgrade: () -> Void
-
-    var body: some View {
-        Button("PipCount Pro", action: onUpgrade)
-            .font(AppFonts.label.weight(.bold))
-            .foregroundStyle(ClubhouseTheme.brass)
-            .frame(minHeight: 44)
-            .accessibilityIdentifier("home_upgrade_button")
     }
 }
 
@@ -665,7 +613,6 @@ private struct RecentGameRow: View {
                         .foregroundStyle(ClubhouseTheme.ink)
                         .accessibilityIdentifier("recent_game_title_\(session.gameType.rawValue)")
                     Spacer()
-                    StampBadge(text: "final")
                 }
 
                 if dynamicTypeSize.isAccessibilitySize {
@@ -709,12 +656,15 @@ private struct RecentGameRow: View {
 
 private struct HomeStatsSection: View {
     @Environment(NavigationRouter.self) private var router
+    @Environment(\.pipCountRailInset) private var railInset
     let sessions: [GameSession]
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            Text("stats")
-                .columnHeaderStyle()
+            if railInset == 0 {
+                Text("stats")
+                    .columnHeaderStyle()
+            }
 
             Button {
                 router.push(.headToHead)
@@ -999,6 +949,7 @@ private struct ToolSheetContent: View {
 // MARK: - Player library
 
 struct SavedPlayersView: View {
+    @Environment(\.pipCountRailInset) private var railInset
     @Environment(NavigationRouter.self) private var router
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Query(sort: \SavedPlayer.lastUsed, order: .reverse) private var savedPlayers: [SavedPlayer]
@@ -1010,7 +961,7 @@ struct SavedPlayersView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
+            VStack(alignment: .leading, spacing: railInset > 0 ? 12 : AppTheme.spacingLarge) {
                 PlayersLibraryHero()
                     .pipCountRailHeader()
                     .staggeredEntrance(visible: contentVisible, index: 0)
@@ -1077,6 +1028,7 @@ struct SavedPlayersView: View {
 }
 
 private struct PlayersLibraryHero: View {
+    @Environment(\.pipCountRailInset) private var railInset
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     var body: some View {
@@ -1096,7 +1048,7 @@ private struct PlayersLibraryHero: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     PipCountGeometricArtwork(scene: .roster)
                         .aspectRatio(170.0 / 180.0, contentMode: .fit)
-                        .frame(maxWidth: 170, maxHeight: 180)
+                        .frame(maxWidth: railInset > 0 ? 130 : 170, maxHeight: railInset > 0 ? 140 : 180)
                 }
             }
         }
@@ -1120,6 +1072,7 @@ private struct PlayersLibraryHero: View {
 private struct SavedPlayerCard: View {
     @Environment(NavigationRouter.self) private var router
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.pipCountRailInset) private var railInset
     let player: SavedPlayer
     let index: Int
 
@@ -1142,7 +1095,7 @@ private struct SavedPlayerCard: View {
                     }
                 } else {
                     HStack(spacing: AppTheme.spacingMedium) {
-                        BauhausPlayerShape(colorIndex: player.colorIndex, size: 44)
+                        BauhausPlayerShape(colorIndex: player.colorIndex, size: railInset > 0 ? 34 : 44)
 
                         VStack(alignment: .leading, spacing: 3) {
                             playerName
@@ -1154,8 +1107,8 @@ private struct SavedPlayerCard: View {
                     }
                 }
             }
-            .padding(AppTheme.spacingMedium)
-            .frame(minHeight: 78)
+            .padding(railInset > 0 ? 12 : AppTheme.spacingMedium)
+            .frame(minHeight: railInset > 0 ? 68 : 78)
             .contentShape(Rectangle())
             .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
         }
