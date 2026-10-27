@@ -5,6 +5,7 @@ struct ScoringView: View {
     let sessionID: PersistentIdentifier
     @Environment(\.modelContext) private var modelContext
     @Environment(NavigationRouter.self) private var router
+    @Environment(\.pipCountUsesIsland) private var usesIsland
     @State private var showEndGameAlert = false
     @State private var saveError: String?
 
@@ -28,28 +29,31 @@ struct ScoringView: View {
                 Phase10ScoringView(session: session)
             }
         }
+        .environment(\.pipCountEndGame, { showEndGameAlert = true })
         .appBackground()
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    router.goHome()
-                } label: {
-                    Image(systemName: "house")
+            if !usesIsland {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        router.goHome()
+                    } label: {
+                        Image(systemName: "house")
+                    }
+                    .accessibilityLabel("Home")
+                    .accessibilityIdentifier("scoring_home_button")
+                    .foregroundStyle(ClubhouseTheme.ink)
                 }
-                .accessibilityLabel("Home")
-                .accessibilityIdentifier("scoring_home_button")
-                .foregroundStyle(ClubhouseTheme.ink)
-            }
 
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("end game") {
-                    showEndGameAlert = true
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("end game") {
+                        showEndGameAlert = true
+                    }
+                    .accessibilityIdentifier("end_game_button")
+                    .font(AppFonts.body)
+                    .foregroundStyle(ClubhouseTheme.red)
                 }
-                .accessibilityIdentifier("end_game_button")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.lacquer)
             }
         }
         .alert("end game?", isPresented: $showEndGameAlert) {
@@ -103,6 +107,7 @@ struct SessionLoader<Content: View>: View {
             content(session)
         } else {
             ContentUnavailableView("Game Not Found", systemImage: "exclamationmark.triangle")
+                .pipCountIsland { PipCountBackButton() }
         }
     }
 

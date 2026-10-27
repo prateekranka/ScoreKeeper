@@ -18,7 +18,7 @@ Playful, capable, polished. The product should feel friendly enough for a living
 
 ## Anti-references
 
-Avoid generic SaaS onboarding, heavy marketing copy, permission-driven first launch flows, paywall-first experiences, mascot art that feels unrelated to scorekeeping, and visual treatments that make the app feel slower than paper.
+Avoid generic SaaS onboarding, heavy marketing copy, permission-driven first launch flows, mascot art that feels unrelated to scorekeeping, and visual treatments that make the app feel slower than paper.
 
 ## Design Principles
 
@@ -26,7 +26,7 @@ Avoid generic SaaS onboarding, heavy marketing copy, permission-driven first lau
 - Show the game loop: onboarding and empty states should demonstrate setup, scoring, tools, and history through concrete app-like moments.
 - Make trust visible: score totals, history, rematches, and undo affordances should feel dependable and easy to verify.
 - Stay playful without losing control: color and motion can carry energy, but controls must remain familiar, readable, and reachable.
-- Respect first launch: explain value quickly, allow skipping, and avoid monetization or review prompts before the user has played.
+- Respect first launch: explain value quickly and allow skipping onboarding. A paywall after onboarding is intentional. Keep an easy exit, clear pricing, and access to active games and history. Ask for notification permission only after trial purchase or exit-offer dismissal.
 
 ## Accessibility & Inclusion
 

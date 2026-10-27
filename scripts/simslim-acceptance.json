@@ -1,0 +1,5 @@
+{
+  "name": "pipcount-native-acceptance",
+  "description": "Keep recognition, purchases, notifications, identity and sharing available",
+  "except": ["siri", "store", "icloud", "web", "connectivity", "telemetry", "family", "photos", "other"]
+}

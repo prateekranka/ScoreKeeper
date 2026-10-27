@@ -15,11 +15,21 @@ jobs:
   build:
     name: Build iPhone and iPad app
     runs-on: macos-26
-    timeout-minutes: 30
+    timeout-minutes: 35
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.2'
+          cache: npm
+
+      - name: Install acceptance tools
+        run: |
+          npm ci
+          brew install mobai-app/tap/simslim
 
       - name: Show Xcode version
         run: xcodebuild -version
@@ -47,14 +57,17 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Launch on iPhone and iPad simulators
-        run: bash scripts/smoke_simulators.sh
+      - name: Accept iPhone and iPad sequentially
+        run: python3 scripts/run_native_acceptance.py --devices iphone,ipad --app "$RUNNER_TEMP/PipCountDerivedData/Build/Products/Debug-iphonesimulator/ScoreKeeper.app" --output .e2e-ci
+        env:
+          DO_NOT_TRACK: '1'
 
-      - name: Upload light-mode simulator evidence
+      - name: Upload native acceptance evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pipcount-light-mode-simulator-evidence
-          path: build-evidence/*.png
-          if-no-files-found: error
+          name: pipcount-native-acceptance
+          path: .e2e-ci
+          include-hidden-files: true
+          if-no-files-found: warn
           retention-days: 14

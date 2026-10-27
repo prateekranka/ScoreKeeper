@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct GamePickerView: View {
+    @Environment(StoreManager.self) private var storeManager
     @Environment(NavigationRouter.self) private var router
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -12,13 +13,20 @@ struct GamePickerView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
                 GamePickerHero()
+                    .pipCountRailHeader()
                     .staggeredEntrance(visible: contentVisible, index: 0)
 
                 LazyVGrid(columns: gridColumns, spacing: AppTheme.spacingLarge) {
                     ForEach(Array(gameTypes.enumerated()), id: \.element.id) { index, gameType in
                         GameTypeTile(
                             gameType: gameType,
-                            action: { router.push(.playerSetup(gameType)) },
+                            action: {
+                                if storeManager.canStartNewGame {
+                                    router.push(.playerSetup(gameType))
+                                } else {
+                                    storeManager.presentPaywall(afterPurchase: { router.push(.playerSetup(gameType)) })
+                                }
+                            },
                             accessibilityID: "game_tile_\(gameType.rawValue)"
                         )
                         .staggeredEntrance(visible: contentVisible, index: index + 1)
@@ -29,7 +37,9 @@ struct GamePickerView: View {
             .padding(.top, AppTheme.spacingSmall)
             .padding(.bottom, AppTheme.spacingXLarge)
             .pipCountPageContent()
+            .pipCountScrollContent()
         }
+        .accessibilityIdentifier("games_content_scroll")
         .appBackground()
         .navigationTitle("")
         .toolbar(horizontalSizeClass == .regular ? .visible : .hidden, for: .navigationBar)
@@ -47,7 +57,6 @@ struct GamePickerView: View {
         return [GridItem(.flexible(), alignment: .top)]
     }
 
-
 }
 
 private struct GamePickerHero: View {
@@ -56,8 +65,7 @@ private struct GamePickerHero: View {
             Text("choose a game")
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
-                .lineLimit(1)
-                .minimumScaleFactor(0.62)
+                .fixedSize(horizontal: false, vertical: true)
 
             Rectangle()
                 .fill(ClubhouseTheme.blue)

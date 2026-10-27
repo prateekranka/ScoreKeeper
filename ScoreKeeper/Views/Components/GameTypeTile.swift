@@ -5,6 +5,7 @@ struct GameTypeTile: View {
     let action: () -> Void
     var accessibilityID: String? = nil
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.pipCountRailInset) private var railInset
 
     var body: some View {
         Button(action: action) {
@@ -12,7 +13,7 @@ struct GameTypeTile: View {
                 if !dynamicTypeSize.isAccessibilitySize {
                     GamePickerArtwork(gameType: gameType)
                         .frame(maxWidth: .infinity)
-                        .aspectRatio(4 / 3, contentMode: .fit)
+                        .aspectRatio(railInset > 0 ? 1.5 : 4 / 3, contentMode: .fit)
                         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
 
@@ -57,12 +58,6 @@ struct GameTypeTile: View {
                 .minimumScaleFactor(0.78)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text(gameType.subtitle)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .multilineTextAlignment(.leading)
-                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
-                .fixedSize(horizontal: false, vertical: true)
         }
     }
 

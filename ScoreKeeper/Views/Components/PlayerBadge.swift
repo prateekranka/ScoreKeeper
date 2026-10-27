@@ -13,15 +13,15 @@ enum BadgeSize {
 
     var font: Font {
         switch self {
-        case .small: return .caption.bold()
-        case .medium: return .subheadline.bold()
+        case .small: return .body.bold()
+        case .medium: return .body.bold()
         case .large: return .title3.bold()
         }
     }
 
     var nameFont: Font {
         switch self {
-        case .small: return AppFonts.caption
+        case .small: return AppFonts.label
         case .medium: return AppFonts.body
         case .large: return AppFonts.headline
         }
@@ -29,6 +29,7 @@ enum BadgeSize {
 }
 
 struct PlayerBadge: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     let name: String
     let colorIndex: Int
     var size: BadgeSize = .medium
@@ -43,7 +44,8 @@ struct PlayerBadge: View {
                 Text(name)
                     .font(size.nameFont)
                     .foregroundStyle(ClubhouseTheme.ink)
-                    .lineLimit(1)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
+                    .fixedSize(horizontal: false, vertical: true)
                     .truncationMode(.tail)
             }
         }
@@ -54,12 +56,12 @@ struct PlayerBadge: View {
 
 struct PlayerGlyph: View {
     let colorIndex: Int
-    var font: Font = AppFonts.caption
+    var font: Font = AppFonts.label
 
     var body: some View {
         Text(PlayerColors.glyph(for: colorIndex))
             .font(font)
-            .foregroundStyle(PlayerColors.color(for: colorIndex))
+            .foregroundStyle(ClubhouseTheme.ink)
             .accessibilityHidden(true)
     }
 }

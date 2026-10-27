@@ -37,7 +37,6 @@ KEY_SCREEN_SCENES = {
     "Views/Scoring/RoundEntryDeckView.swift": {"handwriting"},
     "Views/Components/ScoringComponents.swift": {"scoring"},
     "Views/Summary/GameOverView.swift": {"gameOver"},
-    "Views/Paywall/PaywallView.swift": {"paywall"},
 }
 
 FORBIDDEN_VISUAL_TERMS = (
@@ -150,6 +149,18 @@ def validate_key_screen_routing() -> None:
         fail("GamePickerView.swift is missing the approved 4:3 GameTypeTile artwork")
 
 
+def validate_paywall_controls() -> None:
+    source = (APP_ROOT / "Views" / "Paywall" / "PaywallView.swift").read_text(encoding="utf-8")
+    for identifier in ("paywall_close_button", "paywall_restore_button", "paywall_primary_button", "paywall_retry_button"):
+        if identifier not in source:
+            fail(f"Paywall is missing {identifier}")
+    if "ForEach(availablePlans" not in source:
+        fail("Paywall plans must come from loaded products")
+    root_source = (APP_ROOT / "App" / "ContentView.swift").read_text(encoding="utf-8")
+    if "PaywallView(route: route)" not in root_source:
+        fail("The root must present the shared paywall route")
+
+
 def validate_universal_target() -> None:
     if not PROJECT_FILE.exists():
         fail("Missing Xcode project file")
@@ -203,6 +214,7 @@ def main() -> None:
     validate_motion_engine()
     validate_key_screen_routing()
     validate_universal_target()
+    validate_paywall_controls()
     validate_no_direct_rejected_asset_usage()
     validate_unique_public_view_types()
     print("PipCount redesign integrity checks passed.")

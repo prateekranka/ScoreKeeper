@@ -10,7 +10,7 @@ Legend:
 - **Gap**: no useful proof.
 - **Manual**: the system or visual behavior is not reliable in automation.
 
-Verification checkpoint (2026-08-23): 35 unit tests, 23 main UI tests, 3 legal/review UI tests, standard and extended tours, Reduce Motion, accessibility-extra-large Dynamic Type, and dark-mode evidence all passed. Remaining gaps below are explicit release risks, not silent omissions.
+Verification checkpoint (2026-08-23): 23 main UI checks, 3 legal/review UI checks, standard and extended tours, Reduce Motion, accessibility-extra-large Dynamic Type, and dark-mode evidence all passed. Remaining gaps below are explicit release risks, not silent omissions.
 
 ## Release gate: P0
 
@@ -19,7 +19,7 @@ Verification checkpoint (2026-08-23): 35 unit tests, 23 main UI tests, 3 legal/r
 | Onboarding | Complete or Skip persists; relaunch opens Home | Covered | focused UI relaunch test |
 | Player count | 1 blocked; 2 and 15 allowed; 16 blocked | Gap | pure validation test |
 | Player names | Empty and whitespace-only blocked; trim cannot bypass duplicate check | Partial | duplicate-name UI test; pure boundary coverage still missing |
-| Generic scoring | Direct Ledger Rail submit creates one round with one entry per player | Covered | SwiftData integration + direct UI smoke |
+| Generic scoring | Direct Ledger Rail submit creates one round with one entry per player | Covered | Historical direct UI smoke; rerun with TesterArmy e2e |
 | Round persistence | Submitted round, totals, and next round survive relaunch | Partial | SwiftData persistence + resume UI; disk relaunch proof still missing |
 | Save rollback | Failed round save leaves no partial round or entries | Gap | integration with failing save seam |
 | End game rollback | Failed completion save stays in scoring and keeps game active | Gap | integration |
@@ -32,7 +32,7 @@ Verification checkpoint (2026-08-23): 35 unit tests, 23 main UI tests, 3 legal/r
 | Active deletion | Cancel changes nothing; confirm persists and cascades only the game | Gap | integration + UI confirmation |
 | History deletion | Confirmed deletion remains deleted after relaunch | Gap | integration |
 | Missing route | Invalid scoring, detail, or game-over identifier shows safe unavailable state | Gap | focused UI test |
-| Stats | Games, wins, average, best rank, ties, and no-data values are correct | Covered | pure unit tests + extended stats UI |
+| Stats | Games, wins, average, best rank, ties, and no-data values are correct | Covered | Historical extended stats UI; rerun with TesterArmy e2e |
 | Pro purchase | Verified purchase unlocks and persists; pending/unverified do not unlock | Partial | StoreKit state/config tests; native purchase remains manual |
 | Restore | Entitlement restores; no purchase stays locked; failure remains retryable | Gap | StoreKit adapter/local configuration |
 | Review ask | Counts 2 and 5 only; first session, 120-day, paywall, and duplicate gates | Covered | pure manager tests + native-prompt UI |
@@ -52,7 +52,7 @@ Verification checkpoint (2026-08-23): 35 unit tests, 23 main UI tests, 3 legal/r
 | Tools | Timer, dice, starter, undo, and log never corrupt game state | Partial | deterministic extended UI smoke; state-isolation proof remains missing |
 | Theme | Light, dark, and system selection persists across relaunch | Partial | deterministic dark UI tour; persistence proof remains missing |
 | Reduce Motion | No confetti or movement fallback; data and navigation timing unchanged | Covered | full workflow with system Reduce Motion + 14-screen evidence |
-| Corrupt metadata | Invalid phase JSON and unknown enum values recover without crash | Covered | model unit tests |
+| Corrupt metadata | Invalid phase JSON and unknown enum values recover without crash | Unverified | Needs a TesterArmy system fixture |
 | Handwriting retirement | Legacy launch flag cannot restore the retired handwriting flow | Covered | focused UI regression, RED before code |
 
 ## Manual device and system checks

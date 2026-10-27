@@ -76,7 +76,6 @@ struct Phase10ScoringView: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             AppSectionHeader(
                 title: "current stages",
-                subtitle: "write this round's leftover points with the score deck",
                 systemImage: "flag.checkered"
             )
 
@@ -87,7 +86,7 @@ struct Phase10ScoringView: View {
                     HStack(spacing: AppTheme.spacingSmall) {
                         PlayerColorPip(colorIndex: player.colorIndex)
 
-                        PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.caption)
+                        PlayerGlyph(colorIndex: player.colorIndex, font: AppFonts.label)
 
                         VStack(alignment: .leading, spacing: 1) {
                             Text(player.name)
@@ -96,7 +95,7 @@ struct Phase10ScoringView: View {
                                 .lineLimit(1)
 
                             Text("\(totalPoints) \(totalPoints == 1 ? "point" : "points")")
-                                .font(AppFonts.caption)
+                                .font(AppFonts.label)
                                 .foregroundStyle(ClubhouseTheme.inkMuted)
                                 .monospacedDigit()
                         }
@@ -137,14 +136,14 @@ struct Phase10ScoringView: View {
         if currentPhase < 10 {
             if session.phase10SkipOnFail {
                 Label("stage \(currentPhase + 1) completed", systemImage: "checkmark.circle.fill")
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.felt)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("stage_status_\(player.name)")
             } else {
                 Toggle(isOn: completedPhaseBinding(for: player)) {
                     Text("stage \(currentPhase + 1) completed")
-                        .font(AppFonts.caption)
+                        .font(AppFonts.label)
                 }
                 .toggleStyle(.switch)
                 .tint(ClubhouseTheme.felt)
@@ -152,7 +151,7 @@ struct Phase10ScoringView: View {
             }
         } else {
             Label("all ten stages done", systemImage: "checkmark.seal.fill")
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(ClubhouseTheme.felt)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityIdentifier("stage_status_\(player.name)")

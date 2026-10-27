@@ -166,26 +166,18 @@ private struct GenericTotalsList: View {
                 ? AnyLayout(VStackLayout(alignment: .leading, spacing: AppTheme.spacingSmall))
                 : AnyLayout(HStackLayout(alignment: .firstTextBaseline))
             layout {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("running totals").font(AppFonts.title).foregroundStyle(ClubhouseTheme.ink)
-                    Text("add this round with handwriting").font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted)
-                }
-                if !dynamicTypeSize.isAccessibilitySize { Spacer() }
-                Text(session.winCondition == .highestScore ? "highest wins" : "lowest wins")
-                    .columnHeaderStyle().foregroundStyle(ClubhouseTheme.blue)
+                Text("running totals").font(AppFonts.title).foregroundStyle(ClubhouseTheme.ink)
+                    .accessibilityLabel("running totals, \(session.winCondition == .highestScore ? "highest wins" : "lowest wins")")
             }
             .padding(AppTheme.spacingMedium)
             Rectangle().fill(ClubhouseTheme.rule).frame(height: 1)
             ForEach(Array(session.players.enumerated()), id: \.element.id) { index, player in
-                let lastEntry = session.sortedRounds.last?.entries.first(where: { $0.playerID == player.id })
                 layout {
                     BauhausPlayerShape(colorIndex: player.colorIndex, size: 34)
                     VStack(alignment: .leading, spacing: 1) {
                         Text(player.name).font(AppFonts.headline).foregroundStyle(ClubhouseTheme.ink)
                             .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                             .fixedSize(horizontal: false, vertical: true)
-                        Text(lastRoundText(lastEntry))
-                            .font(AppFonts.caption).foregroundStyle(ClubhouseTheme.inkMuted).monospacedDigit()
                     }
                     if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                     Text("\(player.totalScore(in: session))").font(AppFonts.scoreMedium).monospacedDigit().foregroundStyle(ClubhouseTheme.ink)
@@ -201,12 +193,6 @@ private struct GenericTotalsList: View {
         .accessibilityLabel("Round \(session.currentRoundNumber) running totals")
     }
 
-    /// A submitted zero is a score: show it. Only a round that has no entry
-    /// for this player reads as absent.
-    private func lastRoundText(_ entry: ScoreEntry?) -> String {
-        guard let entry else { return "no score last round" }
-        return "last round \(entry.points > 0 ? "+\(entry.points)" : "\(entry.points)")"
-    }
 }
 
 #if DEBUG

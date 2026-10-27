@@ -1,6 +1,17 @@
 import SwiftUI
 import SwiftData
 
+private struct PipCountEndGameKey: EnvironmentKey {
+    static let defaultValue: @MainActor @Sendable () -> Void = {}
+}
+
+extension EnvironmentValues {
+    var pipCountEndGame: @MainActor @Sendable () -> Void {
+        get { self[PipCountEndGameKey.self] }
+        set { self[PipCountEndGameKey.self] = newValue }
+    }
+}
+
 enum ScoringHeaderStyle {
     case hero
     case compact
@@ -18,6 +29,9 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @ViewBuilder var content: Content
     @ViewBuilder var footer: Footer
 
+    @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
+    @Environment(\.pipCountEndGame) private var endGame
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var selectedTool: ScoringTool?
@@ -33,7 +47,19 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
 
     var body: some View {
         GeometryReader { proxy in
-            if dynamicTypeSize.isAccessibilitySize {
+            if usesIsland {
+                ScrollView {
+                    VStack(spacing: AppTheme.spacingMedium) {
+                        scoringHeader(availableWidth: proxy.size.width)
+                        responsiveContent(availableWidth: proxy.size.width)
+                            .padding(.horizontal, AppTheme.spacingMedium)
+                            .pipCountPageContent(maxWidth: 980)
+                    }
+                    .padding(.bottom, AppTheme.spacingLarge)
+                    .pipCountScrollContent()
+                }
+                .accessibilityIdentifier("scoring_content_scroll")
+            } else if dynamicTypeSize.isAccessibilitySize {
                 ScrollView {
                     VStack(spacing: AppTheme.spacingMedium) {
                         scoringHeader(availableWidth: proxy.size.width)
@@ -62,9 +88,33 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
                 }
             }
         }
+        .pipCountIsland {
+            PipCountBackButton()
+            PipCountIslandButton(title: actionTitle, systemImage: actionSystemImage ?? "plus", identifier: "submit_round_button", isSelected: true, action: performAction)
+                .disabled(isActionLocked)
+            PipCountIslandButton(title: "undo", systemImage: "arrow.uturn.backward", identifier: "undo_last_round_button") {
+                if undoLastRound() { undoTrigger &+= 1 }
+            }
+            .disabled(session.sortedRounds.isEmpty)
+            .sensoryFeedback(.warning, trigger: undoTrigger)
+            PipCountIslandButton(title: "round log", systemImage: "list.bullet", identifier: "round_log_button") {
+                selectedTool = .log
+            }
+            Menu {
+                ForEach(ScoringTool.allCases.filter { $0 != .log }) { tool in
+                    Button(tool.title, systemImage: tool.systemImage) { selectedTool = tool }
+                }
+                Button("end game", systemImage: "flag.checkered", role: .destructive, action: endGame)
+                    .accessibilityIdentifier("end_game_button")
+            } label: {
+                PipCountIslandLabel(title: "Tools", systemImage: "ellipsis")
+            }
+            .accessibilityLabel("Tools")
+            .accessibilityIdentifier("scoring_tools_button")
+        }
         .sheet(item: $selectedTool) { tool in
             ScoringToolSheet(tool: tool, session: session)
-                .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
+                .presentationDetents(dynamicTypeSize.isAccessibilitySize || railInset > 0 ? [.large] : [.medium, .large])
         }
         .alert(
             "couldn’t update rounds",
@@ -91,8 +141,9 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
             }
         }
         .pipCountPageContent(maxWidth: 980)
+        .pipCountRailHeader()
 
-        if showsToolsBar {
+        if showsToolsBar && !usesIsland {
             ScoringToolsBar(session: session, selectedTool: $selectedTool)
                 .pipCountPageContent(maxWidth: 980)
         }
@@ -179,7 +230,6 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
         Label(title, systemImage: systemImage)
             .font(dynamicTypeSize.isAccessibilitySize ? .body.weight(.semibold) : AppFonts.body.weight(.semibold))
             .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-            .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.65)
             .fixedSize(horizontal: false, vertical: true)
             .multilineTextAlignment(.center)
             .padding(.horizontal, 8)
@@ -247,7 +297,6 @@ private struct CompactScoringGameHeader: View {
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                        .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.7)
                 }
 
                 Text("round \(session.currentRoundNumber)")
@@ -255,12 +304,7 @@ private struct CompactScoringGameHeader: View {
                     .foregroundStyle(ClubhouseTheme.blue)
                     .monospacedDigit()
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                    .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.7)
 
-                Text(session.players.count.quantityText("player").uppercased())
-                    .columnHeaderStyle()
-                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                    .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.7)
             }
 
             Spacer(minLength: AppTheme.spacingSmall)
@@ -320,15 +364,11 @@ private struct ScoringGameHeader: View {
 
     private var headerCopy: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("pipcount")
-                .font(AppFonts.headline)
-                .foregroundStyle(ClubhouseTheme.ink)
 
             Text(session.gameType.displayName)
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(2)
-                .minimumScaleFactor(0.75)
 
             Text("round \(session.currentRoundNumber)")
                 .font(AppFonts.title)
@@ -344,7 +384,7 @@ private struct ScoringGameHeader: View {
 
                 if session.currentRoundNumber > 6 {
                     Text("+\(session.currentRoundNumber - 6)")
-                        .font(AppFonts.caption.weight(.bold))
+                        .font(AppFonts.label.weight(.bold))
                         .foregroundStyle(ClubhouseTheme.blue)
                 }
             }
@@ -412,7 +452,6 @@ private struct ScoringToolsBar: View {
                 .rotationEffect(.degrees(-2))
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                 .fixedSize(horizontal: false, vertical: true)
-                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.75)
                 .accessibilityLabel("\(session.gameType.displayName), Round \(session.currentRoundNumber)")
 
             if !dynamicTypeSize.isAccessibilitySize { Spacer() }
@@ -446,6 +485,8 @@ private struct ScoringToolSheet: View {
     let tool: ScoringTool
     let session: GameSession
 
+    @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -459,7 +500,7 @@ private struct ScoringToolSheet: View {
             ScrollView {
                 VStack(spacing: tool == .log ? AppTheme.spacingMedium : AppTheme.spacingLarge) {
                     ToolArtwork(tool: tool)
-                        .frame(width: tool == .log ? 100 : 150, height: tool == .log ? 80 : 120)
+                        .frame(width: tool == .log || railInset > 0 ? 100 : 150, height: tool == .log || railInset > 0 ? 80 : 120)
                         .accessibilityHidden(true)
 
                     Text(tool.title)
@@ -469,13 +510,22 @@ private struct ScoringToolSheet: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(AppTheme.spacingLarge)
+                .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
+                .pipCountScrollContent()
             }
+            .accessibilityIdentifier("scoring_tool_content_scroll")
             .appBackground()
             .navigationTitle(tool.title)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarVisibility(usesIsland ? .hidden : .automatic, for: .navigationBar)
+            .pipCountIsland {
+                PipCountIslandButton(title: "done", systemImage: "xmark", identifier: "scoring_tool_done_button") { dismiss() }
+            }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("done") { dismiss() }
+                if !usesIsland {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("done") { dismiss() }
+                    }
                 }
             }
         }
@@ -489,7 +539,7 @@ private struct ScoringToolSheet: View {
         case .dice:
             VStack(spacing: AppTheme.spacingMedium) {
                 Text("\(dieRoll)")
-                    .font(.system(size: 76, weight: .black, design: .default))
+                    .font(AppFonts.display)
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.ink)
                     .contentTransition(.numericText(value: Double(dieRoll)))
@@ -519,7 +569,7 @@ private struct ScoringToolSheet: View {
         VStack(spacing: AppTheme.spacingMedium) {
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 Text(formattedTimer(at: context.date))
-                    .font(.system(size: 64, weight: .black, design: .default))
+                    .font(AppFonts.display)
                     .monospacedDigit()
                     .foregroundStyle(ClubhouseTheme.ink)
                     .contentTransition(.numericText())
@@ -562,11 +612,7 @@ private struct ScoringToolSheet: View {
                     Text("no rounds yet")
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.ink)
-                    Text("saved rounds appear here after you enter the scores")
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
+
                 }
                 .frame(maxWidth: .infinity)
                 .padding(AppTheme.spacingMedium)
@@ -671,8 +717,8 @@ private struct ToolArtwork: View {
 
             if tool == .dice {
                 Text("1–6")
-                    .font(.system(size: 24, weight: .black, design: .default))
-                    .foregroundStyle(ClubhouseTheme.ink)
+                    .font(AppFonts.title)
+                    .foregroundStyle(ClubhouseTheme.onYellow)
             } else {
                 Image(systemName: tool.systemImage)
                     .font(.system(size: 32, weight: .bold, design: .default))
@@ -737,7 +783,7 @@ struct RoundBanner: View {
             Spacer()
 
             Text(subtitle)
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .multilineTextAlignment(.trailing)
         }
@@ -755,7 +801,6 @@ struct RoundHistoryStrip: View {
             VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 AppSectionHeader(
                     title: "rounds",
-                    subtitle: "\(session.sortedRounds.count) submitted",
                     systemImage: "clock.arrow.circlepath"
                 )
 
@@ -793,7 +838,7 @@ struct RoundHistoryStrip: View {
                     PlayerColorPip(colorIndex: player.colorIndex, size: 10)
 
                     Text(player.name)
-                        .font(AppFonts.caption)
+                        .font(AppFonts.label)
                         .foregroundStyle(ClubhouseTheme.ink)
                         .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                         .fixedSize(horizontal: false, vertical: true)
@@ -802,7 +847,7 @@ struct RoundHistoryStrip: View {
                     if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: AppTheme.spacingSmall) }
 
                     Text("\(round.entry(for: player.id)?.points ?? 0)")
-                        .font(AppFonts.caption.weight(.semibold))
+                        .font(AppFonts.label.weight(.semibold))
                         .monospacedDigit()
                         .foregroundStyle(ClubhouseTheme.ink)
                 }

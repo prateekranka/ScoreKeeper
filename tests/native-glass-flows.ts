@@ -1,6 +1,8 @@
 import { type Device } from '@e2e-dev/mobile';
+import { scrollMainContent } from './handwriting-layout-scroll';
 import { expect, type Screen } from 'e2e';
 import {
+  foldIfSupported,
   enterKeyboardText,
   captureState,
   drawSeven,
@@ -44,7 +46,8 @@ export async function returnToPlayersDock(screen: Screen): Promise<void> {
   const playersTab = screen.getByTestId('tab_players');
   for (let attempt = 0; attempt < 3; attempt += 1) {
     if (await playersTab.isVisible() || await screen.getByTestId('add_new_player_button').isVisible()) return;
-    const backButton = screen.getByTestId('BackButton');
+    const islandBack = screen.getByTestId('island_back_button');
+    const backButton = await islandBack.isVisible() ? islandBack : screen.getByTestId('BackButton');
     await expect(backButton).toBeVisible();
     await tapNativeControl(screen, backButton);
   }
@@ -86,7 +89,7 @@ export async function launchFreshJourney(
       ...extraArguments,
     ],
   });
-  await device.fold('closed');
+  await foldIfSupported(device, 'closed');
   await device.setOrientation('portrait');
   await finishOnboarding(app, screen);
   await tapTab(screen, 'Home');
@@ -138,18 +141,19 @@ export async function startGameFromHome(
   kind: GameKind,
   players: TwoPlayers,
   prefix: string,
-  options: { duplicateValidation?: boolean; stopAfterSettings?: boolean; targetScore?: string } = {},
+  options: { duplicateValidation?: boolean; stopAfterSettings?: boolean; targetScore?: string; device?: Device } = {},
 ): Promise<void> {
   await tapTab(screen, 'Games');
   const tile = screen.getByTestId(gameTiles[kind]);
-  await scrollControlAboveTabDock(screen, tile, 'tab_games', `${kind} game tile`);
+  if (options.device) await scrollMainContent(screen, options.device, tile, 'down');
+  else await scrollControlAboveTabDock(screen, tile, 'tab_games', `${kind} game tile`);
   await expect(tile).toBeVisible();
   await captureState(app, `${prefix}-game-picker`, `game picker before ${kind}`);
   await tile.tap();
 
   await addPlayers(app, screen, players, prefix, options.duplicateValidation ?? false);
   if (kind !== 'whatsForDinner') {
-    await expect(screen.getByText('game settings', { exact: true })).toBeVisible();
+    await expect(screen.getByText('rules for tonight', { exact: true })).toBeVisible();
     if (kind === 'generic') {
       const targetField = screen.getByTestId('target_score_field');
       await expect(targetField).toBeVisible();
@@ -272,6 +276,8 @@ export async function scoreManualRound(
 }
 
 export async function finishCurrentGame(app: ScreenshotApp, screen: Screen, winner: string, prefix: string): Promise<void> {
+  const tools = screen.getByTestId('scoring_tools_button');
+  if (await tools.isVisible()) await tapNativeControl(screen, tools);
   await tapNativeControl(screen, screen.getByTestId('end_game_button').last());
   await screen.getByRole('button', 'end game', { exact: true }).last().tap();
   await expect(screen.getByTestId('winner_text').first()).toContainText(winner.toLowerCase());

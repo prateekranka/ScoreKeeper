@@ -33,10 +33,10 @@ struct PlayerStatsView: View {
 
     private var metrics: [PlayerStatMetric] {
         [
-            PlayerStatMetric(title: "games", value: "\(stats.gamesPlayed)", detail: "played", tint: ClubhouseTheme.blue),
-            PlayerStatMetric(title: "wins", value: "\(stats.wins)", detail: "finished first", tint: ClubhouseTheme.red),
-            PlayerStatMetric(title: "win rate", value: String(format: "%.0f%%", stats.winRate * 100), detail: "all games", tint: ClubhouseTheme.green),
-            PlayerStatMetric(title: "average", value: String(format: "%.0f", stats.avgScore), detail: "score", tint: ClubhouseTheme.ink)
+            PlayerStatMetric(title: "games", value: "\(stats.gamesPlayed)", tint: ClubhouseTheme.blue),
+            PlayerStatMetric(title: "wins", value: "\(stats.wins)", tint: ClubhouseTheme.red),
+            PlayerStatMetric(title: "win rate", value: String(format: "%.0f%%", stats.winRate * 100), tint: ClubhouseTheme.green),
+            PlayerStatMetric(title: "average", value: String(format: "%.0f", stats.avgScore), tint: ClubhouseTheme.ink)
         ]
     }
 
@@ -57,6 +57,7 @@ struct PlayerStatsView: View {
             ScrollView {
                 VStack(spacing: AppTheme.spacingLarge) {
                     statsHero(availableWidth: proxy.size.width)
+                        .pipCountRailHeader()
                         .staggeredEntrance(visible: contentVisible, index: 0)
 
                     responsiveContent(availableWidth: proxy.size.width)
@@ -65,6 +66,7 @@ struct PlayerStatsView: View {
                 .padding(.top, AppTheme.spacingSmall)
                 .padding(.bottom, AppTheme.spacingLarge)
                 .pipCountPageContent(maxWidth: 1_080)
+                .pipCountScrollContent()
             }
         }
         .appBackground()
@@ -143,13 +145,6 @@ struct PlayerStatsView: View {
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(2)
-                .minimumScaleFactor(0.72)
-
-            Text("every result, remembered")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .lineLimit(1)
-                .minimumScaleFactor(0.68)
 
             Rectangle()
                 .fill(ClubhouseTheme.blue)
@@ -188,11 +183,6 @@ struct PlayerStatsView: View {
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text("finish a game with \(SavedPlayer.displayName(for: playerName)) and their history will appear here")
-                    .font(AppFonts.body)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity)
             .padding(AppTheme.spacingLarge)
@@ -254,13 +244,13 @@ struct PlayerStatsView: View {
                 HStack(spacing: 6) {
                     if let date = session.completedAt {
                         Text(ShortDate.string(from: date))
-                            .font(AppFonts.caption)
+                            .font(AppFonts.label)
                     }
 
                     Text("•")
                     Text(session.sortedRounds.count.quantityText("round"))
                 }
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
@@ -278,7 +268,7 @@ struct PlayerStatsView: View {
             }
 
             Image(systemName: "chevron.right")
-                .font(.caption.weight(.bold))
+                .font(.body.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.inkMuted)
         }
         .padding(AppTheme.spacingSmall)
@@ -302,7 +292,7 @@ struct PlayerStatsView: View {
                         router.push(.headToHead)
                     } label: {
                         Text("compare")
-                            .font(AppFonts.caption.weight(.bold))
+                            .font(AppFonts.label.weight(.bold))
                             .foregroundStyle(ClubhouseTheme.blue)
                     }
                     .buttonStyle(PressableButtonStyle())
@@ -344,12 +334,12 @@ struct PlayerStatsView: View {
                         .foregroundStyle(ClubhouseTheme.ink)
 
                     Text(String(format: "%.0f%%", rate * 100))
-                        .font(AppFonts.caption)
+                        .font(AppFonts.label)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
                 Image(systemName: "chevron.right")
-                    .font(.caption.weight(.bold))
+                    .font(.body.weight(.bold))
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
             .padding(.horizontal, AppTheme.spacingSmall)
@@ -371,7 +361,7 @@ private struct PlayerMatchup: Identifiable {
 private struct PlayerStatMetric: Identifiable {
     let title: String
     let value: String
-    let detail: String
+    var detail = ""
     let tint: Color
 
     var id: String { title }
@@ -392,16 +382,17 @@ private struct PlayerStatMetricCard: View {
                 .monospacedDigit()
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
-                .minimumScaleFactor(0.62)
 
             Text(metric.title)
-                .font(AppFonts.caption.weight(.bold))
+                .font(AppFonts.label.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            Text(metric.detail)
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .lineLimit(1)
+            if !metric.detail.isEmpty {
+                Text(metric.detail)
+                    .font(AppFonts.label)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .lineLimit(1)
+            }
         }
         .padding(AppTheme.spacingSmall)
         .frame(maxWidth: .infinity, minHeight: 112, alignment: .leading)
