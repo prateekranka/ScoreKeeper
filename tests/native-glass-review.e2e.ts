@@ -1,6 +1,6 @@
 import { test } from '@e2e-dev/mobile';
 import { expect, type Locator, type Screen } from 'e2e';
-import { captureState, finishOnboarding, tapTab } from './handwriting-helpers';
+import { captureState, finishOnboarding, tapNativeControl, tapTab } from './handwriting-helpers';
 import { assertClearOfIsland } from './handwriting-duo-input';
 import { finishCurrentGame, startGameFromHome, openRoundDeck, scoreManualRound } from './native-glass-flows';
 
@@ -47,8 +47,8 @@ for (const appearance of ['light', 'dark'] as const) {
       await aboveIsland(screen, screen.getByTestId('round_history_1_card'));
       await expect(screen.getByText(/no score last round|last round \+|submitted|2 PLAYERS/)).toBeHidden();
       await captureState(app, `review-${appearance}-scoring`, 'Scores and the complete round card stay above the island at rest');
-      await screen.getByTestId('scoring_tools_button').tap();
-      await screen.getByRole('button', 'timer', { exact: true }).tap();
+      await tapNativeControl(screen, screen.getByTestId('scoring_tools_button'));
+      await tapNativeControl(screen, screen.getByRole('button', 'timer', { exact: true }));
       await expect(screen.getByTestId('scoring_tool_done_button')).toBeVisible();
       const preset = screen.getByRole('button', '2m', { exact: true });
       const reset = screen.getByRole('button', 'reset', { exact: true });
@@ -59,16 +59,16 @@ for (const appearance of ['light', 'dark'] as const) {
       const closeFrame = await screen.getByTestId('scoring_tool_done_button').boundingBox();
       if (!resetFrame || !closeFrame) throw new Error('Timer controls have no current frame');
       expect(resetFrame.x + resetFrame.width).toBeLessThanOrEqual(closeFrame.x + closeFrame.width + 16);
-      await preset.tap();
+      await tapNativeControl(screen, preset);
       await expect(screen.getByText('2:00', { exact: true })).toBeVisible();
-      await reset.tap();
+      await tapNativeControl(screen, reset);
       await expect(screen.getByText('1:00', { exact: true })).toBeVisible();
       await captureState(app, `review-${appearance}-timer`, 'Timer presets and Reset are complete and clear of Close');
-      await screen.getByTestId('scoring_tool_done_button').tap();
+      await tapNativeControl(screen, screen.getByTestId('scoring_tool_done_button'));
       await finishCurrentGame(app, screen, 'leo', `review-${appearance}`);
       await aboveIsland(screen, screen.getByLabel(/leo.*best round \+9.*9/));
       await captureState(app, `review-${appearance}-game-over-at-rest`, 'The first final-score row stays above the island at rest');
-      await screen.getByTestId('home_button').tap();
+      await tapNativeControl(screen, screen.getByTestId('home_button'));
       await aboveIsland(screen, screen.getByRole('button', 'learn about undo', { exact: true }));
       await captureState(app, `review-${appearance}-home-complete`, 'Game night tools remain above the root island');
       await tapTab(screen, 'Players');
@@ -91,7 +91,7 @@ test('empty Home has no zero statistics or floating upgrade and dark paywall is 
   try {
     await device.openApp(bundle, { relaunch: true, launchArguments: ['-in-memory-store', '-exit-offer-seen', '-themeMode', 'system', '-UIPreferredContentSizeCategoryName', 'UICTContentSizeCategoryL'] });
     await expect(screen.getByTestId('paywall_main')).toBeVisible();
-    await screen.getByTestId('paywall_close_button').tap();
+    await tapNativeControl(screen, screen.getByTestId('paywall_close_button'));
     await expect(screen.getByTestId('new_game_button')).toBeVisible();
     await expect(screen.getByText('games', { exact: true })).toBeHidden();
     await expect(screen.getByText('active', { exact: true })).toBeHidden();
@@ -102,7 +102,7 @@ test('empty Home has no zero statistics or floating upgrade and dark paywall is 
     await expect(screen.getByTestId('more_upgrade_button')).toHaveCount(1);
     await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
     await captureState(app, 'review-dark-upgrade-row', 'One high-contrast upgrade row in More for new non-Pro users, without a free-game count');
-    await screen.getByTestId('more_upgrade_button').tap();
+    await tapNativeControl(screen, screen.getByTestId('more_upgrade_button'));
     await expect(screen.getByTestId(/^paywall_(primary|retry)_button$/)).toBeEnabled({ timeout: 30_000 });
     await captureState(app, 'review-dark-main-paywall', 'Main paywall in dark appearance on the open Duo');
   } finally {

@@ -11,12 +11,17 @@
     "test:e2e": "e2e run"
   },
   "devDependencies": {
-    "@e2e-dev/mobile": "^0.12.3",
-    "agent-device": "^0.21.20",
-    "e2e": "^0.21.2",
+    "@e2e-dev/mobile": "0.12.4",
+    "agent-device": "0.21.32",
+    "e2e": "0.21.3",
     "serve-sim": "^0.1.10"
   },
   "engines": {
     "node": "^22.22.3 || >=24.8.0"
+  },
+  "overrides": {
+    "@e2e-dev/mobile": {
+      "agent-device": "$agent-device"
+    }
   }
 }

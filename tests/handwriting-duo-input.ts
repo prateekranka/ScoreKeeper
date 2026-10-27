@@ -1,6 +1,7 @@
 import { appendFile, readdir } from 'node:fs/promises';
 import { isAbsolute, join, resolve, sep } from 'node:path';
 import { expect, type Locator, type Screen } from 'e2e';
+import { tapNativeControl } from './handwriting-helpers';
 
 type CaptureApp = { screenshot(label?: string): Promise<string> };
 
@@ -45,7 +46,7 @@ export async function tapOpenDuoControl(
     artifact, inputGeometry: { bounds, input: 'native locator' },
   })}\n`, 'utf8');
   try {
-    await control.tap();
+    await tapNativeControl(screen, control);
   } catch (error) {
     if (!verifyUncertainResult || !(error instanceof Error) ||
         !error.message.includes('XCTest recorded a failure while executing tap')) throw error;
@@ -99,6 +100,6 @@ export async function tapOpenDuoTab(app: CaptureApp, screen: Screen, control: Lo
     throw new Error('The island control has less than a 44 point target');
   }
   await app.screenshot(`wide-island-${name.toLowerCase()}-reference`);
-  await control.tap();
+  await tapNativeControl(screen, control);
   await expect(screen.getByRole('button', name, { exact: true, selected: true })).toBeVisible();
 }

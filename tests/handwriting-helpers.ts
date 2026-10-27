@@ -40,7 +40,8 @@ export async function tapTab(screen: Screen, name: string): Promise<void> {
   if (!identifier) throw new Error(`Unknown primary tab: ${name}`);
   const tab = screen.getByTestId(identifier);
   await expect(tab).toBeVisible();
-  await tab.tap();
+  await tapNativeControl(screen, tab);
+  await expect(tab).toBeSelected();
 }
 
 /** Scroll a surface until a control's full frame sits above its floating tab dock. */
@@ -112,13 +113,14 @@ export async function finishOnboarding(app: ScreenshotApp, screen: Screen): Prom
     await expect(title).toBeVisible();
     await expect.poll(async () => (await title.boundingBox())?.x ?? -1).toBeGreaterThanOrEqual(0);
     await captureState(app, `onboarding-${page}`, `onboarding page: ${page}`);
-    await primaryButton.tap();
+    await tapNativeControl(screen, primaryButton);
   }
   await expect(primaryButton).not.toBeVisible();
   return true;
 }
 
 export async function pressReturnKey(screen: Screen): Promise<void> {
+  await dismissKeyboardTip(screen);
   const returnKey = screen.getByTestId('Return');
   await expect(returnKey).toBeVisible();
   const keyFrame = await returnKey.boundingBox();
@@ -128,10 +130,16 @@ export async function pressReturnKey(screen: Screen): Promise<void> {
       keyFrame.y + keyFrame.height > keyboardFrame.y + keyboardFrame.height + 1) {
     throw new Error('The Return key is not inside the current software keyboard');
   }
-  // The native runner can misclassify a keyboard key as an app control covered by the keyboard.
-  // A documented local position taps the verified key frame; dismissal proves its result.
-  await returnKey.tap({ position: { x: keyFrame.width / 2, y: keyFrame.height / 2 } });
+  await screen.tapAt({ x: keyFrame.x + keyFrame.width / 2, y: keyFrame.y + keyFrame.height / 2 });
   await expect(returnKey).toBeHidden();
+}
+
+async function dismissKeyboardTip(screen: Screen): Promise<void> {
+  const tip = screen.getByText('Type English and Hindi', {exact:true});
+  if (await tip.isVisible()) {
+    await tapNativeControl(screen, screen.getByRole('button', 'Continue', {exact:true}));
+    await expect(tip).toBeHidden();
+  }
 }
 
 /** Draw a seven with two real touch strokes placed inside the live PencilKit canvas frame. */
@@ -190,15 +198,16 @@ export async function enterKeyboardText(screen: Screen, field: Locator, value: s
     ? screen.getByText('9', {exact:true}).last()
     : screen.getByTestId('Return', {visible:true}).last();
   await expect(anchor).toBeVisible();
+  await dismissKeyboardTip(screen);
   if (prior && prior !== placeholder) {
     const deletion = screen.getByLabel(/^(delete|Delete)$/).last();
     for (const character of prior) await tapNativeControl(screen, deletion);
   }
   for (const character of value) {
-    if (/^\d$/.test(character)) await screen.getByText(character, {exact:true}).last().tap();
+    if (/^\d$/.test(character)) await tapNativeControl(screen, screen.getByText(character, {exact:true}).last());
     else await anchor.press(character);
   }
   const popup = screen.getByTestId('PopoverDismissRegion');
-  if (await popup.isVisible()) await popup.tap();
+  if (await popup.isVisible()) await tapNativeControl(screen, popup);
   await expect(field).toHaveValue(value);
 }

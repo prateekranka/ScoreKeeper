@@ -1,6 +1,6 @@
 import { beforeEach, test } from '@e2e-dev/mobile';
 import { expect, type Locator, type Screen } from 'e2e';
-import { captureState, tapTab } from './handwriting-helpers';
+import { captureState, tapNativeControl, tapTab } from './handwriting-helpers';
 import { assertClearOfIsland } from './handwriting-duo-input';
 
 const bundleId = 'com.icequeen.scorekeeper';
@@ -41,7 +41,7 @@ test('fresh install shows onboarding, main paywall, one exit gift, then Home', a
   await expect(onboarding).toBeVisible();
   for (let page = 0; page < 3; page += 1) {
     await captureState(app, `paywall-onboarding-${page}`, 'Full-width onboarding in the current device pose');
-    await onboarding.tap();
+    await tapNativeControl(screen, onboarding);
   }
   await expect(screen.getByTestId('paywall_main')).toBeVisible();
   const primary = screen.getByTestId('paywall_primary_button');
@@ -62,7 +62,7 @@ test('fresh install shows onboarding, main paywall, one exit gift, then Home', a
   await expect(screen.getByText(/Price unavailable/)).toBeHidden();
   await captureState(app, 'paywall-loaded-main', 'Only loaded products are offered; the first available plan is selected');
   const mainCloseFrame = await screen.getByTestId('paywall_close_button').boundingBox();
-  await screen.getByTestId('paywall_close_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('paywall_close_button'));
   await expect(screen.getByTestId('paywall_gift')).toBeVisible();
   await captureState(app, 'paywall-gift-at-presentation', 'Gift chrome immediately after closing the main offer');
   await expect(screen.getByTestId('paywall_main')).not.toBeVisible();
@@ -73,14 +73,14 @@ test('fresh install shows onboarding, main paywall, one exit gift, then Home', a
     await expect(screen.getByText(/unavailable right now|Unable to load PipCount Pro right now/)).toBeVisible();
   }
   await captureState(app, 'paywall-loaded-gift', 'Full-width gift paywall with purchase or retry');
-  await screen.getByTestId('paywall_close_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('paywall_close_button'));
   const start = screen.getByTestId('new_game_button');
   await expect(start).toBeVisible();
   if (await screen.getByTestId('navigation_island').isVisible()) await assertClearOfIsland(screen, start);
   await captureState(app, 'paywall-home-at-rest', 'Home primary action clears the navigation island without scrolling');
-  await start.tap();
+  await tapNativeControl(screen, start);
   await expect(screen.getByTestId('paywall_main')).toBeVisible();
-  await screen.getByTestId('paywall_close_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('paywall_close_button'));
   await expect(start).toBeVisible();
   await expect(screen.getByTestId('paywall_gift')).toBeHidden();
   await tapTab(screen, 'More');
@@ -88,7 +88,7 @@ test('fresh install shows onboarding, main paywall, one exit gift, then Home', a
   await expect(screen.getByTestId('more_upgrade_button')).toBeVisible();
   await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
   await captureState(app, 'paywall-fresh-more', 'Fresh users see the upgrade offer without any free-game count');
-  await screen.getByTestId('theme_dark_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('theme_dark_button'));
   await expect(screen.getByTestId('more_upgrade_button')).toBeVisible();
   await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
   await captureState(app, 'paywall-fresh-more-dark', 'Fresh users see no free-game count in dark appearance');
@@ -106,7 +106,7 @@ test('converted user can start a game without a paywall', async ({ app, screen, 
   await expect(screen.getByText(/^\d+ free games? left$/)).toBeHidden();
   await captureState(app, 'paywall-pro-more', 'Legacy Pro users see no upgrade or subscription-management row');
   await tapTab(screen, 'Home');
-  await screen.getByTestId('new_game_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('new_game_button'));
   const tile = screen.getByTestId('game_tile_generic');
   await screen.scrollUntilVisible(tile);
   await expect(tile).toBeVisible();
@@ -116,14 +116,14 @@ test('converted user can start a game without a paywall', async ({ app, screen, 
 test('grandfathered user keeps remaining starts and exhausted user keeps Home', async ({ screen, device }) => {
   await device.openApp(bundleId, { relaunch: true, launchArguments: [...baseArguments, '-grandfathered', '24'] });
   await expect(screen.getByTestId('new_game_button')).toBeVisible();
-  await screen.getByTestId('new_game_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('new_game_button'));
   await screen.scrollUntilVisible(screen.getByTestId('game_tile_generic'));
   await expect(screen.getByTestId('game_tile_generic')).toBeVisible();
   await device.openApp(bundleId, { relaunch: true, launchArguments: [...baseArguments, '-grandfathered', '25', '-exit-offer-seen'] });
   await expect(screen.getByTestId('new_game_button')).toBeVisible();
-  await screen.getByTestId('new_game_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('new_game_button'));
   await expect(screen.getByTestId('paywall_main')).toBeVisible();
-  await screen.getByTestId('paywall_close_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('paywall_close_button'));
   await expect(screen.getByTestId('new_game_button')).toBeVisible();
 });
 
@@ -168,7 +168,7 @@ test('active trial grants access and gift launch opens only the gift paywall', a
   await expect(screen.getByTestId('paywall_close_button')).toBeVisible();
   console.log('Gift close frame', await screen.getByTestId('paywall_close_button').boundingBox());
   await captureState(app, 'paywall-gift-direct-launch', 'Gift paywall opened directly in the current pose');
-  await screen.getByTestId('paywall_close_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('paywall_close_button'));
   await expect(screen.getByTestId('new_game_button')).toBeVisible();
 });
 
@@ -194,7 +194,7 @@ test('largest Dynamic Type keeps paywall primary, close and restore reachable', 
   await scroll.scrollUntilVisible(screen.getByTestId(/^paywall_(plan_lifetime|retry_button)$/));
   if (await lifetime.isVisible()) {
     await scroll.scrollUntilVisible(lifetime);
-    await lifetime.tap();
+    await tapNativeControl(screen, lifetime);
   }
   const restore = screen.getByTestId('paywall_restore_button');
   await revealRestore(screen);
@@ -211,6 +211,6 @@ test('largest Dynamic Type keeps paywall primary, close and restore reachable', 
   }
   await expect(screen.getByTestId('paywall_close_button')).toBeVisible();
   await captureState(app, 'paywall-largest-text', 'Primary action, Close and Restore remain reachable at largest Dynamic Type');
-  await screen.getByTestId('paywall_close_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('paywall_close_button'));
   await expect(screen.getByTestId('new_game_button')).toBeVisible();
 });

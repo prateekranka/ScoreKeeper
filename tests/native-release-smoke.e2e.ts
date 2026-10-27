@@ -43,7 +43,7 @@ test('the last legacy start preserves the active game and gates its rematch', { 
   await finishCurrentGame(app, screen, 'leo', 'last-legacy-start');
   await tapGameOverAction(screen, 'play_again_button');
   await expect(screen.getByTestId('paywall_main')).toBeVisible();
-  await screen.getByTestId('paywall_close_button').tap();
+  await tapNativeControl(screen, screen.getByTestId('paywall_close_button'));
   await expect(screen.getByTestId('play_again_button')).toBeVisible();
   await expect(screen.getByText('leo wins', { exact: true })).toBeVisible();
   await captureState(app, 'last-legacy-rematch-gate', 'The exhausted allowance blocks a rematch while retaining the completed game');
