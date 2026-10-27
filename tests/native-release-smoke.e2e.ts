@@ -31,7 +31,7 @@ test('legacy access completes a game and rematch through native scoring', { time
   await captureState(app, 'release-smoke-rematch', 'The preserved legacy entitlement allows a native rematch');
 });
 
-test('the last legacy start preserves the active game and gates its rematch', { timeout: 300_000 }, async ({ app, screen, device }) => {
+test('the last legacy start preserves the active game and gates its rematch', { timeout: 600_000 }, async ({ app, screen, device }) => {
   const names = ['Maya', 'Leo'] as const;
   await launchFreshJourney(app, screen, device, ['-grandfathered', '24', '-exit-offer-seen', '-hasSeenScoreDeckTutorial', 'YES']);
   await startGameFromHome(app, screen, 'generic', names, 'last-legacy-start');

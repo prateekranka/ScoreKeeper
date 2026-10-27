@@ -120,12 +120,12 @@ def main():
                     env.pop("PIPCOUNT_NO_FOLD", None)
                 command = ["npx", "--no-install", "e2e", "run", *args.files, "--target", "ios",
                            "--output", str(case_output.relative_to(ROOT)), "--reporter", "list,markdown",
-                           "--trace", "retain-on-failure"]
+                           "--trace", "retain-on-failure", "--max-failures", "1"]
                 if args.video:
                     command.extend(["--video", "on"])
                 if args.grep:
                     command.extend(["--grep", args.grep])
-                outcome = execute(command, env=env, check=False, timeout=1500)
+                outcome = execute(command, env=env, check=False, timeout=1800)
                 if outcome.returncode:
                     raise RuntimeError(f"TesterArmy failed for {identifier}; inspect {case_output}")
                 counts = validate_report(case_output / "report.json")

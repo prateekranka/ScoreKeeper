@@ -29,7 +29,7 @@ The Duo keeps its bottom trailing navigation island and non-interactive top stat
 
 The committed runner is `scripts/run_native_acceptance.py`. Its default iPhone/iPad matrix runs sequentially. It refuses unrelated booted devices, preserves evidence and never erases or deletes a device. See `tests/README.md` for focused and Duo runs.
 
-The iPhone/iPad rotation gate measures the full-screen paywall frame in each requested orientation and retains a screenshot. The mobile engine can return a portrait-sized PNG containing sideways landscape content, so PNG dimensions alone cannot establish the app's orientation. The longer scoring, Undo and rematch case has a ten-minute limit because the hosted runner exceeded five minutes while still completing successful input assertions. Exact score, Undo and rematch assertions remain unchanged. CI allows sixty minutes for the sequential device matrix and build.
+The iPhone/iPad rotation gate measures the full-screen paywall frame in each requested orientation and retains a screenshot. The mobile engine can return a portrait-sized PNG containing sideways landscape content, so PNG dimensions alone cannot establish the app's orientation. Both complete scoring/rematch journeys have ten-minute limits because the hosted runner exceeded five minutes while still completing successful input assertions. Exact score, Undo, allowance and rematch assertions remain unchanged. Each device run has a thirty-minute subprocess bound, and CI allows seventy-five minutes for the sequential device matrix, build and cleanup. A known test failure stops further dispatch with a nonzero exit; a passing gate still requires every selected case and complete cleanup.
 
 ## Verification boundaries
 
