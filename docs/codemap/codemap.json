@@ -1282,8 +1282,6 @@
       ],
       "external_dependencies": [],
       "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift",
-        "ScoreKeeperTests/TargetScoreEngineTests.swift",
         "ScoreKeeperUITests/LegalSupportAndReviewUITests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITestsLaunchTests.swift"
@@ -1440,9 +1438,7 @@
         "node:fs",
         "node:path"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "release/app-store-screenshots/src/app/api/project/route.ts:1 declares route",
         "release/app-store-screenshots/src/app/api/project/route.ts:5 declares dynamic",
@@ -1635,9 +1631,7 @@
       "external_dependencies": [
         "next"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "release/app-store-screenshots/src/app/layout.tsx:1 declares layout",
         "release/app-store-screenshots/src/app/layout.tsx:5 declares font",
@@ -2452,7 +2446,6 @@
         "sonner"
       ],
       "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift",
         "ScoreKeeperUITests/LegalSupportAndReviewUITests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift"
       ],
@@ -2584,9 +2577,7 @@
         "lucide-react",
         "react"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "release/app-store-screenshots/src/components/editor/screenshot-picker.tsx:1 declares screenshot-picker",
         "release/app-store-screenshots/src/components/editor/screenshot-picker.tsx:8 declares Props",
@@ -3175,7 +3166,6 @@
         "react-rnd"
       ],
       "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITestsLaunchTests.swift"
       ],
@@ -4256,9 +4246,7 @@
         "m-e2330f24d0c9"
       ],
       "external_dependencies": [],
-      "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "release/app-store-screenshots/src/lib/defaults.ts:1 declares defaults",
         "release/app-store-screenshots/src/lib/defaults.ts:5 declares _id",
@@ -4398,9 +4386,7 @@
         "m-fe46be728c3f"
       ],
       "external_dependencies": [],
-      "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "release/app-store-screenshots/src/lib/image-cache.ts:1 declares image-cache",
         "release/app-store-screenshots/src/lib/image-cache.ts:5 declares cache",
@@ -4723,8 +4709,6 @@
         "react"
       ],
       "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift",
-        "ScoreKeeperTests/TargetScoreEngineTests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift"
       ],
       "evidence": [
@@ -5210,9 +5194,7 @@
       "external_dependencies": [
         "Foundation"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Engines/GameEngine.swift:3 declares ScoreInput",
         "ScoreKeeper/Engines/GameEngine.swift:9 declares ValidationResult",
@@ -5265,9 +5247,7 @@
       "external_dependencies": [
         "Foundation"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Engines/GenericEngine.swift:3 declares GenericEngine",
         "ScoreKeeper/Engines/GenericEngine.swift:7 declares totalScore",
@@ -5322,9 +5302,7 @@
       "external_dependencies": [
         "Foundation"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Engines/Phase10Engine.swift:3 declares Phase10Engine",
         "ScoreKeeper/Engines/Phase10Engine.swift:6 declares totalScore",
@@ -5374,9 +5352,7 @@
       "external_dependencies": [
         "Foundation"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Engines/WhatsForDinnerEngine.swift:3 declares WhatsForDinnerEngine",
         "ScoreKeeper/Engines/WhatsForDinnerEngine.swift:6 declares totalScore",
@@ -5470,7 +5446,6 @@
         "SwiftData"
       ],
       "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift"
       ],
       "evidence": [
@@ -5532,9 +5507,7 @@
       "external_dependencies": [
         "SwiftUI"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Models/GameType.swift:3 declares WinCondition",
         "ScoreKeeper/Models/GameType.swift:8 declares GameType",
@@ -5590,7 +5563,6 @@
         "SwiftData"
       ],
       "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift"
       ],
       "evidence": [
@@ -5685,7 +5657,6 @@
         "SwiftData"
       ],
       "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift"
       ],
       "evidence": [
@@ -5770,9 +5741,7 @@
         "Foundation",
         "SwiftData"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Models/ScoreEntry.swift:5 declares ScoreEntry",
         "ScoreKeeper/Models/ScoreEntry.swift:22 declares Phase10Metadata"
@@ -5864,9 +5833,7 @@
         "Foundation",
         "Security"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Services/GameAllowanceStorage.swift:8 declares GameAllowanceStorage",
         "ScoreKeeper/Services/GameAllowanceStorage.swift:9 declares readCount",
@@ -5919,9 +5886,7 @@
         "Foundation",
         "Observation"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Services/ReviewAskManager.swift:6 declares ReviewAskManager",
         "ScoreKeeper/Services/ReviewAskManager.swift:34 declares considerReviewAsk",
@@ -5983,7 +5948,6 @@
         "Foundation"
       ],
       "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift"
       ],
       "evidence": [
@@ -6105,9 +6069,7 @@
         "Observation",
         "StoreKit"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Services/StoreManager.swift:6 declares StoreProductLoading",
         "ScoreKeeper/Services/StoreManager.swift:7 declares product",
@@ -6621,7 +6583,6 @@
         "SwiftUI"
       ],
       "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift",
         "ScoreKeeperUITests/ScoreKeeperUITests.swift"
       ],
       "evidence": [
@@ -6838,9 +6799,7 @@
       "external_dependencies": [
         "SwiftUI"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Components/ClubhouseComponents.swift:1 declares ClubhouseComponents",
         "ScoreKeeper/Views/Components/ClubhouseComponents.swift:3 declares ScorecardSurface",
@@ -7365,9 +7324,7 @@
       "external_dependencies": [
         "SwiftUI"
       ],
-      "related_tests": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift"
-      ],
+      "related_tests": [],
       "evidence": [
         "ScoreKeeper/Views/Components/StandingsList.swift:3 declares PlayerStanding",
         "ScoreKeeper/Views/Components/StandingsList.swift:11 declares StandingsList",
@@ -13615,49 +13572,6 @@
     }
   ],
   "tests": [
-    {
-      "path": "ScoreKeeperTests/StoreManagerStoreKitTests.swift",
-      "related_modules": [
-        "m-091a88abedd5",
-        "m-0f75696778d6",
-        "m-21bd860d9020",
-        "m-3982a76a7594",
-        "m-5082583d1d52",
-        "m-8eafb6d0bb0c",
-        "m-95114df760d9",
-        "m-9fb4ac4e1fec",
-        "m-be404ed99abd",
-        "m-d530bf8fc242",
-        "m-e2330f24d0c9"
-      ],
-      "evidence": [
-        "ScoreKeeperTests/StoreManagerStoreKitTests.swift:1 names production symbols"
-      ]
-    },
-    {
-      "path": "ScoreKeeperTests/TargetScoreEngineTests.swift",
-      "related_modules": [
-        "m-07b70b82f265",
-        "m-135f1761cffd",
-        "m-35ed9d18e80f",
-        "m-3982a76a7594",
-        "m-823b1aa2f40e",
-        "m-95646f0435fa",
-        "m-9d511b895bfc",
-        "m-ac70cc805a96",
-        "m-c2af430a265b",
-        "m-dd44d07ab7b8",
-        "m-e2330f24d0c9",
-        "m-e2f53d4b39fd",
-        "m-ea89de1ef09c",
-        "m-f4513dcaea09",
-        "m-fc5361ceb90a",
-        "m-fd1746dad61b"
-      ],
-      "evidence": [
-        "ScoreKeeperTests/TargetScoreEngineTests.swift:1 names production symbols"
-      ]
-    },
     {
       "path": "ScoreKeeperUITests/LegalSupportAndReviewUITests.swift",
       "related_modules": [

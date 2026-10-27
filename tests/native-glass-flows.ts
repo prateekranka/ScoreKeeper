@@ -1,6 +1,8 @@
 import { type Device } from '@e2e-dev/mobile';
+import { scrollMainContent } from './handwriting-layout-scroll';
 import { expect, type Screen } from 'e2e';
 import {
+  foldIfSupported,
   enterKeyboardText,
   captureState,
   drawSeven,
@@ -28,7 +30,7 @@ const gameTiles: Record<GameKind, string> = {
 export async function tapGameOverAction(screen: Screen, testId: string): Promise<void> {
   const action = screen.getByTestId(testId);
   await screen.scrollUntilVisible(action);
-  await action.tap();
+  await tapNativeControl(screen, action);
 }
 
 export async function captureGameOverActions(app: ScreenshotApp, screen: Screen, label: string): Promise<void> {
@@ -44,7 +46,8 @@ export async function returnToPlayersDock(screen: Screen): Promise<void> {
   const playersTab = screen.getByTestId('tab_players');
   for (let attempt = 0; attempt < 3; attempt += 1) {
     if (await playersTab.isVisible() || await screen.getByTestId('add_new_player_button').isVisible()) return;
-    const backButton = screen.getByTestId('BackButton');
+    const islandBack = screen.getByTestId('island_back_button');
+    const backButton = await islandBack.isVisible() ? islandBack : screen.getByTestId('BackButton');
     await expect(backButton).toBeVisible();
     await tapNativeControl(screen, backButton);
   }
@@ -61,9 +64,9 @@ export async function assertHistoryPageAndFirstCard(screen: Screen): Promise<voi
 export async function returnFromHistoryToMore(screen: Screen): Promise<void> {
   const moreBack = screen.getByRole('button', 'more', { exact: true });
   if (await moreBack.isVisible()) {
-    await moreBack.tap();
+    await tapNativeControl(screen, moreBack);
   } else {
-    await screen.getByRole('button', 'Back', { exact: true }).tap();
+    await tapNativeControl(screen, screen.getByRole('button', 'Back', { exact: true }));
   }
   await expect(screen.getByText('more', { exact: true }).first()).toBeVisible();
 }
@@ -86,8 +89,8 @@ export async function launchFreshJourney(
       ...extraArguments,
     ],
   });
-  await device.fold('closed');
-  await device.setOrientation('portrait');
+  await foldIfSupported(device, 'closed');
+  if (!process.env.PIPCOUNT_PREPARED_DUO_POSE) await device.setOrientation('portrait');
   await finishOnboarding(app, screen);
   await tapTab(screen, 'Home');
   await expect(screen.getByTestId('new_game_button')).toBeVisible();
@@ -129,7 +132,7 @@ export async function addPlayers(
   await expect(continueButton).toBeEnabled();
   await expect(continueButton).toBeVisible();
   await captureState(app, `${prefix}-setup-filled`, `player setup ready for ${players.join(' and ')}`);
-  await continueButton.tap();
+  await tapNativeControl(screen, continueButton);
 }
 
 export async function startGameFromHome(
@@ -138,18 +141,19 @@ export async function startGameFromHome(
   kind: GameKind,
   players: TwoPlayers,
   prefix: string,
-  options: { duplicateValidation?: boolean; stopAfterSettings?: boolean; targetScore?: string } = {},
+  options: { duplicateValidation?: boolean; stopAfterSettings?: boolean; targetScore?: string; device?: Device } = {},
 ): Promise<void> {
   await tapTab(screen, 'Games');
   const tile = screen.getByTestId(gameTiles[kind]);
-  await scrollControlAboveTabDock(screen, tile, 'tab_games', `${kind} game tile`);
+  if (options.device) await scrollMainContent(screen, options.device, tile, 'down');
+  else await scrollControlAboveTabDock(screen, tile, 'tab_games', `${kind} game tile`);
   await expect(tile).toBeVisible();
   await captureState(app, `${prefix}-game-picker`, `game picker before ${kind}`);
-  await tile.tap();
+  await tapNativeControl(screen, tile);
 
   await addPlayers(app, screen, players, prefix, options.duplicateValidation ?? false);
   if (kind !== 'whatsForDinner') {
-    await expect(screen.getByText('game settings', { exact: true })).toBeVisible();
+    await expect(screen.getByText('rules for tonight', { exact: true })).toBeVisible();
     if (kind === 'generic') {
       const targetField = screen.getByTestId('target_score_field');
       await expect(targetField).toBeVisible();
@@ -167,7 +171,7 @@ export async function startGameFromHome(
     if (options.stopAfterSettings) return;
     const startButton = screen.getByTestId('start_game_button').last();
     await expect(startButton).toBeVisible();
-    await startButton.tap();
+    await tapNativeControl(screen, startButton);
   }
 
   await expect(screen.getByTestId('submit_round_button').last()).toBeVisible();
@@ -192,7 +196,7 @@ export async function openRoundDeck(
   const gotIt = screen.getByRole('button', 'got it', { exact: true });
   if (await gotIt.isVisible()) {
     await captureState(app, `${prefix}-deck-tutorial`, 'first-use handwriting tutorial');
-    await gotIt.tap();
+    await tapNativeControl(screen, gotIt);
   } else {
     await captureState(app, `${prefix}-deck-tutorial-dismissed`, 'handwriting tutorial had already been dismissed');
   }
@@ -272,8 +276,10 @@ export async function scoreManualRound(
 }
 
 export async function finishCurrentGame(app: ScreenshotApp, screen: Screen, winner: string, prefix: string): Promise<void> {
+  const tools = screen.getByTestId('scoring_tools_button');
+  if (await tools.isVisible()) await tapNativeControl(screen, tools);
   await tapNativeControl(screen, screen.getByTestId('end_game_button').last());
-  await screen.getByRole('button', 'end game', { exact: true }).last().tap();
+  await tapNativeControl(screen, screen.getByRole('button', 'end game', { exact: true }).last());
   await expect(screen.getByTestId('winner_text').first()).toContainText(winner.toLowerCase());
   await captureState(app, `${prefix}-game-over`, `completed game; expected winner ${winner}`);
   await captureGameOverActions(app, screen, `${prefix}-game-over-actions`);
@@ -282,7 +288,7 @@ export async function finishCurrentGame(app: ScreenshotApp, screen: Screen, winn
 export async function addSavedPlayer(app: ScreenshotApp, screen: Screen, name: string, prefix: string): Promise<void> {
   const addNewPlayer = screen.getByTestId('add_new_player_button');
   await scrollControlAboveTabDock(screen, addNewPlayer, 'tab_players', 'Add saved player button');
-  await addNewPlayer.tap();
+  await tapNativeControl(screen, addNewPlayer);
   const field = screen.getByTestId('add_saved_player_name_field');
   await expect(field).toBeVisible();
   await captureState(app, `${prefix}-add-player-blank`, 'saved-player form before a name is entered');
@@ -446,7 +452,7 @@ export async function scoreGenericRoundWithInk(
   const retryButton = screen.getByRole('button', 'try again', { exact: true });
   await expect(retryButton).toBeVisible();
   await captureState(app, `${prefix}-save-error-retained-draft`, 'first round save failed; both confirmed scores remain in the deck');
-  await retryButton.tap();
+  await tapNativeControl(screen, retryButton);
   await expect(screen.getByTestId('round_entry_deck')).toBeHidden();
   await expect(screen.getByLabel('Round 2 running totals', { exact: true })).toBeVisible();
   await expect(screen.getByText('last round +7', { exact: true })).toHaveCount(2);
@@ -494,7 +500,7 @@ export async function scorePhaseRound(
   if (prefix.endsWith('10')) {
     await expect(screen.getByText('ten phases complete', { exact: true })).toBeVisible();
     await captureState(app, 'phase-completion-confirmation', 'Maya completed all ten phases after ten submitted rounds');
-    await screen.getByRole('button', 'end game', { exact: true }).last().tap();
+    await tapNativeControl(screen, screen.getByRole('button', 'end game', { exact: true }).last());
     await expect(screen.getByTestId('winner_text').first()).toContainText('maya');
     await captureState(app, 'phase-ten-completed', 'Ten Phases ended naturally after its completion prompt');
     await captureGameOverActions(app, screen, 'phase-ten-game-over-actions');
@@ -526,7 +532,7 @@ export async function startDinnerRoundWithInk(
   }
   await captureState(app, `${prefix}-caller-selection`, 'the Dinner Meal Reveal caller choices are visible before selection');
   await expect(caller).toBeVisible();
-  await caller.tap();
+  await tapNativeControl(screen, caller);
   await captureState(app, `${prefix}-caller-selected`, 'Maya is selected as the Meal Reveal caller');
   const first = await openRoundDeck(app, screen, players, prefix);
   const second = players.find((name) => name.toLowerCase() !== first)?.toLowerCase();

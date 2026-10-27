@@ -68,7 +68,6 @@ final class KeychainGameAllowanceStorage: GameAllowanceStorage {
     }
 }
 
-/// Volatile storage used by unit tests and `-in-memory-store` UI-test launches.
 final class InMemoryGameAllowanceStorage: GameAllowanceStorage {
     private(set) var count: Int?
 

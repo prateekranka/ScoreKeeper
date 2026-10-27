@@ -1,33 +1,93 @@
 {
-  "identifier" : "D61D2F7F-2E0E-41F1-A52E-5D1A3FD0C934",
-  "nonRenewingSubscriptions" : [
-
-  ],
-  "products" : [
+  "identifier": "D61D2F7F-2E0E-41F1-A52E-5D1A3FD0C934",
+  "nonRenewingSubscriptions": [],
+  "products": [
     {
-      "displayPrice" : "0.99",
-      "familyShareable" : false,
-      "internalID" : "7F46E35E",
-      "localizations" : [
+      "displayPrice": "0.99",
+      "familyShareable": false,
+      "internalID": "7F46E35E",
+      "localizations": [
         {
-          "description" : "Unlock unlimited PipCount games.",
-          "displayName" : "PipCount Pro",
-          "locale" : "en_US"
+          "description": "Unlock unlimited PipCount games.",
+          "displayName": "Lifetime",
+          "locale": "en_US"
         }
       ],
-      "productID" : "com.icequeen.scorekeeper.unlimited",
-      "referenceName" : "PipCount Pro",
-      "type" : "NonConsumable"
+      "productID": "com.icequeen.scorekeeper.unlimited",
+      "referenceName": "Lifetime",
+      "type": "NonConsumable"
     }
   ],
-  "settings" : {
-
-  },
-  "subscriptionGroups" : [
-
+  "settings": {},
+  "subscriptionGroups": [
+    {
+      "id": "A1DCA202-6B11-4CA9-9037-59BD82373431",
+      "localizations": [
+        {
+          "description": "PipCount Pro",
+          "displayName": "PipCount Pro",
+          "locale": "en_US"
+        }
+      ],
+      "name": "PipCount Pro",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "19.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "42001999",
+          "introductoryOffer": {
+            "internalID": "4200199901",
+            "numberOfPeriods": 1,
+            "paymentMode": "free",
+            "subscriptionPeriod": "P3D"
+          },
+          "localizations": [
+            {
+              "description": "Unlimited games, all three formats, stats and history.",
+              "displayName": "Yearly",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.icequeen.scorekeeper.pro.yearly",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "Yearly",
+          "subscriptionGroupID": "A1DCA202-6B11-4CA9-9037-59BD82373431",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "9.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "42000999",
+          "introductoryOffer": {
+            "internalID": "4200099901",
+            "numberOfPeriods": 1,
+            "paymentMode": "free",
+            "subscriptionPeriod": "P3D"
+          },
+          "localizations": [
+            {
+              "description": "Unlimited games, all three formats, stats and history.",
+              "displayName": "50% off gift",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "com.icequeen.scorekeeper.pro.yearly.gift",
+          "recurringSubscriptionPeriod": "P1Y",
+          "referenceName": "50% off gift",
+          "subscriptionGroupID": "A1DCA202-6B11-4CA9-9037-59BD82373431",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
   ],
-  "version" : {
-    "major" : 4,
-    "minor" : 0
+  "version": {
+    "major": 4,
+    "minor": 0
   }
 }

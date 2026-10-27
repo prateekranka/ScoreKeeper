@@ -4,6 +4,7 @@ import SwiftData
 struct PlayerSetupView: View {
     let gameType: GameType
 
+    @Environment(\.pipCountUsesIsland) private var usesIsland
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
     @Environment(StoreManager.self) private var storeManager
@@ -14,7 +15,6 @@ struct PlayerSetupView: View {
     @State private var playerNames: [String] = ["", ""]
     @FocusState private var focusedIndex: Int?
     @State private var showRoster = false
-    @State private var showPaywall = false
     @State private var saveError: String?
     @State private var contentVisible = false
     @State private var isStartingGame = false
@@ -56,6 +56,7 @@ struct PlayerSetupView: View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
                 SetupPlayerHeader(gameType: gameType)
+                    .pipCountRailHeader()
                     .staggeredEntrance(visible: contentVisible, index: 0)
 
                 responsiveForm
@@ -64,32 +65,36 @@ struct PlayerSetupView: View {
             .padding(.top, AppTheme.spacingSmall)
             .padding(.bottom, 112)
             .pipCountPageContent(maxWidth: 980)
+            .pipCountScrollContent()
         }
         .appBackground()
         .navigationTitle("players")
         .navigationBarTitleDisplayMode(.inline)
+        .pipCountIsland {
+            PipCountBackButton()
+            PipCountIslandButton(title: "continue", systemImage: "arrow.right", identifier: "start_game_button", isSelected: true, action: startGame)
+                .disabled(!canStart)
+        }
         .safeAreaInset(edge: .bottom) {
-            AppActionButton(
-                role: canStart ? .primary(ClubhouseTheme.blue) : .secondary,
-                action: startGame
-            ) {
-                Label("continue", systemImage: "arrow.right")
+            if !usesIsland {
+                AppActionButton(
+                    role: canStart ? .primary(ClubhouseTheme.blue) : .secondary,
+                    action: startGame
+                ) {
+                    Label("continue", systemImage: "arrow.right")
+                }
+                .accessibilityIdentifier("start_game_button")
+                .disabled(!canStart)
+                .padding(.vertical, AppTheme.spacingSmall)
+                .padding(.horizontal, AppTheme.spacingSmall)
+                .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+                .padding(.horizontal, AppTheme.spacingMedium)
+                .padding(.bottom, AppTheme.spacingSmall)
+                .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
             }
-            .accessibilityIdentifier("start_game_button")
-            .disabled(!canStart)
-            .padding(.vertical, AppTheme.spacingSmall)
-            .padding(.horizontal, AppTheme.spacingSmall)
-            .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
-            .padding(.horizontal, AppTheme.spacingMedium)
-            .padding(.bottom, AppTheme.spacingSmall)
-            .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
         }
         .sheet(isPresented: $showRoster) {
             PlayerRosterSheet { names in addRosterNames(names) }
-        }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(onUnlocked: startGame)
-                .presentationDetents([.large])
         }
         .alert(
             "couldn’t save game",
@@ -202,7 +207,7 @@ struct PlayerSetupView: View {
                     .rotationEffect(.degrees(45))
 
                 Text(validationMessage)
-                    .font(AppFonts.caption.weight(.semibold))
+                    .font(AppFonts.label.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.ink)
 
                 Spacer(minLength: 0)
@@ -230,16 +235,16 @@ struct PlayerSetupView: View {
         // duplicate destination, or consume another free game (PC17-004).
         guard !isStartingGame else { return }
 
+        guard storeManager.canStartNewGame else {
+            storeManager.presentPaywall(afterPurchase: startGame)
+            return
+        }
+
         let names = playableNames
         if gameType == .generic || gameType == .phase10 {
             isStartingGame = true
             router.push(.gameConfig(gameType, names))
         } else {
-            guard storeManager.canStartNewGame else {
-                showPaywall = true
-                return
-            }
-
             isStartingGame = true
 
             guard let session = createSession(names: names) else {
@@ -353,10 +358,6 @@ private struct SetupPlayerHeader: View {
                 .foregroundStyle(ClubhouseTheme.ink)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text("build tonight's lineup")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-
             HStack(spacing: 7) {
                 Rectangle()
                     .fill(gameType.color)
@@ -364,8 +365,8 @@ private struct SetupPlayerHeader: View {
                     .rotationEffect(.degrees(45))
 
                 Text(gameType.displayName)
-                    .font(AppFonts.caption.weight(.bold))
-                    .foregroundStyle(gameType.color)
+                    .font(AppFonts.label.weight(.bold))
+                    .foregroundStyle(ClubhouseTheme.ink)
             }
             .padding(.top, 4)
         }
@@ -381,7 +382,6 @@ private struct SavedPlayersBar: View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
             AppSectionHeader(
                 title: "saved players",
-                subtitle: "tap names to fill the table faster",
                 systemImage: "person.crop.circle.badge.plus"
             )
 
@@ -421,7 +421,7 @@ private struct PlayerNameFields: View {
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
                     Text("\(playerNames.count) of \(gameType.maxPlayers) seats filled")
-                        .font(AppFonts.caption)
+                        .font(AppFonts.label)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
@@ -430,7 +430,7 @@ private struct PlayerNameFields: View {
                 Text("\(playerNames.count)")
                     .font(AppFonts.scoreSmall)
                     .monospacedDigit()
-                    .foregroundStyle(gameType.color)
+                    .foregroundStyle(ClubhouseTheme.ink)
             }
 
             VStack(spacing: 0) {
@@ -545,7 +545,7 @@ private struct AddPlayerControls: View {
             HStack {
                 Image(systemName: systemImage)
                     .font(.headline.weight(.bold))
-                    .foregroundStyle(tint == ClubhouseTheme.yellow ? ClubhouseTheme.ink : ClubhouseTheme.onPrimary)
+                    .foregroundStyle(ClubhouseTheme.onButton(tint))
                     .frame(width: 38, height: 38)
                     .background(tint, in: Circle())
 

@@ -1,0 +1,58 @@
+diff --git a/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+AXSnapshotFallback.swift b/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+AXSnapshotFallback.swift
+--- a/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+AXSnapshotFallback.swift
++++ b/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+AXSnapshotFallback.swift
+@@ -219,10 +219,27 @@
+-      let rootFrame = privateAXRect(root["frame"])
+-      let viewport = privateAXSnapshotViewport(
+-        app: app,
+-        bundleId: target.bundleId,
+-        rootFrame: rootFrame
+-      )
+-      let nodes = privateAXAcquisition(
+-        rawRoot: root,
+-        hint: hint
+-      )
++      let rootFrame = privateAXRect(root["frame"])
++      var nodes = privateAXAcquisition(
++        rawRoot: root,
++        hint: hint
++      )
++      let windowFrames = nodes.filter { $0.type == "Window" && $0.parentIndex == 0 }
++        .map { $0.rect.cgRect }.filter { SnapshotGeometry.isPositiveFinite($0) }
++      let viewport: SnapshotViewport
++      if let windowFrame = windowFrames.first,
++        abs(rootFrame.width - rootFrame.height) > 1,
++        abs(windowFrame.width - rootFrame.height) <= 1,
++        abs(windowFrame.height - rootFrame.width) <= 1,
++        windowFrames.allSatisfy({
++          abs($0.minX - rootFrame.minX) <= 1 && abs($0.minY - rootFrame.minY) <= 1
++            && abs($0.width - windowFrame.width) <= 1 && abs($0.height - windowFrame.height) <= 1
++        })
++      {
++        nodes[0].rect = SnapshotRect(windowFrame)
++        viewport = .derived(box: windowFrame)
++        NSLog("AGENT_DEVICE_RUNNER_PRIVATE_AX_VIEWPORT_FROM_WINDOWS root=%@ viewport=%@", String(describing: rootFrame), String(describing: windowFrame))
++      } else {
++        viewport = privateAXSnapshotViewport(
++          app: app,
++          bundleId: target.bundleId,
++          rootFrame: rootFrame
++        )
++      }
+diff --git a/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+SynthesizedInteraction.swift b/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+SynthesizedInteraction.swift
+--- a/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+SynthesizedInteraction.swift
++++ b/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+SynthesizedInteraction.swift
+@@ -549 +549,12 @@
+-    soleDisplayFrame(interfaceOrientation: interfaceOrientation) ?? fallback
++    guard let displayFrame = soleDisplayFrame(interfaceOrientation: interfaceOrientation) else {
++      return fallback
++    }
++    if SnapshotGeometry.isPositiveFinite(fallback),
++      abs(fallback.minX) <= 1, abs(fallback.minY) <= 1,
++      fallback.width > displayFrame.width + 1,
++      fallback.height > displayFrame.height + 1
++    {
++      NSLog("AGENT_DEVICE_RUNNER_SYNTHESIZED_ROTATION_FRAME_FROM_WINDOW display=%@ window=%@", String(describing: displayFrame), String(describing: fallback))
++      return fallback
++    }
++    return displayFrame

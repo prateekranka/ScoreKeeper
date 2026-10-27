@@ -5,6 +5,7 @@ struct GameConfigView: View {
     let gameType: GameType
     let playerNames: [String]
 
+    @Environment(\.pipCountUsesIsland) private var usesIsland
     @Environment(NavigationRouter.self) private var router
     @Environment(\.modelContext) private var modelContext
     @Environment(StoreManager.self) private var storeManager
@@ -13,7 +14,6 @@ struct GameConfigView: View {
     @State private var winCondition: WinCondition = .highestScore
     @State private var phase10SkipOnFail = false
     @State private var targetScoreText = ""
-    @State private var showPaywall = false
     @State private var saveError: String?
     @State private var contentVisible = false
     @State private var isStartingGame = false
@@ -27,6 +27,13 @@ struct GameConfigView: View {
         TargetScoreConfiguration.value(from: targetScoreText)
     }
 
+    private var targetScoreHint: String {
+        guard let targetScore else { return "Leave blank to end the game manually" }
+        return winCondition == .highestScore
+            ? "The first player to reach \(targetScore) after a submitted round ends the game; highest total wins"
+            : "When any player reaches \(targetScore) after a submitted round, the game ends; lowest total wins"
+    }
+
     private var canStart: Bool {
         targetScoreError == nil
     }
@@ -35,6 +42,7 @@ struct GameConfigView: View {
         ScrollView {
             VStack(spacing: AppTheme.spacingLarge) {
                 GameConfigHero(gameType: gameType)
+                    .pipCountRailHeader()
                     .staggeredEntrance(visible: contentVisible, index: 0)
 
                 responsiveConfiguration
@@ -43,26 +51,30 @@ struct GameConfigView: View {
             .padding(.top, AppTheme.spacingSmall)
             .padding(.bottom, 112)
             .pipCountPageContent(maxWidth: 980)
+            .pipCountScrollContent()
         }
         .appBackground()
         .navigationTitle("game settings")
         .navigationBarTitleDisplayMode(.inline)
+        .pipCountIsland {
+            PipCountBackButton()
+            PipCountIslandButton(title: "start game", systemImage: "arrow.right", identifier: "start_game_button", isSelected: true, action: startConfiguredGame)
+                .disabled(!canStart || isStartingGame)
+        }
         .safeAreaInset(edge: .bottom) {
-            startButton
-                .padding(.vertical, AppTheme.spacingSmall)
-                .padding(.horizontal, AppTheme.spacingSmall)
-                .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
-                .padding(.horizontal, AppTheme.spacingMedium)
-                .padding(.bottom, AppTheme.spacingSmall)
-                .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
+            if !usesIsland {
+                startButton
+                    .padding(.vertical, AppTheme.spacingSmall)
+                    .padding(.horizontal, AppTheme.spacingSmall)
+                    .appGlass(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+                    .padding(.horizontal, AppTheme.spacingMedium)
+                    .padding(.bottom, AppTheme.spacingSmall)
+                    .pipCountPageContent(maxWidth: AppTheme.formMaxWidth)
+            }
         }
         .onAppear {
             winCondition = gameType.defaultWinCondition
             contentVisible = true
-        }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView(onUnlocked: startConfiguredGame)
-                .presentationDetents([.large])
         }
         .alert(
             "couldn’t save game",
@@ -121,9 +133,6 @@ struct GameConfigView: View {
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text("set this once. pipcount handles the rest")
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
                 Spacer()
@@ -176,11 +185,8 @@ struct GameConfigView: View {
                     Toggle("no repeat rounds", isOn: $phase10SkipOnFail)
                         .font(AppFonts.body.weight(.semibold))
                         .tint(ClubhouseTheme.felt)
+                        .accessibilityHint("Players advance every round, even without completing the current stage")
 
-                    Text("players advance to the next stage every round, even when they do not complete the current stage")
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
@@ -230,7 +236,7 @@ struct GameConfigView: View {
                     .foregroundStyle(ClubhouseTheme.ink)
 
                 Text(playerNames.count.quantityText("player"))
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
@@ -262,9 +268,6 @@ struct GameConfigView: View {
                     .frame(width: 8, height: 8)
                     .rotationEffect(.degrees(45))
 
-                Text("ready to score")
-                    .font(AppFonts.caption.weight(.bold))
-                    .foregroundStyle(ClubhouseTheme.green)
             }
         }
         .padding(AppTheme.spacingLarge)
@@ -289,26 +292,14 @@ struct GameConfigView: View {
                         .strokeBorder(targetScoreError == nil ? ClubhouseTheme.rule : ClubhouseTheme.red, lineWidth: 1)
                 }
                 .accessibilityLabel("Target score, optional")
-                .accessibilityHint("Leave blank to end the game manually")
+                .accessibilityHint(Text(targetScoreHint))
                 .accessibilityIdentifier("target_score_field")
 
             if let targetScoreError {
                 Text(targetScoreError)
-                    .font(AppFonts.caption.weight(.semibold))
-                    .foregroundStyle(ClubhouseTheme.lacquer)
+                    .font(AppFonts.label.weight(.semibold))
+                    .foregroundStyle(ClubhouseTheme.red)
                     .accessibilityIdentifier("target_score_error")
-            } else if let targetScore {
-                Text(
-                    winCondition == .highestScore
-                        ? "the first player to reach \(targetScore) after a submitted round ends the game; highest total wins"
-                        : "when any player reaches \(targetScore) after a submitted round, the game ends; lowest total wins"
-                )
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-            } else {
-                Text("leave blank for manual-only completion")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
     }
@@ -328,7 +319,7 @@ struct GameConfigView: View {
         guard !isStartingGame else { return }
 
         guard storeManager.canStartNewGame else {
-            showPaywall = true
+            storeManager.presentPaywall(afterPurchase: startConfiguredGame)
             return
         }
 
@@ -431,12 +422,6 @@ private struct GameConfigHero: View {
                 .font(AppFonts.hero)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(2)
-                .minimumScaleFactor(0.78)
-
-            Text("calibrate the rules for tonight")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .fixedSize(horizontal: false, vertical: true)
 
             Rectangle()
                 .fill(gameType.color)

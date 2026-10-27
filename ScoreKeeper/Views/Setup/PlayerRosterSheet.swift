@@ -18,8 +18,7 @@ struct PlayerRosterSheet: View {
                 if savedPlayers.isEmpty {
                     ContentUnavailableView(
                         "no saved players",
-                        systemImage: "person.slash",
-                        description: Text("play a game to save player names to your roster")
+                        systemImage: "person.slash"
                     )
                 } else {
                     ScrollView {
@@ -89,7 +88,7 @@ struct PlayerRosterSheet: View {
                             .foregroundStyle(ClubhouseTheme.ink)
                             .lineLimit(1)
                         Text("\(player.gamesPlayed) games")
-                            .font(AppFonts.caption)
+                            .font(AppFonts.label)
                             .foregroundStyle(ClubhouseTheme.inkMuted)
                     }
                     Spacer(minLength: 0)
@@ -120,7 +119,7 @@ struct PlayerRosterSheet: View {
                 showDeleteConfirmation = true
             } label: {
                 Image(systemName: "trash")
-                    .font(.caption.weight(.semibold))
+                    .font(.body.weight(.semibold))
                     .frame(width: 44, height: 44)
                     .contentShape(Rectangle())
             }

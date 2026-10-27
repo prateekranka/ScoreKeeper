@@ -31,7 +31,7 @@ struct AppSectionHeader: View {
 
             if let subtitle {
                 Text(subtitle)
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
         }
@@ -67,7 +67,7 @@ struct ReleaseSheetHeader<Trailing: View>: View {
                 titleText
 
                 Text(subtitle)
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
@@ -112,7 +112,6 @@ struct AppActionButton<LabelContent: View>: View {
             label
                 .font(dynamicTypeSize.isAccessibilitySize ? .body.weight(.bold) : AppFonts.headline)
                 .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.72)
                 .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
@@ -148,8 +147,8 @@ struct AppActionButton<LabelContent: View>: View {
     private var foregroundStyle: Color {
         guard isEnabled else { return ClubhouseTheme.inkMuted }
         return switch role {
-        case .primary:
-            ClubhouseTheme.onPrimary
+        case .primary(let color):
+            ClubhouseTheme.onButton(color)
         case .destructive:
             ClubhouseTheme.onFelt
         case .secondary:
@@ -161,23 +160,11 @@ struct AppActionButton<LabelContent: View>: View {
         guard isEnabled else { return AnyShapeStyle(ClubhouseTheme.paperCard) }
         return switch role {
         case .primary(let color):
-            AnyShapeStyle(
-                LinearGradient(
-                    colors: [color.opacity(0.98), color],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
+            AnyShapeStyle(color)
         case .secondary:
             AnyShapeStyle(ClubhouseTheme.paperCard)
         case .destructive:
-            AnyShapeStyle(
-                LinearGradient(
-                    colors: [ClubhouseTheme.danger.opacity(0.92), ClubhouseTheme.danger],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
+            AnyShapeStyle(ClubhouseTheme.danger)
         }
     }
 
@@ -299,4 +286,177 @@ enum PipCountTab: String, CaseIterable {
         }
     }
 
+}
+
+private struct PipCountUsesIslandKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
+private struct PipCountRailInsetKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 0
+}
+
+private struct PipCountIslandClearanceKey: EnvironmentKey {
+    static let defaultValue: CGFloat = 0
+}
+
+#if DEBUG
+struct PipCountDebugFixtures: Sendable {
+    let modes: [String]
+    let select: @MainActor @Sendable (String) -> Void
+}
+
+private struct PipCountDebugFixturesKey: EnvironmentKey {
+    static let defaultValue: PipCountDebugFixtures? = nil
+}
+#endif
+
+extension EnvironmentValues {
+    var pipCountUsesIsland: Bool {
+        get { self[PipCountUsesIslandKey.self] }
+        set { self[PipCountUsesIslandKey.self] = newValue }
+    }
+
+    var pipCountRailInset: CGFloat {
+        get { self[PipCountRailInsetKey.self] }
+        set { self[PipCountRailInsetKey.self] = newValue }
+    }
+
+    var pipCountIslandClearance: CGFloat {
+        get { self[PipCountIslandClearanceKey.self] }
+        set { self[PipCountIslandClearanceKey.self] = newValue }
+    }
+
+    #if DEBUG
+    var pipCountDebugFixtures: PipCountDebugFixtures? {
+        get { self[PipCountDebugFixturesKey.self] }
+        set { self[PipCountDebugFixturesKey.self] = newValue }
+    }
+    #endif
+
+}
+
+struct PipCountIsland<Content: View>: View {
+    @Environment(\.pipCountRailInset) private var railInset
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        glassGroup {
+            HStack(spacing: 6) {
+                content
+            }
+            .padding(6)
+            .appGlass(cornerRadius: 100, isInteractive: true)
+            .fixedSize()
+        }
+        .fixedSize()
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("navigation_island")
+    }
+}
+
+struct PipCountIslandButton: View {
+    let title: String
+    let systemImage: String
+    let identifier: String
+    var isSelected = false
+    let action: () -> Void
+    @Environment(\.isEnabled) private var isEnabled
+
+    var body: some View {
+        Button(action: action) {
+            PipCountIslandLabel(title: title, systemImage: systemImage, isSelected: isSelected && isEnabled)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityIdentifier(identifier)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+struct PipCountIslandLabel: View {
+    @ScaledMetric(relativeTo: .body) private var iconSize: CGFloat = 20
+    let title: String
+    let systemImage: String
+    var isSelected = false
+
+    var body: some View {
+        Image(systemName: systemImage)
+            .font(.system(size: min(iconSize, 28), weight: .semibold))
+            .frame(width: 48, height: 48)
+            .padding(4)
+            .foregroundStyle(isSelected ? ClubhouseTheme.onPrimary : ClubhouseTheme.ink)
+            .background(isSelected ? ClubhouseTheme.blue : ClubhouseTheme.paperCard, in: Capsule())
+            .accessibilityLabel(title)
+    }
+}
+
+struct PipCountBackButton: View {
+    @Environment(NavigationRouter.self) private var router
+
+    var body: some View {
+        PipCountIslandButton(title: "Back", systemImage: "chevron.left", identifier: "island_back_button") {
+            router.pop()
+        }
+    }
+}
+
+private struct PipCountIslandOverlay<Actions: View>: ViewModifier {
+    @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
+    @State private var islandHeight: CGFloat = 68
+    var isPresented: Bool
+    @ViewBuilder var actions: Actions
+
+    func body(content: Content) -> some View {
+        let isVisible = usesIsland && isPresented
+        content
+            .environment(\.pipCountIslandClearance, isVisible ? 8 : 0)
+            .padding(.bottom, isVisible ? islandHeight + 16 : 0)
+            .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
+            .overlay(alignment: .bottomTrailing) {
+                if isVisible {
+                    PipCountIsland { actions }
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { islandHeight = $0 }
+                        .padding(.trailing, AppTheme.spacingMedium)
+                        .padding(.bottom, 8)
+                        .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
+                }
+            }
+            .background {
+                if usesIsland { ClubhouseTheme.paper.ignoresSafeArea() }
+            }
+    }
+}
+
+private struct PipCountRailHeader: ViewModifier {
+    @Environment(\.pipCountRailInset) private var railInset
+
+    func body(content: Content) -> some View {
+        content
+            .padding(.trailing, railInset)
+            .frame(minHeight: railInset * 2, alignment: .topLeading)
+    }
+}
+
+private struct PipCountScrollContent: ViewModifier {
+    @Environment(\.pipCountIslandClearance) private var clearance
+
+    func body(content: Content) -> some View {
+        content.padding(.bottom, clearance)
+    }
+}
+
+extension View {
+    func pipCountIsland<Actions: View>(isPresented: Bool = true, @ViewBuilder actions: () -> Actions) -> some View {
+        modifier(PipCountIslandOverlay(isPresented: isPresented, actions: actions))
+    }
+
+    func pipCountRailHeader() -> some View {
+        modifier(PipCountRailHeader())
+    }
+
+    func pipCountScrollContent() -> some View {
+        modifier(PipCountScrollContent())
+    }
 }

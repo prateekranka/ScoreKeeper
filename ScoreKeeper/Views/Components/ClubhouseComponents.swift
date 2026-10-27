@@ -89,7 +89,7 @@ struct LedgerRow: View {
 
                 if let subtitle {
                     Text(subtitle)
-                        .font(AppFonts.caption)
+                        .font(AppFonts.label)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .lineLimit(1)
                 }
@@ -145,10 +145,10 @@ struct StampBadge: View {
         Text(text.uppercased())
             .font(AppFonts.columnHeader)
             .tracking(1.4)
-            .foregroundStyle(ClubhouseTheme.lacquer)
+            .foregroundStyle(ClubhouseTheme.red)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .background(ClubhouseTheme.lacquer.opacity(0.055), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            .background(ClubhouseTheme.paperSunken, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
             .overlay {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .strokeBorder(ClubhouseTheme.lacquer.opacity(0.78), lineWidth: 1.4)
@@ -161,7 +161,7 @@ struct StampBadge: View {
 struct BrassCrown: View {
     var body: some View {
         Image(systemName: "crown.fill")
-            .font(.caption2)
+            .font(.body)
             .symbolRenderingMode(.hierarchical)
             .foregroundStyle(ClubhouseTheme.brass)
             .accessibilityLabel("Leader")
@@ -174,7 +174,7 @@ struct PaperChip<Content: View>: View {
 
     var body: some View {
         content
-            .font(AppFonts.caption.weight(.semibold))
+            .font(AppFonts.label.weight(.semibold))
             .foregroundStyle(isSelected ? ClubhouseTheme.onFelt : ClubhouseTheme.ink)
             .padding(.horizontal, 12)
             .frame(minHeight: 38)

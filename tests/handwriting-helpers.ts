@@ -1,6 +1,11 @@
 import { appendFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { expect, type Locator, type Screen } from 'e2e';
+import type { Device } from '@e2e-dev/mobile';
+
+export async function foldIfSupported(device: Device, pose: Parameters<Device['fold']>[0]): Promise<void> {
+  if (!process.env.PIPCOUNT_NO_FOLD) await device.fold(pose);
+}
 
 export type ScreenshotApp = {
   screenshot(label?: string): Promise<string>;
@@ -19,6 +24,12 @@ export async function tapNativeControl(screen: Screen, locator: Locator): Promis
   });
 }
 
+export async function tapScoringTool(screen: Screen, title: string): Promise<void> {
+  const menu = screen.getByTestId('scoring_tools_button');
+  if (await menu.isVisible()) await tapNativeControl(screen, menu);
+  await tapNativeControl(screen, screen.getByRole('button', title, { exact: true }));
+}
+
 export async function tapTab(screen: Screen, name: string): Promise<void> {
   const identifier = {
     Home: 'tab_home',
@@ -29,7 +40,8 @@ export async function tapTab(screen: Screen, name: string): Promise<void> {
   if (!identifier) throw new Error(`Unknown primary tab: ${name}`);
   const tab = screen.getByTestId(identifier);
   await expect(tab).toBeVisible();
-  await tab.tap();
+  await tapNativeControl(screen, tab);
+  await expect(tab).toBeSelected();
 }
 
 /** Scroll a surface until a control's full frame sits above its floating tab dock. */
@@ -40,9 +52,6 @@ export async function scrollControlAboveTabDock(
   description: string,
 ): Promise<void> {
   const dock = screen.getByTestId(dockTestId, { visible: true }).last();
-  await screen.scrollUntilVisible(control);
-  const card = await control.boundingBox(); const rail = await dock.boundingBox();
-  if(card && rail && (rail.x>=card.x+card.width || card.x>=rail.x+rail.width)) return;
   await scrollControlAboveFixedControl(screen, control, dock, description);
 }
 
@@ -53,28 +62,31 @@ export async function scrollControlAboveFixedControl(
   fixedControl: Locator,
   description: string,
 ): Promise<void> {
-  await screen.scrollUntilVisible(control);
-  let frame = await control.boundingBox();
-  let dockFrame = await fixedControl.boundingBox();
-
-  for (let attempt = 0; attempt < 6; attempt += 1) {
+  for (let attempt = 0; attempt <= 6; attempt += 1) {
+    if (!(await control.isVisible())) await screen.scrollUntilVisible(control);
+    const frame = await control.boundingBox();
+    const dockFrame = await fixedControl.boundingBox();
     if (!frame || frame.width <= 0 || frame.height <= 0 || !dockFrame || dockFrame.height <= 0) {
       throw new Error(`${description} or its pinned control has no usable accessibility frame`);
     }
-    if (frame.y >= 0 && frame.y + frame.height <= dockFrame.y - 8) break;
-
-    const x = frame.x + frame.width / 2;
-    const fromY = dockFrame.y - 12;
-    const toY = Math.max(88, fromY - Math.max(140, frame.height + 72));
-    await screen.swipe({ from: { x, y: fromY }, to: { x, y: toY } });
-    frame = await control.boundingBox();
-    dockFrame = await fixedControl.boundingBox();
-  }
-
-  frame = await control.boundingBox();
-  dockFrame = await fixedControl.boundingBox();
-  if (!frame || !dockFrame || frame.y < 0 || frame.y + frame.height > dockFrame.y - 8) {
-    throw new Error(`${description} stayed partly behind its pinned control after 6 scrolls`);
+    if (dockFrame.x >= frame.x + frame.width || frame.x >= dockFrame.x + dockFrame.width) return;
+    const top = 24;
+    const bottom = dockFrame.y - 8;
+    const fits = frame.height <= bottom - top;
+    const targetTop = fits ? frame.y : frame.y + frame.height / 2 - 22;
+    const targetBottom = fits ? frame.y + frame.height : targetTop + 44;
+    if (targetTop >= top && targetBottom <= bottom) return;
+    if (attempt === 6) throw new Error(`${description} stayed partly behind its pinned control after 6 scrolls`);
+    const forward = targetBottom > bottom;
+    const overflow = forward ? targetBottom - bottom : top - targetTop;
+    const distance = Math.min(120, Math.max(24, overflow + 8), (bottom - top) / 2);
+    const x = frame.x + 4;
+    const center = (top + bottom) / 2;
+    await screen.swipe({
+      from: { x, y: center + (forward ? distance / 2 : -distance / 2) },
+      to: { x, y: center + (forward ? -distance / 2 : distance / 2) },
+      duration: 500,
+    });
   }
 }
 
@@ -99,14 +111,16 @@ export async function finishOnboarding(app: ScreenshotApp, screen: Screen): Prom
   const title = screen.getByTestId('onboarding_page_title');
   for (const page of ['score', 'setup', 'history']) {
     await expect(title).toBeVisible();
+    await expect.poll(async () => (await title.boundingBox())?.x ?? -1).toBeGreaterThanOrEqual(0);
     await captureState(app, `onboarding-${page}`, `onboarding page: ${page}`);
-    await primaryButton.tap();
+    await tapNativeControl(screen, primaryButton);
   }
-  await expect(primaryButton).toBeHidden();
+  await expect(primaryButton).not.toBeVisible();
   return true;
 }
 
 export async function pressReturnKey(screen: Screen): Promise<void> {
+  await dismissKeyboardTip(screen);
   const returnKey = screen.getByTestId('Return');
   await expect(returnKey).toBeVisible();
   const keyFrame = await returnKey.boundingBox();
@@ -116,10 +130,16 @@ export async function pressReturnKey(screen: Screen): Promise<void> {
       keyFrame.y + keyFrame.height > keyboardFrame.y + keyboardFrame.height + 1) {
     throw new Error('The Return key is not inside the current software keyboard');
   }
-  // The native runner can misclassify a keyboard key as an app control covered by the keyboard.
-  // A documented local position taps the verified key frame; dismissal proves its result.
-  await returnKey.tap({ position: { x: keyFrame.width / 2, y: keyFrame.height / 2 } });
+  await screen.tapAt({ x: keyFrame.x + keyFrame.width / 2, y: keyFrame.y + keyFrame.height / 2 });
   await expect(returnKey).toBeHidden();
+}
+
+async function dismissKeyboardTip(screen: Screen): Promise<void> {
+  const tip = screen.getByText('Type English and Hindi', {exact:true});
+  if (await tip.isVisible()) {
+    await tapNativeControl(screen, screen.getByRole('button', 'Continue', {exact:true}));
+    await expect(tip).toBeHidden();
+  }
 }
 
 /** Draw a seven with two real touch strokes placed inside the live PencilKit canvas frame. */
@@ -167,21 +187,27 @@ export async function swipeDeckPlayer(screen: Screen, currentPlayer: string, dir
 
 /** Native keyboard events avoid the runner's incorrect covered-field ref. */
 export async function enterKeyboardText(screen: Screen, field: Locator, value: string): Promise<void> {
-  await tapNativeControl(screen, field);
+  const prior = await field.inputValue();
+  const placeholder = await field.getAttribute('placeholder');
+  const end = await field.boundingBox();
+  if (prior && prior !== placeholder) {
+    if (!end) throw new Error('The input field has no current frame');
+    await screen.tapAt({x:end.x+end.width-10,y:end.y+end.height/2});
+  } else await tapNativeControl(screen, field);
   const anchor = /^-?\d+$/.test(value)
     ? screen.getByText('9', {exact:true}).last()
     : screen.getByTestId('Return', {visible:true}).last();
   await expect(anchor).toBeVisible();
-  const prior = await field.inputValue();
-  const placeholder = await field.getAttribute('placeholder');
+  await dismissKeyboardTip(screen);
   if (prior && prior !== placeholder) {
-    const end = await field.boundingBox();
-    if (!end) throw new Error('The input field has no current frame');
-    await screen.tapAt({x:end.x+end.width-10,y:end.y+end.height/2});
     const deletion = screen.getByLabel(/^(delete|Delete)$/).last();
     for (const character of prior) await tapNativeControl(screen, deletion);
-    await expect(field).toHaveValue('');
   }
-  for (const character of value) await anchor.press(character);
+  for (const character of value) {
+    if (/^\d$/.test(character)) await tapNativeControl(screen, screen.getByText(character, {exact:true}).last());
+    else await anchor.press(character);
+  }
+  const popup = screen.getByTestId('PopoverDismissRegion');
+  if (await popup.isVisible()) await tapNativeControl(screen, popup);
   await expect(field).toHaveValue(value);
 }

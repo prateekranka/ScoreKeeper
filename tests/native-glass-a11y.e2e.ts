@@ -1,6 +1,6 @@
 import { test } from '@e2e-dev/mobile';
 import { expect } from 'e2e';
-import { captureState, tapNativeControl, enterKeyboardText, pressReturnKey, visibleDeckPlayer } from './handwriting-helpers';
+import { foldIfSupported, captureState, tapNativeControl, enterKeyboardText, pressReturnKey, visibleDeckPlayer } from './handwriting-helpers';
 import { scrollMainContent } from './handwriting-layout-scroll';
 import { tapOpenDuoControl, tapOpenDuoTab, screenshotPath } from './handwriting-duo-input';
 import { enterOpenDuoText, submitOpenDuoName } from './handwriting-duo-keyboard';
@@ -84,7 +84,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
  if(recordedOriginal) systemContentSize(recordedOriginal.originalContentSize);
  const originalContentSize=systemContentSize();
  await device.installApp(); await app.open();
- if(!process.env.PIPCOUNT_PHONE) await device.fold('closed'); await device.setOrientation('portrait');
+ if(!process.env.PIPCOUNT_PHONE) await foldIfSupported(device, 'closed'); await device.setOrientation('portrait');
  await device.openApp('com.apple.Preferences',{relaunch:true});
  console.log('Opened system Settings');
  const rootBack=screen.getByTestId('BackButton').first(); for(let i=0;i<4 && await rootBack.isVisible();i++) await rootBack.tap();
@@ -130,7 +130,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
    // Open the target app before changing display shape. Folding Settings first
    // can leave the beta runner's app clip inherited from the Settings window.
    if(openLandscape) await device.openApp(bundle,{relaunch:false});
-   if(!process.env.PIPCOUNT_PHONE) await device.fold(pose==='compact'?'closed':'open');
+   if(!process.env.PIPCOUNT_PHONE) await foldIfSupported(device, pose==='compact'?'closed':'open');
    // Device Hub sets the inner window pose; its actual PNG dimensions prove it.
    // Sending a redundant sensor rotation to the open beta simulator can block its runner.
    if(pose==='compact') await device.setOrientation('portrait');
@@ -150,39 +150,20 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
     return openLandscape?tapOpenDuoControl(app,screen,control,`${label}-${action}`):tapNativeControl(screen,control);
    };
    const scroll=async(control:any)=>scrollMainContent(screen,device,control,'down',openLandscape);
-   // The beta runner can mark the sheet's trailing button hidden against a stale
-   // 669-point root even though the actual landscape capture is 951 points wide.
-   // A native selector retains this node. Require its fresh, screenshot-contained
-   // toolbar frame and verify dismissal; never apply this to another window size.
-   const sheetDone=()=>openLandscape?device.locator('role=button label=done').last():screen.getByRole('button',/^done$/i).last();
+   const sheetDone=()=>screen.getByRole('button',/^done$/i).last();
    const checkSheetDone=async()=>{
     const control=sheetDone();
-    if(!openLandscape){await expect(control).toBeVisible();return control;}
-    // A foreground-only open keeps the sheet and app data, and refreshes the
-    // beta runner's window context before resolving its trailing native button.
-    await device.openApp(bundle,{relaunch:false});
-    const png=await readFile(await screenshotPath(await app.screenshot(`${label}-sheet-toolbar-reference`)));
-    expect({width:png.readUInt32BE(16),height:png.readUInt32BE(20)}).toEqual({width:951,height:669});
-    if(await control.count()){
-     const bounds=await control.boundingBox();
-     if(!bounds || bounds.x<600 || bounds.x+bounds.width>951 || bounds.y<0 || bounds.y+bounds.height>100) throw new Error('Landscape sheet Done is outside its observed toolbar');
-     console.log('Landscape native Done frame',bounds);
-    }
+    await expect(control).toBeVisible();
+    const bounds=await control.boundingBox();
+    if(!bounds || bounds.width<44 || bounds.height<44) throw new Error('Sheet Done has less than a 44 point target');
     return control;
    };
    const closeSheet=async(tool:string,marker:any)=>{
     await expect(marker).toBeVisible();
     const control=await checkSheetDone();
-    if(openLandscape){
-     // The native in-app back command acts on the live navigation bar directly.
-     // A utility sheet has one native bar action: Done. It avoids the clipped
-     // projected tree and requires the unique sheet content to disappear.
-     await device.back();
-     await expect.poll(async()=>await marker.count()).toBe(0);
-     await expect.poll(async()=>await sheetDone().count()).toBe(0);
-    }else{
-     await tap(control,`close-${tool}`); await expect(control).toBeHidden();
-    }
+    await tap(control,`close-${tool}`);
+    await expect(marker).toBeHidden();
+    await expect(sheetDone()).toBeHidden();
    };
    const tab=async(name:string)=>{
     const control=screen.getByTestId(name==='More'?'legal_support_button':`tab_${name.toLowerCase()}`,{visible:true}).last();
@@ -200,7 +181,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
     const control=screen.getByRole('button',title,{exact:true}); await scroll(control); await tap(control,`home-${tool}`);
     await checkSheetDone();
     await captureState(app,`${label}-tool-${tool}`,'Home utility sheet at largest text');
-    const headline=screen.getByText(({timer:'keep turns moving',dice:'roll a quick number',starter:'choose who starts',undo:'fix mistakes safely'} as Record<string,string>)[tool],{exact:true});
+    const headline=screen.getByTestId('home_tool_title');
     await closeSheet(tool,headline);
    }
    if(process.env.PIPCOUNT_A11Y_HOME_ONLY) continue;
@@ -290,6 +271,8 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
    await scroll(screen.getByTestId('start_game_button').last()); await tap(screen.getByTestId('start_game_button').last(),'phase-continue');
    await scroll(screen.getByTestId('start_game_button').last()); await tap(screen.getByTestId('start_game_button').last(),'phase-start');
    for(const tool of ['timer','dice','starter']){
+    const tools=screen.getByTestId('scoring_tools_button');
+    if(await tools.isVisible()) await tap(tools,'scoring-tools');
     const utility=screen.getByRole('button',tool,{exact:true}); await scroll(utility); await tap(utility,`utility-${tool}`);
     const action=screen.getByRole('button',tool==='timer'?'start':tool==='dice'?'roll':'pick starter',{exact:true});
     await scroll(action); await tap(action,`utility-${tool}-primary`);
@@ -307,7 +290,7 @@ test('largest system text plus Reduce Transparency keeps every layout usable', {
  } finally {
   systemContentSize(originalContentSize);
   expect(systemContentSize()).toBe(originalContentSize);
-  if(!process.env.PIPCOUNT_PHONE) await device.fold('closed'); await device.setOrientation('portrait'); await device.setAppearance('light');
+  if(!process.env.PIPCOUNT_PHONE) await foldIfSupported(device, 'closed'); await device.setOrientation('portrait'); await device.setAppearance('light');
   await device.openApp('com.apple.Preferences',{relaunch:true});
   await openSystemTextPage(app,screen,device);
   const toggle=screen.getByRole('switch','Larger Accessibility Sizes',{exact:true}); await expect(toggle).toBeVisible(); await setSystemSwitch(screen,toggle,originalLarger);

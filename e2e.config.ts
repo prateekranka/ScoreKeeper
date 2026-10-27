@@ -3,7 +3,7 @@ import { mobile } from '@e2e-dev/mobile';
 
 // Pin a booted simulator. This suite never erases an app or device.
 export default {
-  tests: ['tests/native-glass-*.e2e.ts'],
+  tests: ['tests/native-glass-*.e2e.ts', 'tests/paywall.e2e.ts', 'tests/native-release-smoke.e2e.ts'],
   targets: [{
     name: 'ios',
     engine: mobile({

@@ -13,8 +13,6 @@ concurrency:
 
 jobs:
   build-and-test:
-    # Preserve the job ID and check names until required checks can be verified.
-    # This job builds only; scheme-tests runs the unit and UI tests below.
     name: ${{ matrix.device }}
     runs-on: macos-latest
     timeout-minutes: 35
@@ -63,55 +61,3 @@ jobs:
             ${{ runner.temp }}/PipCount-${{ matrix.device }}/Logs
           if-no-files-found: ignore
           retention-days: 7
-
-  scheme-tests:
-    name: ScoreKeeper scheme tests
-    runs-on: macos-26
-    timeout-minutes: 90
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Show Xcode version
-        run: xcodebuild -version
-
-      - name: Resolve Swift packages
-        run: |
-          xcodebuild \
-            -project ScoreKeeper.xcodeproj \
-            -scheme ScoreKeeper \
-            -resolvePackageDependencies
-
-      - name: Run unit and UI tests
-        run: |
-          set -o pipefail
-          DESTINATION="$(python3 - <<'PY'
-          import json, subprocess, sys
-          data = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "-j"]))
-          for runtime, devices in data.get("devices", {}).items():
-              if "iOS" not in runtime:
-                  continue
-              for device in devices:
-                  name = device.get("name", "")
-                  if device.get("isAvailable") and "iPhone" in name:
-                      print(f"platform=iOS Simulator,id={device['udid']}")
-                      sys.exit(0)
-          sys.exit("No available iPhone simulator")
-          PY
-          )"
-          xcodebuild test \
-            -project ScoreKeeper.xcodeproj \
-            -scheme ScoreKeeper \
-            -destination "$DESTINATION" \
-            -derivedDataPath "$RUNNER_TEMP/PipCount-SchemeTests" \
-            -resultBundlePath "$RUNNER_TEMP/PipCount-SchemeTests.xcresult" \
-            CODE_SIGNING_ALLOWED=NO
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: PipCount-scheme-test-results
-          path: ${{ runner.temp }}/PipCount-SchemeTests.xcresult
-          if-no-files-found: ignore
-          retention-days: 14

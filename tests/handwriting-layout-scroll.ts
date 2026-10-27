@@ -7,6 +7,7 @@ export async function scrollMainContent(screen: Screen, device: Device, target: 
   const inAccessibleDeck = await accessibleDeck.isVisible();
   const inAccessibleScoring = await screen.getByTestId('scoring_accessible_scroll').isVisible();
   const inOpenDuo = openDuo;
+  const hasIsland = await screen.getByTestId('navigation_island').isVisible();
   if (await screen.getByTestId('round_entry_deck').isVisible() && !inAccessibleDeck) {
     const deck = await screen.getByTestId('round_entry_deck').boundingBox();
     const bounds = await target.boundingBox();
@@ -43,8 +44,18 @@ export async function scrollMainContent(screen: Screen, device: Device, target: 
     if(attempt===0 || attempt===8) console.log('Scroll surface',frame,'candidates',frames,'target',await target.isVisible()?await target.boundingBox():null);
     const targetVisible = await target.isVisible();
     const targetFrame = targetVisible ? await target.boundingBox() : null;
+    if (hasIsland && targetFrame) {
+      for (const id of ['start_game_button', 'submit_round_button', 'round_deck_cancel_button']) {
+        const primary = screen.getByTestId(id, {visible: true}).last();
+        if (await primary.isVisible()) {
+          const bounds = await primary.boundingBox();
+          if (bounds && bounds.x === targetFrame.x && bounds.y === targetFrame.y &&
+              bounds.width === targetFrame.width && bounds.height === targetFrame.height) return;
+        }
+      }
+    }
     let bottom = frame.y + frame.height - 16;
-    for (const id of (inAccessibleDeck || inAccessibleScoring ? [] : ['start_game_button', 'submit_round_button', 'tab_games', 'legal_support_button'])) {
+    for (const id of (hasIsland ? ['navigation_island'] : inAccessibleDeck || inAccessibleScoring ? [] : ['start_game_button', 'submit_round_button', 'tab_games', 'legal_support_button'])) {
       const fixed = screen.getByTestId(id, { visible: true }).last();
       if (await fixed.isVisible()) {
         const fixedFrame = await fixed.boundingBox();
@@ -74,9 +85,9 @@ export async function scrollMainContent(screen: Screen, device: Device, target: 
       // Off-screen rows can be absent from the tree. Search back if we passed one.
       towardLaterRows = !towardLaterRows;
     }
-    // Stay within the rendered leading gutter. The expanded Duo's reported
-    // view bounds can extend into its black trailing safe area.
-    const x = inOpenDuo ? Math.max(340, Math.min(680, frame.x + frame.width / 2 - 80)) : frame.x + frame.width / 2;
+    const x = hasIsland && !inAccessibleDeck && !inAccessibleScoring ? frame.x + 8
+      : hasIsland ? frame.x + Math.min(200, frame.width * 0.35)
+      : inOpenDuo ? Math.max(340, Math.min(680, frame.x + frame.width / 2 - 80)) : frame.x + frame.width / 2;
     const centerY = top + availableHeight / 2;
     const fromY = centerY + (towardLaterRows ? distance / 2 : -distance / 2);
     const toY = centerY + (towardLaterRows ? -distance / 2 : distance / 2);

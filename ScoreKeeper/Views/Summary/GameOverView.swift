@@ -4,6 +4,9 @@ import SwiftUI
 struct GameOverView: View {
     let sessionID: PersistentIdentifier
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
     @Environment(NavigationRouter.self) private var router
     @Environment(StoreManager.self) private var storeManager
     @Environment(ReviewAskManager.self) private var reviewAskManager
@@ -14,17 +17,12 @@ struct GameOverView: View {
     private var completedGames: [GameSession]
 
     @State private var contentVisible = false
-    @State private var showPaywall = false
     @State private var didEvaluateReviewAsk = false
     @State private var saveError: String?
 
     var body: some View {
         SessionLoader(sessionID: sessionID) { session in
             gameOverContent(session)
-                .sheet(isPresented: $showPaywall) {
-                    PaywallView(onUnlocked: { playAgain(session) })
-                        .presentationDetents([.large])
-                }
                 .task(id: session.persistentModelID) {
                     try? await Task.sleep(for: .milliseconds(750))
                     evaluateReviewAskIfNeeded()
@@ -53,13 +51,21 @@ struct GameOverView: View {
     private func gameOverContent(_ session: GameSession) -> some View {
         GeometryReader { proxy in
             ScrollView {
-                if proxy.size.width >= 820 {
+                if proxy.size.width >= 820 && !dynamicTypeSize.isAccessibilitySize {
                     tabletLayout(session, availableWidth: proxy.size.width)
                 } else {
                     phoneLayout(session)
                 }
             }
             .scrollIndicators(.hidden)
+            .accessibilityIdentifier("game_over_content_scroll")
+        }
+        .pipCountIsland {
+            PipCountIslandButton(title: "back home", systemImage: "chevron.left", identifier: "home_button", action: router.goHome)
+            PipCountIslandButton(title: "play again", systemImage: "arrow.clockwise", identifier: "play_again_button", isSelected: true) {
+                playAgain(session)
+            }
+            shareButton(session)
         }
         .appBackground()
     }
@@ -67,6 +73,7 @@ struct GameOverView: View {
     private func phoneLayout(_ session: GameSession) -> some View {
         VStack(spacing: AppTheme.spacingMedium) {
             completionHeader(session)
+                .pipCountRailHeader()
                 .staggeredEntrance(visible: contentVisible, index: 0)
 
             resultHero(session)
@@ -75,33 +82,41 @@ struct GameOverView: View {
             standingsCard(session)
                 .staggeredEntrance(visible: contentVisible, index: 2)
 
-            actionStack(session)
-                .staggeredEntrance(visible: contentVisible, index: 3)
+            if !usesIsland {
+                actionStack(session)
+                    .staggeredEntrance(visible: contentVisible, index: 3)
+            }
 
             recapGrid(session)
                 .staggeredEntrance(visible: contentVisible, index: 4)
 
-            shareButton(session)
-                .staggeredEntrance(visible: contentVisible, index: 5)
+            if !usesIsland {
+                shareButton(session)
+                    .staggeredEntrance(visible: contentVisible, index: 5)
+            }
         }
         .padding(.horizontal, AppTheme.spacingMedium)
         .padding(.top, AppTheme.spacingSmall)
         .padding(.bottom, AppTheme.spacingLarge)
         .responsiveContentWidth()
+        .pipCountScrollContent()
     }
 
     private func tabletLayout(_ session: GameSession, availableWidth: CGFloat) -> some View {
         VStack(spacing: AppTheme.spacingLarge) {
+            completionHeader(session)
+                .pipCountRailHeader()
+                .staggeredEntrance(visible: contentVisible, index: 0)
+
             HStack(alignment: .top, spacing: AppTheme.spacingXLarge) {
                 VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
-                    completionHeader(session)
-                        .staggeredEntrance(visible: contentVisible, index: 0)
-
                     resultHero(session)
                         .staggeredEntrance(visible: contentVisible, index: 1)
 
-                    actionStack(session)
-                        .staggeredEntrance(visible: contentVisible, index: 3)
+                    if !usesIsland {
+                        actionStack(session)
+                            .staggeredEntrance(visible: contentVisible, index: 3)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .topLeading)
 
@@ -112,8 +127,10 @@ struct GameOverView: View {
                     recapGrid(session)
                         .staggeredEntrance(visible: contentVisible, index: 4)
 
-                    shareButton(session)
-                        .staggeredEntrance(visible: contentVisible, index: 5)
+                    if !usesIsland {
+                        shareButton(session)
+                            .staggeredEntrance(visible: contentVisible, index: 5)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .top)
             }
@@ -121,24 +138,33 @@ struct GameOverView: View {
         .padding(AppTheme.spacingXLarge)
         .frame(maxWidth: min(availableWidth, 1180), alignment: .top)
         .frame(maxWidth: .infinity)
+        .pipCountScrollContent()
     }
 
     private func completionHeader(_ session: GameSession) -> some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            ViewThatFits(in: .horizontal) {
-                HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
+            if railInset > 0 && !dynamicTypeSize.isAccessibilitySize {
+                HStack(alignment: .center, spacing: AppTheme.spacingMedium) {
                     completionText(session)
-                        .frame(maxWidth: 300, alignment: .leading)
-
-                    Spacer(minLength: AppTheme.spacingSmall)
-
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     completionArtwork
                 }
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .top, spacing: AppTheme.spacingMedium) {
+                        completionText(session)
+                            .frame(maxWidth: 300, alignment: .leading)
 
-                VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
-                    completionText(session)
-                    completionArtwork
-                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        Spacer(minLength: AppTheme.spacingSmall)
+
+                        completionArtwork
+                    }
+
+                    VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                        completionText(session)
+                        completionArtwork
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
                 }
             }
 
@@ -159,33 +185,25 @@ struct GameOverView: View {
                 .font(AppFonts.body.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.blue)
 
-            Text("the scores are saved. the rematch is one tap away")
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
     private var completionArtwork: some View {
         PipCountGeometricArtwork(scene: .gameOver)
-            .frame(minWidth: 160, idealWidth: 220, maxWidth: 260)
-            .frame(height: 210)
+            .frame(minWidth: railInset > 0 ? 100 : 160, idealWidth: railInset > 0 ? 130 : 220, maxWidth: railInset > 0 ? 150 : 260)
+            .frame(height: railInset > 0 ? 120 : 210)
     }
 
     private func resultHero(_ session: GameSession) -> some View {
         let winnerNames = winners(for: session).map(\.name)
         let title: String
-        let subtitle: String
 
         if winnerNames.count == 1, let winner = winnerNames.first {
             title = "\(winner) wins"
-            subtitle = "tonight belongs to \(winner)"
         } else if winnerNames.count > 1 {
             title = "it’s a tie"
-            subtitle = winnerNames.joined(separator: " • ")
         } else {
             title = "no winner"
-            subtitle = "a perfectly unresolved game night"
         }
 
         return VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
@@ -203,13 +221,15 @@ struct GameOverView: View {
                     Text(title)
                         .font(AppFonts.hero)
                         .foregroundStyle(ClubhouseTheme.ink)
-                        .lineLimit(2)
-                        .minimumScaleFactor(0.72)
+                        .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                        .fixedSize(horizontal: false, vertical: true)
                         .accessibilityIdentifier("winner_text")
 
-                    Text(subtitle)
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
+                    if winnerNames.count > 1 {
+                        Text(winnerNames.joined(separator: " • "))
+                            .font(AppFonts.body)
+                            .foregroundStyle(ClubhouseTheme.inkMuted)
+                    }
                 }
             }
 
@@ -235,17 +255,14 @@ struct GameOverView: View {
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("final scores")
+                        .accessibilityHint(Text(engine.rankingExplanation(session: session)))
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text(engine.rankingExplanation(session: session))
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
 
                 Spacer()
 
-                StampBadge(text: "final")
             }
             .padding(AppTheme.spacingMedium)
 
@@ -296,9 +313,6 @@ struct GameOverView: View {
                     .font(AppFonts.title)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text("a quick memory of how the table finished")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
             }
 
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: AppTheme.spacingSmall) {
@@ -330,24 +344,29 @@ struct GameOverView: View {
         }
     }
 
+    @ViewBuilder
     private var shareLabel: some View {
-        HStack(spacing: AppTheme.spacingSmall) {
-            Image(systemName: "square.and.arrow.up")
-                .font(.headline)
+        if usesIsland {
+            PipCountIslandLabel(title: "share game recap", systemImage: "square.and.arrow.up")
+        } else {
+            HStack(spacing: AppTheme.spacingSmall) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.headline)
 
-            Text("share game recap")
-                .font(AppFonts.headline)
+                Text("share game recap")
+                    .font(AppFonts.headline)
 
-            Spacer()
+                Spacer()
 
-            Image(systemName: "arrow.up.right")
-                .font(.caption.weight(.bold))
+                Image(systemName: "arrow.up.right")
+                    .font(.body.weight(.bold))
+            }
+            .foregroundStyle(ClubhouseTheme.ink)
+            .padding(.horizontal, AppTheme.spacingMedium)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: 58)
+            .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
         }
-        .foregroundStyle(ClubhouseTheme.ink)
-        .padding(.horizontal, AppTheme.spacingMedium)
-        .frame(maxWidth: .infinity)
-        .frame(minHeight: 58)
-        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusMedium, isInteractive: true)
     }
 
     private func winners(for session: GameSession) -> [Player] {
@@ -390,15 +409,15 @@ struct GameOverView: View {
         } ?? 0
 
         return [
-            RecapMetric(title: "rounds", value: "\(session.sortedRounds.count)", detail: "played", tint: ClubhouseTheme.blue),
-            RecapMetric(title: "players", value: "\(session.players.count)", detail: "at the table", tint: ClubhouseTheme.red),
+            RecapMetric(title: "rounds", value: "\(session.sortedRounds.count)", tint: ClubhouseTheme.blue),
+            RecapMetric(title: "players", value: "\(session.players.count)", tint: ClubhouseTheme.red),
             RecapMetric(
                 title: "biggest round",
                 value: biggest.map { $0.1 > 0 ? "+\($0.1)" : "\($0.1)" } ?? "—",
                 detail: biggestPlayer?.name ?? "no scores",
                 tint: ClubhouseTheme.green
             ),
-            RecapMetric(title: "duration", value: durationText(duration), detail: "game time", tint: ClubhouseTheme.yellow)
+            RecapMetric(title: "duration", value: durationText(duration), tint: ClubhouseTheme.yellow)
         ]
     }
 
@@ -416,7 +435,7 @@ struct GameOverView: View {
 
     private func playAgain(_ session: GameSession) {
         guard storeManager.canStartNewGame else {
-            showPaywall = true
+            storeManager.presentPaywall(afterPurchase: { playAgain(session) })
             return
         }
 
@@ -467,7 +486,7 @@ struct GameOverView: View {
 private struct RecapMetric: Identifiable {
     let title: String
     let value: String
-    let detail: String
+    var detail = ""
     let tint: Color
 
     var id: String { title }
@@ -487,16 +506,17 @@ private struct RecapMetricCard: View {
                 .monospacedDigit()
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
-                .minimumScaleFactor(0.72)
 
             Text(metric.title)
-                .font(AppFonts.caption.weight(.bold))
+                .font(AppFonts.label.weight(.bold))
                 .foregroundStyle(ClubhouseTheme.ink)
 
-            Text(metric.detail)
-                .font(AppFonts.caption)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .lineLimit(1)
+            if !metric.detail.isEmpty {
+                Text(metric.detail)
+                    .font(AppFonts.label)
+                    .foregroundStyle(ClubhouseTheme.inkMuted)
+                    .lineLimit(1)
+            }
         }
         .padding(AppTheme.spacingSmall)
         .frame(maxWidth: .infinity, minHeight: 116, alignment: .leading)

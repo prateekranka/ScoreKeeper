@@ -2,11 +2,17 @@ import SwiftUI
 import SwiftData
 
 enum LegalSupportLinks {
+    static let terms = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
     static let privacyPolicy = URL(string: "https://privacy.contenthelper.in")!
     static let support = URL(string: "https://support.contenthelper.in")!
 }
 
 struct LegalSupportView: View {
+    @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
+    #if DEBUG
+    @Environment(\.pipCountDebugFixtures) private var debugFixtures
+    #endif
     @Environment(NavigationRouter.self) private var router
     @Environment(ThemeManager.self) private var themeManager
     @Environment(StoreManager.self) private var storeManager
@@ -18,25 +24,50 @@ struct LegalSupportView: View {
     private var completedGames: [GameSession]
 
     @State private var contentVisible = false
-    @State private var showPaywall = false
 
     var body: some View {
         ScrollView {
-            VStack(spacing: AppTheme.spacingLarge) {
+            VStack(alignment: .leading, spacing: railInset > 0 ? AppTheme.spacingMedium : AppTheme.spacingLarge) {
+                if usesIsland {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingMedium) {
+                        Text("more")
+                            .font(AppFonts.hero)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                        if railInset > 0 { proPanel }
+                    }
+                    .pipCountRailHeader()
+                }
+                #if DEBUG
+                if let debugFixtures {
+                    Menu {
+                        ForEach(debugFixtures.modes, id: \.self) { mode in
+                            Button(mode == "worst" ? "Worst case" : mode.capitalized) {
+                                debugFixtures.select(mode)
+                            }
+                            .accessibilityIdentifier("break_ui_data_\(mode)")
+                        }
+                    } label: {
+                        Text("Demo data / Worst case")
+                            .font(AppFonts.label)
+                            .padding(12)
+                            .foregroundStyle(ClubhouseTheme.ink)
+                            .background(ClubhouseTheme.paperCard, in: Capsule())
+                    }
+                    .accessibilityIdentifier("break_ui_data_toggle")
+                }
+                #endif
                 responsiveContent
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
             .padding(.bottom, AppTheme.spacingXLarge)
             .pipCountPageContent(maxWidth: 1_080)
+            .pipCountScrollContent()
         }
+        .accessibilityIdentifier("more_content_scroll")
         .appBackground()
         .navigationTitle("more")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showPaywall) {
-            PaywallView()
-                .presentationDetents([.large])
-        }
         .onAppear {
             if reduceMotion {
                 contentVisible = true
@@ -66,8 +97,10 @@ struct LegalSupportView: View {
     private var sideBySideContent: some View {
         HStack(alignment: .top, spacing: AppTheme.spacingLarge) {
             VStack(spacing: AppTheme.spacingMedium) {
-                proPanel
-                    .staggeredEntrance(visible: contentVisible, index: 0)
+                if railInset == 0 {
+                    proPanel
+                        .staggeredEntrance(visible: contentVisible, index: 0)
+                }
 
                 recentGamesSection
 
@@ -84,8 +117,10 @@ struct LegalSupportView: View {
 
     private var stackedContent: some View {
         VStack(spacing: AppTheme.spacingMedium) {
-            proPanel
-                .staggeredEntrance(visible: contentVisible, index: 0)
+            if railInset == 0 {
+                proPanel
+                    .staggeredEntrance(visible: contentVisible, index: 0)
+            }
 
             recentGamesSection
 
@@ -111,11 +146,13 @@ struct LegalSupportView: View {
 
     private var appearancePanel: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-            panelHeader(
-                title: "appearance",
-                systemImage: "circle.lefthalf.filled",
-                compact: true
-            )
+            if railInset == 0 || dynamicTypeSize.isAccessibilitySize {
+                panelHeader(
+                    title: "appearance",
+                    systemImage: "circle.lefthalf.filled",
+                    compact: true
+                )
+            }
 
             let layout = dynamicTypeSize.isAccessibilitySize
                 ? AnyLayout(VStackLayout(spacing: AppTheme.spacingSmall))
@@ -154,12 +191,11 @@ struct LegalSupportView: View {
         } label: {
             VStack(spacing: 4) {
                 Image(systemName: systemImage)
-                    .font(.subheadline.weight(.semibold))
+                    .font(.body.weight(.semibold))
 
                 Text(title)
-                    .font(AppFonts.caption.weight(.bold))
+                    .font(AppFonts.label.weight(.bold))
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                    .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.72)
                     .fixedSize(horizontal: false, vertical: true)
             }
             .foregroundStyle(isSelected ? ClubhouseTheme.onPrimary : ClubhouseTheme.ink)
@@ -183,85 +219,27 @@ struct LegalSupportView: View {
         .accessibilityIdentifier("theme_\(mode)_button")
     }
 
+    @ViewBuilder
     private var proPanel: some View {
-        Group {
-            if storeManager.isUnlocked {
-                HStack(spacing: AppTheme.spacingMedium) {
-                    if !dynamicTypeSize.isAccessibilitySize {
-                        ZStack {
-                            Circle()
-                                .fill(ClubhouseTheme.yellow)
-                                .frame(width: 68, height: 68)
-
-                            BauhausStarburst(color: ClubhouseTheme.ink, size: 38)
-                        }
-                        .accessibilityHidden(true)
-                    }
-
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("pipcount pro")
-                            .font(AppFonts.title)
-                            .foregroundStyle(ClubhouseTheme.ink)
-
-                        Text("unlimited game nights are unlocked on this apple id")
-                            .font(AppFonts.body)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                    Spacer(minLength: 0)
-                }
-                .padding(AppTheme.spacingMedium)
-                .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge)
-                .accessibilityElement(children: .combine)
-                .accessibilityIdentifier("pro_unlocked_status")
-            } else {
+        if !storeManager.isPro {
+            VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                 Button {
-                    showPaywall = true
+                    storeManager.presentPaywall()
                 } label: {
-                    HStack(spacing: AppTheme.spacingMedium) {
-                        if !dynamicTypeSize.isAccessibilitySize {
-                            PipCountGeometricArtwork(scene: .paywall, ambientMotion: false)
-                                .frame(width: 104, height: 96)
-                        }
-
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("pipcount pro")
-                                .font(AppFonts.title)
-                                .foregroundStyle(ClubhouseTheme.ink)
-
-                            Text("\(storeManager.remainingFreeGames.quantityText("free game")) remaining")
-                                .font(AppFonts.caption)
-                                .foregroundStyle(ClubhouseTheme.inkMuted)
-                                .monospacedDigit()
-                                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.72)
-
-                            Text("unlock unlimited games forever")
-                                .font(AppFonts.caption.weight(.bold))
-                                .foregroundStyle(ClubhouseTheme.blue)
-                                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.72)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                        Spacer(minLength: 0)
-
-                        if !dynamicTypeSize.isAccessibilitySize {
-                            Image(systemName: "chevron.right")
-                                .font(.caption.weight(.bold))
-                                .foregroundStyle(ClubhouseTheme.inkMuted)
-                        }
-                    }
-                    .padding(AppTheme.spacingMedium)
-                    .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
+                    Label("PipCount Pro", systemImage: "infinity")
+                        .font(AppFonts.title)
+                        .foregroundStyle(ClubhouseTheme.brass)
+                        .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
+                        .padding(AppTheme.spacingMedium)
+                        .scorecardSurface(cornerRadius: AppTheme.cornerRadiusLarge, isInteractive: true)
                 }
                 .buttonStyle(PressableButtonStyle())
-                .accessibilityLabel("Upgrade to PipCount Pro")
                 .accessibilityIdentifier("more_upgrade_button")
+                if storeManager.shouldShowFreeGamesSignal {
+                    Text("\(storeManager.remainingFreeGames.quantityText("free game")) left")
+                        .font(.subheadline)
+                        .foregroundStyle(ClubhouseTheme.ink)
+                }
             }
         }
     }
@@ -272,7 +250,6 @@ struct LegalSupportView: View {
                 Link(destination: LegalSupportLinks.privacyPolicy) {
                     LegalSupportLink(
                         title: "privacy policy",
-                        subtitle: "how pipcount handles your information",
                         systemImage: "hand.raised"
                     )
                 }
@@ -287,7 +264,6 @@ struct LegalSupportView: View {
                 Link(destination: LegalSupportLinks.support) {
                     LegalSupportLink(
                         title: "support",
-                        subtitle: "get help or contact the pipcount team",
                         systemImage: "questionmark.bubble"
                     )
                 }
@@ -304,7 +280,7 @@ struct LegalSupportView: View {
     private func panelHeader(title: String, subtitle: String? = nil, systemImage: String, compact: Bool = false) -> some View {
         HStack(spacing: compact ? 6 : AppTheme.spacingSmall) {
             Image(systemName: systemImage)
-                .font(compact ? .footnote.weight(.semibold) : .headline.weight(.semibold))
+                .font(compact ? .body.weight(.semibold) : .headline.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.blue)
                 .frame(width: compact ? 30 : 42, height: compact ? 30 : 42)
                 .background(ClubhouseTheme.blue.opacity(0.09), in: RoundedRectangle(cornerRadius: compact ? 9 : 14, style: .continuous))
@@ -316,21 +292,17 @@ struct LegalSupportView: View {
                     .foregroundStyle(ClubhouseTheme.ink)
 
                 if let subtitle {
-                    Text(subtitle)
-                        .font(AppFonts.caption)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
+
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-
 }
 
 private struct LegalSupportLink: View {
     let title: String
-    let subtitle: String
     let systemImage: String
 
     var body: some View {
@@ -346,16 +318,12 @@ private struct LegalSupportLink: View {
                     .font(AppFonts.headline)
                     .foregroundStyle(ClubhouseTheme.ink)
 
-                Text(subtitle)
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Spacer(minLength: AppTheme.spacingSmall)
 
             Image(systemName: "arrow.up.right")
-                .font(.caption.weight(.semibold))
+                .font(.body.weight(.semibold))
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .accessibilityHidden(true)
         }

@@ -24,14 +24,12 @@ struct ScorecardShareCard: View {
                     .font(Font.system(size: 32, weight: .black))
                     .foregroundStyle(ClubhouseTheme.ink)
                     .lineLimit(2)
-                    .minimumScaleFactor(0.65)
                     .padding(.top, 16)
 
                 Text(resultLine)
                     .font(Font.system(size: 21, weight: .bold))
                     .foregroundStyle(ClubhouseTheme.blue)
                     .lineLimit(2)
-                    .minimumScaleFactor(0.8)
                     .padding(.top, 5)
 
                 Rectangle()
@@ -41,21 +39,18 @@ struct ScorecardShareCard: View {
 
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text("final scores")
-                        .font(Font.system(size: 16, weight: .bold))
+                        .font(Font.system(.body, weight: .bold))
                         .foregroundStyle(ClubhouseTheme.ink)
 
                     Spacer()
 
-                    Text(engine.rankingExplanation(session: session))
-                        .font(Font.system(size: 12))
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
                 }
                 .padding(.top, 24)
                 .padding(.bottom, 10)
 
                 if standings.isEmpty {
                     Text("no scores recorded")
-                        .font(Font.system(size: 14))
+                        .font(Font.system(.body))
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .padding(.vertical, 14)
                 } else {
@@ -70,7 +65,7 @@ struct ScorecardShareCard: View {
                     .padding(.top, 16)
 
                 Text(roundsLine)
-                    .font(Font.system(size: 13))
+                    .font(Font.system(.body))
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .padding(.top, 12)
             }
@@ -92,13 +87,13 @@ struct ScorecardShareCard: View {
     private var header: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Text("pipcount")
-                .font(Font.system(size: 15, weight: .bold))
+                .font(Font.system(.body, weight: .bold))
                 .foregroundStyle(ClubhouseTheme.ink)
 
             Spacer()
 
             Text(dateLine)
-                .font(Font.system(size: 13))
+                .font(Font.system(.body))
                 .foregroundStyle(ClubhouseTheme.inkMuted)
         }
     }
@@ -106,7 +101,7 @@ struct ScorecardShareCard: View {
     private func standingRow(_ standing: PlayerStanding) -> some View {
         HStack(spacing: 10) {
             Text("\(standing.rank)")
-                .font(Font.system(size: 12, weight: .bold))
+                .font(Font.system(.body, weight: .bold))
                 .monospacedDigit()
                 .foregroundStyle(ClubhouseTheme.inkMuted)
                 .frame(width: 20, alignment: .leading)
@@ -117,7 +112,7 @@ struct ScorecardShareCard: View {
                 .rotationEffect(.degrees(45))
 
             Text(standing.player.name)
-                .font(Font.system(size: 14, weight: standing.isWinner ? .bold : .semibold))
+                .font(Font.system(.body, weight: standing.isWinner ? .bold : .semibold))
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
                 .layoutPriority(1)

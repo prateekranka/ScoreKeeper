@@ -20,6 +20,8 @@ struct RoundEntryDeckView<Accessory: View>: View {
     let onSubmit: ([UUID: Int]) -> String?
     let onCancel: () -> Void
 
+    @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
@@ -87,11 +89,17 @@ struct RoundEntryDeckView<Accessory: View>: View {
             .frame(width: proxy.size.width, height: proxy.size.height)
         }
         .background(PipCountPaperBackground().ignoresSafeArea())
+        .pipCountIsland {
+            PipCountIslandButton(title: "Cancel", systemImage: "xmark", identifier: "round_deck_cancel_button") {
+                performExit(onCancel)
+            }
+        }
+        .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
         .safeAreaInset(edge: .bottom, spacing: 0) {
             if dynamicTypeSize.isAccessibilitySize && manualEntryFocused {
                 VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
                     Text(player.name)
-                        .font(.caption.weight(.semibold))
+                        .font(.body.weight(.semibold))
                         .foregroundStyle(ClubhouseTheme.ink)
                         .fixedSize(horizontal: false, vertical: true)
                         .accessibilityLabel("Score for \(player.name)")
@@ -162,6 +170,8 @@ struct RoundEntryDeckView<Accessory: View>: View {
                 .padding(.vertical, AppTheme.spacingLarge)
 
             playerCard
+                .padding(.top, railInset * 2)
+                .pipCountScrollContent()
                 .padding(AppTheme.spacingLarge)
         }
         .padding(.horizontal, AppTheme.spacingLarge)
@@ -173,17 +183,6 @@ struct RoundEntryDeckView<Accessory: View>: View {
             VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
                 header
 
-                VStack(alignment: .leading, spacing: AppTheme.spacingSmall) {
-                    Text("write it. check it. keep playing")
-                        .font(AppFonts.hero)
-                        .foregroundStyle(ClubhouseTheme.ink)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    Text("use your finger or apple pencil. pipcount reads the score, then asks you to confirm it before moving on")
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
 
                 PipCountGeometricArtwork(scene: .handwriting)
                     .frame(maxWidth: 340)
@@ -216,6 +215,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
             .padding(.horizontal, AppTheme.spacingMedium)
 
             playerCard
+                .pipCountScrollContent()
                 .padding(.horizontal, AppTheme.spacingMedium)
                 .padding(.bottom, 4)
         }
@@ -233,6 +233,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
                 playerCard
             }
             .padding(AppTheme.spacingMedium)
+            .pipCountScrollContent()
         }
         .scrollDismissesKeyboard(.interactively)
         .accessibilityIdentifier("round_deck_accessible_scroll")
@@ -247,7 +248,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
                     .monospacedDigit()
 
                 Text(session.gameType.displayName)
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.blue)
                     .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
                     .fixedSize(horizontal: false, vertical: true)
@@ -255,19 +256,22 @@ struct RoundEntryDeckView<Accessory: View>: View {
 
             Spacer()
 
-            Button {
-                performExit(onCancel)
-            } label: {
-                Image(systemName: "xmark")
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(ClubhouseTheme.ink)
-                    .frame(width: 44, height: 44)
-                    .appGlass(cornerRadius: 22, isInteractive: true)
+            if !usesIsland {
+                Button {
+                    performExit(onCancel)
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(ClubhouseTheme.ink)
+                        .frame(width: 44, height: 44)
+                        .appGlass(cornerRadius: 22, isInteractive: true)
+                }
+                .buttonStyle(PressableButtonStyle())
+                .accessibilityLabel("Cancel")
+                .accessibilityIdentifier("round_deck_cancel_button")
             }
-            .buttonStyle(PressableButtonStyle())
-            .accessibilityLabel("Cancel")
-            .accessibilityIdentifier("round_deck_cancel_button")
         }
+        .pipCountRailHeader()
     }
 
     private var playerProgressCard: some View {
@@ -297,7 +301,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
                             .foregroundStyle(ClubhouseTheme.blue)
                     } else if index == currentIndex {
                         Text("writing")
-                            .font(AppFonts.caption.weight(.bold))
+                            .font(AppFonts.label.weight(.bold))
                             .foregroundStyle(ClubhouseTheme.red)
                     } else {
                         Circle()
@@ -362,7 +366,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 Text("running total \(player.totalScore(in: session))")
-                    .font(AppFonts.caption)
+                    .font(AppFonts.label)
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .monospacedDigit()
                     .fixedSize(horizontal: false, vertical: true)
@@ -383,7 +387,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
                         .lineLimit(1)
 
                     Text("running total \(player.totalScore(in: session))")
-                        .font(AppFonts.caption)
+                        .font(AppFonts.label)
                         .foregroundStyle(ClubhouseTheme.inkMuted)
                         .monospacedDigit()
                 }
@@ -457,6 +461,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Drawing area for \(player.name)'s score")
+        .accessibilityHint("Draw each player's score, read it, then confirm. Swipe from either edge to move between players. Confirm the last card last to submit the round; confirm it again after returning to an earlier card")
     }
 
     private var scoreActions: some View {
@@ -543,7 +548,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
 
     private var noInkHint: some View {
         Text("draw the score first")
-            .font(AppFonts.caption.weight(.semibold))
+            .font(AppFonts.label.weight(.semibold))
             .foregroundStyle(ClubhouseTheme.inkMuted)
             .frame(maxWidth: .infinity, alignment: .leading)
             .transition(.opacity)
@@ -587,7 +592,6 @@ struct RoundEntryDeckView<Accessory: View>: View {
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.blue)
                         .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                        .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.8)
                         .padding(.horizontal, AppTheme.spacingSmall)
                         .frame(maxWidth: .infinity, minHeight: 56)
                         .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
@@ -607,7 +611,6 @@ struct RoundEntryDeckView<Accessory: View>: View {
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.onPrimary)
                         .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                        .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.8)
                         .padding(.horizontal, AppTheme.spacingSmall)
                         .frame(maxWidth: .infinity, minHeight: 56)
                         .background(ClubhouseTheme.blue, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
@@ -630,10 +633,6 @@ struct RoundEntryDeckView<Accessory: View>: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityIdentifier("deck_invalid_value")
 
-                Text(manualFromRecognitionFailure ? "redraw or type the score" : "then tap use to confirm")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(ClubhouseTheme.inkMuted)
-                    .fixedSize(horizontal: false, vertical: true)
             }
 
             entryActionsLayout {
@@ -644,7 +643,6 @@ struct RoundEntryDeckView<Accessory: View>: View {
                         .font(AppFonts.headline)
                         .foregroundStyle(ClubhouseTheme.blue)
                         .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 1)
-                        .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 1 : 0.8)
                         .padding(.horizontal, AppTheme.spacingSmall)
                         .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil, minHeight: 56)
                         .background(ClubhouseTheme.paperCard, in: RoundedRectangle(cornerRadius: AppTheme.cornerRadiusSmall, style: .continuous))
@@ -688,14 +686,14 @@ struct RoundEntryDeckView<Accessory: View>: View {
                 }
                 .buttonStyle(PressableButtonStyle())
                 .disabled(manualScore == nil || isExiting)
-                .opacity(manualScore == nil || isExiting ? 0.45 : 1)
+
                 .accessibilityLabel(manualScore.map { "Use \($0)" } ?? "Enter a valid score")
                 .accessibilityIdentifier("deck_manual_use_\(player.name)")
             }
 
             if showsManualRangeHint {
                 Text("enter a score between 0 and 99")
-                    .font(AppFonts.caption.weight(.semibold))
+                    .font(AppFonts.label.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.inkMuted)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityIdentifier("deck_manual_range_hint")
@@ -736,11 +734,6 @@ struct RoundEntryDeckView<Accessory: View>: View {
                         .font(AppFonts.title)
                         .foregroundStyle(ClubhouseTheme.ink)
 
-                    Text("draw each player's score, tap ✓ to read it, then confirm. swipe from either edge to move between players. confirm the last card last — that submits the round, so confirm it again if you jump back")
-                        .font(AppFonts.body)
-                        .foregroundStyle(ClubhouseTheme.inkMuted)
-                        .multilineTextAlignment(.center)
-                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 AppActionButton(role: .primary(ClubhouseTheme.blue), action: dismissTutorial) {
@@ -748,7 +741,7 @@ struct RoundEntryDeckView<Accessory: View>: View {
                 }
 
                 Button("skip", action: dismissTutorial)
-                    .font(AppFonts.caption.weight(.semibold))
+                    .font(AppFonts.label.weight(.semibold))
                     .foregroundStyle(ClubhouseTheme.ink)
                     .frame(minWidth: 44, minHeight: 44)
             }

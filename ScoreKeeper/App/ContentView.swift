@@ -111,33 +111,65 @@ enum AppDestination: Hashable {
 struct ContentView: View {
     @Bindable var router: NavigationRouter
 
+    @Environment(StoreManager.self) private var storeManager
+    @Environment(\.scenePhase) private var scenePhase
+    @Query private var savedGames: [GameSession]
+    @State private var entryPoint = AppEntryPoint.shared
+    @State private var showProManagement = false
+    @State private var pendingProManagement = false
+    @State private var statusCapsule = PipCountStatusCapsuleController()
     @Environment(ReviewAskManager.self) private var reviewAskManager
     @Environment(\.requestReview) private var requestReview
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     @State private var didApplyOnboardingReset = false
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some View {
-        TabView(selection: $router.selectedTab) {
-            ForEach(PipCountTab.allCases, id: \.self) { tab in
-                PipCountNavigationRoot(tab: tab, router: router)
-                    .background(NativeTabIdentifiers().frame(width: 0, height: 0))
-                    .tabItem {
-                        Label(tab.title.capitalized, systemImage: tab.systemImage)
-                            .accessibilityIdentifier(tab.accessibilityIdentifier)
-                    }
-                    .tag(tab)
+        PipCountRootSurface(statusCapsule: statusCapsule) {
+            TabView(selection: $router.selectedTab) {
+                ForEach(PipCountTab.allCases, id: \.self) { tab in
+                    PipCountNavigationRoot(tab: tab, router: router)
+                        .background(NativeTabIdentifiers().frame(width: 0, height: 0))
+                        .tabItem {
+                            Label(tab.title, systemImage: tab.systemImage)
+                                .accessibilityIdentifier(tab.accessibilityIdentifier)
+                        }
+                        .tag(tab)
+                }
             }
+            .tabViewStyle(.tabBarOnly)
         }
-        .tabViewStyle(.tabBarOnly)
+        .appBackground()
         .tint(ClubhouseTheme.blue)
         .environment(router)
         .environment(\.pipCountPageIsExiting, router.isPageExiting)
-        .fullScreenCover(isPresented: onboardingBinding) {
-            OnboardingView {
-                hasCompletedOnboarding = true
+        .fullScreenCover(isPresented: presentationBinding, onDismiss: presentationDidDismiss) {
+            PipCountRootSurface(statusCapsule: statusCapsule, priority: 1) {
+                if shouldShowOnboarding {
+                    OnboardingView { hasCompletedOnboarding = true }
+                } else if let route = storeManager.paywallRoute {
+                    PaywallView(route: route)
+                }
             }
             .environment(\.pipCountPageIsExiting, false)
+        }
+        .manageSubscriptionsSheet(isPresented: $showProManagement)
+        .task {
+            await storeManager.prepareForLaunch(hasSavedGames: !savedGames.isEmpty)
+            handleEntryPoint()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                Task {
+                    await storeManager.foreground()
+                    handleEntryPoint()
+                }
+            }
+        }
+        .onChange(of: entryPoint.destination) { _, _ in handleEntryPoint() }
+        .onChange(of: hasCompletedOnboarding) { _, completed in
+            if completed { handleEntryPoint() }
         }
         .onChange(of: reviewAskManager.reviewRequestPending) { _, isPending in
             guard isPending else { return }
@@ -153,31 +185,223 @@ struct ContentView: View {
         }
     }
 
-    private var onboardingBinding: Binding<Bool> {
+    private var presentationBinding: Binding<Bool> {
         Binding(
-            get: { shouldShowOnboarding },
-            set: { isPresented in
-                if !isPresented {
-                    hasCompletedOnboarding = true
-                }
-            }
+            get: { shouldShowOnboarding || storeManager.paywallRoute != nil },
+            set: { _ in }
         )
+    }
+
+    private func presentationDidDismiss() {
+        storeManager.paywallDidDismiss()
+        if pendingProManagement {
+            pendingProManagement = false
+            showProManagement = true
+        }
+    }
+
+    private func handleEntryPoint() {
+        guard storeManager.hasPreparedLaunch, !shouldShowOnboarding,
+              let destination = entryPoint.destination else { return }
+        entryPoint.destination = nil
+        switch destination {
+        case .gift:
+            storeManager.presentPaywall(.gift)
+        case .home:
+            storeManager.dismissPaywallForNavigation()
+            router.goHome()
+        case .proManagement:
+            router.push(.legalSupport)
+            if storeManager.paywallRoute != nil {
+                pendingProManagement = true
+                storeManager.dismissPaywallForNavigation()
+            } else {
+                showProManagement = true
+            }
+        }
     }
 
     private var shouldShowOnboarding: Bool {
         let arguments = ProcessInfo.processInfo.arguments
-        let isOnboardingTest = arguments.contains("-reset-onboarding")
+        let isOnboardingTest = arguments.contains("-reset-onboarding") || arguments.contains("-fresh-install")
         return !hasCompletedOnboarding && (!arguments.contains("-in-memory-store") || isOnboardingTest)
     }
 
     private func resetOnboardingIfRequested() {
         guard !didApplyOnboardingReset,
-              ProcessInfo.processInfo.arguments.contains("-reset-onboarding") else {
+              ProcessInfo.processInfo.arguments.contains("-in-memory-store"),
+              (ProcessInfo.processInfo.arguments.contains("-reset-onboarding") || ProcessInfo.processInfo.arguments.contains("-fresh-install")) else {
             return
         }
 
         didApplyOnboardingReset = true
         hasCompletedOnboarding = false
+    }
+}
+
+private enum PipCountRailMetrics {
+    // Measured on the iPhone Duo 27.1 simulator, through the Wi-Fi glyph.
+    static let statusCapsuleHeight: CGFloat = 156
+}
+
+private struct PipCountRootSurface<Content: View>: View {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    let statusCapsule: PipCountStatusCapsuleController
+    var priority = 0
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        GeometryReader { proxy in
+            let railInset = proxy.safeAreaInsets.trailing >= 60 && proxy.safeAreaInsets.leading <= 1
+                ? proxy.safeAreaInsets.trailing : 0
+            content
+                .environment(\.pipCountUsesIsland, horizontalSizeClass == .regular || railInset > 0)
+                .environment(\.pipCountRailInset, railInset)
+                .background {
+                    PipCountStatusCapsuleHost(controller: statusCapsule, priority: priority, railInset: railInset, colorScheme: colorScheme, reduceTransparency: reduceTransparency)
+                }
+                .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
+        }
+    }
+}
+
+private struct PipCountStatusCapsule: View {
+    let railInset: CGFloat
+    let colorScheme: ColorScheme
+    let reduceTransparency: Bool
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            Color.clear
+            Group {
+                if reduceTransparency {
+                    Capsule()
+                        .fill(ClubhouseTheme.paperCard)
+                        .overlay { Capsule().strokeBorder(ClubhouseTheme.ruleStrong, lineWidth: 1) }
+                } else {
+                    Color.clear.appGlass(cornerRadius: 30)
+                }
+            }
+                .frame(width: 60, height: PipCountRailMetrics.statusCapsuleHeight)
+                .padding(.trailing, max(0, (railInset - 60) / 2))
+        }
+        .ignoresSafeArea()
+        .environment(\.colorScheme, colorScheme)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
+    }
+}
+
+private struct PipCountStatusCapsuleHost: UIViewRepresentable {
+    let controller: PipCountStatusCapsuleController
+    let priority: Int
+    let railInset: CGFloat
+    let colorScheme: ColorScheme
+    let reduceTransparency: Bool
+
+    func makeUIView(context: Context) -> HostView { HostView() }
+
+    func updateUIView(_ view: HostView, context: Context) {
+        view.controller = controller
+        view.priority = priority
+        view.capsule = PipCountStatusCapsule(railInset: railInset, colorScheme: colorScheme, reduceTransparency: reduceTransparency)
+        view.updateOverlay()
+    }
+
+    static func dismantleUIView(_ view: HostView, coordinator: ()) { view.removeOverlay() }
+
+    final class HostView: UIView {
+        var controller: PipCountStatusCapsuleController?
+        var priority = 0
+        var capsule: PipCountStatusCapsule?
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            updateOverlay()
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            updateOverlay()
+        }
+
+        func updateOverlay() {
+            guard let capsule else { return }
+            controller?.update(owner: ObjectIdentifier(self), source: window, capsule: capsule, priority: priority)
+        }
+
+        func removeOverlay() {
+            controller?.remove(owner: ObjectIdentifier(self))
+        }
+    }
+}
+
+@MainActor
+private final class PipCountStatusCapsuleController {
+    private struct Surface {
+        let scene: UIWindowScene
+        let frame: CGRect
+        let capsule: PipCountStatusCapsule
+        let priority: Int
+    }
+
+    private final class OverlayWindow: UIWindow {
+        override var canBecomeKey: Bool { false }
+        override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? { nil }
+    }
+
+    private var surfaces: [ObjectIdentifier: Surface] = [:]
+    private var overlay: OverlayWindow?
+    private var displayedCapsule: PipCountStatusCapsule?
+
+    func update(owner: ObjectIdentifier, source: UIWindow?, capsule: PipCountStatusCapsule, priority: Int) {
+        guard let scene = source?.windowScene ?? surfaces[owner]?.scene,
+              let frame = source?.frame ?? surfaces[owner]?.frame else { return }
+        if let previous = surfaces[owner], previous.scene === scene,
+           previous.frame == frame, previous.priority == priority,
+           sameStyle(previous.capsule, capsule) { return }
+        surfaces[owner] = Surface(scene: scene, frame: frame, capsule: capsule, priority: priority)
+        refresh()
+    }
+
+    func remove(owner: ObjectIdentifier) {
+        surfaces.removeValue(forKey: owner)
+        refresh()
+    }
+
+    private func refresh() {
+        guard let surface = surfaces.values.max(by: { $0.priority < $1.priority }), surface.capsule.railInset > 0 else {
+            overlay?.isHidden = true
+            overlay = nil
+            displayedCapsule = nil
+            return
+        }
+        if overlay?.windowScene !== surface.scene {
+            overlay?.isHidden = true
+            let controller = UIHostingController(rootView: surface.capsule)
+            controller.view.backgroundColor = .clear
+            controller.view.accessibilityElementsHidden = true
+            let overlay = OverlayWindow(windowScene: surface.scene)
+            overlay.backgroundColor = .clear
+            overlay.isUserInteractionEnabled = false
+            overlay.windowLevel = .normal + 1
+            overlay.rootViewController = controller
+            self.overlay = overlay
+            displayedCapsule = surface.capsule
+        }
+        if overlay?.frame != surface.frame { overlay?.frame = surface.frame }
+        if !sameStyle(displayedCapsule, surface.capsule) {
+            (overlay?.rootViewController as? UIHostingController<PipCountStatusCapsule>)?.rootView = surface.capsule
+            displayedCapsule = surface.capsule
+        }
+        if overlay?.isHidden == true { overlay?.isHidden = false }
+    }
+
+    private func sameStyle(_ first: PipCountStatusCapsule?, _ second: PipCountStatusCapsule) -> Bool {
+        first?.railInset == second.railInset && first?.colorScheme == second.colorScheme &&
+            first?.reduceTransparency == second.reduceTransparency
     }
 }
 
@@ -239,14 +463,45 @@ private struct NativeTabIdentifiers: UIViewControllerRepresentable {
 struct PipCountNavigationRoot: View {
     let tab: PipCountTab
     @Bindable var router: NavigationRouter
+    @Environment(\.pipCountUsesIsland) private var usesIsland
+    @Environment(\.pipCountRailInset) private var railInset
 
     var body: some View {
         NavigationStack(path: router.pathBinding(for: tab)) {
             root
+                .pipCountIsland {
+                    ForEach(PipCountTab.allCases, id: \.self) { destination in
+                        PipCountIslandButton(
+                            title: destination.title,
+                            systemImage: router.selectedTab == destination ? selectedSymbol(for: destination) : destination.systemImage,
+                            identifier: destination.accessibilityIdentifier,
+                            isSelected: router.selectedTab == destination
+                        ) {
+                            router.selectedTab = destination
+                        }
+                    }
+                }
+                .toolbarVisibility(usesIsland ? .hidden : .automatic, for: .tabBar)
+                .toolbarVisibility(usesIsland || tab != .more ? .hidden : .automatic, for: .navigationBar)
                 .navigationDestination(for: AppDestination.self) { destination in
                     destinationView(destination)
-                        .toolbar(.hidden, for: .tabBar)
+                        .pipCountIsland(isPresented: !destination.hasIslandActions) {
+                            PipCountBackButton()
+                        }
+                        .toolbarVisibility(.hidden, for: .tabBar)
+                        .toolbarVisibility(usesIsland || destination.hidesNavigationBar ? .hidden : .automatic, for: .navigationBar)
                 }
+        }
+        .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
+        .appBackground()
+    }
+
+    private func selectedSymbol(for tab: PipCountTab) -> String {
+        switch tab {
+        case .home: "house.fill"
+        case .games: "square.grid.2x2.fill"
+        case .players: "person.2.fill"
+        case .more: "ellipsis.circle.fill"
         }
     }
 
@@ -279,12 +534,27 @@ struct PipCountNavigationRoot: View {
     }
 }
 
+private extension AppDestination {
+    var hidesNavigationBar: Bool {
+        if case .gameOver = self { return true }
+        return false
+    }
+
+    var hasIslandActions: Bool {
+        switch self {
+        case .scoring, .gameOver, .gameDetail, .playerSetup, .gameConfig: true
+        default: false
+        }
+    }
+}
+
 // MARK: - Onboarding
 
 private struct OnboardingView: View {
     let finish: () -> Void
     @State private var selectedPage = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.pipCountRailInset) private var railInset
 
     private let pages = OnboardingPage.allCases
 
@@ -301,15 +571,31 @@ private struct OnboardingView: View {
             }
             .padding(.horizontal, AppTheme.spacingMedium)
             .padding(.top, AppTheme.spacingSmall)
+            .padding(.trailing, railInset)
             .pipCountPageContent()
 
-            TabView(selection: $selectedPage) {
-                ForEach(Array(pages.enumerated()), id: \.element.id) { index, page in
-                    OnboardingPageView(page: page, highlightsVisible: selectedPage == index)
-                        .tag(index)
+            GeometryReader { proxy in
+                ScrollView(.horizontal) {
+                    HStack(spacing: 0) {
+                        ForEach(Array(pages.enumerated()), id: \.element.id) { index, page in
+                            OnboardingPageView(page: page, highlightsVisible: selectedPage == index)
+                                .frame(width: proxy.size.width, height: proxy.size.height)
+                                .accessibilityHidden(selectedPage != index)
+                                .id(index)
+                        }
+                    }
+                    .scrollTargetLayout()
                 }
+                .scrollTargetBehavior(.paging)
+                .scrollPosition(id: Binding<Int?>(
+                    get: { selectedPage },
+                    set: { if let page = $0 { selectedPage = page } }
+                ))
+                .scrollIndicators(.hidden)
+                .ignoresSafeArea(.container, edges: railInset > 0 ? .trailing : [])
+                .frame(width: proxy.size.width, height: proxy.size.height)
+                .clipped()
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
 
             VStack(spacing: AppTheme.spacingMedium) {
                 OnboardingPageDots(count: pages.count, selectedPage: selectedPage)
@@ -362,6 +648,7 @@ private struct OnboardingPageView: View {
                 if horizontalSizeClass == .regular && !dynamicTypeSize.isAccessibilitySize {
                     HStack(alignment: .center, spacing: AppTheme.spacingXXLarge) {
                         onboardingCopy
+                            .pipCountRailHeader()
                             .frame(maxWidth: 360, alignment: .leading)
 
                         OnboardingArtwork(page: page, isVisible: highlightsVisible)
@@ -371,6 +658,7 @@ private struct OnboardingPageView: View {
                 } else {
                     VStack(alignment: .leading, spacing: AppTheme.spacingLarge) {
                         onboardingCopy
+                            .pipCountRailHeader()
 
                         OnboardingArtwork(page: page, isVisible: highlightsVisible)
                             .frame(minHeight: dynamicTypeSize.isAccessibilitySize ? 390 : 430)
@@ -392,13 +680,7 @@ private struct OnboardingPageView: View {
                 .foregroundStyle(ClubhouseTheme.ink)
                 .multilineTextAlignment(.leading)
                 .accessibilityIdentifier("onboarding_page_title")
-                .minimumScaleFactor(dynamicTypeSize.isAccessibilitySize ? 0.78 : 1)
-
-            Text(page.message)
-                .font(AppFonts.body)
-                .foregroundStyle(ClubhouseTheme.inkMuted)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityHint(Text(page.accessibilityHint))
 
             Rectangle()
                 .fill(page.tint)
@@ -513,9 +795,7 @@ private struct OnboardingArtwork: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("final scores")
                             .columnHeaderStyle()
-                        Text("game night archive")
-                            .font(AppFonts.caption)
-                            .foregroundStyle(ClubhouseTheme.inkMuted)
+
                     }
 
                     Spacer()
@@ -545,10 +825,9 @@ private struct OnboardingGameCover: View {
                 .frame(height: 42)
 
             Text(gameType.displayName)
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(isSelected ? ClubhouseTheme.felt : ClubhouseTheme.ink)
                 .lineLimit(1)
-                .minimumScaleFactor(0.62)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 82)
@@ -648,7 +927,7 @@ private struct OnboardingStatsLine: View {
         HStack(spacing: AppTheme.spacingSmall) {
             PlayerColorPip(colorIndex: 0, size: 12)
             Text("mina leads head-to-head")
-                .font(AppFonts.caption)
+                .font(AppFonts.label)
                 .foregroundStyle(ClubhouseTheme.ink)
                 .lineLimit(1)
             Spacer()
@@ -703,14 +982,11 @@ private enum OnboardingPage: CaseIterable, Identifiable {
         }
     }
 
-    var message: String {
+    var accessibilityHint: String {
         switch self {
-        case .scoreFast:
-            return "pipcount replaces the notes app, napkin, and 'who's winning?'"
-        case .setupFast:
-            return "pick a game, add your crew once, reuse them every night"
-        case .toolsAndHistory:
-            return "final scores, stats, and rematches — saved automatically"
+        case .scoreFast: "pipcount replaces the notes app, napkin, and 'who's winning?'"
+        case .setupFast: "pick a game, add your crew once, reuse them every night"
+        case .toolsAndHistory: "final scores, stats, and rematches — saved automatically"
         }
     }
 
