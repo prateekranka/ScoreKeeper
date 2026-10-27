@@ -4,20 +4,25 @@ import { expect } from 'e2e';
 import { captureState, enterKeyboardText, finishOnboarding, tapNativeControl, visibleDeckPlayer } from './handwriting-helpers';
 import { assertClearOfIsland, screenshotPath } from './handwriting-duo-input';
 
-test('Duo exposes both required inner-display orientations', { timeout: 120_000 }, async ({ app, screen, device }) => {
+test(process.env.PIPCOUNT_PREPARED_DUO_POSE
+  ? `Duo exposes the prepared ${process.env.PIPCOUNT_PREPARED_DUO_POSE} viewport`
+  : 'Duo exposes both required inner-display orientations', { timeout: 120_000 }, async ({ app, screen, device }) => {
+  const preparedPose = process.env.PIPCOUNT_PREPARED_DUO_POSE;
+  const poses = [
+    { orientation: 'portrait', label: 'inner-landscape', size: { width: 951, height: 669 } },
+    { orientation: 'landscape-left', label: 'inner-portrait', size: { width: 669, height: 951 } },
+  ] as const;
+  const selectedPoses = poses.filter(pose => !preparedPose || pose.label === preparedPose);
+  expect(selectedPoses.length).toBeGreaterThan(0);
   await device.installApp();
   await device.openApp('com.icequeen.scorekeeper', {
     relaunch: true,
     launchArguments: ['-in-memory-store', '-unlock-pro', '-force-light-theme', '-break-ui-data', '-hasSeenScoreDeckTutorial', 'YES'],
   });
   await finishOnboarding(app, screen);
-  await device.fold('open');
-  const poses = [
-    { orientation: 'portrait', label: 'inner-landscape', size: { width: 951, height: 669 } },
-    { orientation: 'landscape-left', label: 'inner-portrait', size: { width: 669, height: 951 } },
-  ] as const;
-  for (const pose of poses) {
-    await device.setOrientation(pose.orientation);
+  if (!preparedPose) await device.fold('open');
+  for (const pose of selectedPoses) {
+    if (!preparedPose) await device.setOrientation(pose.orientation);
     await expect(screen.getByTestId('navigation_island')).toHaveCount(1);
     await expect(screen.getByRole('tablist')).toBeHidden();
     await assertClearOfIsland(screen, screen.getByTestId('new_game_button'));

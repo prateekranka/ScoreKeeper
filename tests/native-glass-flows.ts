@@ -90,7 +90,7 @@ export async function launchFreshJourney(
     ],
   });
   await foldIfSupported(device, 'closed');
-  await device.setOrientation('portrait');
+  if (!process.env.PIPCOUNT_PREPARED_DUO_POSE) await device.setOrientation('portrait');
   await finishOnboarding(app, screen);
   await tapTab(screen, 'Home');
   await expect(screen.getByTestId('new_game_button')).toBeVisible();

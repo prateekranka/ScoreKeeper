@@ -25,6 +25,7 @@ The Duo keeps its bottom trailing navigation island and non-interactive top stat
 - Use complete paywall and notification sentences without sentence-ending full stops
 - Add native scoring, Undo, last-allowance, rematch and rotation acceptance cases
 - Read fields before opening the iPad number pad and dismiss its native popup before asserting the score
+- Use a full-height scoring tool sheet whenever the navigation island is active, so Duo portrait does not leave timer Reset below a half-height sheet
 
 The committed runner is `scripts/run_native_acceptance.py`. Its default iPhone/iPad matrix runs sequentially. It refuses unrelated booted devices, preserves evidence and never erases or deletes a device. See `tests/README.md` for focused and Duo runs.
 
@@ -38,6 +39,8 @@ The local StoreKit catalog is retained. A command-line app launch does not activ
 
 Current-pose Duo results do not prove folding. A fold run must change the hinge pose and retain the active route and score draft. If CoreDevice cannot report the hinge angle, record that as an environment blocker.
 
-The reconciliation run verified a manual score of 46 through closing and reopening the Duo, then cancelled entry and confirmed the original saved totals of 7 and 9. The inner landscape viewport was 951 × 669. The driver acknowledged both orientation requests without changing that viewport, so the required 669 × 951 inner portrait check remains open. The exact-size assertion remains in `tests/native-glass-duo-poses.e2e.ts`; it is not replaced by a current-pose pass. The driver project records the same orientation limitation in [issue 2774](https://github.com/callstack/agent-device/issues/2774).
+The reconciliation run verified a manual score of 46 through closing and reopening the Duo, then cancelled entry and confirmed the original saved totals of 7 and 9. The driver can acknowledge both orientation requests while leaving the inner viewport at 951 × 669. The driver project records the same limitation in [issue 2774](https://github.com/callstack/agent-device/issues/2774). The exact 669 × 951 and 951 × 669 assertions remain in `tests/native-glass-duo-poses.e2e.ts`.
 
-Some Duo captures also report a 669 × 951 accessibility viewport while the screenshot is 951 × 669. This can omit visible trailing controls from the test tree. The runtime pins e2e 0.21.3, mobile 0.12.4 and agent-device 0.21.32, with one shared driver resolution. The patch improves floating-bar and keyboard handling, but the remaining pose/viewport mismatch is still an acceptance limitation. Current-frame native input retains exact destination, score and visibility assertions; it does not turn missing-control checks into passes.
+Some Duo captures also report a 669 × 951 accessibility viewport while the screenshot is 951 × 669. This can omit visible trailing controls from the test tree. The runtime pins e2e 0.21.3, mobile 0.12.4 and agent-device 0.21.32, with one shared driver resolution. Current-frame native input retains exact destination, score and visibility assertions; it does not turn missing-control checks into passes.
+
+With the user's explicit approval, Device Hub can set each inner pose before TesterArmy runs. `PIPCOUNT_PREPARED_DUO_POSE` selects the exact required size and prevents the helpers from overriding that setup. Both inner-portrait and inner-landscape runs must pass their original size, navigation and clearance assertions. Device Hub is used only for pose setup; all app assertions remain in TesterArmy. The actual fold regression remains separate. See `tests/README.md` for the prepared-pose commands and the run report for results, including retained direct-driver failures.

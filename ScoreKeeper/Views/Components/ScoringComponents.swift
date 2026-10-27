@@ -30,7 +30,6 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
     @ViewBuilder var footer: Footer
 
     @Environment(\.pipCountUsesIsland) private var usesIsland
-    @Environment(\.pipCountRailInset) private var railInset
     @Environment(\.pipCountEndGame) private var endGame
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -114,7 +113,7 @@ struct ScoringScreenLayout<Content: View, Footer: View>: View {
         }
         .sheet(item: $selectedTool) { tool in
             ScoringToolSheet(tool: tool, session: session)
-                .presentationDetents(dynamicTypeSize.isAccessibilitySize || railInset > 0 ? [.large] : [.medium, .large])
+                .presentationDetents(dynamicTypeSize.isAccessibilitySize || usesIsland ? [.large] : [.medium, .large])
         }
         .alert(
             "couldn’t update rounds",

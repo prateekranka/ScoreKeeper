@@ -117,4 +117,12 @@ The release smoke covers setup, typed round scores, Undo, results, a Pro rematch
 
 This matrix uses the current device pose with PIPCOUNT_NO_FOLD=1. Run the dedicated Duo suites with --allow-fold to prove fold and open-layout behavior; a current-pose pass is not a fold pass. Use --files to select suites and --grep to select a focused regression case.
 
+If the user approves Device Hub only for pose setup, set the dedicated Duo to Open and rotate it to the required inner pose there. Then run the exact viewport check through TesterArmy:
+
+```sh
+PIPCOUNT_PREPARED_DUO_POSE=inner-portrait python3 scripts/run_native_acceptance.py --udid <dedicated-duo-udid> --files tests/native-glass-duo-poses.e2e.ts --grep 'Duo exposes' --output .e2e-duo-prepared-portrait
+```
+
+Repeat with inner-landscape and a new output directory after changing the pose in Device Hub. The prepared-pose option prevents test helpers from overriding that setup. Each run still requires the exact 669 × 951 or 951 × 669 screenshot size, one navigation island, hidden compact tabs and clear controls. Both prepared runs must pass to claim both inner poses. The default case still requests both orientations through TesterArmy. A prepared-pose pass does not prove folding; retain the separate closing/reopening regression.
+
 The root tooling pins e2e 0.21.3, the mobile adapter 0.12.4, and agent-device 0.21.32. The npm override makes the adapter and lifecycle CLI use the same tested driver. A direct driver upgrade alone can leave the adapter running its older nested dependency; verify the resolved versions with npm ls agent-device --all. This patch includes iOS 27 floating-bar, capture-geometry and keyboard-coverage fixes. App navigation uses the existing current-frame native input helper and retains its destination and score assertions.
