@@ -8,12 +8,14 @@
     "sim:serve": "npx serve-sim",
     "sim:serve:detach": "npx serve-sim --detach",
     "sim:serve:kill": "npx serve-sim --kill",
-    "test:e2e": "e2e run"
+    "test:e2e": "e2e run",
+    "postinstall": "patch-package --error-on-fail"
   },
   "devDependencies": {
     "@e2e-dev/mobile": "0.12.4",
     "agent-device": "0.21.32",
     "e2e": "0.21.3",
+    "patch-package": "8.0.1",
     "serve-sim": "^0.1.10"
   },
   "engines": {

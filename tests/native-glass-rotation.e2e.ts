@@ -1,6 +1,6 @@
 import { test } from '@e2e-dev/mobile';
 import { expect } from 'e2e';
-import { captureState, scrollControlAboveTabDock } from './handwriting-helpers';
+import { captureState, scrollControlAboveTabDock, tapNativeControl } from './handwriting-helpers';
 
 test('paywall close, restore and the start gate survive portrait and landscape', async ({ app, screen, device }) => {
   await device.installApp();
@@ -30,11 +30,13 @@ test('paywall close, restore and the start gate survive portrait and landscape',
           : viewport.width > viewport.height;
       }).toBe(true);
       await captureState(app, `reconcile-paywall-${orientation}`, 'The measured app frame has the requested orientation and paywall controls remain reachable');
-      await close.tap();
+      await tapNativeControl(screen, close);
+      await expect(screen.getByTestId('paywall_main')).toBeHidden();
+      await captureState(app, `reconcile-home-${orientation}`, 'Closing the rotated paywall reveals Home');
       const start = screen.getByTestId('new_game_button');
       await scrollControlAboveTabDock(screen, start, 'tab_home', 'Start new game after rotation');
       await expect(start).toBeVisible();
-      await start.tap();
+      await tapNativeControl(screen, start);
       await expect(screen.getByTestId('paywall_main')).toBeVisible();
     }
   } finally {
