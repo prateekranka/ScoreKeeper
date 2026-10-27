@@ -15,7 +15,7 @@ jobs:
   build:
     name: Build iPhone and iPad app
     runs-on: macos-26
-    timeout-minutes: 35
+    timeout-minutes: 60
 
     steps:
       - name: Check out repository

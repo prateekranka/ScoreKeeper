@@ -10,7 +10,7 @@ import {
   tapGameOverAction,
 } from './native-glass-flows';
 
-test('legacy access completes a game and rematch through native scoring', { timeout: 300_000 }, async ({ app, screen, device }) => {
+test('legacy access completes a game and rematch through native scoring', { timeout: 600_000 }, async ({ app, screen, device }) => {
   const names = ['Maya', 'Leo'] as const;
   await launchFreshJourney(app, screen, device, ['-unlock-pro', '-hasSeenScoreDeckTutorial', 'YES']);
   await startGameFromHome(app, screen, 'generic', names, 'release-smoke');

@@ -1,8 +1,6 @@
-import { readFile } from 'node:fs/promises';
 import { test } from '@e2e-dev/mobile';
 import { expect } from 'e2e';
 import { captureState, scrollControlAboveTabDock } from './handwriting-helpers';
-import { screenshotPath } from './handwriting-duo-input';
 
 test('paywall close, restore and the start gate survive portrait and landscape', async ({ app, screen, device }) => {
   await device.installApp();
@@ -24,12 +22,14 @@ test('paywall close, restore and the start gate survive portrait and landscape',
       await screen.getByTestId('paywall_content_scroll').scrollUntilVisible(restore);
       await expect(restore).toBeVisible();
       await expect(close).toBeVisible();
-      const artifact = await captureState(app, `reconcile-paywall-${orientation}`, 'Paywall controls remain reachable after rotation');
-      const png = await readFile(await screenshotPath(artifact));
-      const width = png.readUInt32BE(16);
-      const height = png.readUInt32BE(20);
-      if (orientation === 'portrait') expect(height).toBeGreaterThan(width);
-      else expect(width).toBeGreaterThan(height);
+      await expect.poll(async () => {
+        const viewport = await screen.getByTestId('paywall_main').boundingBox();
+        if (!viewport || viewport.width <= 0 || viewport.height <= 0) return false;
+        return orientation === 'portrait'
+          ? viewport.height > viewport.width
+          : viewport.width > viewport.height;
+      }).toBe(true);
+      await captureState(app, `reconcile-paywall-${orientation}`, 'The measured app frame has the requested orientation and paywall controls remain reachable');
       await close.tap();
       const start = screen.getByTestId('new_game_button');
       await scrollControlAboveTabDock(screen, start, 'tab_home', 'Start new game after rotation');
