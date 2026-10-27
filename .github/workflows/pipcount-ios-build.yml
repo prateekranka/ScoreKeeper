@@ -57,8 +57,13 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
-      - name: Accept iPhone and iPad sequentially
-        run: python3 scripts/run_native_acceptance.py --devices iphone,ipad --app "$RUNNER_TEMP/PipCountDerivedData/Build/Products/Debug-iphonesimulator/ScoreKeeper.app" --output .e2e-ci
+      - name: Accept iPhone
+        run: python3 scripts/run_native_acceptance.py --devices iphone --app "$RUNNER_TEMP/PipCountDerivedData/Build/Products/Debug-iphonesimulator/ScoreKeeper.app" --output .e2e-ci/iphone-run
+        env:
+          DO_NOT_TRACK: '1'
+
+      - name: Accept iPad after iPhone
+        run: python3 scripts/run_native_acceptance.py --devices ipad --app "$RUNNER_TEMP/PipCountDerivedData/Build/Products/Debug-iphonesimulator/ScoreKeeper.app" --output .e2e-ci/ipad-run
         env:
           DO_NOT_TRACK: '1'
 

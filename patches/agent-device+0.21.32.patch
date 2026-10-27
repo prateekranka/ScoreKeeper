@@ -39,3 +39,20 @@ diff --git a/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/Agent
 +          rootFrame: rootFrame
 +        )
 +      }
+diff --git a/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+SynthesizedInteraction.swift b/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+SynthesizedInteraction.swift
+--- a/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+SynthesizedInteraction.swift
++++ b/node_modules/agent-device/dist/apple/runner/AgentDeviceRunner/AgentDeviceRunnerUITests/RunnerTests+SynthesizedInteraction.swift
+@@ -549 +549,12 @@
+-    soleDisplayFrame(interfaceOrientation: interfaceOrientation) ?? fallback
++    guard let displayFrame = soleDisplayFrame(interfaceOrientation: interfaceOrientation) else {
++      return fallback
++    }
++    if SnapshotGeometry.isPositiveFinite(fallback),
++      abs(fallback.minX) <= 1, abs(fallback.minY) <= 1,
++      fallback.width > displayFrame.width + 1,
++      fallback.height > displayFrame.height + 1
++    {
++      NSLog("AGENT_DEVICE_RUNNER_SYNTHESIZED_ROTATION_FRAME_FROM_WINDOW display=%@ window=%@", String(describing: displayFrame), String(describing: fallback))
++      return fallback
++    }
++    return displayFrame
