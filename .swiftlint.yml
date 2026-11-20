@@ -1,0 +1,124 @@
+# PipCount design-system lint rules.
+#
+# These rules keep people and AI agents inside the design system.
+# Each message says what to use instead.
+#
+# Old code is listed in .swiftlint-baseline.json, so it does not fail.
+# New code must follow every rule. When you fix an old line, it leaves
+# the baseline by itself. To refresh the baseline after a cleanup:
+#   swiftlint lint --write-baseline .swiftlint-baseline.json
+
+included:
+  - ScoreKeeper
+
+# Only the design-system rules below. SwiftLint's general style rules are off.
+only_rules:
+  - custom_rules
+
+custom_rules:
+  # ---------- Color ----------
+
+  no_palette_in_features:
+    name: "Palette color in feature code"
+    regex: 'ClubhouseTheme\.(blue|blueDeep|red|yellow|green|sky|coral|lilac)\b'
+    excluded: 'ScoreKeeper/Theme/|TileArt\.swift$|Artwork|Confetti'
+    message: >-
+      Use a role token, not a palette color. blue -> accentPrimary,
+      textLink or borderFocus. red -> accentDanger (delete, end) or
+      accentLacquer (decoration). yellow -> accentHighlight.
+      sky -> artBackdrop. For a game, round or player tint, take a PipTint.
+    severity: error
+    # Do not flag comments or text in quotes.
+    excluded_match_kinds: &skip_text [comment, comment.mark, comment.url, doccomment, doccomment.field, string]
+
+  no_legacy_token_names:
+    name: "Legacy token name"
+    regex: 'ClubhouseTheme\.(paper|paperCard|paperSunken|paperElevated|ink|inkMuted|rule|ruleStrong|onPrimary|onYellow|onFelt|onButton|panelBorder|woodgrain|paperShadow|artShadow|warmHighlight|felt|feltDeep|lacquer|brass|primaryFill|danger|palette)\b'
+    excluded: 'ScoreKeeper/Theme/'
+    message: >-
+      Use the role name. paper -> surfacePage, paperCard -> surfaceCard,
+      paperSunken -> surfaceSunken, paperElevated -> surfaceRaised,
+      ink -> textPrimary, inkMuted -> textSecondary, rule -> borderHairline,
+      ruleStrong -> borderStrong, onPrimary/onFelt -> textOnAccent,
+      onYellow -> textOnHighlight, onButton -> textOn(_:),
+      felt/primaryFill -> accentPrimary, danger -> accentDanger,
+      lacquer -> accentLacquer, brass -> accentLeader,
+      paperShadow -> shadowCard, warmHighlight -> effectSheen.
+    severity: error
+    excluded_match_kinds: *skip_text
+
+  no_raw_color_values:
+    name: "Raw color value"
+    regex: '\b(Color|UIColor)\((light|red|white|hue|hex|displayP3|\.sRGB|\.displayP3)\s*:|#colorLiteral'
+    excluded: 'ScoreKeeper/Theme/'
+    message: >-
+      Do not type color values. Add the color to ClubhouseTheme.swift
+      as a role token, then use that token.
+    severity: error
+    excluded_match_kinds: *skip_text
+
+  no_system_colors:
+    name: "System color"
+    regex: '\b(Color|UIColor)\.(red|blue|green|yellow|orange|pink|purple|gray|grey|black|white|brown|cyan|mint|indigo|teal|systemRed|systemBlue|systemGreen|systemGray)\b|\.(foregroundStyle|foregroundColor|background|fill|stroke|tint|strokeBorder)\(\s*\.(red|blue|green|yellow|orange|pink|purple|gray|black|white|brown|cyan|mint|indigo|teal)\b'
+    excluded: 'ScoreKeeper/Theme/|ScoreWritingCanvas\.swift$'
+    message: >-
+      Apple's built-in colors do not match PipCount. Use a role token,
+      for example ClubhouseTheme.surfaceCard or textPrimary.
+    severity: error
+    excluded_match_kinds: *skip_text
+
+  # ---------- Type ----------
+
+  no_fixed_font_size:
+    name: "Fixed font size"
+    regex: '\.system\(\s*size\s*:|Font\.custom\(|UIFont\.systemFont\(ofSize'
+    excluded: 'ScoreKeeper/Theme/'
+    message: >-
+      Use an AppFonts style (title, headline, body, label, scoreDisplay ...).
+      Fixed sizes do not grow with Dynamic Type.
+    severity: error
+    excluded_match_kinds: *skip_text
+
+  # ---------- Space, shape, motion ----------
+
+  no_literal_spacing:
+    name: "Number used for spacing"
+    regex: '\.padding\(\s*(\.[a-zA-Z]+\s*,\s*)?(?!0\b)\d+(\.\d+)?\s*\)|\bspacing\s*:\s*(?!0\b)\d+'
+    excluded: 'ScoreKeeper/Theme/'
+    message: >-
+      Use an AppTheme spacing token: spacingXSmall 6, spacingSmall 10,
+      spacingMedium 16, spacingLarge 24, spacingXLarge 32, spacingXXLarge 44.
+    severity: error
+    excluded_match_kinds: *skip_text
+
+  no_literal_corner_radius:
+    name: "Number used for corner radius"
+    regex: '\bcornerRadius\s*:\s*(?!0\b)\d+'
+    excluded: 'ScoreKeeper/Theme/'
+    message: >-
+      Use an AppTheme radius token: cornerRadiusSmall 12, cornerRadiusMedium 18,
+      cornerRadiusLarge 28, cornerRadiusXLarge 36.
+    severity: error
+    excluded_match_kinds: *skip_text
+
+  no_raw_animation:
+    name: "Animation not from AppMotion"
+    regex: '(\bAnimation)?\.(spring|interactiveSpring|interpolatingSpring|easeIn|easeOut|easeInOut|linear|bouncy|snappy|smooth)\('
+    excluded: 'ScoreKeeper/Theme/'
+    message: >-
+      Use an AppMotion value (pressIn, pressOut, fade, state, page,
+      celebration ...). AppMotion also handles Reduce Motion.
+    severity: error
+    excluded_match_kinds: *skip_text
+
+  # ---------- Component props ----------
+
+  no_free_color_props:
+    name: "Component takes a free Color"
+    regex: '^[ \t]*(@\w+[ \t]+)*(public[ \t]+|internal[ \t]+)?(let|var)[ \t]+\w+[ \t]*:[ \t]*Color\b(?![ \t]*\{)'
+    included: 'ScoreKeeper/Views/Components/'
+    message: >-
+      A component must not take any Color. Take a PipTint (a palette
+      choice) or a small enum of roles, so agents can only pick allowed colors.
+    severity: error
+    excluded_match_kinds: *skip_text
