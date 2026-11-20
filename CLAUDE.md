@@ -25,8 +25,12 @@ This file covers the design system. Follow it for every UI change.
 | Space, radius, widths | `AppTheme.<token>` | `ScoreKeeper/Theme/AppTheme.swift` |
 | Motion | `AppMotion.<value>` | `ScoreKeeper/Theme/AppTheme.swift` |
 
-The PipCount Component Library page uses the same names in CSS form
-(`accentPrimary` in Swift is `--accent-primary` on the page).
+**The Doop file is the source of truth for the design.** The PipCount screens and
+components live on the Doop canvas. Doop's pinned frames, decisions and style rules
+win over anything else. If Doop and this file disagree, follow Doop and tell the user.
+
+Token names in Doop use CSS form: `accentPrimary` in Swift is `--accent-primary` in Doop.
+The old claude.ai "PipCount Component Library" page is retired. Do not use it or update it.
 
 ## Color: role tokens
 
@@ -99,7 +103,7 @@ Old names still compile, but lint blocks them in new code.
 | `sky` | `artBackdrop` |
 
 If no role fits, do not invent a color. Add a new role token to `ClubhouseTheme.swift`,
-add it to the Component Library page, and say so in your summary.
+add it to the Doop file, and say so in your summary.
 
 ## Type, space, shape, motion
 
@@ -141,7 +145,7 @@ Use these before you make anything new. Files are in `ScoreKeeper/Views/Componen
 - Keep tap targets at 44 pt or more.
 - Support Dynamic Type up to accessibility sizes. Support light and dark mode, Reduce Motion and Reduce Transparency.
 - Never show a player by color alone. Use the seat shape or glyph too.
-- Add the new component to the Component Library page with "use it when" and "do not use it when".
+- Add the new component to the Doop file, with a "use it when" and "do not use it when" decision.
 
 ## Lint and CI
 
