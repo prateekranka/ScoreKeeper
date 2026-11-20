@@ -10,7 +10,7 @@ struct ClubhouseTheme {
     static let ink = Color(light: 0x0B0B0B, dark: 0xF7F3E9)
     static let inkMuted = Color(light: 0x5B554D, dark: 0xC2BCB2)
 
-    // MARK: PipCount Bauhaus palette
+    // MARK: PipCount Bauhaus palette (raw — Theme files, artwork and PipTint only)
 
     static let blue = Color(light: 0x0C42CD, dark: 0x7DA1FF)
     static let blueDeep = Color(light: 0x07349F, dark: 0x7DA1FF)
@@ -29,7 +29,7 @@ struct ClubhouseTheme {
 
     static let palette: [Color] = [blue, red, yellow, green, ink]
 
-    // MARK: Stable semantic names used throughout feature code
+    // MARK: Legacy names — do not use in new code; use the role tokens below
 
     static let felt = blue
     static let feltDeep = blueDeep
@@ -62,6 +62,79 @@ struct ClubhouseTheme {
     static var warmHighlight: Color {
         Color(light: 0xFFFFFF, dark: 0xFFFFFF).opacity(0.68)
     }
+
+    // MARK: Role tokens — feature code uses ONLY these
+    // Each role names a job, not a look. The palette above feeds them.
+    // Matches the CSS names in the PipCount Component Library
+    // (--surface-card -> surfaceCard, --accent-primary -> accentPrimary).
+
+    // Surfaces
+    static let surfacePage = paper
+    static let surfaceCard = paperCard
+    static let surfaceSunken = paperSunken
+    static let surfaceRaised = paperElevated
+
+    // Text
+    static let textPrimary = ink
+    static let textSecondary = inkMuted
+    static let textOnAccent = onPrimary
+    static let textOnHighlight = onYellow
+    static let textLink = blue
+
+    // Lines
+    static var borderHairline: Color { rule }
+    static var borderStrong: Color { ruleStrong }
+    static let borderPanel = panelBorder
+    static let borderWood = woodgrain
+    static let borderFocus = blue
+
+    // Accents and states
+    static let accentPrimary = blue
+    static let accentPrimaryStrong = blueDeep
+    static let accentDanger = red
+    static let accentLacquer = red
+    static let accentHighlight = yellow
+    static let accentLeader = brass
+
+    // Shadows and effects
+    static var shadowCard: Color { paperShadow }
+    static var shadowArt: Color { artShadow }
+    static var effectSheen: Color { warmHighlight }
+    static let artBackdrop = sky
+
+    /// Text color for a filled button or chip: textOnHighlight on yellow,
+    /// surfaceCard on ink, textOnAccent on everything else.
+    static func textOn(_ tint: PipTint) -> Color {
+        switch tint {
+        case .yellow: return textOnHighlight
+        case .ink: return surfaceCard
+        default: return textOnAccent
+        }
+    }
+}
+
+/// The only way to pass a palette color into a component.
+/// A component that shows a game, a round or a player takes a PipTint,
+/// never a free `Color`. This keeps every tint inside the palette.
+enum PipTint: CaseIterable, Hashable {
+    case blue, red, yellow, green, orange, brown, teal, pink, ink
+
+    var color: Color {
+        switch self {
+        case .blue: return ClubhouseTheme.blue
+        case .red: return ClubhouseTheme.red
+        case .yellow: return ClubhouseTheme.yellow
+        case .green: return ClubhouseTheme.green
+        case .orange: return PlayerColors.palette[4]
+        case .brown: return PlayerColors.palette[5]
+        case .teal: return PlayerColors.palette[6]
+        case .pink: return PlayerColors.palette[7]
+        case .ink: return ClubhouseTheme.ink
+        }
+    }
+
+    /// Seat tints in seat order: seat 1 is blue, seat 8 is pink.
+    static let seats: [PipTint] = [.blue, .red, .yellow, .green, .orange, .brown, .teal, .pink]
 }
 
 extension Color {
