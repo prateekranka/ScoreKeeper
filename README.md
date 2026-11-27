@@ -40,6 +40,14 @@ The accessibility acceptance pass uses the largest system Dynamic Type size toge
 
 The app targets iOS 26.0 and uses Swift 6. The current Duo and system-accessibility suites target Xcode 27.1 beta. The accessibility helper currently selects `/Applications/Xcode-27.1-beta.app/Contents/Developer` for system text-size queries.
 
+## Design and archive
+
+The PipCount Doop canvas contains the current screens and component library. [The design rules](CLAUDE.md) map the canvas tokens to Swift. [The screen inventory](docs/ui-screen-network.md) maps native workflows and routes.
+
+Earlier [screen captures](https://github.com/prateekranka/ScoreKeeper/tree/8c5354f272328ae9def2ccb5c27f522ec5594334/screenshots), [OpenDesign exports](https://github.com/prateekranka/ScoreKeeper/tree/8c5354f272328ae9def2ccb5c27f522ec5594334/design), and [design explorations](https://github.com/prateekranka/ScoreKeeper/tree/8c5354f272328ae9def2ccb5c27f522ec5594334/design-explorations) are available at the pre-cleanup revision. The current handwriting preview and App Store screenshot editor are still in this repository.
+
+Install [Git LFS](https://git-lfs.com/) before cloning. For an existing checkout, run `git lfs install` once and `git lfs pull` after updating your branch.
+
 ## Build and run
 
 Run commands from the repository root. If several Xcode installations are available, set `DEVELOPER_DIR` to the required installation.

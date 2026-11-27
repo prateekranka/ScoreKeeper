@@ -1,0 +1,5 @@
+ScoreKeeper/Assets.xcassets/**/*.png filter=lfs diff=lfs merge=lfs -text
+release/app-store-screenshots/public/**/*.png filter=lfs diff=lfs merge=lfs -text
+design-explorations/mascot-rive/*.png filter=lfs diff=lfs merge=lfs -text
+design-explorations/mascot-rive/*.gif filter=lfs diff=lfs merge=lfs -text
+design-explorations/mascot-rive/*.webm filter=lfs diff=lfs merge=lfs -text

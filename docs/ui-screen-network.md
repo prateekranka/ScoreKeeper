@@ -6,11 +6,11 @@ Canonical route and workflow inventory for the current PipCount Paper Bauhaus im
 
 - Editable major-workflow map: `docs/pipcount-screen-network.excalidraw`
 - Quick-view major-workflow SVG: `docs/pipcount-screen-network.svg`
-- Clickable source/dependency map: `docs/codemap/codemap.html`
-- Route-strip manifest: `docs/ui-screen-network-manifest.json`
-- Generated route-strip PNG: `docs/ui-screen-network-route-strips.png`
-- Source screenshot folder: `screenshots/app-screens`
-- Onboarding screenshot refreshed after the onboarding redesign: `screenshots/app-screens/23-onboarding.png`
+- [Archived source and dependency map](https://github.com/prateekranka/ScoreKeeper/blob/8c5354f272328ae9def2ccb5c27f522ec5594334/docs/codemap/codemap.html)
+- [Archived route-strip manifest](https://github.com/prateekranka/ScoreKeeper/blob/8c5354f272328ae9def2ccb5c27f522ec5594334/docs/ui-screen-network-manifest.json)
+- [Archived route-strip PNG](https://github.com/prateekranka/ScoreKeeper/blob/8c5354f272328ae9def2ccb5c27f522ec5594334/docs/ui-screen-network-route-strips.png)
+- [Archived screen captures](https://github.com/prateekranka/ScoreKeeper/tree/8c5354f272328ae9def2ccb5c27f522ec5594334/screenshots/app-screens)
+- [Archived onboarding capture](https://github.com/prateekranka/ScoreKeeper/blob/8c5354f272328ae9def2ccb5c27f522ec5594334/screenshots/app-screens/23-onboarding.png)
 
 ## Route Backbone
 
